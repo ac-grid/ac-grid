@@ -1,0 +1,76 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+
+import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
+import { type Cell } from "@tanstack/table-core";
+import { flexRender } from "../utils/flex-render";
+
+export interface DraggableTableCellProps<TData> {
+    /**
+     * 单元格对象
+     */
+    cell: Cell<TData, unknown>;
+}
+
+/**
+ * 可拖拽表格单元格组件
+ */
+@autoRegister({ tagName: "wsx-ac-draggable-table-cell" })
+export class DraggableTableCell extends LightComponent {
+    // cell 通过 property 传递，不需要在 observedAttributes 中
+    // 只有简单的字符串属性才需要 observedAttributes
+    static observedAttributes: string[] = [];
+
+    @state private _cell: Cell<any, unknown> = null as any;
+
+    // Property getter/setter
+    get cell(): Cell<any, unknown> {
+        return this._cell;
+    }
+
+    set cell(value: Cell<any, unknown>) {
+        if (value !== this._cell) {
+            this._cell = value;
+        }
+    }
+
+    onConnected() {
+        super.onConnected?.();
+
+        // 从 property 读取 cell（wsx 会直接设置 property）
+        const element = this as any;
+        if (element.cell && !this._cell) {
+            this.cell = element.cell;
+        }
+    }
+
+    render() {
+        if (!this._cell || !this._cell.column) {
+            return <td>Loading...</td>;
+        }
+
+        // 使用 getSize() 获取列大小，如果失败则使用列定义中的 size 或默认值
+        let columnSize = 150;
+        try {
+            columnSize =
+                this._cell.column.getSize() ||
+                this._cell.column.columnDef.size ||
+                150;
+        } catch (e) {
+            // 如果 getSize() 失败，使用列定义中的 size 或默认值
+            columnSize = this._cell.column.columnDef.size || 150;
+        }
+        const style = {
+            position: "relative" as const,
+            transition: "width transform 0.2s ease-in-out",
+            width: `${columnSize}px`,
+        };
+
+        // flexRender 在 wsx 中返回 HTMLElement 或基本类型，直接使用
+        const rendered = flexRender(
+            this._cell.column.columnDef.cell,
+            this._cell.getContext()
+        );
+
+        return <td style={style}>{rendered}</td>;
+    }
+}

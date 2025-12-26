@@ -1,0 +1,26 @@
+.ac-grid {
+  width: 100%;
+  height: 100%;
+}
+
+.ac-grid table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.ac-grid th,
+.ac-grid td {
+  padding: 0.5rem;
+  text-align: left;
+  border: 1px solid #e5e7eb;
+}
+
+.ac-grid th {
+  background-color: #f9fafb;
+  font-weight: 500;
+}
+
+.ac-grid tbody tr:hover {
+  background-color: #f9fafb;
+}
+

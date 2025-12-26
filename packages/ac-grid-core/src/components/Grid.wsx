@@ -1,0 +1,312 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+
+import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
+import {
+    createTable,
+    getCoreRowModel,
+    type Table,
+    type ColumnDef,
+} from "@tanstack/table-core";
+import { arrayMove } from "../utils/array-move";
+import { flexRender } from "../utils/flex-render";
+import "./DraggableTableHeader.wsx";
+import "./DraggableTableRow.wsx";
+
+export interface GridProps<TData extends { userId?: string }> {
+    /**
+     * 数据源
+     */
+    data: TData[];
+    /**
+     * 列定义
+     */
+    columns: ColumnDef<TData, any>[];
+    /**
+     * 自定义类名
+     */
+    className?: string;
+}
+
+/**
+ * Grid 组件 - 使用 wsx 和 @tanstack/table-core 实现的数据表格组件
+ */
+@autoRegister({ tagName: "wsx-ac-grid" })
+export class Grid extends LightComponent {
+    @state private columnOrder: string[] = [];
+    @state private gridData: any[] = [];
+
+    private table: Table<any> | null = null;
+
+    // Property getters/setters - wsx jsx-factory 会设置这些 properties
+    get data(): any[] {
+        return this._data;
+    }
+    set data(value: any[]) {
+        console.log("[Grid] data setter called:", {
+            value,
+            isArray: Array.isArray(value),
+            length: Array.isArray(value) ? value.length : 0,
+            currentData: this._data,
+        });
+        if (Array.isArray(value) && value !== this._data) {
+            this._data = value;
+            this.gridData = [...value];
+            this.updateTable();
+            // @state 属性变化会自动触发重新渲染
+        }
+    }
+    @state private _data: any[] = [];
+
+    get columns(): ColumnDef<any, any>[] {
+        return this._columns;
+    }
+    set columns(value: ColumnDef<any, any>[]) {
+        console.log("[Grid] columns setter called:", {
+            value,
+            isArray: Array.isArray(value),
+            length: Array.isArray(value) ? value.length : 0,
+            currentColumns: this._columns,
+        });
+        if (Array.isArray(value) && value !== this._columns) {
+            this._columns = value;
+            this.columnOrder = value.map(
+                (col, index) => col.id || `col-${index}`
+            );
+            this.updateTable();
+            // @state 属性变化会自动触发重新渲染
+        }
+    }
+    @state private _columns: ColumnDef<any, any>[] = [];
+
+    get className(): string {
+        return this._className;
+    }
+    set className(value: string) {
+        if (value !== this._className) {
+            this._className = value;
+            // @state 属性变化会自动触发重新渲染
+        }
+    }
+    @state private _className: string = "";
+
+    onConnected() {
+        super.onConnected?.();
+        console.log("[Grid] onConnected called");
+
+        // 检查 properties 是否已经设置（wsx 现在可以直接设置 properties）
+        const element = this as any;
+        console.log("[Grid] Checking properties in connectedCallback:", {
+            hasData: !!element.data,
+            hasColumns: !!element.columns,
+            dataLength: Array.isArray(element.data) ? element.data.length : 0,
+            columnsLength: Array.isArray(element.columns)
+                ? element.columns.length
+                : 0,
+        });
+
+        if (
+            element.data &&
+            Array.isArray(element.data) &&
+            element.data.length > 0
+        ) {
+            console.log("[Grid] Found data in connectedCallback, setting...");
+            this.data = element.data;
+        }
+
+        if (
+            element.columns &&
+            Array.isArray(element.columns) &&
+            element.columns.length > 0
+        ) {
+            console.log(
+                "[Grid] Found columns in connectedCallback, setting..."
+            );
+            this.columns = element.columns;
+        }
+    }
+
+    /**
+     * 更新表格实例
+     */
+    private updateTable() {
+        // 从列定义中提取初始列大小，用于初始化 columnSizing 状态
+        // 这是 @tanstack/table-core 的最佳实践：使用列定义中的 size 属性初始化 columnSizing
+        // ColumnSizingState = Record<string, number>，键是列 ID，值是大小
+        const initialColumnSizing: Record<string, number> = {};
+        this._columns.forEach((col) => {
+            if (col.id && typeof col.size === "number") {
+                initialColumnSizing[col.id] = col.size;
+            }
+        });
+
+        this.table = createTable({
+            data: this.gridData,
+            columns: this._columns,
+            getCoreRowModel: getCoreRowModel(),
+            state: {
+                columnOrder: this.columnOrder,
+                // 初始化 columnPinning 状态，避免访问 undefined.left 错误
+                columnPinning: {
+                    left: [],
+                    right: [],
+                },
+                // 初始化 columnSizing 状态，使用列定义中的 size 属性
+                columnSizing: initialColumnSizing,
+            },
+            onColumnOrderChange: (updater) => {
+                const newOrder =
+                    typeof updater === "function"
+                        ? updater(this.columnOrder)
+                        : updater;
+                this.columnOrder = newOrder;
+                this.updateTable();
+            },
+            getRowId: (row) => row.userId || String(Math.random()),
+            onStateChange: () => {
+                // 表格状态变化时，通过更新 @state 属性来触发重新渲染
+                // 或者让 wsx 自动处理渲染
+            },
+            renderFallbackValue: null,
+        });
+    }
+
+    /**
+     * 处理列拖拽结束
+     */
+    private handleColumnDragEnd(activeId: string, overId: string) {
+        if (activeId !== overId) {
+            const oldIndex = this.columnOrder.indexOf(activeId);
+            const newIndex = this.columnOrder.indexOf(overId);
+            if (oldIndex !== -1 && newIndex !== -1) {
+                this.columnOrder = arrayMove(
+                    this.columnOrder,
+                    oldIndex,
+                    newIndex
+                );
+                this.updateTable();
+            }
+        }
+    }
+
+    /**
+     * 处理行拖拽结束
+     */
+    private handleRowDragEnd(activeId: string, overId: string) {
+        if (activeId !== overId) {
+            const oldIndex = this.gridData.findIndex(
+                (row) => (row.userId || String(Math.random())) === activeId
+            );
+            const newIndex = this.gridData.findIndex(
+                (row) => (row.userId || String(Math.random())) === overId
+            );
+            if (oldIndex !== -1 && newIndex !== -1) {
+                this.gridData = arrayMove(this.gridData, oldIndex, newIndex);
+                this.updateTable();
+            }
+        }
+    }
+
+    render() {
+        console.log("[Grid] render called:", {
+            hasData: !!this._data,
+            hasColumns: !!this._columns,
+            dataLength: this._data?.length || 0,
+            columnsLength: this._columns?.length || 0,
+            elementData: (this as any).data,
+            elementColumns: (this as any).columns,
+        });
+
+        // 如果数据未设置，尝试从 element properties 读取
+        const element = this as any;
+        if (
+            (!this._data || this._data.length === 0) &&
+            element.data &&
+            Array.isArray(element.data)
+        ) {
+            console.log(
+                "[Grid] Data missing in render, reading from element property"
+            );
+            this.data = element.data;
+        }
+        if (
+            (!this._columns || this._columns.length === 0) &&
+            element.columns &&
+            Array.isArray(element.columns)
+        ) {
+            console.log(
+                "[Grid] Columns missing in render, reading from element property"
+            );
+            this.columns = element.columns;
+        }
+
+        // 检查属性是否已设置
+        if (!this._columns || !this._data || this._columns.length === 0) {
+            console.log(
+                "[Grid] Still missing data/columns, showing Loading..."
+            );
+            return <div>Loading...</div>;
+        }
+
+        // 创建或更新表格实例
+        if (!this.table) {
+            this.updateTable();
+        }
+
+        if (!this.table) {
+            return <div>Loading...</div>;
+        }
+
+        const headerGroups = this.table.getHeaderGroups();
+        const rowModel = this.table.getRowModel();
+        const footerGroups = this.table.getFooterGroups();
+
+        return (
+            <div className={`ac-grid ${this.className || ""}`}>
+                <div className="flex justify-center h-screen">
+                    <table className="my-auto border">
+                        <thead>
+                            {headerGroups.map((headerGroup) => (
+                                <tr>
+                                    {headerGroup.headers.map((header) => (
+                                        <wsx-ac-draggable-table-header
+                                            header={header}
+                                            onDragEnd={this.handleColumnDragEnd.bind(
+                                                this
+                                            )}
+                                        />
+                                    ))}
+                                </tr>
+                            ))}
+                        </thead>
+                        <tbody>
+                            {rowModel.rows.map((row) => (
+                                <wsx-ac-draggable-table-row
+                                    row={row}
+                                    onDragEnd={this.handleRowDragEnd.bind(this)}
+                                />
+                            ))}
+                        </tbody>
+                        <tfoot>
+                            {footerGroups.map((footerGroup) => (
+                                <tr className="border-b">
+                                    {footerGroup.headers.map((header) => (
+                                        <th className="px-4 pt-[14px] pb-[18px]">
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                      header.column
+                                                          .columnDef.footer,
+                                                      header.getContext()
+                                                  )}
+                                        </th>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tfoot>
+                    </table>
+                    <div className="h-4" />
+                </div>
+            </div>
+        );
+    }
+}

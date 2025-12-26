@@ -1,0 +1,94 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+
+import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
+
+export interface DraggableHandlerProps {
+    /**
+     * 行 ID
+     */
+    rowId: string;
+    /**
+     * 拖拽开始回调
+     */
+    onDragStart?: (id: string) => void;
+    /**
+     * 拖拽结束回调
+     */
+    onDragEnd?: (id: string) => void;
+}
+
+/**
+ * 拖拽手柄组件
+ */
+@autoRegister({ tagName: "wsx-ac-draggable-handler" })
+export class DraggableHandler extends LightComponent {
+    static observedAttributes = ["row-id"];
+
+    @state private _rowId: string = "";
+    private onDragStart: ((id: string) => void) | undefined = undefined;
+    private onDragEnd: ((id: string) => void) | undefined = undefined;
+    @state private isDragging: boolean = false;
+
+    // Property getter/setter for rowId
+    get rowId(): string {
+        return this._rowId;
+    }
+    set rowId(value: string) {
+        if (value !== this._rowId) {
+            this._rowId = value;
+        }
+    }
+
+    onConnected() {
+        super.onConnected?.();
+        // 从 property 或 attribute 读取 rowId
+        const element = this as any;
+        if (element.rowId && !this._rowId) {
+            this.rowId = element.rowId;
+        }
+        // 也检查 attribute（kebab-case）
+        const attrRowId = this.getAttribute("row-id");
+        if (attrRowId && !this._rowId) {
+            this.rowId = attrRowId;
+        }
+    }
+
+    onAttributeChanged(name: string, oldValue: string | null, newValue: string | null) {
+        if (name === "row-id" && newValue !== oldValue) {
+            this.rowId = newValue || "";
+        }
+    }
+
+    private handleDragStart = (e: DragEvent) => {
+        this.isDragging = true;
+        if (e.dataTransfer) {
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setData("text/plain", this._rowId);
+        }
+        this.onDragStart?.(this._rowId);
+    };
+
+    private handleDragEnd = () => {
+        this.isDragging = false;
+        this.onDragEnd?.(this._rowId);
+    };
+
+    render() {
+        return (
+            <button
+                draggable="true"
+                onDragStart={this.handleDragStart}
+                onDragEnd={this.handleDragEnd}
+                className="drag-handle"
+                style={{
+                    cursor: "grab",
+                    background: "none",
+                    border: "none",
+                    padding: "4px",
+                }}
+            >
+                🟰
+            </button>
+        );
+    }
+}

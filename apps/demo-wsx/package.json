@@ -1,0 +1,22 @@
+{
+    "name": "@systembug/demo-wsx",
+    "version": "0.0.1",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@systembug/ac-grid-core": "workspace:*",
+        "@wsxjs/wsx-core": "^0.0.20",
+        "@tanstack/table-core": "^8.20.6"
+    },
+    "devDependencies": {
+        "@wsxjs/wsx-vite-plugin": "^0.0.20",
+        "@types/node": "^22.10.7",
+        "typescript": "^5.6.2",
+        "vite": "^5.4.4"
+    }
+}

@@ -1,0 +1,215 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+
+import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
+import { type Row } from "@tanstack/table-core";
+import {
+    draggable,
+    dropTargetForElements,
+} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import "./DraggableTableCell.wsx";
+
+export interface DraggableTableRowProps<TData> {
+    /**
+     * 行对象
+     */
+    row: Row<TData>;
+    /**
+     * 拖拽结束回调
+     */
+    onDragEnd?: (activeId: string, overId: string) => void;
+}
+
+/**
+ * 可拖拽表格行组件
+ */
+@autoRegister({ tagName: "wsx-ac-draggable-table-row" })
+export class DraggableTableRow extends LightComponent {
+    // row 和 onDragEnd 通过 property 传递，不需要在 observedAttributes 中
+    // 只有简单的字符串属性才需要 observedAttributes
+    static observedAttributes: string[] = [];
+
+    @state private _row: Row<any> = null as any;
+    @state private isDragging: boolean = false;
+    @state private transform: string = "";
+
+    private _onDragEnd:
+        | ((activeId: string, overId: string) => void)
+        | undefined = undefined;
+
+    private cleanupFn: (() => void) | null = null;
+
+    // Property getters/setters
+    get row(): Row<any> {
+        return this._row;
+    }
+
+    set row(value: Row<any>) {
+        if (value !== this._row) {
+            this._row = value;
+            if (this.isConnected && value) {
+                // 延迟设置拖拽，确保元素完全渲染
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        if (this.isConnected && this._row) {
+                            this.setupDragAndDrop();
+                        }
+                    });
+                });
+            }
+            // @state 属性变化会自动触发重新渲染，不需要手动调用 this.render()
+        }
+    }
+
+    get onDragEnd(): ((activeId: string, overId: string) => void) | undefined {
+        return this._onDragEnd;
+    }
+
+    set onDragEnd(
+        value: ((activeId: string, overId: string) => void) | undefined
+    ) {
+        this._onDragEnd = value;
+    }
+
+    onConnected() {
+        super.onConnected?.();
+
+        // 从 property 读取 row（wsx 会直接设置 property）
+        const element = this as any;
+        if (element.row && !this._row) {
+            this.row = element.row;
+        }
+        if (element.onDragEnd && !this._onDragEnd) {
+            this.onDragEnd = element.onDragEnd;
+        }
+
+        // 延迟设置拖拽，确保元素完全渲染
+        if (this._row) {
+            // 使用 requestAnimationFrame 确保 DOM 完全渲染
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (this.isConnected && this._row) {
+                        this.setupDragAndDrop();
+                    }
+                });
+            });
+        }
+    }
+
+    onDisconnected() {
+        super.onDisconnected?.();
+        if (this.cleanupFn) {
+            this.cleanupFn();
+        }
+    }
+
+    private setupDragAndDrop() {
+        if (!this._row) return;
+        if (!this.isConnected) {
+            console.warn(
+                "[DraggableTableRow] setupDragAndDrop called but element not connected"
+            );
+            return;
+        }
+
+        const element = this as unknown as HTMLElement;
+        if (!element || !element.getBoundingClientRect) {
+            console.warn(
+                "[DraggableTableRow] Invalid element for drag and drop"
+            );
+            return;
+        }
+
+        // 验证元素在 DOM 中并且有有效的 bounding rect
+        try {
+            const rect = element.getBoundingClientRect();
+            if (!rect || rect.width === 0 || rect.height === 0) {
+                console.warn(
+                    "[DraggableTableRow] Element not visible, retrying..."
+                );
+                // 如果元素不可见，延迟重试
+                setTimeout(() => {
+                    if (this.isConnected && this._row) {
+                        this.setupDragAndDrop();
+                    }
+                }, 100);
+                return;
+            }
+        } catch (e) {
+            console.warn(
+                "[DraggableTableRow] Error checking element bounds:",
+                e
+            );
+            return;
+        }
+
+        const rowId = this._row.id;
+        if (!rowId) {
+            console.warn("[DraggableTableRow] No row ID found");
+            return;
+        }
+
+        try {
+            // 设置为可拖拽
+            const draggableCleanup = draggable({
+                element,
+                getInitialData: () => ({ rowId }),
+                onDragStart: () => {
+                    this.isDragging = true;
+                },
+                onDrop: () => {
+                    this.isDragging = false;
+                    this.transform = "";
+                },
+            });
+
+            // 设置为可放置目标
+            const dropTargetCleanup = dropTargetForElements({
+                element,
+                getData: () => ({ rowId }),
+                onDrop: ({ source }) => {
+                    const activeId = source.data.rowId as string;
+                    const overId = rowId;
+                    if (activeId && activeId !== overId) {
+                        this._onDragEnd?.(activeId, overId);
+                    }
+                },
+            });
+
+            this.cleanupFn = () => {
+                draggableCleanup();
+                dropTargetCleanup();
+            };
+        } catch (error) {
+            console.error(
+                "[DraggableTableRow] Error setting up drag and drop:",
+                error
+            );
+        }
+    }
+
+    render() {
+        if (!this._row) {
+            return (
+                <tr>
+                    <td>Loading...</td>
+                </tr>
+            );
+        }
+
+        const style = {
+            transform: this.transform,
+            transition: this.isDragging ? "none" : "transform 0.2s ease-in-out",
+            opacity: this.isDragging ? 0.8 : 1,
+            zIndex: this.isDragging ? 1 : 0,
+            position: "relative" as const,
+        };
+
+        return (
+            <tr style={style}>
+                {this._row.getVisibleCells().map((cell) => (
+                    <wsx-ac-draggable-table-cell cell={cell} />
+                ))}
+            </tr>
+        );
+    }
+}

@@ -1,0 +1,68 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import { type ColumnDef } from "@systembug/ac-grid-core";
+// 导入组件以触发注册
+import "@systembug/ac-grid-core";
+import { makeData, type Person } from "./makeData";
+
+@autoRegister({ tagName: "wsx-app" })
+export class App extends LightComponent {
+    @state private data = makeData(20);
+    @state private columns: ColumnDef<Person>[] = [
+        {
+            id: "drag-handle",
+            header: "Move",
+            cell: ({ row }) => (
+                <wsx-ac-draggable-handler rowId={row.original.userId} />
+            ),
+            size: 60,
+        },
+        {
+            accessorKey: "firstName",
+            cell: (info) => info.getValue(),
+            id: "firstName",
+            header: "First Name",
+            size: 150,
+        },
+        {
+            accessorFn: (row) => row.lastName,
+            cell: (info) => info.getValue(),
+            header: () => <span>Last Name</span>,
+            id: "lastName",
+            size: 150,
+        },
+        {
+            accessorKey: "age",
+            header: () => "Age",
+            id: "age",
+            size: 120,
+        },
+        {
+            accessorKey: "visits",
+            header: () => <span>Visits</span>,
+            id: "visits",
+            size: 120,
+        },
+        {
+            accessorKey: "status",
+            header: "Status",
+            id: "status",
+            size: 150,
+        },
+        {
+            accessorKey: "progress",
+            header: "Profile Progress",
+            id: "progress",
+            size: 180,
+        },
+    ];
+
+    render() {
+        return (
+            <div className="p-2">
+                <wsx-ac-grid data={this.data} columns={this.columns} />
+            </div>
+        );
+    }
+}
