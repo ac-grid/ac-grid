@@ -1,6 +1,8 @@
 # AC Grid
 
-一个高性能的数据表格组件库，基于 `@tanstack/table` 构建，支持列和行的拖拽重排序功能。
+一个高性能的数据表格组件库，基于 Web Components 和 `@tanstack/table-core` 构建，支持列和行的拖拽重排序功能。
+
+> 🚀 **最新动态**: 查看我们的 [项目路线图](./ROADMAP.md) 了解开发进展和未来计划！
 
 ## 架构
 
@@ -11,12 +13,27 @@
 
 ## 功能特性
 
-- ✅ 数据渲染和列管理（基于 @tanstack/react-table）
-- ✅ 列拖拽重排序（使用 @dnd-kit）
-- ✅ 行拖拽重排序（使用 @dnd-kit）
-- ✅ 自定义单元格渲染
-- ✅ 类型安全（TypeScript）
-- ✅ Storybook 文档
+### ✅ 已实现（v0.0.1）
+- 数据渲染和列管理（基于 @tanstack/table-core）
+- 列拖拽重排序（使用 @atlaskit/pragmatic-drag-and-drop）
+- 行拖拽重排序
+- 自定义单元格渲染
+- 框架无关（Web Components）
+- 类型安全（完整 TypeScript 支持）
+- Storybook 文档
+
+### 🚧 开发中（v0.0.2 - 主题系统）
+- 主题系统基础架构（`@systembug/ac-grid-theme-base`）
+- Light & Dark 预设主题（`@systembug/ac-grid-theme-default`）
+- CSS 变量驱动的样式系统
+
+### 📋 计划中（v0.1.0）
+- 排序功能（单列/多列）
+- 过滤功能（列过滤/全局搜索）
+- 列调整大小
+
+### 📋 计划中
+查看完整的 [项目路线图](./ROADMAP.md) 了解所有计划功能。
 
 ## 安装
 
@@ -86,6 +103,9 @@ ac-grid/
 │       ├── .storybook/          # Storybook 配置
 │       └── package.json
 ├── pnpm-workspace.yaml          # pnpm workspace 配置
+├── ROADMAP.md                   # 项目路线图
+└── docs/
+    └── rfc/                     # RFC 文档
 ├── turbo.json                   # Turbo 配置
 └── package.json                 # 根 package.json
 ```

@@ -10,11 +10,13 @@
     },
     "dependencies": {
         "@systembug/ac-grid-core": "workspace:*",
-        "@wsxjs/wsx-core": "^0.0.20",
+        "@systembug/ac-grid-theme-base": "workspace:*",
+        "@systembug/ac-grid-theme-default": "workspace:*",
+        "@wsxjs/wsx-core": "^0.1.0",
         "@tanstack/table-core": "^8.20.6"
     },
     "devDependencies": {
-        "@wsxjs/wsx-vite-plugin": "^0.0.20",
+        "@wsxjs/wsx-vite-plugin": "^0.1.0",
         "@types/node": "^22.10.7",
         "typescript": "^5.6.2",
         "vite": "^5.4.4"

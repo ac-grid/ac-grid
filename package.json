@@ -10,7 +10,7 @@
     },
     "homepage": "http://systembugtj.github.io/ac-grid",
     "scripts": {
-        "dev": "turbo run dev",
+        "dev": "pangu",
         "dev:wsx": "pnpm --filter @systembug/demo-wsx dev",
         "dev:core": "pnpm --filter @systembug/ac-grid-core dev",
         "build": "turbo run build",
@@ -26,7 +26,8 @@
     "devDependencies": {
         "prettier": "^3.4.2",
         "turbo": "^2.0.0",
-        "typescript": "^5.6.2"
+        "typescript": "^5.6.2",
+        "@systembug/pangu": "^0.0.10"
     },
     "packageManager": "pnpm@9.0.0",
     "volta": {

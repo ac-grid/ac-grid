@@ -47,11 +47,20 @@ export default defineConfig({
         alias: {
             "@": path.resolve(__dirname, "./src"),
             // 开发模式：直接使用源码，支持 HMR
+            // 注意：alias 指向 src 目录，Vite 会自动解析 index.ts
             ...(process.env.NODE_ENV === "development"
                 ? {
                       "@systembug/ac-grid-core": path.resolve(
                           __dirname,
-                          "../../packages/ac-grid-core/src"
+                          "../../packages/core/src/index.ts"
+                      ),
+                      "@systembug/ac-grid-theme-base": path.resolve(
+                          __dirname,
+                          "../../packages/theme-base/src/index.ts"
+                      ),
+                      "@systembug/ac-grid-theme-default": path.resolve(
+                          __dirname,
+                          "../../packages/theme-default/src/index.ts"
                       ),
                   }
                 : {}),
@@ -61,10 +70,13 @@ export default defineConfig({
             pino: "pino/browser",
         },
         conditions: ["source", "import", "module", "browser", "default"],
+        extensions: [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json", ".wsx"],
     },
     optimizeDeps: {
         exclude: [
             "@systembug/ac-grid-core",
+            "@systembug/ac-grid-theme-base",
+            "@systembug/ac-grid-theme-default",
             "@wsxjs/wsx-core",
             "@tanstack/table-core",
             "@atlaskit/pragmatic-drag-and-drop",

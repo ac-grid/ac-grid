@@ -1,0 +1,314 @@
+/**
+ * AC Grid - CSS Grid Design
+ * No table elements, pure CSS Grid
+ */
+
+.ac-grid {
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+  display: block;
+  overflow-x: auto;
+  overflow-y: auto;
+  position: relative;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+/* Grid container - 固定宽度，不换行，水平滚动 */
+.ac-grid .grid-container {
+  display: grid;
+  width: max-content;
+  min-width: 100%;
+  font-size: 1rem;
+  line-height: 1.5;
+  background-color: #ffffff;
+  grid-auto-flow: row;
+}
+
+/* Header row */
+.ac-grid .grid-header {
+  display: contents;
+}
+
+.ac-grid .grid-header-row {
+  display: grid;
+  grid-template-columns: var(--grid-columns, repeat(7, 150px));
+  background: #f8fafc;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 2px solid #e5e7eb;
+  width: max-content;
+  min-width: 100%;
+  grid-auto-flow: column;
+}
+
+/* Header cell */
+.ac-grid .grid-header-cell {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  color: #0f172a;
+  background: #f8fafc;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-right: 1px solid #e5e7eb;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+}
+
+.ac-grid .grid-header-cell:last-child {
+  border-right: none;
+}
+
+.ac-grid .grid-header-cell > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.ac-grid .grid-header-cell > div > span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #0f172a;
+}
+
+/* Body rows */
+.ac-grid .grid-body {
+  display: contents;
+}
+
+.ac-grid .grid-row {
+  display: grid;
+  grid-template-columns: var(--grid-columns, repeat(7, 150px));
+  transition: background-color 0.15s ease;
+  width: max-content;
+  min-width: 100%;
+  grid-auto-flow: column;
+}
+
+.ac-grid .grid-row:hover {
+  background-color: #f1f5f9;
+}
+
+.ac-grid .grid-row[data-selected="true"] {
+  background-color: #dbeafe;
+}
+
+.ac-grid .grid-row:nth-child(even) {
+  background-color: rgba(248, 250, 252, 0.5);
+}
+
+.ac-grid .grid-row:nth-child(even):hover {
+  background-color: #f1f5f9;
+}
+
+/* Body cell */
+.ac-grid .grid-cell {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  color: #0f172a;
+  background-color: inherit;
+  vertical-align: middle;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  min-height: 1.5em;
+}
+
+.ac-grid .grid-cell:last-child {
+  border-right: none;
+}
+
+.ac-grid .grid-row:last-child .grid-cell {
+  border-bottom: none;
+}
+
+.ac-grid .grid-row:hover .grid-cell {
+  background-color: #f1f5f9;
+}
+
+.ac-grid .grid-row[data-selected="true"] .grid-cell {
+  background-color: #dbeafe;
+}
+
+.ac-grid .grid-row:nth-child(even) .grid-cell {
+  background-color: rgba(248, 250, 252, 0.5);
+}
+
+.ac-grid .grid-row:nth-child(even):hover .grid-cell {
+  background-color: #f1f5f9;
+}
+
+.ac-grid .grid-cell > div {
+  display: flex;
+  align-items: center;
+  min-height: 1.5em;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Drag handle button */
+.ac-grid .drag-handle-button {
+  cursor: grab;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: #64748b;
+}
+
+.ac-grid .drag-handle-button:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #2563eb;
+}
+
+.ac-grid .drag-handle-button:active {
+  cursor: grabbing;
+}
+
+.ac-grid .drag-handle-button svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Row drag handle */
+.ac-grid .drag-handle-row {
+  cursor: grab;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: #64748b;
+}
+
+.ac-grid .drag-handle-row:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #2563eb;
+}
+
+.ac-grid .drag-handle-row:active {
+  cursor: grabbing;
+}
+
+.ac-grid .drag-handle-row svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Drag states */
+.ac-grid [data-dragging="true"] {
+  opacity: 0.6;
+  cursor: grabbing;
+  z-index: 1000;
+}
+
+.ac-grid [data-drop-target="true"] {
+  border-left: 3px solid #2563eb;
+  background-color: rgba(37, 99, 235, 0.05);
+}
+
+/* Empty state */
+.ac-grid .grid-body:empty::after {
+  content: 'No data available';
+  display: block;
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #64748b;
+  grid-column: 1 / -1;
+}
+
+/* Loading state */
+.ac-grid[data-loading="true"] {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.ac-grid[data-loading="true"]::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  z-index: 100;
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ac-grid .grid-header-cell,
+  .ac-grid .grid-cell {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Focus state */
+.ac-grid .grid-header-cell:focus,
+.ac-grid .grid-cell:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+}
+
+/* Print */
+@media print {
+  .ac-grid {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+
+  .ac-grid .grid-header-cell {
+    background: #f0f0f0;
+    color: #000;
+  }
+
+  .ac-grid .drag-handle-button,
+  .ac-grid .drag-handle-row {
+    display: none;
+  }
+}

@@ -1,0 +1,285 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+
+import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
+import { type Header } from "@tanstack/table-core";
+import { flexRender } from "../utils/flex-render";
+import {
+    draggable,
+    dropTargetForElements,
+} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+
+export interface DraggableTableHeaderProps<TData> {
+    /**
+     * 表头对象
+     */
+    header: Header<TData, unknown>;
+    /**
+     * 拖拽结束回调
+     */
+    onDragEnd?: (activeId: string, overId: string) => void;
+}
+
+/**
+ * 可拖拽表头组件
+ */
+@autoRegister({ tagName: "wsx-ac-draggable-table-header" })
+export class DraggableTableHeader extends LightComponent {
+    // header 和 onDragEnd 通过 property 传递，不需要在 observedAttributes 中
+    // 只有简单的字符串属性才需要 observedAttributes
+    static observedAttributes: string[] = [];
+
+    @state private isDragging: boolean = false;
+    @state private transform: string = "";
+
+    private cleanupFn: (() => void) | null = null;
+
+    // Property getters/setters
+    get header(): Header<any, unknown> {
+        return this._header;
+    }
+    set header(value: Header<any, unknown>) {
+        if (value !== this._header) {
+            this._header = value;
+            if (this.isConnected && value) {
+                // 延迟设置拖拽，确保元素完全渲染
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        if (this.isConnected && this._header) {
+                            this.setupDragAndDrop();
+                        }
+                    });
+                });
+            }
+            // @state 属性变化会自动触发重新渲染，不需要手动调用 this.render()
+        }
+    }
+    @state private _header: Header<any, unknown> = null as any;
+
+    get onDragEnd(): ((activeId: string, overId: string) => void) | undefined {
+        return this._onDragEnd;
+    }
+    set onDragEnd(
+        value: ((activeId: string, overId: string) => void) | undefined
+    ) {
+        this._onDragEnd = value;
+    }
+    private _onDragEnd:
+        | ((activeId: string, overId: string) => void)
+        | undefined = undefined;
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        // 从 property 读取 header（wsx 会直接设置 property）
+        const element = this as any;
+        if (element.header && !this._header) {
+            this.header = element.header;
+        }
+        if (element.onDragEnd && !this._onDragEnd) {
+            this.onDragEnd = element.onDragEnd;
+        }
+
+        // 延迟设置拖拽，确保元素完全渲染
+        if (this._header) {
+            // 使用 requestAnimationFrame 确保 DOM 完全渲染
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (this.isConnected && this._header) {
+                        this.setupDragAndDrop();
+                    }
+                });
+            });
+        }
+    }
+
+    onDisconnected() {
+        super.onDisconnected?.();
+        if (this.cleanupFn) {
+            this.cleanupFn();
+        }
+    }
+
+    private setupDragAndDrop() {
+        if (!this._header) return;
+        if (!this.isConnected) {
+            console.warn(
+                "[DraggableTableHeader] setupDragAndDrop called but element not connected"
+            );
+            return;
+        }
+
+        const element = this as unknown as HTMLElement;
+        if (!element || !element.getBoundingClientRect) {
+            console.warn(
+                "[DraggableTableHeader] Invalid element for drag and drop"
+            );
+            return;
+        }
+
+        // 验证元素在 DOM 中并且有有效的 bounding rect
+        try {
+            const rect = element.getBoundingClientRect();
+            if (!rect || rect.width === 0 || rect.height === 0) {
+                console.warn(
+                    "[DraggableTableHeader] Element not visible, retrying..."
+                );
+                // 如果元素不可见，延迟重试
+                setTimeout(() => {
+                    if (this.isConnected && this._header) {
+                        this.setupDragAndDrop();
+                    }
+                }, 100);
+                return;
+            }
+        } catch (e) {
+            console.warn(
+                "[DraggableTableHeader] Error checking element bounds:",
+                e
+            );
+            return;
+        }
+
+        const columnId = this._header.column?.id;
+        if (!columnId) {
+            console.warn("[DraggableTableHeader] No column ID found");
+            return;
+        }
+
+        try {
+            // 设置为可拖拽
+            const draggableCleanup = draggable({
+                element,
+                getInitialData: () => ({ columnId }),
+                onDragStart: () => {
+                    this.isDragging = true;
+                },
+                onDrop: () => {
+                    this.isDragging = false;
+                    this.transform = "";
+                },
+            });
+
+            // 设置为可放置目标
+            const dropTargetCleanup = dropTargetForElements({
+                element,
+                getData: () => ({ columnId }),
+                onDrop: ({ source }) => {
+                    const activeId = source.data.columnId as string;
+                    const overId = columnId;
+                    if (activeId && activeId !== overId) {
+                        this._onDragEnd?.(activeId, overId);
+                    }
+                },
+            });
+
+            this.cleanupFn = () => {
+                draggableCleanup();
+                dropTargetCleanup();
+            };
+        } catch (error) {
+            console.error(
+                "[DraggableTableHeader] Error setting up drag and drop:",
+                error
+            );
+        }
+    }
+
+    render() {
+        if (!this._header || !this._header.column) {
+            return <th>Loading...</th>;
+        }
+
+        // 跳过占位符
+        if (this._header.isPlaceholder) {
+            return null;
+        }
+
+        // 使用 getSize() 获取列大小，如果失败则使用列定义中的 size 或默认值
+        let columnSize = 150;
+        try {
+            columnSize =
+                this._header.column.getSize() ||
+                this._header.column.columnDef.size ||
+                150;
+        } catch (e) {
+            // 如果 getSize() 失败，使用列定义中的 size 或默认值
+            columnSize = this._header.column.columnDef.size || 150;
+        }
+        const style = {
+            opacity: this.isDragging ? 0.6 : 1,
+            position: "relative" as const,
+            transform: this.transform,
+            transition: "all 0.2s ease",
+            whiteSpace: "nowrap" as const,
+            width: `${columnSize}px`,
+            minWidth: `${columnSize}px`,
+            maxWidth: `${columnSize}px`,
+            zIndex: this.isDragging ? 1000 : 10,
+            overflow: "hidden" as const,
+            textOverflow: "ellipsis" as const,
+        };
+
+        const headerContent = flexRender(
+            this._header.column.columnDef.header,
+            this._header.getContext()
+        );
+
+        // 确保 headerContent 有值，如果没有则显示列 ID
+        const displayContent = headerContent != null ? headerContent : (this._header.column.id || '');
+        
+        return (
+            <th
+                colSpan={this._header.colSpan}
+                style={style}
+                className="draggable-header"
+                data-dragging={this.isDragging}
+            >
+                <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between',
+                    gap: '0.5rem',
+                    width: '100%',
+                    minHeight: '20px',
+                    overflow: 'hidden'
+                }}>
+                    <span style={{ 
+                        flex: '1', 
+                        minWidth: 0,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        color: '#0f172a'
+                    }}>
+                        {displayContent}
+                    </span>
+                    <button
+                        className="drag-handle-button"
+                        type="button"
+                        aria-label="Drag column to reorder"
+                        title="Drag to reorder column"
+                    >
+                        <svg 
+                            width="14" 
+                            height="14" 
+                            viewBox="0 0 14 14" 
+                            fill="none" 
+                            xmlns="http://www.w3.org/2000/svg"
+                            style={{ display: 'block' }}
+                        >
+                            <path 
+                                d="M2 3.5h10M2 7h10M2 10.5h10" 
+                                stroke="currentColor" 
+                                strokeWidth="1.5" 
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                        </svg>
+                    </button>
+                </div>
+            </th>
+        );
+    }
+}

@@ -1,0 +1,18 @@
+{
+    "projectName": "ac-grid",
+    "packageManager": "pnpm",
+    "demos": [
+        {
+            "name": "demo-wsx",
+            "value": "wsx",
+            "description": "WSX Demo",
+            "package": "@systembug/demo-wsx"
+        },
+        {
+            "name": "demo-react",
+            "value": "react",
+            "description": "React Demo",
+            "package": "@systembug/demo-react"
+        }
+    ]
+}
