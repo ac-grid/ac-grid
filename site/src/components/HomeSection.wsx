@@ -94,7 +94,7 @@ export default class HomeSection extends LightComponent {
                     <h2 class="section-title">Quick Start</h2>
                     <div class="code-block">
                         <pre>
-                            <code>{`import { createGrid } from '@ac-grid/ac-grid-core';
+                            <code>{`import { createGrid } from '@ac-grid/core';
 
 const grid = createGrid({
   data: myData,

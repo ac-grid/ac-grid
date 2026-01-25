@@ -1,7 +1,7 @@
 /**
- * WSXJS 类型声明文件
+ * AC Grid Site 类型声明文件
  *
- * 为WSX组件和模块提供TypeScript类型支持
+ * 为 AC Grid 站点提供 TypeScript 类型支持
  */
 
 // Import core WSX types
@@ -45,10 +45,6 @@ declare module "*?raw" {
     export default content;
 }
 
-declare module "*.slide?raw" {
-    const content: string;
-    export default content;
-}
 
 // WSX component module declarations
 // Types from @wsxjs/wsx-core and @testing-library/jest-dom
@@ -63,15 +59,5 @@ declare global {
     }
 }
 
-// i18n 装饰器类型扩展
-declare module "@wsxjs/wsx-core" {
-    interface WebComponent {
-        t(key: string, options?: object): string;
-    }
-
-    interface LightComponent {
-        t(key: string, options?: object): string;
-    }
-}
 
 export {};

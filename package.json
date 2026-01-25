@@ -12,9 +12,9 @@
     "scripts": {
         "dev": "pangu",
         "dev:wsx": "pnpm --filter @ac-grid/demo-wsx dev",
-        "dev:core": "pnpm --filter @ac-grid/ac-grid-core dev",
+        "dev:core": "pnpm --filter @ac-grid/core dev",
         "build": "turbo run build",
-        "build:core": "pnpm --filter @ac-grid/ac-grid-core build",
+        "build:core": "pnpm --filter @ac-grid/core build",
         "build:wsx": "pnpm --filter @ac-grid/demo-wsx build",
         "lint": "turbo run lint",
         "test": "turbo run test",

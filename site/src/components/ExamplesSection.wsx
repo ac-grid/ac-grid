@@ -4,8 +4,8 @@
  */
 import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
 import styles from "./ExamplesSection.css?inline";
-import "@ac-grid/ac-grid-core";
-import type { ColumnDef } from "@ac-grid/ac-grid-core";
+import "@ac-grid/core";
+import type { ColumnDef } from "@ac-grid/core";
 
 interface Person {
     userId: string;

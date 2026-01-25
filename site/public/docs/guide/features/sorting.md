@@ -14,7 +14,7 @@ AC Grid provides powerful sorting capabilities that allow users to organize data
 Sorting is enabled by default in AC Grid. Users can simply click column headers to sort data.
 
 ```typescript
-import '@ac-grid/ac-grid-core';
+import '@ac-grid/core';
 
 const columns = [
   { id: 'name', accessorKey: 'name', header: 'Name' },
@@ -242,8 +242,8 @@ const columns = [
 ### Setting Sort State
 
 ```typescript
-import { createGrid } from '@ac-grid/ac-grid-core';
-import type { SortingState } from '@ac-grid/ac-grid-core';
+import { createGrid } from '@ac-grid/core';
+import type { SortingState } from '@ac-grid/core';
 
 const gridElement = createGrid({
   data,
@@ -282,7 +282,7 @@ console.log(currentSorting);
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
 import { LightComponent, state, autoRegister } from '@wsxjs/wsx-core';
-import type { SortingState } from '@ac-grid/ac-grid-core';
+import type { SortingState } from '@ac-grid/core';
 
 @autoRegister({ tagName: 'my-app' })
 export class App extends LightComponent {
@@ -315,7 +315,7 @@ export class App extends LightComponent {
 ### Saving to localStorage
 
 ```typescript
-import { createGrid } from '@ac-grid/ac-grid-core';
+import { createGrid } from '@ac-grid/core';
 
 const gridElement = createGrid({
   data,

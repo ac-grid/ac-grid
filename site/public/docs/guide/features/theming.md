@@ -15,17 +15,17 @@ AC Grid provides a flexible theme system that allows you to customize the appear
 
 ```bash
 # Standard installation (recommended)
-npm install @ac-grid/ac-grid-core @ac-grid/ac-grid-theme-base @ac-grid/ac-grid-theme-default
+npm install @ac-grid/core @ac-grid/ac-grid-theme-base @ac-grid/ac-grid-theme-default
 
 # Or using pnpm
-pnpm add @ac-grid/ac-grid-core @ac-grid/ac-grid-theme-base @ac-grid/ac-grid-theme-default
+pnpm add @ac-grid/core @ac-grid/ac-grid-theme-base @ac-grid/ac-grid-theme-default
 ```
 
 ### Basic Usage
 
 ```typescript
 // 1. Import Grid core
-import '@ac-grid/ac-grid-core';
+import '@ac-grid/core';
 
 // 2. Import default themes (automatically applies light theme)
 import '@ac-grid/ac-grid-theme-default';
@@ -39,7 +39,7 @@ import '@ac-grid/ac-grid-theme-default';
 AC Grid's theme system uses an **independent package architecture**:
 
 ```
-@ac-grid/ac-grid-core          Core grid functionality
+@ac-grid/core          Core grid functionality
     ↓ (uses CSS variables)
 @ac-grid/ac-grid-theme-base    Theme system foundation
     ↓ (provides theme management)
@@ -58,7 +58,7 @@ AC Grid's theme system uses an **independent package architecture**:
 ### Light Theme (Default)
 
 ```typescript
-import '@ac-grid/ac-grid-core';
+import '@ac-grid/core';
 import '@ac-grid/ac-grid-theme-default';
 
 // Automatically applies light theme, no additional configuration needed
@@ -67,7 +67,7 @@ import '@ac-grid/ac-grid-theme-default';
 ### Dark Theme
 
 ```typescript
-import '@ac-grid/ac-grid-core';
+import '@ac-grid/core';
 import '@ac-grid/ac-grid-theme-default';
 import { themeManager } from '@ac-grid/ac-grid-theme-base';
 

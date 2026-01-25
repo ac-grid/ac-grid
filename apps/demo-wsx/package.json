@@ -9,7 +9,7 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@ac-grid/ac-grid-core": "workspace:*",
+        "@ac-grid/core": "workspace:*",
         "@ac-grid/ac-grid-theme-base": "workspace:*",
         "@ac-grid/ac-grid-theme-default": "workspace:*",
         "@wsxjs/wsx-core": "^0.1.0",

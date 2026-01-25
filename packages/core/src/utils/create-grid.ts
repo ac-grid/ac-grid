@@ -36,7 +36,7 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
  *
  * @example
  * ```typescript
- * import { createGrid } from '@ac-grid/ac-grid-core';
+ * import { createGrid } from '@ac-grid/core';
  *
  * const gridElement = createGrid({
  *   data: myData,

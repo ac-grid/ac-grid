@@ -209,7 +209,7 @@ export type FilterFn<TData> = (
 
 #### 基础用法
 ```typescript
-import { Grid } from '@ac-grid/ac-grid-core';
+import { Grid } from '@ac-grid/core';
 
 const grid = createGrid({
   data,
@@ -243,7 +243,7 @@ const columns = [
 #### 基础自定义过滤
 
 ```typescript
-import type { ColumnDef, Row } from '@ac-grid/ac-grid-core';
+import type { ColumnDef, Row } from '@ac-grid/core';
 
 interface Person {
   id: string;
@@ -487,7 +487,7 @@ gridElement.clearFilters();
 ### 6. 过滤状态持久化
 
 ```typescript
-import { createGrid } from '@ac-grid/ac-grid-core';
+import { createGrid } from '@ac-grid/core';
 
 const gridElement = createGrid({
   data,
@@ -519,7 +519,7 @@ if (savedFilters) {
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
 import { LightComponent, state, autoRegister } from '@wsxjs/wsx-core';
-import type { FilterState } from '@ac-grid/ac-grid-core';
+import type { FilterState } from '@ac-grid/core';
 
 @autoRegister({ tagName: 'my-app' })
 export class App extends LightComponent {

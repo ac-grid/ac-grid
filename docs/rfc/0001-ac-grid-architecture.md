@@ -262,7 +262,7 @@ DOM 更新（通过 wsxjs 的 @state 装饰器自动触发）
 <wsx-ac-grid data={data} columns={columns} />
 
 // ✅ 正确：使用 createGrid 工具函数
-import { createGrid } from '@ac-grid/ac-grid-core';
+import { createGrid } from '@ac-grid/core';
 
 const gridElement = createGrid({
   data: myData,
@@ -483,8 +483,8 @@ interface GridProps<TData extends { userId?: string }> {
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
 import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
-import { type ColumnDef } from "@ac-grid/ac-grid-core";
-import "@ac-grid/ac-grid-core";
+import { type ColumnDef } from "@ac-grid/core";
+import "@ac-grid/core";
 
 @autoRegister({ tagName: "wsx-app" })
 export class App extends LightComponent {
@@ -520,7 +520,7 @@ export class App extends LightComponent {
 
 **在纯 HTML/JavaScript 环境中**:
 ```typescript
-import { createGrid, type ColumnDef } from '@ac-grid/ac-grid-core';
+import { createGrid, type ColumnDef } from '@ac-grid/core';
 
 // 定义列
 const columns: ColumnDef<Person>[] = [
@@ -564,7 +564,7 @@ createGrid({
 <html>
 <head>
     <script type="module">
-        import { createGrid } from './node_modules/@ac-grid/ac-grid-core/dist/index.js';
+        import { createGrid } from './node_modules/@ac-grid/core/dist/index.js';
         
         const data = [
             { firstName: 'John', lastName: 'Doe' },

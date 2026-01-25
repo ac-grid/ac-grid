@@ -1,9 +1,9 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 
 import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
-import { type ColumnDef } from "@ac-grid/ac-grid-core";
+import { type ColumnDef } from "@ac-grid/core";
 // 导入组件以触发注册
-import "@ac-grid/ac-grid-core";
+import "@ac-grid/core";
 import { makeData, type Person } from "./makeData";
 
 @autoRegister({ tagName: "wsx-app" })

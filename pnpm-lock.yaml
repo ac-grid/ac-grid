@@ -246,7 +246,7 @@ importers:
 
     apps/demo-wsx:
         dependencies:
-            "@ac-grid/ac-grid-core":
+            "@ac-grid/core":
                 specifier: workspace:*
                 version: link:../../packages/core
             "@tanstack/table-core":

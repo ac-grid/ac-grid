@@ -21,11 +21,10 @@
     "dependencies": {
         "@unocss/preset-attributify": "^66.3.3",
         "@unocss/preset-uno": "^66.3.3",
-        "@ac-grid/ac-grid-core": "workspace:*",
+        "@ac-grid/core": "workspace:*",
         "@wsxjs/wsx-core": "^0.0.20",
         "@wsxjs/wsx-router": "workspace:*",
-        "@wsxjs/wsx-base-components": "workspace:*",
-        "marked": "^17.0.1"
+        "@wsxjs/wsx-base-components": "workspace:*"
     },
     "devDependencies": {
         "@testing-library/dom": "^10.4.0",

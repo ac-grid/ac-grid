@@ -50,7 +50,7 @@ export default defineConfig({
             // 注意：alias 指向 src 目录，Vite 会自动解析 index.ts
             ...(process.env.NODE_ENV === "development"
                 ? {
-                      "@ac-grid/ac-grid-core": path.resolve(
+                      "@ac-grid/core": path.resolve(
                           __dirname,
                           "../../packages/core/src/index.ts",
                       ),
@@ -83,7 +83,7 @@ export default defineConfig({
     },
     optimizeDeps: {
         exclude: [
-            "@ac-grid/ac-grid-core",
+            "@ac-grid/core",
             "@ac-grid/ac-grid-theme-base",
             "@ac-grid/ac-grid-theme-default",
             "@wsxjs/wsx-core",

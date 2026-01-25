@@ -59,7 +59,7 @@ export default defineConfig({
             "@wsxjs/wsx-core",
             "@wsxjs/wsx-base-components",
             "@wsxjs/wsx-router",
-            "@ac-grid/ac-grid-core",
+            "@ac-grid/core",
         ],
     },
     // Source maps are enabled by default in dev mode
@@ -70,7 +70,7 @@ export default defineConfig({
         alias: [
             // AC Grid 包别名
             {
-                find: "@ac-grid/ac-grid-core",
+                find: "@ac-grid/core",
                 replacement: path.resolve(
                     __dirname,
                     "../packages/core/src/index.ts",

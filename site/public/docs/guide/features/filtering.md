@@ -14,7 +14,7 @@ AC Grid provides powerful filtering capabilities that allow users to quickly fin
 Filtering allows users to quickly find and filter table data.
 
 ```typescript
-import '@ac-grid/ac-grid-core';
+import '@ac-grid/core';
 
 const columns = [
   { id: 'name', accessorKey: 'name', header: 'Name' },
@@ -101,7 +101,7 @@ const columns = [
 Global search searches across all columns for matching data.
 
 ```typescript
-import { createGrid } from '@ac-grid/ac-grid-core';
+import { createGrid } from '@ac-grid/core';
 
 const gridElement = createGrid({
   data,
@@ -153,7 +153,7 @@ The most flexible approach is to provide a custom filter function with complete 
 #### Basic Custom Filtering
 
 ```typescript
-import type { ColumnDef, Row } from '@ac-grid/ac-grid-core';
+import type { ColumnDef, Row } from '@ac-grid/core';
 
 interface Person {
   id: string;
@@ -360,7 +360,7 @@ const columns: ColumnDef<Person>[] = [
 ### Setting Column Filters
 
 ```typescript
-import { createGrid } from '@ac-grid/ac-grid-core';
+import { createGrid } from '@ac-grid/core';
 
 const gridElement = createGrid({
   data,
@@ -401,7 +401,7 @@ console.log(filterState);
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
 import { LightComponent, state, autoRegister } from '@wsxjs/wsx-core';
-import type { FilterState } from '@ac-grid/ac-grid-core';
+import type { FilterState } from '@ac-grid/core';
 
 @autoRegister({ tagName: 'my-app' })
 export class App extends LightComponent {
@@ -434,7 +434,7 @@ export class App extends LightComponent {
 ### Saving to localStorage
 
 ```typescript
-import { createGrid } from '@ac-grid/ac-grid-core';
+import { createGrid } from '@ac-grid/core';
 
 const gridElement = createGrid({
   data,

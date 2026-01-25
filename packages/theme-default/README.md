@@ -107,7 +107,7 @@ themeManager.applyTheme('my-custom-light');
 ## 完整示例
 
 ```typescript
-import '@ac-grid/ac-grid-core';
+import '@ac-grid/core';
 import '@ac-grid/ac-grid-theme-default';
 import { themeManager } from '@ac-grid/ac-grid-theme-base';
 

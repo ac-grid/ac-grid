@@ -15,7 +15,7 @@ import "@wsxjs/wsx-base-components";
 import "@wsxjs/wsx-router";
 import { RouterUtils } from "@wsxjs/wsx-router";
 // Import AC Grid core
-import "@ac-grid/ac-grid-core";
+import "@ac-grid/core";
 // Import SEO utilities
 import { MetaManager, type RouteMeta } from "./utils/meta-manager";
 import { getRouteMeta, routeMeta } from "./config/route-meta";

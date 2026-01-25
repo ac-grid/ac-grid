@@ -268,7 +268,7 @@ export type { SortingState, SortingFn } from '@tanstack/table-core';
 #### 基础用法（默认排序）
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
-import { Grid } from '@ac-grid/ac-grid-core';
+import { Grid } from '@ac-grid/core';
 
 const columns = [
   { id: 'name', accessorKey: 'name', header: 'Name' },
@@ -428,7 +428,7 @@ const columns = [
 ```typescript
 // utils/sorters.ts
 import type { SortingFn } from '@tanstack/table-core';
-import type { Row } from '@ac-grid/ac-grid-core';
+import type { Row } from '@ac-grid/core';
 
 export const nullsLastSorter = <TData>(
   rowA: Row<TData>,
@@ -472,7 +472,7 @@ const columns = [
 
 #### 编程式排序
 ```typescript
-import { createGrid } from '@ac-grid/ac-grid-core';
+import { createGrid } from '@ac-grid/core';
 
 const gridElement = createGrid({
   data,
@@ -499,7 +499,7 @@ const currentSorting = (gridElement as any).getSorting();
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
 import { LightComponent, state, autoRegister } from '@wsxjs/wsx-core';
-import type { SortingState } from '@ac-grid/ac-grid-core';
+import type { SortingState } from '@ac-grid/core';
 
 @autoRegister({ tagName: 'my-app' })
 export class App extends LightComponent {
@@ -783,7 +783,7 @@ export class DraggableTableHeader extends LightComponent {
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { createGrid } from '@ac-grid/ac-grid-core';
+import { createGrid } from '@ac-grid/core';
 
 describe('Sorting Feature', () => {
   it('should sort data in ascending order', () => {

@@ -26,7 +26,7 @@
 建立 AC Grid 的主题系统基础架构，采用**独立包设计**，将主题系统拆分为三个独立的 npm 包：
 1. `@ac-grid/ac-grid-theme-base` - 主题系统基础
 2. `@ac-grid/ac-grid-theme-default` - 默认主题预设（Light & Dark）
-3. `@ac-grid/ac-grid-core` - 核心表格功能（使用主题系统）
+3. `@ac-grid/core` - 核心表格功能（使用主题系统）
 
 ## 动机
 
@@ -72,10 +72,10 @@ background-color: #f9fafb;
 2. **按需加载**
    ```bash
    # 最小安装
-   npm i @ac-grid/ac-grid-core @ac-grid/ac-grid-theme-base
+   npm i @ac-grid/core @ac-grid/ac-grid-theme-base
    
    # 标准安装（+ 默认主题）
-   npm i @ac-grid/ac-grid-core @ac-grid/ac-grid-theme-base @ac-grid/ac-grid-theme-default
+   npm i @ac-grid/core @ac-grid/ac-grid-theme-base @ac-grid/ac-grid-theme-default
    ```
 
 3. **独立演进**
@@ -95,7 +95,7 @@ background-color: #f9fafb;
 
 **场景 1: 使用默认主题（最常见）**
 ```typescript
-import '@ac-grid/ac-grid-core';
+import '@ac-grid/core';
 import '@ac-grid/ac-grid-theme-default';  // light & dark
 
 import { themeManager } from '@ac-grid/ac-grid-theme-base';
@@ -104,7 +104,7 @@ themeManager.applyTheme('dark');
 
 **场景 2: 完全自定义主题**
 ```typescript
-import '@ac-grid/ac-grid-core';
+import '@ac-grid/core';
 import { themeManager, type ACGridTheme } from '@ac-grid/ac-grid-theme-base';
 
 const customTheme: ACGridTheme = {
@@ -119,7 +119,7 @@ themeManager.applyTheme('custom');
 
 **场景 3: 使用社区主题**
 ```typescript
-import '@ac-grid/ac-grid-core';
+import '@ac-grid/core';
 import '@community/ac-grid-theme-material';  // 社区主题包
 
 import { themeManager } from '@ac-grid/ac-grid-theme-base';
@@ -151,7 +151,7 @@ themeManager.applyTheme('material-light');
 ┌─────────────────────────────────────────────────┐
 │  用户应用                                        │
 │  ┌──────────────────────────────────────────┐  │
-│  │  import '@ac-grid/ac-grid-core'        │  │
+│  │  import '@ac-grid/core'        │  │
 │  │  import '@ac-grid/ac-grid-theme-...'   │  │
 │  └──────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────┘
@@ -307,7 +307,7 @@ packages/theme-default/
 
 ---
 
-### 包 3: @ac-grid/ac-grid-core（更新）
+### 包 3: @ac-grid/core（更新）
 
 **职责**: 核心表格功能
 
@@ -319,7 +319,7 @@ packages/theme-default/
 **package.json 更新**:
 ```json
 {
-  "name": "@ac-grid/ac-grid-core",
+  "name": "@ac-grid/core",
   "version": "0.0.2",
   "peerDependencies": {
     "@ac-grid/ac-grid-theme-base": "^0.1.0"
@@ -715,7 +715,7 @@ themeManager.applyTheme('light');
 export { lightTheme, darkTheme };
 ```
 
-### @ac-grid/ac-grid-core（CSS 变量使用）
+### @ac-grid/core（CSS 变量使用）
 
 ```css
 /* src/styles/base.css */
@@ -1027,16 +1027,16 @@ describe('Default Themes', () => {
 
 ```bash
 # 1. 更新依赖
-npm install @ac-grid/ac-grid-core@0.0.2
+npm install @ac-grid/core@0.0.2
 npm install @ac-grid/ac-grid-theme-base@0.1.0
 npm install @ac-grid/ac-grid-theme-default@0.1.0
 
 # 2. 更新导入
 # 之前
-import '@ac-grid/ac-grid-core';
+import '@ac-grid/core';
 
 # 之后
-import '@ac-grid/ac-grid-core';
+import '@ac-grid/core';
 import '@ac-grid/ac-grid-theme-default';  // 添加主题包
 ```
 
