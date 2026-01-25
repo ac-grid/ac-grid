@@ -11,7 +11,7 @@
         "build-storybook": "storybook build"
     },
     "dependencies": {
-        "@ac-grid/ac-grid": "workspace:*",
+        "@ac-grid/core": "workspace:*",
         "react": "^18.3.1",
         "react-dom": "^18.3.1"
     },

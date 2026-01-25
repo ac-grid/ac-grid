@@ -3,7 +3,7 @@
  * 使用绿色和自然色调，营造清新、自然的视觉效果
  */
 
-import type { ACGridTheme } from "@ac-grid/ac-grid-theme-base";
+import type { ACGridTheme } from "@ac-grid/theme-base";
 
 export const forestTheme: ACGridTheme = {
     name: "forest",

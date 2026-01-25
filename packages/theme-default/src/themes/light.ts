@@ -2,7 +2,7 @@
  * Light 主题 - AC Grid 默认浅色主题
  */
 
-import type { ACGridTheme } from "@ac-grid/ac-grid-theme-base";
+import type { ACGridTheme } from "@ac-grid/theme-base";
 
 export const lightTheme: ACGridTheme = {
     name: "light",

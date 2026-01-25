@@ -1,5 +1,5 @@
 /**
- * @ac-grid/ac-grid-theme-base
+ * @ac-grid/theme-base
  *
  * AC Grid 主题系统基础包
  * 提供主题管理、主题接口定义和工具函数

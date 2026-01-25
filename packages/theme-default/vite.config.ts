@@ -16,7 +16,7 @@ export default defineConfig({
             fileName: "index",
         },
         rollupOptions: {
-            external: ["@ac-grid/ac-grid-theme-base"],
+            external: ["@ac-grid/theme-base"],
         },
     },
 });

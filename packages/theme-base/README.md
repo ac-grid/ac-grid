@@ -1,4 +1,4 @@
-# @ac-grid/ac-grid-theme-base
+# @ac-grid/theme-base
 
 AC Grid 主题系统基础包，提供主题管理能力、类型定义和工具函数。
 
@@ -13,7 +13,7 @@ AC Grid 主题系统基础包，提供主题管理能力、类型定义和工具
 ## 安装
 
 ```bash
-npm install @ac-grid/ac-grid-theme-base
+npm install @ac-grid/theme-base
 ```
 
 ## 使用
@@ -21,7 +21,7 @@ npm install @ac-grid/ac-grid-theme-base
 ### 基础使用
 
 ```typescript
-import { themeManager, type ACGridTheme } from '@ac-grid/ac-grid-theme-base';
+import { themeManager, type ACGridTheme } from '@ac-grid/theme-base';
 
 // 定义主题
 const myTheme: ACGridTheme = {
@@ -45,7 +45,7 @@ themeManager.applyTheme('my-theme');
 ### 监听主题变化
 
 ```typescript
-import { themeManager } from '@ac-grid/ac-grid-theme-base';
+import { themeManager } from '@ac-grid/theme-base';
 
 const unsubscribe = themeManager.onThemeChange((currentTheme, previousTheme) => {
   console.log(`Theme changed from ${previousTheme} to ${currentTheme}`);
@@ -58,7 +58,7 @@ unsubscribe();
 ### 响应系统主题
 
 ```typescript
-import { watchSystemTheme } from '@ac-grid/ac-grid-theme-base';
+import { watchSystemTheme } from '@ac-grid/theme-base';
 
 // 自动响应系统主题变化
 const unwatch = watchSystemTheme('light', 'dark');

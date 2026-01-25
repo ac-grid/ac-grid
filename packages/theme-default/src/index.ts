@@ -1,11 +1,11 @@
 /**
- * @ac-grid/ac-grid-theme-default
+ * @ac-grid/theme-default
  *
  * AC Grid 默认主题预设包
  * 自动注册 Light 和 Dark 主题，并默认应用 Light 主题
  */
 
-import { themeManager } from "@ac-grid/ac-grid-theme-base";
+import { themeManager } from "@ac-grid/theme-base";
 import { lightTheme } from "./themes/light";
 import { darkTheme } from "./themes/dark";
 import { oceanTheme } from "./themes/ocean";

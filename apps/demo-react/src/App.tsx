@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import "./App.css";
 
 // https://nodejs.org/api/packages.html#packages_self_referencing_a_package_using_its_name
-import { Grid, DraggableHandler } from "@ac-grid/ac-grid";
+import { Grid, DraggableHandler } from "@ac-grid/core";
 
 import { ColumnDef } from "@tanstack/react-table";
 

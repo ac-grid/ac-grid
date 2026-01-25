@@ -164,7 +164,7 @@ importers:
 
     apps/demo-react:
         dependencies:
-            "@ac-grid/ac-grid":
+            "@ac-grid/core":
                 specifier: workspace:*
                 version: link:../ac-grid-react-poc
             react:
@@ -274,7 +274,7 @@ importers:
             "@atlaskit/pragmatic-drag-and-drop":
                 specifier: ^1.7.7
                 version: 1.7.7
-            "@ac-grid/ac-grid-theme-base":
+            "@ac-grid/theme-base":
                 specifier: workspace:^
                 version: link:../theme-base
             "@tanstack/table-core":
@@ -320,7 +320,7 @@ importers:
 
     packages/theme-default:
         dependencies:
-            "@ac-grid/ac-grid-theme-base":
+            "@ac-grid/theme-base":
                 specifier: workspace:^
                 version: link:../theme-base
         devDependencies:

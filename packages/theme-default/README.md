@@ -1,4 +1,4 @@
-# @ac-grid/ac-grid-theme-default
+# @ac-grid/theme-default
 
 AC Grid 默认主题预设包，提供 6 个精心设计的预设主题。
 
@@ -16,7 +16,7 @@ AC Grid 默认主题预设包，提供 6 个精心设计的预设主题。
 ## 安装
 
 ```bash
-npm install @ac-grid/ac-grid-theme-base @ac-grid/ac-grid-theme-default
+npm install @ac-grid/theme-base @ac-grid/theme-default
 ```
 
 ## 使用
@@ -25,14 +25,14 @@ npm install @ac-grid/ac-grid-theme-base @ac-grid/ac-grid-theme-default
 
 ```typescript
 // 导入即自动注册并应用 light 主题
-import '@ac-grid/ac-grid-theme-default';
+import '@ac-grid/theme-default';
 ```
 
 ### 切换主题
 
 ```typescript
-import '@ac-grid/ac-grid-theme-default';
-import { themeManager } from '@ac-grid/ac-grid-theme-base';
+import '@ac-grid/theme-default';
+import { themeManager } from '@ac-grid/theme-base';
 
 // 切换到不同主题
 themeManager.applyTheme('dark');    // 深色主题
@@ -45,8 +45,8 @@ themeManager.applyTheme('bamboo');   // 竹子主题
 ### 响应系统主题
 
 ```typescript
-import '@ac-grid/ac-grid-theme-default';
-import { watchSystemTheme } from '@ac-grid/ac-grid-theme-base';
+import '@ac-grid/theme-default';
+import { watchSystemTheme } from '@ac-grid/theme-base';
 
 // 自动跟随系统主题
 watchSystemTheme('light', 'dark');
@@ -55,8 +55,8 @@ watchSystemTheme('light', 'dark');
 ### 基于预设主题定制
 
 ```typescript
-import { lightTheme } from '@ac-grid/ac-grid-theme-default';
-import { themeManager, type ACGridTheme } from '@ac-grid/ac-grid-theme-base';
+import { lightTheme } from '@ac-grid/theme-default';
+import { themeManager, type ACGridTheme } from '@ac-grid/theme-base';
 
 // 基于 light 主题创建自定义主题
 const myTheme: ACGridTheme = {
@@ -108,8 +108,8 @@ themeManager.applyTheme('my-custom-light');
 
 ```typescript
 import '@ac-grid/core';
-import '@ac-grid/ac-grid-theme-default';
-import { themeManager } from '@ac-grid/ac-grid-theme-base';
+import '@ac-grid/theme-default';
+import { themeManager } from '@ac-grid/theme-base';
 
 // 1. 默认使用 light 主题
 // Grid 自动应用 light 主题样式
@@ -122,7 +122,7 @@ document.getElementById('theme-toggle')?.addEventListener('click', () => {
 });
 
 // 3. 响应系统主题
-import { watchSystemTheme } from '@ac-grid/ac-grid-theme-base';
+import { watchSystemTheme } from '@ac-grid/theme-base';
 watchSystemTheme('light', 'dark');
 ```
 

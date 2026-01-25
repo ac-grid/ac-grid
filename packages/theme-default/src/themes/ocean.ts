@@ -3,7 +3,7 @@
  * 使用蓝色和青色调色板，营造清新、专业的视觉效果
  */
 
-import type { ACGridTheme } from "@ac-grid/ac-grid-theme-base";
+import type { ACGridTheme } from "@ac-grid/theme-base";
 
 export const oceanTheme: ACGridTheme = {
     name: "ocean",

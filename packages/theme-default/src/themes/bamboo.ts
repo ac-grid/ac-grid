@@ -3,7 +3,7 @@
  * 使用竹绿色和自然色调色板，营造清新、宁静的视觉效果
  */
 
-import type { ACGridTheme } from "@ac-grid/ac-grid-theme-base";
+import type { ACGridTheme } from "@ac-grid/theme-base";
 
 export const bambooTheme: ACGridTheme = {
     name: "bamboo",

@@ -3,7 +3,7 @@
  * 使用橙色和紫色调色板，营造温暖、活力的视觉效果
  */
 
-import type { ACGridTheme } from "@ac-grid/ac-grid-theme-base";
+import type { ACGridTheme } from "@ac-grid/theme-base";
 
 export const sunsetTheme: ACGridTheme = {
     name: "sunset",

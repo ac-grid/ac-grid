@@ -23,8 +23,8 @@
 - Storybook 文档
 
 ### 🚧 开发中（v0.0.2 - 主题系统）
-- 主题系统基础架构（`@ac-grid/ac-grid-theme-base`）
-- Light & Dark 预设主题（`@ac-grid/ac-grid-theme-default`）
+- 主题系统基础架构（`@ac-grid/theme-base`）
+- Light & Dark 预设主题（`@ac-grid/theme-default`）
 - CSS 变量驱动的样式系统
 
 ### 📋 计划中（v0.1.0）
@@ -38,13 +38,13 @@
 ## 安装
 
 ```bash
-pnpm add @ac-grid/ac-grid
+pnpm add @ac-grid/core
 ```
 
 ## 使用
 
 ```tsx
-import { Grid, DraggableHandler } from '@ac-grid/ac-grid';
+import { Grid, DraggableHandler } from '@ac-grid/core';
 import { ColumnDef } from '@tanstack/react-table';
 
 const columns: ColumnDef<Person>[] = [

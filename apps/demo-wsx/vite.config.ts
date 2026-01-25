@@ -54,11 +54,11 @@ export default defineConfig({
                           __dirname,
                           "../../packages/core/src/index.ts",
                       ),
-                      "@ac-grid/ac-grid-theme-base": path.resolve(
+                      "@ac-grid/theme-base": path.resolve(
                           __dirname,
                           "../../packages/theme-base/src/index.ts",
                       ),
-                      "@ac-grid/ac-grid-theme-default": path.resolve(
+                      "@ac-grid/theme-default": path.resolve(
                           __dirname,
                           "../../packages/theme-default/src/index.ts",
                       ),
@@ -84,8 +84,8 @@ export default defineConfig({
     optimizeDeps: {
         exclude: [
             "@ac-grid/core",
-            "@ac-grid/ac-grid-theme-base",
-            "@ac-grid/ac-grid-theme-default",
+            "@ac-grid/theme-base",
+            "@ac-grid/theme-default",
             "@wsxjs/wsx-core",
             "@tanstack/table-core",
             "@atlaskit/pragmatic-drag-and-drop",

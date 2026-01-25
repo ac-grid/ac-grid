@@ -10,8 +10,8 @@
     },
     "dependencies": {
         "@ac-grid/core": "workspace:*",
-        "@ac-grid/ac-grid-theme-base": "workspace:*",
-        "@ac-grid/ac-grid-theme-default": "workspace:*",
+        "@ac-grid/theme-base": "workspace:*",
+        "@ac-grid/theme-default": "workspace:*",
         "@wsxjs/wsx-core": "^0.1.0",
         "@tanstack/table-core": "^8.20.6"
     },

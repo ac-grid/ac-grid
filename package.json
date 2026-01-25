@@ -1,5 +1,5 @@
 {
-    "name": "@ac-grid/ac-grid-monorepo",
+    "name": "@ac-grid/monorepo",
     "version": "0.0.1",
     "private": true,
     "type": "module",

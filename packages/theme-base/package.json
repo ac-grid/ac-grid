@@ -1,5 +1,5 @@
 {
-    "name": "@ac-grid/ac-grid-theme-base",
+    "name": "@ac-grid/theme-base",
     "version": "0.1.0",
     "description": "AC Grid theme system foundation",
     "type": "module",

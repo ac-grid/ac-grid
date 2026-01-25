@@ -1,5 +1,5 @@
 {
-    "name": "@ac-grid/ac-grid-theme-default",
+    "name": "@ac-grid/theme-default",
     "version": "0.1.0",
     "description": "AC Grid default theme presets (Light, Dark, Ocean, Forest, Sunset, Bamboo)",
     "type": "module",
@@ -41,7 +41,7 @@
         "directory": "packages/theme-default"
     },
     "dependencies": {
-        "@ac-grid/ac-grid-theme-base": "workspace:^"
+        "@ac-grid/theme-base": "workspace:^"
     },
     "devDependencies": {
         "@types/node": "^22.10.7",
