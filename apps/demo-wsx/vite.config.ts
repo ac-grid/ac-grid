@@ -50,17 +50,17 @@ export default defineConfig({
             // 注意：alias 指向 src 目录，Vite 会自动解析 index.ts
             ...(process.env.NODE_ENV === "development"
                 ? {
-                      "@systembug/ac-grid-core": path.resolve(
+                      "@ac-grid/ac-grid-core": path.resolve(
                           __dirname,
-                          "../../packages/core/src/index.ts"
+                          "../../packages/core/src/index.ts",
                       ),
-                      "@systembug/ac-grid-theme-base": path.resolve(
+                      "@ac-grid/ac-grid-theme-base": path.resolve(
                           __dirname,
-                          "../../packages/theme-base/src/index.ts"
+                          "../../packages/theme-base/src/index.ts",
                       ),
-                      "@systembug/ac-grid-theme-default": path.resolve(
+                      "@ac-grid/ac-grid-theme-default": path.resolve(
                           __dirname,
-                          "../../packages/theme-default/src/index.ts"
+                          "../../packages/theme-default/src/index.ts",
                       ),
                   }
                 : {}),
@@ -70,13 +70,22 @@ export default defineConfig({
             pino: "pino/browser",
         },
         conditions: ["source", "import", "module", "browser", "default"],
-        extensions: [".mjs", ".js", ".mts", ".ts", ".jsx", ".tsx", ".json", ".wsx"],
+        extensions: [
+            ".mjs",
+            ".js",
+            ".mts",
+            ".ts",
+            ".jsx",
+            ".tsx",
+            ".json",
+            ".wsx",
+        ],
     },
     optimizeDeps: {
         exclude: [
-            "@systembug/ac-grid-core",
-            "@systembug/ac-grid-theme-base",
-            "@systembug/ac-grid-theme-default",
+            "@ac-grid/ac-grid-core",
+            "@ac-grid/ac-grid-theme-base",
+            "@ac-grid/ac-grid-theme-default",
             "@wsxjs/wsx-core",
             "@tanstack/table-core",
             "@atlaskit/pragmatic-drag-and-drop",
@@ -98,7 +107,7 @@ export default defineConfig({
         },
         watch: {
             // 监听 workspace 包的源码变化
-            ignored: ["!**/node_modules/@systembug/**", "!**/packages/**"],
+            ignored: ["!**/node_modules/@ac-grid/**", "!**/packages/**"],
         },
     },
     build: {

@@ -6,13 +6,19 @@
             "name": "demo-wsx",
             "value": "wsx",
             "description": "WSX Demo",
-            "package": "@systembug/demo-wsx"
+            "package": "@ac-grid/demo-wsx"
         },
         {
             "name": "demo-react",
             "value": "react",
             "description": "React Demo",
-            "package": "@systembug/demo-react"
+            "package": "@ac-grid/demo-react"
+        },
+        {
+            "name": "site",
+            "value": "site",
+            "description": "Site",
+            "package": "@ac-grid/site"
         }
     ]
 }

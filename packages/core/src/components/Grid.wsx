@@ -4,14 +4,17 @@ import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
 import {
     createTable,
     getCoreRowModel,
+    getSortedRowModel,
     type Table,
     type ColumnDef,
+    type SortingState,
 } from "@tanstack/table-core";
 import { arrayMove } from "../utils/array-move";
 import { flexRender } from "../utils/flex-render";
 import "./Grid.css";
 import "./DraggableTableHeader.wsx";
 import "./DraggableTableRow.wsx";
+import "./SortingIndicator.wsx";
 
 export interface GridProps<TData extends { userId?: string }> {
     /**
@@ -35,6 +38,7 @@ export interface GridProps<TData extends { userId?: string }> {
 export class Grid extends LightComponent {
     @state private columnOrder: string[] = [];
     @state private gridData: any[] = [];
+    @state private sorting: SortingState = [];
 
     private table: Table<any> | null = null;
 
@@ -76,6 +80,28 @@ export class Grid extends LightComponent {
     }
     @state private _className: string = "";
 
+    // Sorting configuration property
+    get sortingConfig(): GridSortingConfig | undefined {
+        return this._sortingConfigIsSet ? this._sortingConfig : undefined;
+    }
+    set sortingConfig(value: GridSortingConfig | undefined) {
+        if (value === undefined) {
+            this._sortingConfigIsSet = false;
+            this._sortingConfig = {} as GridSortingConfig;
+        } else {
+            this._sortingConfigIsSet = true;
+            if (value !== this._sortingConfig) {
+                this._sortingConfig = value;
+                if (value.initialState) {
+                    this.sorting = value.initialState;
+                }
+                this.updateTable();
+            }
+        }
+    }
+    @state private _sortingConfigIsSet: boolean = false;
+    @state private _sortingConfig: GridSortingConfig = {} as GridSortingConfig;
+
     onConnected() {
         super.onConnected?.();
 
@@ -115,8 +141,10 @@ export class Grid extends LightComponent {
             data: this.gridData,
             columns: this._columns,
             getCoreRowModel: getCoreRowModel(),
+            getSortedRowModel: getSortedRowModel(),
             state: {
                 columnOrder: this.columnOrder,
+                sorting: this.sorting,
                 // 初始化 columnPinning 状态，避免访问 undefined.left 错误
                 columnPinning: {
                     left: [],
@@ -131,6 +159,15 @@ export class Grid extends LightComponent {
                         ? updater(this.columnOrder)
                         : updater;
                 this.columnOrder = newOrder;
+                this.updateTable();
+            },
+            onSortingChange: (updater) => {
+                const newSorting =
+                    typeof updater === "function"
+                        ? updater(this.sorting)
+                        : updater;
+                this.sorting = newSorting;
+                this._sortingConfig?.onSortingChange?.(newSorting);
                 this.updateTable();
             },
             getRowId: (row) => row.userId || String(Math.random()),
@@ -245,39 +282,81 @@ export class Grid extends LightComponent {
                                         header.getContext()
                                     );
                                     
+                                    const column = header.column;
+                                    const canSort = column.getCanSort();
+                                    const sortDirection = column.getIsSorted();
+                                    const sortIndex = column.getSortIndex();
+                                    
                                     return (
                                         <div
                                             key={header.id}
-                                            className="grid-header-cell"
-                                            data-column-id={header.column.id}
+                                            className={`grid-header-cell ${canSort ? 'sortable' : ''} ${sortDirection ? 'sorting-active' : ''}`}
+                                            data-column-id={column.id}
+                                            data-can-sort={canSort ? 'true' : 'false'}
                                             style={{
-                                                gridColumn: header.colSpan > 1 ? `span ${header.colSpan}` : 'auto'
+                                                gridColumn: header.colSpan > 1 ? `span ${header.colSpan}` : 'auto',
+                                                cursor: canSort ? 'pointer' : 'default'
+                                            }}
+                                            ref={(el: HTMLElement | null) => {
+                                                if (el && canSort) {
+                                                    // 移除旧的事件监听器（如果存在）
+                                                    const oldHandler = (el as any).__sortHandler;
+                                                    if (oldHandler) {
+                                                        el.removeEventListener('click', oldHandler);
+                                                    }
+                                                    
+                                                    // 添加新的事件监听器
+                                                    const handler = (e: MouseEvent) => {
+                                                        // 如果点击的是拖拽按钮，不触发排序
+                                                        const target = e.target as HTMLElement;
+                                                        if (target.closest('.drag-handle-button')) {
+                                                            return;
+                                                        }
+                                                        
+                                                        // 切换排序（Shift 键支持多列排序）
+                                                        column.toggleSorting(
+                                                            undefined,  // 循环：asc -> desc -> none
+                                                            e.shiftKey  // 是否多列排序
+                                                        );
+                                                    };
+                                                    
+                                                    el.addEventListener('click', handler);
+                                                    (el as any).__sortHandler = handler;
+                                                }
                                             }}
                                         >
-                                            <div>
+                                            <div className="header-content">
                                                 <span>{headerContent}</span>
-                                                <button
-                                                    className="drag-handle-button"
-                                                    type="button"
-                                                    aria-label="Drag column to reorder"
-                                                    title="Drag to reorder column"
-                                                >
-                                                    <svg 
-                                                        width="12" 
-                                                        height="12" 
-                                                        viewBox="0 0 14 14" 
-                                                        fill="none" 
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                    >
-                                                        <path 
-                                                            d="M2 3.5h10M2 7h10M2 10.5h10" 
-                                                            stroke="currentColor" 
-                                                            strokeWidth="1.5" 
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
+                                                <div className="header-actions">
+                                                    {canSort && (
+                                                        <wsx-ac-sorting-indicator 
+                                                            direction={sortDirection}
+                                                            index={sortIndex}
                                                         />
-                                                    </svg>
-                                                </button>
+                                                    )}
+                                                    <button
+                                                        className="drag-handle-button"
+                                                        type="button"
+                                                        aria-label="Drag column to reorder"
+                                                        title="Drag to reorder column"
+                                                    >
+                                                        <svg 
+                                                            width="12" 
+                                                            height="12" 
+                                                            viewBox="0 0 14 14" 
+                                                            fill="none" 
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                        >
+                                                            <path 
+                                                                d="M2 3.5h10M2 7h10M2 10.5h10" 
+                                                                stroke="currentColor" 
+                                                                strokeWidth="1.5" 
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     );
@@ -309,4 +388,49 @@ export class Grid extends LightComponent {
             </div>
         );
     }
+
+    /**
+     * 公共 API: 设置排序状态
+     */
+    public setSorting(sorting: SortingState): void {
+        this.sorting = sorting;
+        this.updateTable();
+    }
+
+    /**
+     * 公共 API: 获取当前排序状态
+     */
+    public getSorting(): SortingState {
+        return this.sorting;
+    }
+
+    /**
+     * 公共 API: 重置排序状态
+     */
+    public resetSorting(): void {
+        this.sorting = [];
+        this.updateTable();
+    }
+}
+
+/**
+ * 排序配置接口
+ */
+export interface GridSortingConfig {
+    /**
+     * 是否启用排序（默认：true）
+     */
+    enabled?: boolean;
+    /**
+     * 是否允许多列排序（默认：true）
+     */
+    multiColumn?: boolean;
+    /**
+     * 初始排序状态
+     */
+    initialState?: SortingState;
+    /**
+     * 排序状态变化回调
+     */
+    onSortingChange?: (sorting: SortingState) => void;
 }

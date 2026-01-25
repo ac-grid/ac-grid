@@ -1,5 +1,5 @@
 {
-    "name": "@systembug/demo-wsx",
+    "name": "@ac-grid/demo-wsx",
     "version": "0.0.1",
     "type": "module",
     "private": true,
@@ -9,9 +9,9 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@systembug/ac-grid-core": "workspace:*",
-        "@systembug/ac-grid-theme-base": "workspace:*",
-        "@systembug/ac-grid-theme-default": "workspace:*",
+        "@ac-grid/ac-grid-core": "workspace:*",
+        "@ac-grid/ac-grid-theme-base": "workspace:*",
+        "@ac-grid/ac-grid-theme-default": "workspace:*",
         "@wsxjs/wsx-core": "^0.1.0",
         "@tanstack/table-core": "^8.20.6"
     },

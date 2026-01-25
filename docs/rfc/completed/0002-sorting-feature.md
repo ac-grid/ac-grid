@@ -1,10 +1,10 @@
 # RFC-0002: 排序功能
 
-**状态**: 📝 草稿  
+**状态**: ✔️ 已完成  
 **版本**: 0.1.0  
 **作者**: Albert Li  
 **日期**: 2026-01-24  
-**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md)
+**相关 RFC**: [0001-ac-grid-architecture](../0001-ac-grid-architecture.md)
 
 ## 目录
 
@@ -268,7 +268,7 @@ export type { SortingState, SortingFn } from '@tanstack/table-core';
 #### 基础用法（默认排序）
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
-import { Grid } from '@systembug/ac-grid-core';
+import { Grid } from '@ac-grid/ac-grid-core';
 
 const columns = [
   { id: 'name', accessorKey: 'name', header: 'Name' },
@@ -291,7 +291,14 @@ const columns = [
 ];
 ```
 
-#### 自定义排序函数
+#### 自定义排序函数（Comparator）
+
+AC Grid 支持通过 `sortingFn` 属性定义自定义比较器（comparator）。比较器函数接收两个行对象和列 ID，返回数字：
+- **负数**: `rowA` 应该排在 `rowB` 之前
+- **正数**: `rowA` 应该排在 `rowB` 之后
+- **0**: 两者相等，保持原顺序
+
+**基础示例**：
 ```typescript
 import { sortingFns } from '@tanstack/table-core';
 
@@ -317,9 +324,155 @@ const columns = [
 ];
 ```
 
+**更多自定义比较器示例**：
+
+**示例 1: 数字排序（处理 null/undefined）**
+```typescript
+const columns = [
+  {
+    id: 'age',
+    accessorKey: 'age',
+    header: 'Age',
+    sortingFn: (rowA, rowB, columnId) => {
+      const a = rowA.getValue(columnId) as number | null | undefined;
+      const b = rowB.getValue(columnId) as number | null | undefined;
+      // null/undefined 排在最后
+      if (a == null && b == null) return 0;
+      if (a == null) return 1;
+      if (b == null) return -1;
+      return a - b;
+    }
+  }
+];
+```
+
+**示例 2: 日期排序**
+```typescript
+const columns = [
+  {
+    id: 'createdAt',
+    accessorKey: 'createdAt',
+    header: 'Created At',
+    sortingFn: (rowA, rowB, columnId) => {
+      const dateA = new Date(rowA.getValue(columnId) as string);
+      const dateB = new Date(rowB.getValue(columnId) as string);
+      return dateA.getTime() - dateB.getTime();
+    }
+  }
+];
+```
+
+**示例 3: 自定义优先级排序**
+```typescript
+const columns = [
+  {
+    id: 'status',
+    accessorKey: 'status',
+    header: 'Status',
+    sortingFn: (rowA, rowB, columnId) => {
+      const statusOrder = { 'active': 1, 'pending': 2, 'inactive': 3 };
+      const a = rowA.getValue(columnId) as keyof typeof statusOrder;
+      const b = rowB.getValue(columnId) as keyof typeof statusOrder;
+      return (statusOrder[a] || 999) - (statusOrder[b] || 999);
+    }
+  }
+];
+```
+
+**示例 4: 多字段组合排序**
+```typescript
+const columns = [
+  {
+    id: 'fullName',
+    accessorKey: 'fullName',
+    header: 'Full Name',
+    sortingFn: (rowA, rowB, columnId) => {
+      // 先按姓氏排序，再按名字排序
+      const a = rowA.original as Person;
+      const b = rowB.original as Person;
+      const lastNameCompare = a.lastName.localeCompare(b.lastName);
+      if (lastNameCompare !== 0) return lastNameCompare;
+      return a.firstName.localeCompare(b.firstName);
+    }
+  }
+];
+```
+
+**示例 5: 使用内置排序函数**
+```typescript
+import { sortingFns } from '@tanstack/table-core';
+
+const columns = [
+  {
+    id: 'name',
+    accessorKey: 'name',
+    header: 'Name',
+    sortingFn: sortingFns.alphanumeric,  // 字母数字排序
+  },
+  {
+    id: 'date',
+    accessorKey: 'date',
+    header: 'Date',
+    sortingFn: sortingFns.datetime,     // 日期时间排序
+  },
+  {
+    id: 'number',
+    accessorKey: 'number',
+    header: 'Number',
+    sortingFn: sortingFns.basic,        // 基础排序
+  }
+];
+```
+
+**示例 6: 可复用的比较器工具函数**
+```typescript
+// utils/sorters.ts
+import type { SortingFn } from '@tanstack/table-core';
+import type { Row } from '@ac-grid/ac-grid-core';
+
+export const nullsLastSorter = <TData>(
+  rowA: Row<TData>,
+  rowB: Row<TData>,
+  columnId: string
+): number => {
+  const a = rowA.getValue(columnId);
+  const b = rowB.getValue(columnId);
+  if (a == null && b == null) return 0;
+  if (a == null) return 1;
+  if (b == null) return -1;
+  if (a < b) return -1;
+  if (a > b) return 1;
+  return 0;
+};
+
+export const caseInsensitiveSorter = <TData>(
+  rowA: Row<TData>,
+  rowB: Row<TData>,
+  columnId: string
+): number => {
+  const a = String(rowA.getValue(columnId)).toLowerCase();
+  const b = String(rowB.getValue(columnId)).toLowerCase();
+  return a.localeCompare(b);
+};
+
+// 使用
+import { nullsLastSorter, caseInsensitiveSorter } from './utils/sorters';
+
+const columns = [
+  {
+    id: 'name',
+    sortingFn: caseInsensitiveSorter
+  },
+  {
+    id: 'optionalField',
+    sortingFn: nullsLastSorter
+  }
+];
+```
+
 #### 编程式排序
 ```typescript
-import { createGrid } from '@systembug/ac-grid-core';
+import { createGrid } from '@ac-grid/ac-grid-core';
 
 const gridElement = createGrid({
   data,
@@ -346,7 +499,7 @@ const currentSorting = (gridElement as any).getSorting();
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
 import { LightComponent, state, autoRegister } from '@wsxjs/wsx-core';
-import type { SortingState } from '@systembug/ac-grid-core';
+import type { SortingState } from '@ac-grid/ac-grid-core';
 
 @autoRegister({ tagName: 'my-app' })
 export class App extends LightComponent {
@@ -630,7 +783,7 @@ export class DraggableTableHeader extends LightComponent {
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { createGrid } from '@systembug/ac-grid-core';
+import { createGrid } from '@ac-grid/ac-grid-core';
 
 describe('Sorting Feature', () => {
   it('should sort data in ascending order', () => {
@@ -792,4 +945,4 @@ describe('Sorting Performance', () => {
 - [ag-Grid 排序文档](https://www.ag-grid.com/javascript-data-grid/row-sorting/)
 - [@tanstack/table-core 排序文档](https://tanstack.com/table/latest/docs/guide/sorting)
 - [MDN: Array.prototype.sort()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
-- [0001-ac-grid-architecture.md](./0001-ac-grid-architecture.md)
+- [0001-ac-grid-architecture.md](../0001-ac-grid-architecture.md)

@@ -1,0 +1,131 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * AC Grid Documentation Site
+ *
+ * Features:
+ * - AC Grid documentation and examples
+ * - Router-based navigation
+ * - Interactive grid demos
+ */
+
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import styles from "./App.css?inline";
+// Import base components and router
+import "@wsxjs/wsx-base-components";
+import "@wsxjs/wsx-router";
+import { RouterUtils } from "@wsxjs/wsx-router";
+// Import AC Grid core
+import "@ac-grid/ac-grid-core";
+// Import SEO utilities
+import { MetaManager, type RouteMeta } from "./utils/meta-manager";
+import { getRouteMeta, routeMeta } from "./config/route-meta";
+
+// Define ResponsiveNavConfig locally
+interface NavItem {
+    label: string;
+    to: string;
+    exact?: boolean;
+    hideOnMobile?: boolean;
+}
+
+interface ResponsiveNavConfig {
+    brand?: string;
+    brandIcon?: HTMLElement | string;
+    items: NavItem[];
+    actionTags?: string[];
+    mobileBreakpoint?: number;
+    autoOverflow?: boolean;
+}
+
+// Import route-based section components
+import "./components/HomeSection.wsx";
+import "./components/ExamplesSection.wsx";
+import "./components/DocsSection.wsx";
+import "./components/NotFoundSection.wsx";
+
+export interface AppConfig {
+    title?: string;
+    theme?: "light" | "dark";
+}
+
+@autoRegister({ tagName: "ac-grid-app" })
+export default class App extends LightComponent {
+    constructor(config: AppConfig = {}) {
+        super({
+            styles,
+            styleName: "ac-grid-app",
+            ...config,
+        });
+    }
+
+    render() {
+        return (
+            <div class="app-container">
+                {/* Navigation */}
+                {this.renderNavigation()}
+                <div class="app-content">
+                    {/* Router Container */}
+                    <wsx-router>
+                        <wsx-view route="/" component="home-section"></wsx-view>
+                        <wsx-view
+                            route="/examples"
+                            component="examples-section"
+                        ></wsx-view>
+                        <wsx-view
+                            route="/docs"
+                            component="docs-section"
+                        ></wsx-view>
+                        <wsx-view
+                            route="/docs/*"
+                            component="docs-section"
+                        ></wsx-view>
+                        <wsx-view
+                            route="*"
+                            component="not-found-section"
+                        ></wsx-view>
+                    </wsx-router>
+                </div>
+            </div>
+        );
+    }
+
+    private renderNavigation() {
+        const navConfig: ResponsiveNavConfig = {
+            brand: "AC Grid",
+            items: [
+                { label: "Home", to: "/", exact: true },
+                { label: "Examples", to: "/examples" },
+                { label: "Documentation", to: "/docs" },
+            ],
+        };
+
+        return <wsx-responsive-nav config={navConfig}></wsx-responsive-nav>;
+    }
+
+    protected onConnected(): void {
+        super.onConnected?.();
+        this.setupRouter();
+        this.setupMeta();
+    }
+
+    private setupRouter() {
+        const router = RouterUtils.getRouter();
+        if (router) {
+            router.onRouteChange((route) => {
+                this.updateMeta(route);
+            });
+        }
+    }
+
+    private setupMeta() {
+        const currentRoute = RouterUtils.getCurrentRoute() || "/";
+        this.updateMeta(currentRoute);
+    }
+
+    private updateMeta(route: string) {
+        const meta = getRouteMeta(route);
+        if (meta) {
+            MetaManager.updateMeta(meta);
+        }
+    }
+}

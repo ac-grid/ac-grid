@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import "./App.css";
 
 // https://nodejs.org/api/packages.html#packages_self_referencing_a_package_using_its_name
-import { Grid, DraggableHandler } from "@systembug/ac-grid";
+import { Grid, DraggableHandler } from "@ac-grid/ac-grid";
 
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -56,7 +56,7 @@ function App() {
                 size: 180,
             },
         ],
-        []
+        [],
     );
 
     return (

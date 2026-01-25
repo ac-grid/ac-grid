@@ -86,6 +86,57 @@
   color: #0f172a;
 }
 
+/* Header content wrapper */
+.ac-grid .grid-header-cell .header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.ac-grid .grid-header-cell .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Sortable header */
+.ac-grid .grid-header-cell.sortable {
+  user-select: none;
+}
+
+.ac-grid .grid-header-cell.sortable:hover {
+  background-color: #f1f5f9;
+}
+
+.ac-grid .grid-header-cell.sorting-active {
+  background-color: #e0e7ff;
+}
+
+/* Sorting indicator */
+.ac-grid .sort-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  transition: color 0.15s ease;
+}
+
+.ac-grid .sort-indicator.active {
+  color: #3b82f6;
+}
+
+.ac-grid .sort-indicator svg {
+  display: block;
+}
+
+.ac-grid .sort-indicator .sort-index {
+  color: #6b7280;
+  font-weight: 500;
+}
+
 /* Body rows */
 .ac-grid .grid-body {
   display: contents;

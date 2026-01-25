@@ -64,6 +64,35 @@ export default class MyComponent extends WebComponent {
 ### 3. 状态管理宪章
 
 *   **初始化**: `@state private name = "";` (禁止 `private name;` 这种未初始化的行为)。
+*   **非 null/undefined 要求**: `@state` 装饰器的属性必须有非 null、非 undefined 的初始值。
+    *   **错误示例**: `@state private _index: number | undefined;` ❌
+    *   **正确方式 1 - 标记值**: 对于可选数字类型，使用标记值（如 `-1`）：
+        ```typescript
+        @state private _index: number = -1;
+        get index(): number | undefined {
+            return this._index === -1 ? undefined : this._index;
+        }
+        set index(value: number | undefined) {
+            this._index = value === undefined ? -1 : value;
+        }
+        ```
+    *   **正确方式 2 - 标志位**: 对于可选对象类型，使用标志位 + 空对象：
+        ```typescript
+        @state private _isSet: boolean = false;
+        @state private _config: Config = {} as Config;
+        get config(): Config | undefined {
+            return this._isSet ? this._config : undefined;
+        }
+        set config(value: Config | undefined) {
+            if (value === undefined) {
+                this._isSet = false;
+                this._config = {} as Config;
+            } else {
+                this._isSet = true;
+                this._config = value;
+            }
+        }
+        ```
 *   **禁止滥用**: 严禁手动调用 `this.rerender()`。那是对响应式系统的侮辱。
 *   **外部同步**: 这里的 `render()` 函数里不能直接读取外部非响应式数据。必须在 `onConnected` 中监听外部事件并将数据同步到内部 `@state`。
 

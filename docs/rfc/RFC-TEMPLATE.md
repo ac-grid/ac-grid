@@ -137,7 +137,7 @@ export interface NewInterface {
 
 #### 基础用法
 ```typescript
-import { Grid } from '@systembug/ac-grid-core';
+import { Grid } from '@ac-grid/ac-grid-core';
 
 const grid = createGrid({
   data,

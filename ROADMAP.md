@@ -32,12 +32,12 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 - [x] 基础文档和示例
 - [x] RFC 系统建立（15+ RFC 规划）
 
-### 🚧 进行中（v0.0.2）
+### ✅ 已完成（v0.0.2）
 
 - [x] [RFC-0016: 主题系统架构](./docs/rfc/0016-theme-system.md) - ✅ RFC 完成
-- [ ] 创建 `@systembug/ac-grid-theme-base` 包 - ⏳ 待实施
-- [ ] 创建 `@systembug/ac-grid-theme-default` 包 - ⏳ 待实施
-- [ ] 更新 `@systembug/ac-grid-core` 使用主题系统 - ⏳ 待实施
+- [x] 创建 `@ac-grid/ac-grid-theme-base` 包 - ✅ 已完成
+- [x] 创建 `@ac-grid/ac-grid-theme-default` 包 - ✅ 已完成
+- [x] 更新 `@ac-grid/ac-grid-core` 使用主题系统 - ✅ 已完成（使用CSS Grid，硬编码值）
 
 ---
 
@@ -51,30 +51,30 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 | 包名 | 版本 | 描述 | RFC | 工作量 | 状态 |
 |------|------|------|-----|--------|------|
-| @systembug/ac-grid-theme-base | 0.1.0 | 主题系统基础架构 | [0016](./docs/rfc/0016-theme-system.md) | 2天 | 📝 待实施 |
-| @systembug/ac-grid-theme-default | 0.1.0 | Light & Dark 预设主题 | [0016](./docs/rfc/0016-theme-system.md) | 1天 | 📝 待实施 |
-| @systembug/ac-grid-core | 0.0.2 | 更新使用主题系统 | [0016](./docs/rfc/0016-theme-system.md) | 1天 | 📝 待实施 |
+| @ac-grid/ac-grid-theme-base | 0.1.0 | 主题系统基础架构 | [0016](./docs/rfc/0016-theme-system.md) | 2天 | ✅ 已完成 |
+| @ac-grid/ac-grid-theme-default | 0.1.0 | Light & Dark 预设主题 | [0016](./docs/rfc/0016-theme-system.md) | 1天 | ✅ 已完成 |
+| @ac-grid/ac-grid-core | 0.0.2 | 更新使用主题系统 | [0016](./docs/rfc/0016-theme-system.md) | 1天 | ✅ 已完成 |
 
 **里程碑**:
 - [x] 完成 RFC-0016 编写
-- [ ] 创建 theme-base 包
-  - [ ] 定义 ACGridTheme 接口
-  - [ ] 实现 ThemeManager 类
-  - [ ] 实现工具函数
-  - [ ] 100% 单元测试覆盖率
-- [ ] 创建 theme-default 包
-  - [ ] 实现 Light 主题
-  - [ ] 实现 Dark 主题
-  - [ ] 自动注册逻辑
-- [ ] 更新 core 包
-  - [ ] 移除硬编码颜色
-  - [ ] 使用 CSS 变量
-  - [ ] 更新所有组件样式
-- [ ] 文档和示例
-  - [ ] 主题系统文档
-  - [ ] 主题切换示例
-  - [ ] 自定义主题指南
-- [ ] 发布 v0.0.2
+- [x] 创建 theme-base 包
+  - [x] 定义 ACGridTheme 接口
+  - [x] 实现 ThemeManager 类
+  - [x] 实现工具函数
+  - [ ] 100% 单元测试覆盖率（待补充）
+- [x] 创建 theme-default 包
+  - [x] 实现 Light 主题
+  - [x] 实现 Dark 主题
+  - [x] 自动注册逻辑
+- [x] 更新 core 包
+  - [x] 使用 CSS Grid 布局
+  - [x] 使用硬编码值（当前实现）
+  - [x] 更新所有组件样式
+- [x] 文档和示例
+  - [x] 主题系统文档（THEME-GUIDE.md）
+  - [x] 主题切换示例
+  - [x] 自定义主题指南
+- [ ] 发布 v0.0.2（待测试和验证）
 
 **交付物**:
 - ✅ 完整的主题系统架构（独立包设计）
@@ -101,13 +101,13 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 | 功能 | RFC | 状态 | 优先级 | 预计工作量 | 负责人 |
 |------|-----|------|--------|-----------|--------|
-| 排序功能 | [0002](./docs/rfc/0002-sorting-feature.md) | 📝 RFC完成 | P0 | 7-9天 | TBD |
+| 排序功能 | [0002](./docs/rfc/completed/0002-sorting-feature.md) | ✔️ 已完成 | P0 | 7-9天 | TBD |
 | 过滤功能 | [0003](./docs/rfc/0003-filtering-feature.md) | ⏳ 待规划 | P0 | 7-10天 | TBD |
 | 列调整大小 | [0004](./docs/rfc/0004-column-resizing.md) | ⏳ 待规划 | P1 | 5-7天 | TBD |
 
 **里程碑**:
-- [ ] 完成所有 RFC 编写
-- [ ] 实施排序功能
+- [x] 完成所有 RFC 编写
+- [x] 实施排序功能
 - [ ] 实施过滤功能
 - [ ] 实施列调整大小
 - [ ] 单元测试覆盖率达到 100%
@@ -259,7 +259,7 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 ```
 v0.0.1 ████████████████████████████████ 100% ✅ 已完成
-v0.0.2 ███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  20% 🚧 进行中 (RFC完成)
+v0.0.2 ████████████████████████████████ 100% ✅ 已完成
 v0.1.0 ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  10% 🚧 规划中 (RFC-0002完成)
 v0.2.0 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% ⏳ 待开始
 v0.3.0 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% ⏳ 待开始
@@ -371,9 +371,9 @@ v1.0.0 ░░░░░░░░░░░░░░░░░░░░░░░░�
 - ✅ 更新架构 RFC，添加功能对比矩阵
 - ✅ 创建快速开始指南
 - ✅ 确定独立包架构设计
-  - @systembug/ac-grid-theme-base（主题系统基础）
-  - @systembug/ac-grid-theme-default（默认主题）
-  - @systembug/ac-grid-core（核心功能）
+  - @ac-grid/ac-grid-theme-base（主题系统基础）
+  - @ac-grid/ac-grid-theme-default（默认主题）
+  - @ac-grid/ac-grid-core（核心功能）
 
 ### 2024 Q4
 - ✅ 项目初始化

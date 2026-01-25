@@ -1,0 +1,118 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+
+/**
+ * 排序指示器组件 - 显示列的排序状态（升序/降序/无序）
+ */
+@autoRegister({ tagName: "wsx-ac-sorting-indicator" })
+export class SortingIndicator extends LightComponent {
+    static observedAttributes: string[] = [];
+
+    get direction(): "asc" | "desc" | false {
+        return this._direction;
+    }
+    set direction(value: "asc" | "desc" | false) {
+        if (value !== this._direction) {
+            this._direction = value;
+        }
+    }
+    @state private _direction: "asc" | "desc" | false = false;
+
+    get index(): number | undefined {
+        return this._index === -1 ? undefined : this._index;
+    }
+    set index(value: number | undefined) {
+        const newValue = value === undefined ? -1 : value;
+        if (newValue !== this._index) {
+            this._index = newValue;
+        }
+    }
+    @state private _index: number = -1;
+
+    connectedCallback() {
+        super.connectedCallback();
+        const element = this as any;
+        if (element.direction !== undefined) {
+            this.direction = element.direction;
+        }
+        if (element.index !== undefined) {
+            this.index = element.index;
+        }
+    }
+
+    render() {
+        if (!this._direction) {
+            return (
+                <span className="sort-indicator" aria-hidden="true">
+                    <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ opacity: 0.3 }}
+                    >
+                        <path
+                            d="M3 4.5L6 1.5L9 4.5M3 7.5L6 10.5L9 7.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                </span>
+            );
+        }
+
+        const isAsc = this._direction === "asc";
+        const indexText =
+            this._index !== -1 ? ` ${this._index + 1}` : "";
+
+        return (
+            <span
+                className="sort-indicator active"
+                aria-label={`Sorted ${isAsc ? "ascending" : "descending"}${indexText}`}
+            >
+                {isAsc ? (
+                    <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M3 4.5L6 1.5L9 4.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                ) : (
+                    <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M3 7.5L6 10.5L9 7.5"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                )}
+                {indexText && (
+                    <span className="sort-index" style={{ fontSize: "0.75rem", marginLeft: "2px" }}>
+                        {indexText}
+                    </span>
+                )}
+            </span>
+        );
+    }
+}

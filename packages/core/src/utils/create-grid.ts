@@ -1,11 +1,12 @@
 /**
  * createGrid 工具函数 - 用于在纯 HTML/JavaScript 环境中创建和配置 Grid 组件
- * 
+ *
  * 在非 JSX 环境中，不能直接使用 JSX 语法，需要通过 DOM API 创建元素
  * 并通过 property（而非 attribute）设置复杂数据
  */
 
 import type { ColumnDef } from "@tanstack/table-core";
+import type { GridSortingConfig } from "../components/Grid.wsx";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
     /**
@@ -21,6 +22,10 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
      */
     className?: string;
     /**
+     * 排序配置
+     */
+    sorting?: GridSortingConfig;
+    /**
      * 容器元素（可选，如果不提供则返回元素本身）
      */
     container?: HTMLElement;
@@ -28,20 +33,20 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
 
 /**
  * 创建并配置 Grid 组件
- * 
+ *
  * @example
  * ```typescript
- * import { createGrid } from '@systembug/ac-grid-core';
- * 
+ * import { createGrid } from '@ac-grid/ac-grid-core';
+ *
  * const gridElement = createGrid({
  *   data: myData,
  *   columns: myColumns,
  *   className: 'my-grid'
  * });
- * 
+ *
  * document.body.appendChild(gridElement);
  * ```
- * 
+ *
  * @example
  * ```typescript
  * // 直接挂载到容器
@@ -53,9 +58,9 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
  * ```
  */
 export function createGrid<TData extends { userId?: string }>(
-    options: CreateGridOptions<TData>
+    options: CreateGridOptions<TData>,
 ): HTMLElement {
-    const { data, columns, className, container } = options;
+    const { data, columns, className, sorting, container } = options;
 
     // 确保组件已注册（导入时会自动注册）
     // 创建自定义元素
@@ -69,8 +74,11 @@ export function createGrid<TData extends { userId?: string }>(
     // 简单的字符串属性可以通过 attribute 或 property 设置
     if (className) {
         gridElement.className = className;
-        // 或者使用 setAttribute（对于简单的字符串属性两者都可以）
-        // gridElement.setAttribute('class-name', className);
+    }
+
+    // 排序配置
+    if (sorting) {
+        gridElement.sortingConfig = sorting;
     }
 
     // 如果提供了容器，直接挂载
@@ -80,4 +88,3 @@ export function createGrid<TData extends { userId?: string }>(
 
     return gridElement;
 }
-

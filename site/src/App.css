@@ -1,0 +1,61 @@
+/* AC Grid App Styles */
+
+.app-container {
+    width: 100%;
+    min-height: 100vh;
+}
+
+.app-content {
+    min-height: calc(100vh - 60px);
+    padding-top: 60px; /* Account for fixed navigation */
+}
+
+/* Router Navigation Styles */
+.nav-link-active {
+    color: #667eea !important;
+    border-bottom: 2px solid #667eea;
+    font-weight: 600;
+}
+
+/* WSX Link Parts Styling */
+wsx-link::part(link) {
+    color: #4a5568;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    position: relative;
+}
+
+wsx-link::part(link)::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    transition: width 0.3s ease;
+}
+
+wsx-link::part(link):hover {
+    color: #2d3748;
+}
+
+wsx-link::part(link):hover::after {
+    width: 100%;
+}
+
+wsx-link::part(link):focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* WSX Link 激活状态 */
+wsx-link[active]::part(link) {
+    color: #667eea;
+    font-weight: 600;
+}
+
+wsx-link[active]::part(link)::after {
+    width: 100%;
+}

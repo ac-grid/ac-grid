@@ -1,0 +1,141 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Examples Section - AC Grid 示例展示
+ */
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import styles from "./ExamplesSection.css?inline";
+import "@ac-grid/ac-grid-core";
+import type { ColumnDef } from "@ac-grid/ac-grid-core";
+
+interface Person {
+    userId: string;
+    name: string;
+    age: number;
+    email: string;
+    department: string;
+    salary: number;
+}
+
+@autoRegister({ tagName: "examples-section" })
+export default class ExamplesSection extends LightComponent {
+    constructor() {
+        super({ styles });
+    }
+
+    @state private exampleData: Person[] = [
+        {
+            userId: "1",
+            name: "Alice Johnson",
+            age: 28,
+            email: "alice@example.com",
+            department: "Engineering",
+            salary: 95000,
+        },
+        {
+            userId: "2",
+            name: "Bob Smith",
+            age: 32,
+            email: "bob@example.com",
+            department: "Marketing",
+            salary: 85000,
+        },
+        {
+            userId: "3",
+            name: "Charlie Brown",
+            age: 45,
+            email: "charlie@example.com",
+            department: "Sales",
+            salary: 110000,
+        },
+        {
+            userId: "4",
+            name: "Diana Prince",
+            age: 29,
+            email: "diana@example.com",
+            department: "Engineering",
+            salary: 98000,
+        },
+        {
+            userId: "5",
+            name: "Eve Wilson",
+            age: 35,
+            email: "eve@example.com",
+            department: "HR",
+            salary: 75000,
+        },
+    ];
+
+    @state private columns: ColumnDef<Person>[] = [
+        { id: "name", accessorKey: "name", header: "Name", size: 200 },
+        { id: "age", accessorKey: "age", header: "Age", size: 100 },
+        { id: "email", accessorKey: "email", header: "Email", size: 250 },
+        {
+            id: "department",
+            accessorKey: "department",
+            header: "Department",
+            size: 150,
+        },
+        { id: "salary", accessorKey: "salary", header: "Salary", size: 120 },
+    ];
+
+    render() {
+        return (
+            <div class="examples-section">
+                <div class="container">
+                    <h1 class="page-title">AC Grid Examples</h1>
+                    <p class="page-description">
+                        Explore interactive examples showcasing AC Grid
+                        capabilities.
+                    </p>
+
+                    {/* Basic Grid Example */}
+                    <section class="example-section">
+                        <h2 class="section-title">Basic Grid</h2>
+                        <p class="section-description">
+                            A simple data grid with sorting enabled.
+                        </p>
+                        <div class="example-container">
+                            <wsx-ac-grid
+                                data={this.exampleData}
+                                columns={this.columns}
+                            ></wsx-ac-grid>
+                        </div>
+                    </section>
+
+                    {/* Sorting Example */}
+                    <section class="example-section">
+                        <h2 class="section-title">Sorting</h2>
+                        <p class="section-description">
+                            Click column headers to sort. Hold Shift for
+                            multi-column sorting.
+                        </p>
+                        <div class="example-container">
+                            <wsx-ac-grid
+                                data={this.exampleData}
+                                columns={this.columns}
+                                sorting={{
+                                    initialState: [{ id: "name", desc: false }],
+                                }}
+                            ></wsx-ac-grid>
+                        </div>
+                    </section>
+
+                    {/* Custom Styling Example */}
+                    <section class="example-section">
+                        <h2 class="section-title">Custom Styling</h2>
+                        <p class="section-description">
+                            Grid with custom className for styling.
+                        </p>
+                        <div class="example-container">
+                            <wsx-ac-grid
+                                data={this.exampleData}
+                                columns={this.columns}
+                                className="custom-grid"
+                            ></wsx-ac-grid>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        );
+    }
+}

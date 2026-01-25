@@ -1,0 +1,62 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Docs Section - AC Grid 文档页面
+ */
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import styles from "./DocsSection.css?inline";
+import "@wsxjs/wsx-base-components";
+import "@wsxjs/wsx-router";
+
+@autoRegister({ tagName: "docs-section" })
+export default class DocsSection extends LightComponent {
+    constructor() {
+        super({ styles });
+    }
+
+    render() {
+        return (
+            <div class="docs-section">
+                <div class="container">
+                    <h1 class="page-title">AC Grid Documentation</h1>
+                    <p class="page-description">
+                        Complete documentation for AC Grid, including guides, API reference, and RFCs.
+                    </p>
+
+                    <div class="docs-grid">
+                        <div class="doc-card">
+                            <h3>Getting Started</h3>
+                            <p>Learn how to install and use AC Grid in your project.</p>
+                            <wsx-link to="/docs/getting-started" class="doc-link">
+                                Read More →
+                            </wsx-link>
+                        </div>
+
+                        <div class="doc-card">
+                            <h3>API Reference</h3>
+                            <p>Complete API documentation for all components and utilities.</p>
+                            <wsx-link to="/docs/api" class="doc-link">
+                                Read More →
+                            </wsx-link>
+                        </div>
+
+                        <div class="doc-card">
+                            <h3>RFCs</h3>
+                            <p>Request for Comments - detailed design documents for features.</p>
+                            <wsx-link to="/docs/rfc" class="doc-link">
+                                Read More →
+                            </wsx-link>
+                        </div>
+
+                        <div class="doc-card">
+                            <h3>Examples</h3>
+                            <p>Interactive examples and code snippets.</p>
+                            <wsx-link to="/examples" class="doc-link">
+                                View Examples →
+                            </wsx-link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}

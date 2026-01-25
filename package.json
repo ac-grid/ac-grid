@@ -1,5 +1,5 @@
 {
-    "name": "@systembug/ac-grid-monorepo",
+    "name": "@ac-grid/ac-grid-monorepo",
     "version": "0.0.1",
     "private": true,
     "type": "module",
@@ -11,11 +11,11 @@
     "homepage": "http://systembugtj.github.io/ac-grid",
     "scripts": {
         "dev": "pangu",
-        "dev:wsx": "pnpm --filter @systembug/demo-wsx dev",
-        "dev:core": "pnpm --filter @systembug/ac-grid-core dev",
+        "dev:wsx": "pnpm --filter @ac-grid/demo-wsx dev",
+        "dev:core": "pnpm --filter @ac-grid/ac-grid-core dev",
         "build": "turbo run build",
-        "build:core": "pnpm --filter @systembug/ac-grid-core build",
-        "build:wsx": "pnpm --filter @systembug/demo-wsx build",
+        "build:core": "pnpm --filter @ac-grid/ac-grid-core build",
+        "build:wsx": "pnpm --filter @ac-grid/demo-wsx build",
         "lint": "turbo run lint",
         "test": "turbo run test",
         "clean": "turbo run clean && rm -rf node_modules",
@@ -27,7 +27,7 @@
         "prettier": "^3.4.2",
         "turbo": "^2.0.0",
         "typescript": "^5.6.2",
-        "@systembug/pangu": "^0.0.10"
+        "@ac-grid/pangu": "^0.0.10"
     },
     "packageManager": "pnpm@9.0.0",
     "volta": {

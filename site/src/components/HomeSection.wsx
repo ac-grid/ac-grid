@@ -1,0 +1,115 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Home Section - AC Grid 首页
+ */
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import styles from "./HomeSection.css?inline";
+import "@wsxjs/wsx-base-components";
+import "@wsxjs/wsx-router";
+
+@autoRegister({ tagName: "home-section" })
+export default class HomeSection extends LightComponent {
+    constructor() {
+        super({ styles });
+    }
+
+    render() {
+        return (
+            <div class="home-section">
+                {/* Hero Section */}
+                <section class="hero-section">
+                    <div class="hero-content">
+                        <h1 class="hero-title">AC Grid</h1>
+                        <p class="hero-subtitle">
+                            High-Performance Data Grid Component
+                        </p>
+                        <p class="hero-description">
+                            A framework-agnostic data grid built with Web
+                            Components and @tanstack/table-core.
+                            TypeScript-first, production-ready, and designed for
+                            modern web applications.
+                        </p>
+                        <div class="hero-actions">
+                            <wsx-link to="/docs" class="btn btn-primary">
+                                Get Started
+                            </wsx-link>
+                            <wsx-link to="/examples" class="btn btn-secondary">
+                                View Examples
+                            </wsx-link>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Features Section */}
+                <section class="features-section">
+                    <h2 class="section-title">Features</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <h3>Framework Agnostic</h3>
+                            <p>
+                                Works with any framework or vanilla JavaScript.
+                                Built on Web Components standards.
+                            </p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>High Performance</h3>
+                            <p>
+                                Optimized for large datasets with efficient
+                                rendering and state management.
+                            </p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>TypeScript First</h3>
+                            <p>
+                                Full TypeScript support with comprehensive type
+                                definitions.
+                            </p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Sorting & Filtering</h3>
+                            <p>
+                                Built-in sorting and filtering capabilities with
+                                custom comparator support.
+                            </p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Column Management</h3>
+                            <p>
+                                Drag-and-drop column reordering, resizing, and
+                                pinning.
+                            </p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Customizable</h3>
+                            <p>
+                                Flexible theming system and extensive
+                                customization options.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Quick Start Section */}
+                <section class="quick-start-section">
+                    <h2 class="section-title">Quick Start</h2>
+                    <div class="code-block">
+                        <pre>
+                            <code>{`import { createGrid } from '@ac-grid/ac-grid-core';
+
+const grid = createGrid({
+  data: myData,
+  columns: [
+    { id: 'name', accessorKey: 'name', header: 'Name' },
+    { id: 'age', accessorKey: 'age', header: 'Age' },
+    { id: 'email', accessorKey: 'email', header: 'Email' }
+  ]
+});
+
+document.body.appendChild(grid);`}</code>
+                        </pre>
+                    </div>
+                </section>
+            </div>
+        );
+    }
+}

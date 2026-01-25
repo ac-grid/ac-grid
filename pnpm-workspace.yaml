@@ -1,5 +1,4 @@
 packages:
-  - 'packages/*'
-  - 'packages/theme-base'
-  - 'packages/theme-default'
-  - 'apps/*'
+    - "packages/*"
+    - "apps/*"
+    - "site"

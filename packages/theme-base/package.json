@@ -1,47 +1,47 @@
 {
-  "name": "@systembug/ac-grid-theme-base",
-  "version": "0.1.0",
-  "description": "AC Grid theme system foundation",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+    "name": "@ac-grid/ac-grid-theme-base",
+    "version": "0.1.0",
+    "description": "AC Grid theme system foundation",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "scripts": {
+        "dev": "vite build --watch",
+        "build": "tsc && vite build",
+        "test": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "clean": "rm -rf dist"
+    },
+    "keywords": [
+        "ac-grid",
+        "theme",
+        "theming",
+        "css-variables",
+        "design-tokens"
+    ],
+    "author": "Albert Li <albert_lee@hotmail.com>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/systembugtj/ac-grid",
+        "directory": "packages/theme-base"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "@types/node": "^22.10.7",
+        "typescript": "^5.6.2",
+        "vite": "^5.4.4",
+        "vite-plugin-dts": "^4.2.1",
+        "vitest": "^1.0.0"
     }
-  },
-  "files": [
-    "dist",
-    "README.md"
-  ],
-  "scripts": {
-    "dev": "vite build --watch",
-    "build": "tsc && vite build",
-    "test": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "clean": "rm -rf dist"
-  },
-  "keywords": [
-    "ac-grid",
-    "theme",
-    "theming",
-    "css-variables",
-    "design-tokens"
-  ],
-  "author": "Albert Li <albert_lee@hotmail.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/systembugtj/ac-grid",
-    "directory": "packages/theme-base"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "@types/node": "^22.10.7",
-    "typescript": "^5.6.2",
-    "vite": "^5.4.4",
-    "vite-plugin-dts": "^4.2.1",
-    "vitest": "^1.0.0"
-  }
 }
