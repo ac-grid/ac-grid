@@ -1,15 +1,29 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 
 import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
-import { type ColumnDef } from "@ac-grid/core";
+import {
+    type ColumnDef,
+    type FilterState,
+    type GridFilteringConfig,
+} from "@ac-grid/core";
 // 导入组件以触发注册
 import "@ac-grid/core";
 import { makeData, type Person } from "./makeData";
+import "./App.css";
 
 @autoRegister({ tagName: "wsx-app" })
 export class App extends LightComponent {
-    @state private data = makeData(20);
-    @state private columns: ColumnDef<Person>[] = [
+    @state private data = makeData(500); // 增加数据量以演示过滤性能
+
+    private filteringConfig: GridFilteringConfig = {
+        enabled: true,
+        onFilterChange: (state: FilterState) => {
+            console.log("Filter Change:", state);
+            // Grid 内部已经管理过滤状态，这里只需要日志记录
+        },
+    };
+
+    @state private columns: ColumnDef<Person, any>[] = [
         {
             id: "drag-handle",
             header: "Move",
@@ -17,6 +31,7 @@ export class App extends LightComponent {
                 <wsx-ac-draggable-handler rowId={row.original.userId} />
             ),
             size: 60,
+            enableColumnFilter: false, // 禁用此列过滤
         },
         {
             accessorKey: "firstName",
@@ -24,44 +39,139 @@ export class App extends LightComponent {
             id: "firstName",
             header: "First Name",
             size: 150,
+            filterType: "text",
         },
         {
-            accessorFn: (row) => row.lastName,
+            accessorKey: "lastName",
             cell: (info) => info.getValue(),
-            header: () => <span>Last Name</span>,
+            header: "Last Name",
             id: "lastName",
             size: 150,
+            filterType: "text",
         },
         {
             accessorKey: "age",
-            header: () => "Age",
+            header: "Age",
             id: "age",
-            size: 120,
-        },
-        {
-            accessorKey: "visits",
-            header: () => <span>Visits</span>,
-            id: "visits",
-            size: 120,
+            size: 100,
+            filterType: "number", // 使用数字过滤器
         },
         {
             accessorKey: "status",
             header: "Status",
             id: "status",
             size: 150,
+            filterType: "text",
+        },
+        {
+            accessorKey: "visits",
+            header: "Visits",
+            id: "visits",
+            size: 100,
+            filterType: "number",
         },
         {
             accessorKey: "progress",
-            header: "Profile Progress",
+            header: "Progress",
             id: "progress",
-            size: 180,
+            size: 100,
+            filterType: "number",
         },
     ];
 
+    private handleGlobalSearch = (value: string) => {
+        // 获取 Grid 实例并调用 setGlobalFilter
+        const grid = this.querySelector("wsx-ac-grid") as any;
+        if (grid?.setGlobalFilter) {
+            grid.setGlobalFilter(value);
+        }
+    };
+
+    private handleClearFilters = () => {
+        const grid = this.querySelector("wsx-ac-grid") as any;
+        if (grid?.clearFilters) {
+            grid.clearFilters();
+        }
+    };
+
     render() {
         return (
-            <div className="p-2">
-                <wsx-ac-grid data={this.data} columns={this.columns} />
+            <div className="demo-container">
+                <div className="demo-content">
+                    {/* Header */}
+                    <div className="demo-header">
+                        <h1>
+                            <img 
+                                src="/favicon.svg" 
+                                alt="AC Grid Logo" 
+                                className="demo-logo"
+                            />
+                            AC Grid
+                        </h1>
+                        <div className="subtitle">
+                            Powerful data grid with advanced filtering and global search capabilities
+                        </div>
+                    </div>
+
+                    {/* Toolbar */}
+                    <div className="demo-toolbar">
+                        <div className="demo-toolbar-left">
+                            <wsx-ac-global-search
+                                value=""
+                                onChange={this.handleGlobalSearch}
+                                placeholder="Search all columns..."
+                            />
+                        </div>
+                        <div className="demo-toolbar-right">
+                            <button
+                                className="demo-button"
+                                onClick={this.handleClearFilters}
+                            >
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                                Clear Filters
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Grid Container */}
+                    <div className="demo-grid-container">
+                        <div className="demo-grid-wrapper">
+                            <wsx-ac-grid
+                                data={this.data}
+                                columns={this.columns}
+                                filteringConfig={this.filteringConfig}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="demo-footer">
+                        <p>Quick Tips</p>
+                        <ul>
+                            <li>
+                                <strong>Column Filter:</strong> Click the filter icon in column headers. For numbers, try expressions like "&gt;30" or "25-35"
+                            </li>
+                            <li>
+                                <strong>Global Search:</strong> Use the search box above to search across all filterable columns simultaneously
+                            </li>
+                            <li>
+                                <strong>Combined Filters:</strong> Multiple filters work together with AND logic - all conditions must match
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         );
     }

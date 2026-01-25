@@ -1,0 +1,85 @@
+/**
+ * Global Search Styles
+ * Dark violet theme compatible
+ */
+
+.global-search {
+    width: 100%;
+}
+
+.global-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.global-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ac-grid-text-secondary, rgba(196, 181, 253, 0.7));
+    pointer-events: none;
+    z-index: 1;
+    transition: color 0.2s ease;
+}
+
+.global-search-input {
+    width: 100%;
+    padding: 8px 40px 8px 36px;
+    border: var(--ac-grid-border-width-base, 1px) solid var(--ac-grid-border, rgba(139, 92, 246, 0.3));
+    border-radius: var(--ac-grid-border-radius-md, 6px);
+    font-size: var(--ac-grid-font-size-sm, 0.875rem);
+    line-height: var(--ac-grid-line-height-normal, 1.5);
+    color: var(--ac-grid-text-primary, #c4b5fd);
+    background: var(--ac-grid-bg-cell, rgba(30, 27, 75, 0.5));
+    backdrop-filter: blur(10px);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.global-search-input::placeholder {
+    color: var(--ac-grid-text-secondary, rgba(196, 181, 253, 0.5));
+}
+
+.global-search-input:hover {
+    border-color: rgba(139, 92, 246, 0.5);
+}
+
+.global-search-input:focus {
+    border-color: var(--ac-grid-primary, #8b5cf6);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.global-search-input:focus + .global-search-icon,
+.global-search-wrapper:has(.global-search-input:focus) .global-search-icon {
+    color: var(--ac-grid-primary, #8b5cf6);
+}
+
+.global-search-clear {
+    position: absolute;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--ac-grid-border-radius-sm, 4px);
+    cursor: pointer;
+    color: var(--ac-grid-text-secondary, rgba(196, 181, 253, 0.7));
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.global-search-clear:hover {
+    background: rgba(139, 92, 246, 0.2);
+    color: var(--ac-grid-text-primary, #c4b5fd);
+}
+
+.global-search-clear:active {
+    background: rgba(139, 92, 246, 0.3);
+}

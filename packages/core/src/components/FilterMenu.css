@@ -1,0 +1,177 @@
+/**
+ * Filter Menu Styles
+ * Dark violet theme compatible
+ */
+
+.filter-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--ac-grid-bg-cell, rgba(30, 27, 75, 0.9));
+    backdrop-filter: blur(20px);
+    border: var(--ac-grid-border-width-base, 1px) solid var(--ac-grid-border, rgba(139, 92, 246, 0.3));
+    border-radius: var(--ac-grid-border-radius-md, 6px);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(139, 92, 246, 0.2);
+    z-index: 1000;
+    min-width: 260px;
+    max-width: 300px;
+    overflow: hidden;
+}
+
+.filter-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: var(--ac-grid-bg-header, rgba(49, 46, 129, 0.6));
+    border-bottom: var(--ac-grid-border-width-base, 1px) solid var(--ac-grid-border, rgba(139, 92, 246, 0.3));
+}
+
+.filter-menu-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--ac-grid-font-size-xs, 0.8125rem);
+    font-weight: var(--ac-grid-font-weight-semibold, 600);
+    color: var(--ac-grid-text-primary, #c4b5fd);
+}
+
+.filter-menu-title svg {
+    color: var(--ac-grid-text-secondary, rgba(196, 181, 253, 0.7));
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+}
+
+.filter-menu-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--ac-grid-border-radius-sm, 4px);
+    cursor: pointer;
+    color: var(--ac-grid-text-secondary, rgba(196, 181, 253, 0.7));
+    transition: all 0.15s ease;
+}
+
+.filter-menu-close:hover {
+    background: rgba(139, 92, 246, 0.2);
+    color: var(--ac-grid-text-primary, #c4b5fd);
+}
+
+.filter-menu-close svg {
+    width: 14px;
+    height: 14px;
+}
+
+.filter-menu-body {
+    padding: var(--ac-grid-spacing-md, 12px);
+}
+
+.filter-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.filter-input {
+    width: 100%;
+    padding: 6px 32px 6px 10px;
+    border: var(--ac-grid-border-width-base, 1px) solid var(--ac-grid-border, rgba(139, 92, 246, 0.3));
+    border-radius: var(--ac-grid-border-radius-sm, 4px);
+    font-size: var(--ac-grid-font-size-sm, 0.875rem);
+    color: var(--ac-grid-text-primary, #c4b5fd);
+    background: rgba(30, 27, 75, 0.4);
+    backdrop-filter: blur(10px);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.filter-input::placeholder {
+    color: var(--ac-grid-text-secondary, rgba(196, 181, 253, 0.5));
+}
+
+.filter-input:hover {
+    border-color: rgba(139, 92, 246, 0.5);
+}
+
+.filter-input:focus {
+    border-color: var(--ac-grid-primary, #8b5cf6);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.filter-input-clear {
+    position: absolute;
+    right: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--ac-grid-border-radius-sm, 3px);
+    cursor: pointer;
+    color: var(--ac-grid-text-secondary, rgba(196, 181, 253, 0.7));
+    transition: all 0.15s ease;
+}
+
+.filter-input-clear:hover {
+    background: rgba(139, 92, 246, 0.2);
+    color: var(--ac-grid-text-primary, #c4b5fd);
+}
+
+.filter-input-clear svg {
+    width: 12px;
+    height: 12px;
+}
+
+.filter-hint {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: var(--ac-grid-border-width-base, 1px) solid var(--ac-grid-border, rgba(139, 92, 246, 0.3));
+}
+
+.filter-hint-label {
+    display: block;
+    font-size: var(--ac-grid-font-size-xs, 0.75rem);
+    font-weight: var(--ac-grid-font-weight-medium, 500);
+    color: var(--ac-grid-text-secondary, rgba(196, 181, 253, 0.7));
+    margin-bottom: 6px;
+}
+
+.filter-hint-examples {
+    display: flex;
+    gap: var(--ac-grid-spacing-xs, 4px);
+    flex-wrap: wrap;
+}
+
+.filter-hint-example {
+    padding: 3px 8px;
+    font-size: var(--ac-grid-font-size-xs, 0.75rem);
+    font-weight: var(--ac-grid-font-weight-medium, 500);
+    color: var(--ac-grid-primary, #8b5cf6);
+    background: rgba(139, 92, 246, 0.15);
+    border: var(--ac-grid-border-width-base, 1px) solid rgba(139, 92, 246, 0.3);
+    border-radius: var(--ac-grid-border-radius-sm, 4px);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.filter-hint-example:hover {
+    background: rgba(139, 92, 246, 0.25);
+    border-color: rgba(139, 92, 246, 0.5);
+    color: #a78bfa;
+}
+
+.filter-hint-example:active {
+    transform: scale(0.98);
+}

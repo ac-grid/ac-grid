@@ -5,16 +5,28 @@ import {
     createTable,
     getCoreRowModel,
     getSortedRowModel,
+    getFilteredRowModel,
     type Table,
-    type ColumnDef,
     type SortingState,
 } from "@tanstack/table-core";
+import { type ColumnDef } from "../types/column";
 import { arrayMove } from "../utils/array-move";
 import { flexRender } from "../utils/flex-render";
+import type { FilterState, GridFilteringConfig } from "../types/filtering";
 import "./Grid.css";
 import "./DraggableTableHeader.wsx";
 import "./DraggableTableRow.wsx";
 import "./SortingIndicator.wsx";
+import "./FilterIcon.wsx";
+import "./FilterMenu.wsx";
+import "./GlobalSearch.css";
+import "./FilterIcon.css";
+import "./FilterMenu.css";
+import {
+    defaultTextFilter,
+    numberFilter,
+    dateFilter,
+} from "../utils/filter-functions";
 
 export interface GridProps<TData extends { userId?: string }> {
     /**
@@ -39,8 +51,14 @@ export class Grid extends LightComponent {
     @state private columnOrder: string[] = [];
     @state private gridData: any[] = [];
     @state private sorting: SortingState = [];
+    @state private columnFilters: Record<string, string> = {};
+    @state private globalFilter: string = "";
+    @state private openFilterMenu: string | null = null; // 当前打开的过滤菜单的列 ID
 
     private table: Table<any> | null = null;
+    private headerScrollElement: HTMLElement | null = null;
+    private bodyScrollElement: HTMLElement | null = null;
+    private isSyncingScroll: boolean = false;
 
     // Property getters/setters - wsx jsx-factory 会设置这些 properties
     get data(): any[] {
@@ -62,7 +80,7 @@ export class Grid extends LightComponent {
         if (Array.isArray(value) && value !== this._columns) {
             this._columns = value;
             this.columnOrder = value.map(
-                (col, index) => col.id || `col-${index}`
+                (col, index) => col.id || `col-${index}`,
             );
             this.updateTable();
         }
@@ -102,6 +120,32 @@ export class Grid extends LightComponent {
     @state private _sortingConfigIsSet: boolean = false;
     @state private _sortingConfig: GridSortingConfig = {} as GridSortingConfig;
 
+    // Filtering configuration property
+    get filteringConfig(): GridFilteringConfig | undefined {
+        return this._filteringConfigIsSet ? this._filteringConfig : undefined;
+    }
+    set filteringConfig(value: GridFilteringConfig | undefined) {
+        if (value === undefined) {
+            this._filteringConfigIsSet = false;
+            this._filteringConfig = {} as GridFilteringConfig;
+        } else {
+            this._filteringConfigIsSet = true;
+            if (value !== this._filteringConfig) {
+                this._filteringConfig = value;
+                if (value.initialGlobalFilter !== undefined) {
+                    this.globalFilter = value.initialGlobalFilter;
+                }
+                if (value.initialColumnFilters) {
+                    this.columnFilters = { ...value.initialColumnFilters };
+                }
+                this.updateTable();
+            }
+        }
+    }
+    @state private _filteringConfigIsSet: boolean = false;
+    @state private _filteringConfig: GridFilteringConfig =
+        {} as GridFilteringConfig;
+
     onConnected() {
         super.onConnected?.();
 
@@ -137,14 +181,88 @@ export class Grid extends LightComponent {
             }
         });
 
+        // 检查是否启用过滤
+        const isFilteringEnabled = this._filteringConfigIsSet
+            ? this._filteringConfig?.enabled !== false
+            : false;
+
+        // 为列定义应用默认过滤函数（如果未指定）
+        const columnsWithFilters = this._columns.map((col) => {
+            if (!isFilteringEnabled) {
+                return col;
+            }
+
+            // 如果列禁用了过滤，跳过
+            if (col.enableColumnFilter === false) {
+                return col;
+            }
+
+            // 如果已经有自定义过滤函数，使用自定义的
+            if (col.filterFn) {
+                return col;
+            }
+
+            // 根据 filterType 选择默认过滤函数
+            const filterType = col.filterType || "text";
+            let defaultFilterFn = defaultTextFilter;
+
+            if (filterType === "number") {
+                defaultFilterFn = numberFilter;
+            } else if (filterType === "date") {
+                defaultFilterFn = dateFilter;
+            }
+
+            return {
+                ...col,
+                filterFn: defaultFilterFn,
+            };
+        });
+
         this.table = createTable({
             data: this.gridData,
-            columns: this._columns,
+            columns: columnsWithFilters,
             getCoreRowModel: getCoreRowModel(),
             getSortedRowModel: getSortedRowModel(),
+            ...(isFilteringEnabled && {
+                getFilteredRowModel: getFilteredRowModel(),
+                // 全局过滤函数：在所有列中搜索
+                globalFilterFn: (row, columnId, filterValue) => {
+                    if (!filterValue || String(filterValue).trim() === "") {
+                        return true;
+                    }
+
+                    const searchValue = String(filterValue).toLowerCase();
+
+                    // 在所有可过滤的列中搜索
+                    return columnsWithFilters.some((col) => {
+                        // 跳过禁用了过滤的列
+                        if (col.enableColumnFilter === false) {
+                            return false;
+                        }
+
+                        // 获取列的值
+                        const columnId = col.id || col.accessorKey;
+                        if (!columnId) {
+                            return false;
+                        }
+
+                        const value = row.getValue(columnId as string);
+                        if (value == null) {
+                            return false;
+                        }
+
+                        const stringValue = String(value).toLowerCase();
+                        return stringValue.includes(searchValue);
+                    });
+                },
+            }),
             state: {
                 columnOrder: this.columnOrder,
                 sorting: this.sorting,
+                ...(isFilteringEnabled && {
+                    columnFilters: this.columnFilters,
+                    globalFilter: this.globalFilter,
+                }),
                 // 初始化 columnPinning 状态，避免访问 undefined.left 错误
                 columnPinning: {
                     left: [],
@@ -170,6 +288,35 @@ export class Grid extends LightComponent {
                 this._sortingConfig?.onSortingChange?.(newSorting);
                 this.updateTable();
             },
+            ...(isFilteringEnabled && {
+                onColumnFiltersChange: (updater) => {
+                    const newFilters =
+                        typeof updater === "function"
+                            ? updater(this.columnFilters)
+                            : updater;
+
+                    // 确保所有值都是字符串
+                    const record: Record<string, string> = {};
+                    Object.entries(newFilters).forEach(([id, value]) => {
+                        if (value != null && value !== "") {
+                            record[id] = String(value);
+                        }
+                    });
+
+                    this.columnFilters = record;
+                    this.notifyFilterChange();
+                    this.updateTable();
+                },
+                onGlobalFilterChange: (updater) => {
+                    const newGlobalFilter =
+                        typeof updater === "function"
+                            ? updater(this.globalFilter)
+                            : updater;
+                    this.globalFilter = newGlobalFilter;
+                    this.notifyFilterChange();
+                    this.updateTable();
+                },
+            }),
             getRowId: (row) => row.userId || String(Math.random()),
             onStateChange: () => {
                 // 表格状态变化时，通过更新 @state 属性来触发重新渲染
@@ -190,7 +337,7 @@ export class Grid extends LightComponent {
                 this.columnOrder = arrayMove(
                     this.columnOrder,
                     oldIndex,
-                    newIndex
+                    newIndex,
                 );
                 this.updateTable();
             }
@@ -203,10 +350,10 @@ export class Grid extends LightComponent {
     private handleRowDragEnd(activeId: string, overId: string) {
         if (activeId !== overId) {
             const oldIndex = this.gridData.findIndex(
-                (row) => (row.userId || String(Math.random())) === activeId
+                (row) => (row.userId || String(Math.random())) === activeId,
             );
             const newIndex = this.gridData.findIndex(
-                (row) => (row.userId || String(Math.random())) === overId
+                (row) => (row.userId || String(Math.random())) === overId,
             );
             if (oldIndex !== -1 && newIndex !== -1) {
                 this.gridData = arrayMove(this.gridData, oldIndex, newIndex);
@@ -249,88 +396,172 @@ export class Grid extends LightComponent {
         const footerGroups = this.table.getFooterGroups();
 
         // 计算列宽模板 - 固定宽度，不换行
-        const columnSizes = headerGroups[0]?.headers
-            .filter(h => !h.isPlaceholder)
-            .map(h => {
-                const size = h.column.getSize() || h.column.columnDef.size || 150;
-                return `${size}px`;
-            }) || [];
-        
-        const gridTemplateColumns = columnSizes.length > 0 
-            ? columnSizes.join(' ') 
-            : 'repeat(7, 150px)';
+        const columnSizes =
+            headerGroups[0]?.headers
+                .filter((h) => !h.isPlaceholder)
+                .map((h) => {
+                    const size =
+                        h.column.getSize() || h.column.columnDef.size || 150;
+                    return `${size}px`;
+                }) || [];
+
+        const gridTemplateColumns =
+            columnSizes.length > 0 ? columnSizes.join(" ") : "repeat(7, 150px)";
 
         return (
-            <div 
+            <div
                 className={`ac-grid ${this.className || ""}`}
-                style={{
-                    '--grid-columns': gridTemplateColumns
-                } as any}
+                style={
+                    {
+                        "--grid-columns": gridTemplateColumns,
+                    } as any
+                }
             >
                 <div className="grid-container">
                     {/* Header */}
-                    <div className="grid-header">
+                    <div
+                        className="grid-header"
+                        ref={(el: HTMLElement | null) => {
+                            if (el) {
+                                this.headerScrollElement = el;
+                                this.syncHeaderScroll();
+                            }
+                        }}
+                    >
                         {headerGroups.map((headerGroup) => (
-                            <div key={headerGroup.id} className="grid-header-row">
+                            <div
+                                key={headerGroup.id}
+                                className="grid-header-row"
+                            >
                                 {headerGroup.headers.map((header) => {
                                     if (header.isPlaceholder) {
                                         return null;
                                     }
-                                    
+
                                     const headerContent = flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext()
+                                        header.getContext(),
                                     );
-                                    
+
                                     const column = header.column;
                                     const canSort = column.getCanSort();
                                     const sortDirection = column.getIsSorted();
                                     const sortIndex = column.getSortIndex();
-                                    
+
+                                    // 过滤相关
+                                    const isFilteringEnabled = this
+                                        ._filteringConfigIsSet
+                                        ? this._filteringConfig?.enabled !==
+                                          false
+                                        : false;
+                                    const canFilter =
+                                        isFilteringEnabled &&
+                                        column.columnDef.enableColumnFilter !==
+                                            false;
+                                    const hasFilter =
+                                        canFilter &&
+                                        this.columnFilters[column.id] &&
+                                        this.columnFilters[column.id] !== "";
+                                    const isFilterMenuOpen =
+                                        this.openFilterMenu === column.id;
+                                    const filterValue =
+                                        this.columnFilters[column.id] || "";
+
                                     return (
                                         <div
                                             key={header.id}
-                                            className={`grid-header-cell ${canSort ? 'sortable' : ''} ${sortDirection ? 'sorting-active' : ''}`}
+                                            className={`grid-header-cell ${canSort ? "sortable" : ""} ${sortDirection ? "sorting-active" : ""}`}
                                             data-column-id={column.id}
-                                            data-can-sort={canSort ? 'true' : 'false'}
+                                            data-can-sort={
+                                                canSort ? "true" : "false"
+                                            }
                                             style={{
-                                                gridColumn: header.colSpan > 1 ? `span ${header.colSpan}` : 'auto',
-                                                cursor: canSort ? 'pointer' : 'default'
+                                                gridColumn:
+                                                    header.colSpan > 1
+                                                        ? `span ${header.colSpan}`
+                                                        : "auto",
+                                                cursor: canSort
+                                                    ? "pointer"
+                                                    : "default",
+                                                position: "relative" as const,
                                             }}
                                             ref={(el: HTMLElement | null) => {
                                                 if (el && canSort) {
                                                     // 移除旧的事件监听器（如果存在）
-                                                    const oldHandler = (el as any).__sortHandler;
+                                                    const oldHandler = (
+                                                        el as any
+                                                    ).__sortHandler;
                                                     if (oldHandler) {
-                                                        el.removeEventListener('click', oldHandler);
+                                                        el.removeEventListener(
+                                                            "click",
+                                                            oldHandler,
+                                                        );
                                                     }
-                                                    
+
                                                     // 添加新的事件监听器
-                                                    const handler = (e: MouseEvent) => {
+                                                    const handler = (
+                                                        e: MouseEvent,
+                                                    ) => {
                                                         // 如果点击的是拖拽按钮，不触发排序
-                                                        const target = e.target as HTMLElement;
-                                                        if (target.closest('.drag-handle-button')) {
+                                                        const target =
+                                                            e.target as HTMLElement;
+                                                        if (
+                                                            target.closest(
+                                                                ".drag-handle-button",
+                                                            )
+                                                        ) {
                                                             return;
                                                         }
-                                                        
+
                                                         // 切换排序（Shift 键支持多列排序）
                                                         column.toggleSorting(
-                                                            undefined,  // 循环：asc -> desc -> none
-                                                            e.shiftKey  // 是否多列排序
+                                                            undefined, // 循环：asc -> desc -> none
+                                                            e.shiftKey, // 是否多列排序
                                                         );
                                                     };
-                                                    
-                                                    el.addEventListener('click', handler);
-                                                    (el as any).__sortHandler = handler;
+
+                                                    el.addEventListener(
+                                                        "click",
+                                                        handler,
+                                                    );
+                                                    (el as any).__sortHandler =
+                                                        handler;
                                                 }
                                             }}
                                         >
                                             <div className="header-content">
                                                 <span>{headerContent}</span>
                                                 <div className="header-actions">
+                                                    {canFilter && (
+                                                        <span
+                                                            onClick={(
+                                                                e: MouseEvent,
+                                                            ) => {
+                                                                e.stopPropagation();
+                                                                this.openFilterMenu =
+                                                                    isFilterMenuOpen
+                                                                        ? null
+                                                                        : column.id;
+                                                            }}
+                                                            style={{
+                                                                cursor: "pointer",
+                                                            }}
+                                                        >
+                                                            <wsx-ac-filter-icon
+                                                                active={
+                                                                    hasFilter
+                                                                }
+                                                                visible={
+                                                                    canFilter
+                                                                }
+                                                            />
+                                                        </span>
+                                                    )}
                                                     {canSort && (
-                                                        <wsx-ac-sorting-indicator 
-                                                            direction={sortDirection}
+                                                        <wsx-ac-sorting-indicator
+                                                            direction={
+                                                                sortDirection
+                                                            }
                                                             index={sortIndex}
                                                         />
                                                     )}
@@ -340,17 +571,17 @@ export class Grid extends LightComponent {
                                                         aria-label="Drag column to reorder"
                                                         title="Drag to reorder column"
                                                     >
-                                                        <svg 
-                                                            width="12" 
-                                                            height="12" 
-                                                            viewBox="0 0 14 14" 
-                                                            fill="none" 
+                                                        <svg
+                                                            width="12"
+                                                            height="12"
+                                                            viewBox="0 0 14 14"
+                                                            fill="none"
                                                             xmlns="http://www.w3.org/2000/svg"
                                                         >
-                                                            <path 
-                                                                d="M2 3.5h10M2 7h10M2 10.5h10" 
-                                                                stroke="currentColor" 
-                                                                strokeWidth="1.5" 
+                                                            <path
+                                                                d="M2 3.5h10M2 7h10M2 10.5h10"
+                                                                stroke="currentColor"
+                                                                strokeWidth="1.5"
                                                                 strokeLinecap="round"
                                                                 strokeLinejoin="round"
                                                             />
@@ -358,25 +589,59 @@ export class Grid extends LightComponent {
                                                     </button>
                                                 </div>
                                             </div>
+                                            {canFilter && isFilterMenuOpen && (
+                                                <wsx-ac-filter-menu
+                                                    column={column}
+                                                    value={filterValue}
+                                                    visible={isFilterMenuOpen}
+                                                    onChange={(
+                                                        newValue: string,
+                                                    ) => {
+                                                        this.setColumnFilter(
+                                                            column.id,
+                                                            newValue,
+                                                        );
+                                                    }}
+                                                    onClose={() => {
+                                                        this.openFilterMenu =
+                                                            null;
+                                                    }}
+                                                />
+                                            )}
                                         </div>
                                     );
                                 })}
                             </div>
                         ))}
                     </div>
-                    
+
                     {/* Body */}
-                    <div className="grid-body">
+                    <div
+                        className="grid-body"
+                        ref={(el: HTMLElement | null) => {
+                            if (el) {
+                                this.bodyScrollElement = el;
+                                this.syncBodyScroll();
+                            }
+                        }}
+                    >
                         {rowModel.rows.map((row) => (
-                            <div key={row.id} className="grid-row" data-row-id={row.id}>
+                            <div
+                                key={row.id}
+                                className="grid-row"
+                                data-row-id={row.id}
+                            >
                                 {row.getVisibleCells().map((cell) => {
                                     const rendered = flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext()
+                                        cell.getContext(),
                                     );
-                                    
+
                                     return (
-                                        <div key={cell.id} className="grid-cell">
+                                        <div
+                                            key={cell.id}
+                                            className="grid-cell"
+                                        >
                                             <div>{rendered}</div>
                                         </div>
                                     );
@@ -410,6 +675,136 @@ export class Grid extends LightComponent {
     public resetSorting(): void {
         this.sorting = [];
         this.updateTable();
+    }
+
+    /**
+     * 同步表头水平滚动
+     */
+    private syncHeaderScroll(): void {
+        if (!this.bodyScrollElement || !this.headerScrollElement) {
+            return;
+        }
+
+        // 移除旧的事件监听器（如果存在）
+        const oldHandler = (this.bodyScrollElement as any).__headerScrollHandler;
+        if (oldHandler) {
+            this.bodyScrollElement.removeEventListener("scroll", oldHandler);
+        }
+
+        // 监听内容区域滚动，同步表头
+        const handler = () => {
+            if (this.isSyncingScroll) {
+                return;
+            }
+            this.isSyncingScroll = true;
+            if (this.headerScrollElement) {
+                this.headerScrollElement.scrollLeft =
+                    this.bodyScrollElement!.scrollLeft;
+            }
+            requestAnimationFrame(() => {
+                this.isSyncingScroll = false;
+            });
+        };
+
+        this.bodyScrollElement.addEventListener("scroll", handler);
+        (this.bodyScrollElement as any).__headerScrollHandler = handler;
+    }
+
+    /**
+     * 同步内容区域水平滚动
+     */
+    private syncBodyScroll(): void {
+        if (!this.bodyScrollElement || !this.headerScrollElement) {
+            return;
+        }
+
+        // 移除旧的事件监听器（如果存在）
+        const oldHandler = (this.headerScrollElement as any).__bodyScrollHandler;
+        if (oldHandler) {
+            this.headerScrollElement.removeEventListener("scroll", oldHandler);
+        }
+
+        // 监听表头滚动，同步内容区域
+        const handler = () => {
+            if (this.isSyncingScroll) {
+                return;
+            }
+            this.isSyncingScroll = true;
+            if (this.bodyScrollElement) {
+                this.bodyScrollElement.scrollLeft =
+                    this.headerScrollElement!.scrollLeft;
+            }
+            requestAnimationFrame(() => {
+                this.isSyncingScroll = false;
+            });
+        };
+
+        this.headerScrollElement.addEventListener("scroll", handler);
+        (this.headerScrollElement as any).__bodyScrollHandler = handler;
+    }
+
+    /**
+     * 通知过滤状态变化
+     */
+    private notifyFilterChange(): void {
+        if (
+            this._filteringConfigIsSet &&
+            this._filteringConfig?.onFilterChange
+        ) {
+            const filterState: FilterState = {
+                globalFilter: this.globalFilter || undefined,
+                columnFilters: { ...this.columnFilters },
+            };
+            this._filteringConfig.onFilterChange(filterState);
+        }
+    }
+
+    /**
+     * 公共 API: 设置全局过滤条件
+     */
+    public setGlobalFilter(value: string): void {
+        this.globalFilter = value;
+        this.notifyFilterChange();
+        this.updateTable();
+    }
+
+    /**
+     * 公共 API: 设置列过滤条件
+     */
+    public setColumnFilter(columnId: string, value: string): void {
+        if (value === "") {
+            // 删除过滤条件
+            const newFilters = { ...this.columnFilters };
+            delete newFilters[columnId];
+            this.columnFilters = newFilters;
+        } else {
+            this.columnFilters = {
+                ...this.columnFilters,
+                [columnId]: value,
+            };
+        }
+        this.notifyFilterChange();
+        this.updateTable();
+    }
+
+    /**
+     * 公共 API: 清除所有过滤条件
+     */
+    public clearFilters(): void {
+        this.globalFilter = "";
+        this.columnFilters = {};
+        this.notifyFilterChange();
+        this.updateTable();
+    }
+
+    /**
+     * 公共 API: 获取当前过滤状态
+     */
+    public getFilterState(): FilterState {
+        return {
+            globalFilter: this.globalFilter || undefined,
+            columnFilters: { ...this.columnFilters },
+        };
     }
 }
 

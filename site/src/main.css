@@ -1,30 +1,29 @@
 /* WSXJS App Styles - 基于Vue.js设计风格 */
 
-/* CSS变量 - 深红橘色主题 */
 :root {
-    /* 深红橘色主题变量 - 增加橘色10% */
-    --primary-red: #dc2626;
-    --secondary-red: #b91c1c;
-    --accent-orange: #ea580c;
-    --dark-red: #991b1b;
-    --light-orange: #fb923c;
+    /* 极致紫罗兰主题变量 */
+    --primary-red: #8b5cf6;
+    --secondary-red: #7c3aed;
+    --accent-orange: #6366f1;
+    --dark-red: #6d28d9;
+    --light-orange: #a78bfa;
 
     /* 浅色主题变量 */
-    --hero-gradient-start: #dc2626;
-    --hero-gradient-end: #ea580c;
-    --btn-primary-bg: #dc2626;
-    --btn-primary-hover: #b91c1c;
-    --btn-primary-shadow: rgba(220, 38, 38, 0.4);
-    --btn-primary-shadow-hover: rgba(220, 38, 38, 0.5);
+    --hero-gradient-start: #8b5cf6;
+    --hero-gradient-end: #8b5cf6;
+    --btn-primary-bg: #8b5cf6;
+    --btn-primary-hover: #7c3aed;
+    --btn-primary-shadow: rgba(139, 92, 246, 0.4);
+    --btn-primary-shadow-hover: rgba(139, 92, 246, 0.5);
 
     /* 浅色模式变量 */
     --text-primary: #2c3e50;
     --text-secondary: #7f8c8d;
-    --bg-primary: #fef2e5;
-    --bg-secondary: #fde8d1;
-    --border-color: #fed7aa;
-    --card-shadow: rgba(220, 38, 38, 0.1);
-    --card-shadow-hover: rgba(220, 38, 38, 0.15);
+    --bg-primary: #f8faff;
+    --bg-secondary: #f0f4ff;
+    --border-color: #e0e7ff;
+    --card-shadow: rgba(139, 92, 246, 0.1);
+    --card-shadow-hover: rgba(139, 92, 246, 0.15);
 
     /* 焦点颜色变量 - 使用主题颜色 */
     --wsx-theme-focus-color: var(--primary-red);
@@ -32,7 +31,7 @@
     --wsx-theme-dropdown-focus-color: var(--primary-red);
     --wsx-theme-language-switcher-focus-color: var(--primary-red);
     --wsx-theme-combobox-focus-border: var(--primary-red);
-    --wsx-theme-combobox-focus-outline: rgba(220, 38, 38, 0.2);
+    --wsx-theme-combobox-focus-outline: rgba(139, 92, 246, 0.2);
 
     /* 布局间距变量 */
     --nav-height: 70px;

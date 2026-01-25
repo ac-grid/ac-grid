@@ -6,7 +6,9 @@
  */
 
 import type { ColumnDef } from "@tanstack/table-core";
+// @ts-ignore - .wsx 文件在构建时会被处理
 import type { GridSortingConfig } from "../components/Grid.wsx";
+import type { GridFilteringConfig } from "../types/filtering";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
     /**
@@ -25,6 +27,10 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
      * 排序配置
      */
     sorting?: GridSortingConfig;
+    /**
+     * 过滤配置
+     */
+    filtering?: GridFilteringConfig;
     /**
      * 容器元素（可选，如果不提供则返回元素本身）
      */
@@ -60,7 +66,7 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
 export function createGrid<TData extends { userId?: string }>(
     options: CreateGridOptions<TData>,
 ): HTMLElement {
-    const { data, columns, className, sorting, container } = options;
+    const { data, columns, className, sorting, filtering, container } = options;
 
     // 确保组件已注册（导入时会自动注册）
     // 创建自定义元素
@@ -79,6 +85,11 @@ export function createGrid<TData extends { userId?: string }>(
     // 排序配置
     if (sorting) {
         gridElement.sortingConfig = sorting;
+    }
+
+    // 过滤配置
+    if (filtering) {
+        gridElement.filteringConfig = filtering;
     }
 
     // 如果提供了容器，直接挂载

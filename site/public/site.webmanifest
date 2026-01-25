@@ -1,7 +1,7 @@
 {
-    "name": "WSXJS",
-    "short_name": "WSXJS",
-    "description": "Modern JSX syntax for Native Web Components",
+    "name": "AC Grid",
+    "short_name": "AC Grid",
+    "description": "High-Performance Data Grid Component",
     "icons": [
         {
             "src": "/favicon-16x16.png",

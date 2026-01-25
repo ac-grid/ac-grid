@@ -19,6 +19,7 @@ export default class HomeSection extends LightComponent {
                 {/* Hero Section */}
                 <section class="hero-section">
                     <div class="hero-content">
+                        <brand-logo class="hero-logo"></brand-logo>
                         <h1 class="hero-title">AC Grid</h1>
                         <p class="hero-subtitle">
                             High-Performance Data Grid Component

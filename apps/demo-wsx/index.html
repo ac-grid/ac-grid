@@ -2,9 +2,37 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>AC Grid - WSX Demo</title>
+        <title>AC Grid - Filtering Demo</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            html, body {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                margin: 0;
+                padding: 0;
+                background: linear-gradient(135deg, 
+                    #1e1b4b 0%,    /* Indigo 900 - darkest */
+                    #312e81 20%,   /* Indigo 800 */
+                    #4c1d95 40%,   /* Violet 900 */
+                    #5b21b6 60%,   /* Violet 800 */
+                    #6d28d9 80%,   /* Violet 700 */
+                    #7c3aed 100%); /* Violet 600 */
+            }
+            
+            #app {
+                width: 100%;
+                height: 100%;
+                background: transparent;
+            }
+        </style>
     </head>
     <body>
         <div id="app"></div>

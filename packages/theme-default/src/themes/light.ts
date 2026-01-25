@@ -11,19 +11,19 @@ export const lightTheme: ACGridTheme = {
     author: "AC Grid Team",
     version: "0.1.0",
     colors: {
-        primary: "#2563eb", // 更现代的蓝色
+        primary: "#8b5cf6", // 极致紫罗兰
         border: "#e5e7eb", // 柔和的边框
         bgHeader: "#f8fafc", // 更清爽的表头背景
         bgHover: "#f1f5f9", // 优雅的悬停效果
         bgCell: "#ffffff",
-        bgSelected: "#dbeafe", // 选中状态
+        bgSelected: "#f5f3ff", // 紫色选中状态
         textPrimary: "#0f172a", // 更深的文字，提高对比度
         textSecondary: "#64748b", // 次要文字
         textDisabled: "#94a3b8",
         success: "#10b981",
         warning: "#f59e0b",
         error: "#ef4444",
-        info: "#3b82f6",
+        info: "#8b5cf6",
     },
     spacing: {
         xs: "0.25rem",

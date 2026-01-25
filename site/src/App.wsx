@@ -38,6 +38,7 @@ interface ResponsiveNavConfig {
 }
 
 // Import route-based section components
+import "./components/BrandLogo.wsx";
 import "./components/HomeSection.wsx";
 import "./components/ExamplesSection.wsx";
 import "./components/DocsSection.wsx";
@@ -92,6 +93,7 @@ export default class App extends LightComponent {
     private renderNavigation() {
         const navConfig: ResponsiveNavConfig = {
             brand: "AC Grid",
+            brandIcon: "<brand-logo></brand-logo>",
             items: [
                 { label: "Home", to: "/", exact: true },
                 { label: "Examples", to: "/examples" },
