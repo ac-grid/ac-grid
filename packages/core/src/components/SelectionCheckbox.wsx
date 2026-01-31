@@ -1,0 +1,60 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
+import "./SelectionCheckbox.css";
+
+export interface SelectionCheckboxProps {
+    checked: boolean;
+    indeterminate?: boolean;
+    onChange: (checked: boolean) => void;
+    title?: string;
+}
+
+@autoRegister({ tagName: "wsx-ac-selection-checkbox" })
+export class SelectionCheckbox extends LightComponent {
+    get checked(): boolean { return this._checked; }
+    set checked(val: boolean) { this._checked = val; }
+    @state private _checked: boolean = false;
+
+    get indeterminate(): boolean { return this._indeterminate; }
+    set indeterminate(val: boolean) { this._indeterminate = val; }
+    @state private _indeterminate: boolean = false;
+
+    get onChange(): ((checked: boolean) => void) | undefined { return this._onChange; }
+    set onChange(val: ((checked: boolean) => void) | undefined) { this._onChange = val; }
+    private _onChange: ((checked: boolean) => void) | undefined;
+
+    get title(): string { return this._title; }
+    set title(val: string) { this._title = val; }
+    private _title: string = "";
+
+    onConnected() {
+        super.onConnected?.();
+        const el = this as any;
+        if (el.checked !== undefined) this.checked = el.checked;
+        if (el.indeterminate !== undefined) this.indeterminate = el.indeterminate;
+        if (el.onChange) this.onChange = el.onChange;
+        if (el.title) this.title = el.title;
+    }
+
+    private handleChange = (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        this.checked = target.checked;
+        this._onChange?.(target.checked);
+        e.stopPropagation(); // Stop propagation to row selection
+    };
+
+    render() {
+        return (
+            <div className="selection-checkbox-wrapper" onClick={(e) => e.stopPropagation()}>
+                <input
+                    type="checkbox"
+                    className="selection-checkbox"
+                    checked={this._checked}
+                    indeterminate={this._indeterminate}
+                    onChange={this.handleChange}
+                    title={this._title}
+                />
+            </div>
+        );
+    }
+}

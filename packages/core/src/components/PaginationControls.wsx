@@ -1,0 +1,127 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
+import "./PaginationControls.css";
+
+export interface PaginationControlsProps {
+    pageIndex: number;
+    pageSize: number;
+    totalRows: number;
+    totalPages: number;
+    pageSizeOptions?: number[];
+    onPageChange: (page: number) => void;
+    onPageSizeChange: (size: number) => void;
+}
+
+@autoRegister({ tagName: "wsx-ac-pagination-controls" })
+export class PaginationControls extends LightComponent {
+    // Props
+    get pageIndex(): number { return this._pageIndex; }
+    set pageIndex(v: number) { this._pageIndex = v; }
+    @state private _pageIndex: number = 0;
+
+    get pageSize(): number { return this._pageSize; }
+    set pageSize(v: number) { this._pageSize = v; }
+    @state private _pageSize: number = 10;
+
+    get totalRows(): number { return this._totalRows; }
+    set totalRows(v: number) { this._totalRows = v; }
+    @state private _totalRows: number = 0;
+
+    get totalPages(): number { return this._totalPages; }
+    set totalPages(v: number) { this._totalPages = v; }
+    @state private _totalPages: number = 0;
+
+    get pageSizeOptions(): number[] { return this._pageSizeOptions; }
+    set pageSizeOptions(v: number[]) { this._pageSizeOptions = v; }
+    private _pageSizeOptions: number[] = [10, 20, 30, 40, 50];
+
+    // Callbacks
+    private onPageChange?: (page: number) => void;
+    private onPageSizeChange?: (size: number) => void;
+
+    onConnected() {
+        super.onConnected?.();
+        const el = this as any;
+        if (el.pageIndex !== undefined) this.pageIndex = el.pageIndex;
+        if (el.pageSize !== undefined) this.pageSize = el.pageSize;
+        if (el.totalRows !== undefined) this.totalRows = el.totalRows;
+        if (el.totalPages !== undefined) this.totalPages = el.totalPages;
+        if (el.pageSizeOptions !== undefined) this.pageSizeOptions = el.pageSizeOptions;
+        if (el.onPageChange) this.onPageChange = el.onPageChange;
+        if (el.onPageSizeChange) this.onPageSizeChange = el.onPageSizeChange;
+    }
+
+    private handlePageChange(page: number) {
+        if (page >= 0 && page < this._totalPages) {
+            this.onPageChange?.(page);
+        }
+    }
+
+    private handlePageSizeChange(e: Event) {
+        const size = Number((e.target as HTMLSelectElement).value);
+        this.onPageSizeChange?.(size);
+    }
+
+    render() {
+        const start = this._pageIndex * this._pageSize + 1;
+        const end = Math.min((this._pageIndex + 1) * this._pageSize, this._totalRows);
+        const canPrev = this._pageIndex > 0;
+        const canNext = this._pageIndex < this._totalPages - 1;
+
+        return (
+            <div className="pagination-controls">
+                <div className="pagination-info">
+                    Showing <span className="font-medium">{this._totalRows > 0 ? start : 0}</span> to <span className="font-medium">{end}</span> of <span className="font-medium">{this._totalRows}</span> results
+                </div>
+                <div className="pagination-actions">
+                    <select 
+                        className="pagination-select"
+                        onChange={this.handlePageSizeChange}
+                        value={this._pageSize}
+                    >
+                        {this._pageSizeOptions.map(size => (
+                            <option value={size} selected={size === this._pageSize}>Show {size}</option>
+                        ))}
+                    </select>
+                    <div className="pagination-buttons">
+                        <button 
+                            className="pagination-btn"
+                            disabled={!canPrev}
+                            onClick={() => this.handlePageChange(0)}
+                            title="First Page"
+                        >
+                            &laquo;
+                        </button>
+                        <button 
+                            className="pagination-btn"
+                            disabled={!canPrev}
+                            onClick={() => this.handlePageChange(this._pageIndex - 1)}
+                            title="Previous Page"
+                        >
+                            &lt;
+                        </button>
+                        <span className="pagination-page-info">
+                            Page {this._pageIndex + 1} of {Math.max(1, this._totalPages)}
+                        </span>
+                        <button 
+                            className="pagination-btn"
+                            disabled={!canNext}
+                            onClick={() => this.handlePageChange(this._pageIndex + 1)}
+                            title="Next Page"
+                        >
+                            &gt;
+                        </button>
+                        <button 
+                            className="pagination-btn"
+                            disabled={!canNext}
+                            onClick={() => this.handlePageChange(this._totalPages - 1)}
+                            title="Last Page"
+                        >
+                            &raquo;
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}

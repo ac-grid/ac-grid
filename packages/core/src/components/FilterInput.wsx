@@ -1,15 +1,20 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
-import "./GlobalSearch.css";
+import type { Column } from "@tanstack/table-core";
+import { type ColumnDef } from "../types/column";
 
-export interface GlobalSearchProps {
+export interface FilterInputProps {
+    column: Column<any, unknown>;
     value: string;
     onChange: (value: string) => void;
-    placeholder?: string;
 }
 
-@autoRegister({ tagName: "wsx-ac-global-search" })
-export class GlobalSearch extends LightComponent {
+@autoRegister({ tagName: "wsx-ac-filter-input" })
+export class FilterInput extends LightComponent {
+    get column(): Column<any, unknown> { return this._column; }
+    set column(val: Column<any, unknown>) { this._column = val; }
+    private _column: Column<any, unknown> = null as any;
+
     get value(): string { return this._value; }
     set value(val: string) {
         if (val !== this._value) {
@@ -23,18 +28,14 @@ export class GlobalSearch extends LightComponent {
     set onChange(val: ((value: string) => void) | undefined) { this._onChange = val; }
     private _onChange: ((value: string) => void) | undefined;
 
-    get placeholder(): string { return this._placeholder; }
-    set placeholder(val: string) { this._placeholder = val; }
-    private _placeholder: string = "Search all columns...";
-
     @state private inputValue: string = "";
 
     onConnected() {
         super.onConnected?.();
         const el = this as any;
+        if (el.column) this.column = el.column;
         if (el.value !== undefined) this.value = el.value;
         if (el.onChange) this.onChange = el.onChange;
-        if (el.placeholder) this.placeholder = el.placeholder;
     }
 
     private handleInput = (e: Event) => {
@@ -44,16 +45,16 @@ export class GlobalSearch extends LightComponent {
     };
 
     render() {
+        const colDef = this._column?.columnDef as ColumnDef<any>;
+        const type = colDef?.filterType === "number" ? "number" : "text";
         return (
-            <div className="global-search">
-                <input
-                    type="text"
-                    className="global-search-input"
-                    value={this.inputValue}
-                    onInput={this.handleInput}
-                    placeholder={this._placeholder}
-                />
-            </div>
+            <input
+                type={type}
+                className="filter-input"
+                value={this.inputValue}
+                onInput={this.handleInput}
+                placeholder="Filter..."
+            />
         );
     }
 }

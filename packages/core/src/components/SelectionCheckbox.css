@@ -1,0 +1,15 @@
+.selection-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.selection-checkbox {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--ac-grid-primary, #8b5cf6);
+}

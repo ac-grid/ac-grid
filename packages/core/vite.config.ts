@@ -35,4 +35,8 @@ export default defineConfig({
             "@": resolve(__dirname, "./src"),
         },
     },
+    test: {
+        environment: "jsdom",
+        include: ["test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    },
 });

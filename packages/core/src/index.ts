@@ -16,26 +16,39 @@ export type {
     FilterType,
     GridFilteringConfig,
 } from "./types/filtering";
+export type { GridResizingConfig } from "./types/resizing";
+export type { GridVirtualizationConfig } from "./types/virtualization";
+export type { GridPaginationConfig } from "./types/pagination";
+export type { GridSelectionConfig } from "./types/selection";
+export type { GridPinningConfig } from "./types/pinning";
+export type { GridEditingConfig } from "./types/editing";
+export type { GridGroupingConfig } from "./types/grouping";
 
-// 导入组件以触发注册（.wsx 文件在构建时会被处理）
+// 导出组件
 // @ts-ignore - .wsx 文件在构建时会被处理
-import "./components/Grid.wsx";
+export { Grid } from "./components/Grid.wsx";
 // @ts-ignore
-import "./components/DraggableHandler.wsx";
+export { DraggableHandler } from "./components/DraggableHandler.wsx";
 // @ts-ignore
-import "./components/DraggableTableHeader.wsx";
+export { DraggableTableHeader } from "./components/DraggableTableHeader.wsx";
 // @ts-ignore
-import "./components/DraggableTableRow.wsx";
+export { DraggableTableRow } from "./components/DraggableTableRow.wsx";
 // @ts-ignore
-import "./components/DraggableTableCell.wsx";
+export { DraggableTableCell } from "./components/DraggableTableCell.wsx";
 // @ts-ignore
-import "./components/SortingIndicator.wsx";
+export { SortingIndicator } from "./components/SortingIndicator.wsx";
 // @ts-ignore
-import "./components/FilterIcon.wsx";
+export { FilterIcon } from "./components/FilterIcon.wsx";
 // @ts-ignore
-import "./components/FilterMenu.wsx";
+export { FilterMenu } from "./components/FilterMenu.wsx";
 // @ts-ignore
-import "./components/GlobalSearch.wsx";
+export { GlobalSearch } from "./components/GlobalSearch.wsx";
+// @ts-ignore
+export { PaginationControls } from "./components/PaginationControls.wsx";
+// @ts-ignore
+export { SelectionCheckbox } from "./components/SelectionCheckbox.wsx";
+// @ts-ignore
+export { CellEditor } from "./components/CellEditor.wsx";
 
 // 导出工具函数
 export { arrayMove } from "./utils/array-move";

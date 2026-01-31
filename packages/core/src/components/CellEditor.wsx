@@ -1,0 +1,90 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
+import "./CellEditor.css";
+
+export interface CellEditorProps {
+    value: any;
+    type?: 'text' | 'number' | 'date';
+    onChange: (value: any) => void;
+    onSave: () => void;
+    onCancel: () => void;
+}
+
+@autoRegister({ tagName: "wsx-ac-cell-editor" })
+export class CellEditor extends LightComponent {
+    get value(): any { return this._value; }
+    set value(v: any) { 
+        if (v !== this._value) {
+            this._value = v; 
+            this.inputValue = String(v ?? "");
+        }
+    }
+    private _value: any = "";
+
+    get type(): string { return this._type; }
+    set type(v: string) { this._type = v; }
+    private _type: string = "text";
+
+    get onChange(): ((v: any) => void) | undefined { return this._onChange; }
+    set onChange(v: ((v: any) => void) | undefined) { this._onChange = v; }
+    private _onChange: ((v: any) => void) | undefined;
+
+    get onSave(): (() => void) | undefined { return this._onSave; }
+    set onSave(v: (() => void) | undefined) { this._onSave = v; }
+    private _onSave: (() => void) | undefined;
+
+    get onCancel(): (() => void) | undefined { return this._onCancel; }
+    set onCancel(v: (() => void) | undefined) { this._onCancel = v; }
+    private _onCancel: (() => void) | undefined;
+
+    @state private inputValue: string = "";
+
+    onConnected() {
+        super.onConnected?.();
+        const el = this as any;
+        if (el.value !== undefined) this.value = el.value;
+        if (el.type) this.type = el.type;
+        if (el.onChange) this.onChange = el.onChange;
+        if (el.onSave) this.onSave = el.onSave;
+        if (el.onCancel) this.onCancel = el.onCancel;
+
+        // Auto focus
+        requestAnimationFrame(() => {
+            const input = this.shadowRoot?.querySelector("input") || this.querySelector("input");
+            input?.focus();
+        });
+    }
+
+    private handleInput = (e: Event) => {
+        const val = (e.target as HTMLInputElement).value;
+        this.inputValue = val;
+        this._onChange?.(val);
+    };
+
+    private handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Enter") {
+            this._onSave?.();
+        } else if (e.key === "Escape") {
+            this._onCancel?.();
+        }
+        e.stopPropagation(); // Prevent grid navigation during edit
+    };
+
+    private handleBlur = () => {
+        // Auto save on blur
+        this._onSave?.();
+    };
+
+    render() {
+        return (
+            <input
+                type={this._type}
+                className="cell-editor-input"
+                value={this.inputValue}
+                onInput={this.handleInput}
+                onKeyDown={this.handleKeyDown}
+                onBlur={this.handleBlur}
+            />
+        );
+    }
+}

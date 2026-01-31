@@ -6,27 +6,48 @@ import {
     getCoreRowModel,
     getSortedRowModel,
     getFilteredRowModel,
+    getExpandedRowModel,
+    getGroupedRowModel,
+    getPaginationRowModel,
     type Table,
     type SortingState,
+    type PaginationState,
+    type RowSelectionState,
+    type ColumnPinningState,
 } from "@tanstack/table-core";
 import { type ColumnDef } from "../types/column";
 import { arrayMove } from "../utils/array-move";
 import { flexRender } from "../utils/flex-render";
 import type { FilterState, GridFilteringConfig } from "../types/filtering";
+import type { GridResizingConfig } from "../types/resizing";
+import type { GridVirtualizationConfig, VirtualizerState } from "../types/virtualization";
+import type { GridPaginationConfig } from "../types/pagination";
+import type { GridSelectionConfig } from "../types/selection";
+import type { GridPinningConfig } from "../types/pinning";
+import type { GridEditingConfig } from "../types/editing";
+import type { GridGroupingConfig } from "../types/grouping";
+import { Virtualizer } from "../utils/virtualizer";
+import {
+    defaultTextFilter,
+    numberFilter,
+    dateFilter,
+} from "../utils/filter-functions";
 import "./Grid.css";
 import "./DraggableTableHeader.wsx";
 import "./DraggableTableRow.wsx";
 import "./SortingIndicator.wsx";
 import "./FilterIcon.wsx";
 import "./FilterMenu.wsx";
-import "./GlobalSearch.css";
-import "./FilterIcon.css";
-import "./FilterMenu.css";
-import {
-    defaultTextFilter,
-    numberFilter,
-    dateFilter,
-} from "../utils/filter-functions";
+
+/** 默认列宽信息，保证 table.getState().columnSizingInfo 永不为 undefined，避免 "reading 'isResizingColumn'" 报错 */
+const DEFAULT_COLUMN_SIZING_INFO = {
+    startOffset: null as number | null,
+    startSize: null as number | null,
+    deltaOffset: null as number | null,
+    deltaPercentage: null as number | null,
+    isResizingColumn: false as false | string,
+    columnSizingStart: [] as [string, number][],
+};
 
 export interface GridProps<TData extends { userId?: string }> {
     /**
@@ -53,7 +74,14 @@ export class Grid extends LightComponent {
     @state private sorting: SortingState = [];
     @state private columnFilters: Record<string, string> = {};
     @state private globalFilter: string = "";
-    @state private openFilterMenu: string | null = null; // 当前打开的过滤菜单的列 ID
+    @state private openFilterMenu: string | null = null;
+
+    private get columnFiltersArray(): Array<{ id: string; value: unknown }> {
+        return Object.entries(this.columnFilters).map(([id, value]) => ({
+            id,
+            value,
+        }));
+    }
 
     private table: Table<any> | null = null;
     private headerScrollElement: HTMLElement | null = null;
@@ -120,7 +148,6 @@ export class Grid extends LightComponent {
     @state private _sortingConfigIsSet: boolean = false;
     @state private _sortingConfig: GridSortingConfig = {} as GridSortingConfig;
 
-    // Filtering configuration property
     get filteringConfig(): GridFilteringConfig | undefined {
         return this._filteringConfigIsSet ? this._filteringConfig : undefined;
     }
@@ -146,8 +173,210 @@ export class Grid extends LightComponent {
     @state private _filteringConfig: GridFilteringConfig =
         {} as GridFilteringConfig;
 
+    // Resizing configuration property
+    get resizingConfig(): GridResizingConfig | undefined {
+        return this._resizingConfigIsSet ? this._resizingConfig : undefined;
+    }
+    set resizingConfig(value: GridResizingConfig | undefined) {
+        if (value === undefined) {
+            this._resizingConfigIsSet = false;
+            this._resizingConfig = {} as GridResizingConfig;
+        } else {
+            this._resizingConfigIsSet = true;
+            if (value !== this._resizingConfig) {
+                this._resizingConfig = value;
+                if (value.initialColumnSizing) {
+                    this.columnSizing = value.initialColumnSizing;
+                }
+                this.updateTable();
+            }
+        }
+    }
+    @state private _resizingConfigIsSet: boolean = false;
+    @state private _resizingConfig: GridResizingConfig = {} as GridResizingConfig;
+    @state private columnSizing: Record<string, number> = {};
+    @state private columnSizingInfo = { ...DEFAULT_COLUMN_SIZING_INFO };
+
+    // Virtualization configuration
+    get virtualizationConfig(): GridVirtualizationConfig | undefined {
+        return this._virtualizationConfigIsSet ? this._virtualizationConfig : undefined;
+    }
+    set virtualizationConfig(value: GridVirtualizationConfig | undefined) {
+        if (value === undefined) {
+            this._virtualizationConfigIsSet = false;
+            this._virtualizationConfig = {} as GridVirtualizationConfig;
+        } else {
+            this._virtualizationConfigIsSet = true;
+            if (value !== this._virtualizationConfig) {
+                this._virtualizationConfig = value;
+                this.virtualizer.updateConfig(value);
+                this.updateVirtualization();
+            }
+        }
+    }
+    @state private _virtualizationConfigIsSet: boolean = false;
+    @state private _virtualizationConfig: GridVirtualizationConfig = {} as GridVirtualizationConfig;
+    @state private virtualState: VirtualizerState = {
+        scrollTop: 0,
+        containerHeight: 0,
+        totalHeight: 0,
+        visibleRange: { start: 0, end: 0 }
+    };
+
+    // Pagination config
+    get paginationConfig(): GridPaginationConfig | undefined {
+        return this._paginationConfigIsSet ? this._paginationConfig : undefined;
+    }
+    set paginationConfig(value: GridPaginationConfig | undefined) {
+        if (value === undefined) {
+            this._paginationConfigIsSet = false;
+            this._paginationConfig = {} as GridPaginationConfig;
+        } else {
+            this._paginationConfigIsSet = true;
+            if (value !== this._paginationConfig) {
+                this._paginationConfig = value;
+                if (value.initialPageIndex !== undefined || value.pageSize !== undefined) {
+                    this.pagination = {
+                        pageIndex: value.initialPageIndex || 0,
+                        pageSize: value.pageSize || 10,
+                    };
+                }
+                this.updateTable();
+            }
+        }
+    }
+    @state private _paginationConfigIsSet: boolean = false;
+    @state private _paginationConfig: GridPaginationConfig = {} as GridPaginationConfig;
+    @state private pagination: PaginationState = { pageIndex: 0, pageSize: 10 };
+
+    // Selection config
+    get selectionConfig(): GridSelectionConfig | undefined {
+        return this._selectionConfigIsSet ? this._selectionConfig : undefined;
+    }
+    set selectionConfig(value: GridSelectionConfig | undefined) {
+        if (value === undefined) {
+            this._selectionConfigIsSet = false;
+            this._selectionConfig = {} as GridSelectionConfig;
+        } else {
+            this._selectionConfigIsSet = true;
+            if (value !== this._selectionConfig) {
+                this._selectionConfig = value;
+                if (value.initialRowSelection) {
+                    this.rowSelection = value.initialRowSelection;
+                }
+                this.updateTable();
+            }
+        }
+    }
+    @state private _selectionConfigIsSet: boolean = false;
+    @state private _selectionConfig: GridSelectionConfig = {} as GridSelectionConfig;
+    @state private rowSelection: RowSelectionState = {};
+
+    // Pinning config
+    get pinningConfig(): GridPinningConfig | undefined {
+        return this._pinningConfigIsSet ? this._pinningConfig : undefined;
+    }
+    set pinningConfig(value: GridPinningConfig | undefined) {
+        if (value === undefined) {
+            this._pinningConfigIsSet = false;
+            this._pinningConfig = {} as GridPinningConfig;
+        } else {
+            this._pinningConfigIsSet = true;
+            if (value !== this._pinningConfig) {
+                this._pinningConfig = value;
+                if (value.initialState) {
+                    this.columnPinning = value.initialState;
+                }
+                this.updateTable();
+            }
+        }
+    }
+    @state private _pinningConfigIsSet: boolean = false;
+    @state private _pinningConfig: GridPinningConfig = {} as GridPinningConfig;
+    @state private columnPinning: ColumnPinningState = { left: [], right: [] };
+
+    // Editing config
+    get editingConfig(): GridEditingConfig | undefined {
+        return this._editingConfigIsSet ? this._editingConfig : undefined;
+    }
+    set editingConfig(value: GridEditingConfig | undefined) {
+        if (value === undefined) {
+            this._editingConfigIsSet = false;
+            this._editingConfig = {} as GridEditingConfig;
+        } else {
+            this._editingConfigIsSet = true;
+            if (value !== this._editingConfig) {
+                this._editingConfig = value;
+                this.updateTable();
+            }
+        }
+    }
+    @state private _editingConfigIsSet: boolean = false;
+    @state private _editingConfig: GridEditingConfig = {} as GridEditingConfig;
+    @state private editingState: { rowId: string | null; columnId: string | null; value: any } = { rowId: null, columnId: null, value: null };
+
+    // Grouping config
+    get groupingConfig(): GridGroupingConfig | undefined {
+        return this._groupingConfigIsSet ? this._groupingConfig : undefined;
+    }
+    set groupingConfig(value: GridGroupingConfig | undefined) {
+        if (value === undefined) {
+            this._groupingConfigIsSet = false;
+            this._groupingConfig = {} as GridGroupingConfig;
+        } else {
+            this._groupingConfigIsSet = true;
+            if (value !== this._groupingConfig) {
+                this._groupingConfig = value;
+                if (value.initialGrouping) {
+                    this.grouping = value.initialGrouping;
+                }
+                if (value.initialExpanded) {
+                    this.expanded = value.initialExpanded === true ? true : (value.initialExpanded || {});
+                }
+                this.updateTable();
+            }
+        }
+    }
+    @state private _groupingConfigIsSet: boolean = false;
+    @state private _groupingConfig: GridGroupingConfig = {} as GridGroupingConfig;
+    @state private grouping: string[] = [];
+    @state private expanded: Record<string, boolean> | boolean = {};
+
+    private virtualizer: Virtualizer = new Virtualizer({});
+
+    /** RFC-0003: 外部搜索框等可只调 setGlobalFilter，无需传 filteringConfig 即启用过滤 */
+    get enableFiltering(): boolean {
+        return this._enableFiltering;
+    }
+    set enableFiltering(value: boolean) {
+        if (value !== this._enableFiltering) {
+            this._enableFiltering = Boolean(value);
+            this.updateTable();
+        }
+    }
+    @state private _enableFiltering: boolean = false;
+
+    private get isFilteringEnabled(): boolean {
+        const hasFilterState =
+            this.globalFilter !== "" ||
+            Object.keys(this.columnFilters).length > 0;
+        const configEnables =
+            this._filteringConfigIsSet &&
+            this._filteringConfig?.enabled !== false;
+        if (
+            this._filteringConfigIsSet &&
+            this._filteringConfig?.enabled === false
+        ) {
+            return false;
+        }
+        return configEnables || this._enableFiltering || hasFilterState;
+    }
+
     onConnected() {
         super.onConnected?.();
+
+        // Initialize virtualizer
+        this.virtualizer = new Virtualizer(this._virtualizationConfig);
 
         const element = this as any;
         if (
@@ -167,55 +396,176 @@ export class Grid extends LightComponent {
         }
     }
 
+    // Pagination Methods
+    public setPageIndex(pageIndex: number) {
+        this.pagination = { ...this.pagination, pageIndex };
+        this.updateTable();
+    }
+
+    public setPageSize(pageSize: number) {
+        this.pagination = { ...this.pagination, pageSize, pageIndex: 0 };
+        this.updateTable();
+    }
+
+    // Selection Methods
+    public selectRow(rowId: string) {
+        this.rowSelection = { ...this.rowSelection, [rowId]: true };
+        this.notifySelectionChange();
+        this.updateTable();
+    }
+
+    public deselectRow(rowId: string) {
+        const next = { ...this.rowSelection };
+        delete next[rowId];
+        this.rowSelection = next;
+        this.notifySelectionChange();
+        this.updateTable();
+    }
+
+    public toggleRowSelection(rowId: string) {
+        if (this.rowSelection[rowId]) {
+            this.deselectRow(rowId);
+        } else {
+            this.selectRow(rowId);
+        }
+    }
+
+    public selectAll() {
+        if (!this.table) return;
+        const newSelection: RowSelectionState = {};
+        const rowModel = this.table.getRowModel();
+        const rows = rowModel && rowModel.rows ? rowModel.rows : [];
+        rows.forEach(row => {
+            newSelection[row.id] = true;
+        });
+        this.rowSelection = newSelection;
+        this.notifySelectionChange();
+        this.updateTable();
+    }
+
+    public deselectAll() {
+        this.rowSelection = {};
+        this.notifySelectionChange();
+        this.updateTable();
+    }
+
+    public getSelectedRows() {
+        const sel = this.table?.getSelectedRowModel();
+        return sel && sel.rows ? sel.rows : [];
+    }
+
+    public getSelectedRowIds() {
+        return Object.keys(this.rowSelection);
+    }
+
+    private notifySelectionChange() {
+        this._selectionConfig?.onRowSelectionChange?.(this.rowSelection);
+    }
+
+    private handleScroll = (e: Event) => {
+        if (!this._virtualizationConfig.enabled) {
+            this.syncHeaderScroll();
+            return;
+        }
+        
+        const target = e.target as HTMLElement;
+        // Sync header scroll
+        if (this.headerScrollElement) {
+            this.headerScrollElement.scrollLeft = target.scrollLeft;
+        }
+
+        // Update virtual state
+        requestAnimationFrame(() => {
+            const rm = this.table?.getRowModel();
+            const rowCount = rm && rm.rows ? rm.rows.length : 0;
+            this.virtualizer.updateState(
+                target.scrollTop,
+                target.clientHeight,
+                rowCount
+            );
+            this.virtualState = this.virtualizer.getVirtualState();
+        });
+    };
+
+    private updateVirtualization() {
+        if (this.bodyScrollElement && this.table) {
+            const rm = this.table.getRowModel();
+            const rowCount = rm && rm.rows ? rm.rows.length : 0;
+            this.virtualizer.updateState(
+                this.bodyScrollElement.scrollTop,
+                this.bodyScrollElement.clientHeight,
+                rowCount
+            );
+            this.virtualState = this.virtualizer.getVirtualState();
+        }
+    }
+
     /**
      * 更新表格实例
      */
     private updateTable() {
-        // 从列定义中提取初始列大小，用于初始化 columnSizing 状态
-        // 这是 @tanstack/table-core 的最佳实践：使用列定义中的 size 属性初始化 columnSizing
-        // ColumnSizingState = Record<string, number>，键是列 ID，值是大小
-        const initialColumnSizing: Record<string, number> = {};
+        const defaultColumnSizing: Record<string, number> = {};
         this._columns.forEach((col) => {
-            if (col.id && typeof col.size === "number") {
-                initialColumnSizing[col.id] = col.size;
+            const colId = col.id ?? (col as { accessorKey?: string }).accessorKey ?? "";
+            if (colId && typeof col.size === "number") {
+                defaultColumnSizing[colId] = col.size;
             }
         });
 
-        // 检查是否启用过滤
-        const isFilteringEnabled = this._filteringConfigIsSet
-            ? this._filteringConfig?.enabled !== false
-            : false;
+        const currentColumnSizing = {
+            ...defaultColumnSizing,
+            ...this.columnSizing,
+        };
 
-        // 为列定义应用默认过滤函数（如果未指定）
-        const columnsWithFilters = this._columns.map((col) => {
-            if (!isFilteringEnabled) {
-                return col;
-            }
+        const isFilteringEnabled = this.isFilteringEnabled;
+        const isResizingEnabled = this._resizingConfigIsSet ? this._resizingConfig?.enabled !== false : false;
+        const isPaginationEnabled = this._paginationConfigIsSet ? this._paginationConfig?.enabled !== false : false;
+        const isSelectionEnabled = this._selectionConfigIsSet ? this._selectionConfig?.enabled !== false : false;
+        const isEditingEnabled = this._editingConfigIsSet ? this._editingConfig?.enabled !== false : false;
+        const isGroupingEnabled = this._groupingConfigIsSet ? this._groupingConfig?.enabled !== false : false;
 
-            // 如果列禁用了过滤，跳过
-            if (col.enableColumnFilter === false) {
-                return col;
-            }
-
-            // 如果已经有自定义过滤函数，使用自定义的
-            if (col.filterFn) {
-                return col;
-            }
-
-            // 根据 filterType 选择默认过滤函数
-            const filterType = col.filterType || "text";
-            let defaultFilterFn = defaultTextFilter;
-
-            if (filterType === "number") {
-                defaultFilterFn = numberFilter;
-            } else if (filterType === "date") {
-                defaultFilterFn = dateFilter;
-            }
-
-            return {
-                ...col,
-                filterFn: defaultFilterFn,
+        // Add selection column if enabled
+        let tableColumns = this._columns;
+        if (isSelectionEnabled && this._selectionConfig?.enableCheckbox !== false && this._selectionConfig?.mode !== 'single') {
+            const selectionCol: ColumnDef<any, any> = {
+                id: 'selection',
+                header: ({ table }) => (
+                    <wsx-ac-selection-checkbox
+                        checked={table.getIsAllRowsSelected()}
+                        indeterminate={table.getIsSomeRowsSelected()}
+                        onChange={table.getToggleAllRowsSelectedHandler()}
+                    />
+                ),
+                cell: ({ row }) => (
+                    <wsx-ac-selection-checkbox
+                        checked={row.getIsSelected()}
+                        indeterminate={row.getIsSomeSelected()}
+                        onChange={row.getToggleSelectedHandler()}
+                    />
+                ),
+                size: 40,
+                enableColumnFilter: false,
+                enableResizing: false,
+                enableSorting: false,
             };
+            // Check if selection column already exists to avoid duplicates or issues
+            if (!tableColumns.find(c => c.id === 'selection')) {
+                tableColumns = [selectionCol, ...tableColumns];
+            }
+        }
+
+        const columnsWithFilters = tableColumns.map((col) => {
+            if (!isFilteringEnabled) return col;
+            if (col.enableColumnFilter === false) return col;
+            if (col.filterFn) return col;
+            const filterType = col.filterType ?? "text";
+            const defaultFilterFn =
+                filterType === "number"
+                    ? numberFilter
+                    : filterType === "date"
+                      ? dateFilter
+                      : defaultTextFilter;
+            return { ...col, filterFn: defaultFilterFn };
         });
 
         this.table = createTable({
@@ -223,36 +573,30 @@ export class Grid extends LightComponent {
             columns: columnsWithFilters,
             getCoreRowModel: getCoreRowModel(),
             getSortedRowModel: getSortedRowModel(),
+            ...(isGroupingEnabled && {
+                getGroupedRowModel: getGroupedRowModel(),
+                getExpandedRowModel: getExpandedRowModel(),
+            }),
+            ...(isPaginationEnabled && {
+                getPaginationRowModel: getPaginationRowModel(),
+            }),
             ...(isFilteringEnabled && {
                 getFilteredRowModel: getFilteredRowModel(),
-                // 全局过滤函数：在所有列中搜索
-                globalFilterFn: (row, columnId, filterValue) => {
-                    if (!filterValue || String(filterValue).trim() === "") {
+                globalFilterFn: (row, _columnId, filterValue) => {
+                    if (!filterValue || String(filterValue).trim() === "")
                         return true;
-                    }
-
                     const searchValue = String(filterValue).toLowerCase();
-
-                    // 在所有可过滤的列中搜索
                     return columnsWithFilters.some((col) => {
-                        // 跳过禁用了过滤的列
-                        if (col.enableColumnFilter === false) {
-                            return false;
-                        }
-
-                        // 获取列的值
-                        const columnId = col.id || col.accessorKey;
-                        if (!columnId) {
-                            return false;
-                        }
-
+                        if (col.enableColumnFilter === false) return false;
+                        const columnId =
+                            col.id ??
+                            (col as { accessorKey?: string }).accessorKey;
+                        if (!columnId) return false;
                         const value = row.getValue(columnId as string);
-                        if (value == null) {
-                            return false;
-                        }
-
-                        const stringValue = String(value).toLowerCase();
-                        return stringValue.includes(searchValue);
+                        if (value == null) return false;
+                        return String(value)
+                            .toLowerCase()
+                            .includes(searchValue);
                     });
                 },
             }),
@@ -260,17 +604,67 @@ export class Grid extends LightComponent {
                 columnOrder: this.columnOrder,
                 sorting: this.sorting,
                 ...(isFilteringEnabled && {
-                    columnFilters: this.columnFilters,
+                    columnFilters: this.columnFiltersArray,
                     globalFilter: this.globalFilter,
                 }),
-                // 初始化 columnPinning 状态，避免访问 undefined.left 错误
-                columnPinning: {
-                    left: [],
-                    right: [],
-                },
-                // 初始化 columnSizing 状态，使用列定义中的 size 属性
-                columnSizing: initialColumnSizing,
+                ...(isGroupingEnabled && {
+                    grouping: this.grouping,
+                    expanded: this.expanded === false ? {} : this.expanded,
+                }),
+                columnPinning: { left: [], right: [] },
+                columnSizing: currentColumnSizing,
+                columnSizingInfo: this.columnSizingInfo ?? DEFAULT_COLUMN_SIZING_INFO,
+                pagination: this.pagination,
+                rowSelection: this.rowSelection,
             },
+            ...(isResizingEnabled && {
+                enableColumnResizing: true,
+                columnResizeMode: "onChange",
+                onColumnSizingChange: (updater: any) => {
+                    const newSizing =
+                        typeof updater === "function"
+                            ? updater(this.columnSizing || {})
+                            : updater;
+                    this.columnSizing = newSizing;
+                    this._resizingConfig?.onColumnSizingChange?.(newSizing);
+                    this.updateTable();
+                },
+                onColumnSizingInfoChange: (updater: any) => {
+                    const prev = this.columnSizingInfo ?? DEFAULT_COLUMN_SIZING_INFO;
+                    const newInfo =
+                        typeof updater === "function"
+                            ? updater(prev)
+                            : updater;
+                    this.columnSizingInfo = newInfo ?? prev;
+                    this.updateTable();
+                },
+            }),
+            ...(isGroupingEnabled && {
+                onExpandedChange: (updater: any) => {
+                    const newExpanded = typeof updater === "function" ? updater(this.expanded) : updater;
+                    this.expanded = newExpanded;
+                    this._groupingConfig?.onExpandedChange?.(newExpanded);
+                    this.updateTable();
+                }
+            }),
+            ...(isPaginationEnabled && {
+                onPaginationChange: (updater: any) => {
+                    const newPagination = typeof updater === "function" ? updater(this.pagination) : updater;
+                    this.pagination = newPagination;
+                    this._paginationConfig?.onPaginationChange?.(newPagination);
+                    this.updateTable();
+                }
+            }),
+            ...(isSelectionEnabled && {
+                enableRowSelection: true,
+                enableMultiRowSelection: this._selectionConfig?.mode === 'multiple',
+                onRowSelectionChange: (updater: any) => {
+                    const newSelection = typeof updater === "function" ? updater(this.rowSelection) : updater;
+                    this.rowSelection = newSelection;
+                    this.notifySelectionChange();
+                    this.updateTable();
+                }
+            }),
             onColumnOrderChange: (updater) => {
                 const newOrder =
                     typeof updater === "function"
@@ -287,41 +681,47 @@ export class Grid extends LightComponent {
                 this.sorting = newSorting;
                 this._sortingConfig?.onSortingChange?.(newSorting);
                 this.updateTable();
+                this.updateVirtualization();
+            },
+            onGroupingChange: (updater) => {
+                const newGrouping = typeof updater === "function" ? updater(this.grouping) : updater;
+                this.grouping = newGrouping;
+                this._groupingConfig?.onGroupingChange?.(newGrouping);
+                this.updateTable();
             },
             ...(isFilteringEnabled && {
                 onColumnFiltersChange: (updater) => {
-                    const newFilters =
+                    const currentArray = this.columnFiltersArray;
+                    const newArray =
                         typeof updater === "function"
-                            ? updater(this.columnFilters)
-                            : updater;
-
-                    // 确保所有值都是字符串
+                            ? updater(currentArray)
+                            : currentArray;
                     const record: Record<string, string> = {};
-                    Object.entries(newFilters).forEach(([id, value]) => {
-                        if (value != null && value !== "") {
-                            record[id] = String(value);
-                        }
-                    });
-
+                    if (Array.isArray(newArray)) {
+                        newArray.forEach((f) => {
+                            if (f?.id != null && f?.value != null) {
+                                const s = String(f.value).trim();
+                                if (s !== "") record[f.id] = s;
+                            }
+                        });
+                    }
                     this.columnFilters = record;
                     this.notifyFilterChange();
                     this.updateTable();
+                    this.updateVirtualization();
                 },
                 onGlobalFilterChange: (updater) => {
-                    const newGlobalFilter =
+                    this.globalFilter =
                         typeof updater === "function"
                             ? updater(this.globalFilter)
-                            : updater;
-                    this.globalFilter = newGlobalFilter;
+                            : String(updater ?? "");
                     this.notifyFilterChange();
                     this.updateTable();
+                    this.updateVirtualization();
                 },
             }),
             getRowId: (row) => row.userId || String(Math.random()),
-            onStateChange: () => {
-                // 表格状态变化时，通过更新 @state 属性来触发重新渲染
-                // 或者让 wsx 自动处理渲染
-            },
+            onStateChange: () => {},
             renderFallbackValue: null,
         });
     }
@@ -393,7 +793,18 @@ export class Grid extends LightComponent {
 
         const headerGroups = this.table.getHeaderGroups();
         const rowModel = this.table.getRowModel();
-        const footerGroups = this.table.getFooterGroups();
+        const allRows = rowModel && rowModel.rows ? rowModel.rows : [];
+        let visibleRows = allRows;
+        let paddingTop = 0;
+        let paddingBottom = 0;
+
+        if (this._virtualizationConfig.enabled && this.virtualState.totalHeight > 0) {
+            const { start, end } = this.virtualState.visibleRange;
+            visibleRows = allRows.slice(start, end);
+            const rowHeight = this._virtualizationConfig.rowHeight || 35;
+            paddingTop = start * rowHeight;
+            paddingBottom = Math.max(0, (allRows.length - end) * rowHeight);
+        }
 
         // 计算列宽模板 - 固定宽度，不换行
         const columnSizes =
@@ -447,17 +858,13 @@ export class Grid extends LightComponent {
                                     const canSort = column.getCanSort();
                                     const sortDirection = column.getIsSorted();
                                     const sortIndex = column.getSortIndex();
+                                    const canResize = column.getCanResize();
+                                    const isResizing = column.getIsResizing();
 
-                                    // 过滤相关
-                                    const isFilteringEnabled = this
-                                        ._filteringConfigIsSet
-                                        ? this._filteringConfig?.enabled !==
-                                          false
-                                        : false;
                                     const canFilter =
-                                        isFilteringEnabled &&
-                                        column.columnDef.enableColumnFilter !==
-                                            false;
+                                        this.isFilteringEnabled &&
+                                        (column.columnDef as { enableColumnFilter?: boolean })
+                                            .enableColumnFilter !== false;
                                     const hasFilter =
                                         canFilter &&
                                         this.columnFilters[column.id] &&
@@ -465,13 +872,22 @@ export class Grid extends LightComponent {
                                     const isFilterMenuOpen =
                                         this.openFilterMenu === column.id;
                                     const filterValue =
-                                        this.columnFilters[column.id] || "";
+                                        this.columnFilters[column.id] ?? "";
+                                    
+                                    const isPinnedLeft = column.getIsPinned() === 'left';
+                                    const isPinnedRight = column.getIsPinned() === 'right';
+                                    const pinnedStyle = isPinnedLeft 
+                                        ? { left: `${column.getStart("left")}px`, position: 'sticky' as const, zIndex: 3 }
+                                        : isPinnedRight
+                                            ? { right: `${column.getAfter("right")}px`, position: 'sticky' as const, zIndex: 3 }
+                                            : {};
 
                                     return (
                                         <div
                                             key={header.id}
                                             className={`grid-header-cell ${canSort ? "sortable" : ""} ${sortDirection ? "sorting-active" : ""}`}
                                             data-column-id={column.id}
+                                            data-pinned={column.getIsPinned() || undefined}
                                             data-can-sort={
                                                 canSort ? "true" : "false"
                                             }
@@ -484,6 +900,7 @@ export class Grid extends LightComponent {
                                                     ? "pointer"
                                                     : "default",
                                                 position: "relative" as const,
+                                                ...pinnedStyle,
                                             }}
                                             ref={(el: HTMLElement | null) => {
                                                 if (el && canSort) {
@@ -508,12 +925,13 @@ export class Grid extends LightComponent {
                                                         if (
                                                             target.closest(
                                                                 ".drag-handle-button",
+                                                            ) ||
+                                                            target.closest(
+                                                                "wsx-ac-filter-icon",
                                                             )
                                                         ) {
                                                             return;
                                                         }
-
-                                                        // 切换排序（Shift 键支持多列排序）
                                                         column.toggleSorting(
                                                             undefined, // 循环：asc -> desc -> none
                                                             e.shiftKey, // 是否多列排序
@@ -534,26 +952,18 @@ export class Grid extends LightComponent {
                                                 <div className="header-actions">
                                                     {canFilter && (
                                                         <span
-                                                            onClick={(
-                                                                e: MouseEvent,
-                                                            ) => {
+                                                            onClick={(e: MouseEvent) => {
                                                                 e.stopPropagation();
                                                                 this.openFilterMenu =
                                                                     isFilterMenuOpen
                                                                         ? null
                                                                         : column.id;
                                                             }}
-                                                            style={{
-                                                                cursor: "pointer",
-                                                            }}
+                                                            style={{ cursor: "pointer" }}
                                                         >
                                                             <wsx-ac-filter-icon
-                                                                active={
-                                                                    hasFilter
-                                                                }
-                                                                visible={
-                                                                    canFilter
-                                                                }
+                                                                active={hasFilter}
+                                                                visible={true}
                                                             />
                                                         </span>
                                                     )}
@@ -590,22 +1000,25 @@ export class Grid extends LightComponent {
                                                 </div>
                                             </div>
                                             {canFilter && isFilterMenuOpen && (
-                                                <wsx-ac-filter-menu
-                                                    column={column}
-                                                    value={filterValue}
-                                                    visible={isFilterMenuOpen}
-                                                    onChange={(
-                                                        newValue: string,
-                                                    ) => {
-                                                        this.setColumnFilter(
-                                                            column.id,
-                                                            newValue,
-                                                        );
-                                                    }}
-                                                    onClose={() => {
-                                                        this.openFilterMenu =
-                                                            null;
-                                                    }}
+                                                <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 10 }}>
+                                                    <wsx-ac-filter-menu
+                                                        column={column}
+                                                        value={filterValue}
+                                                        onChange={(val: string) => {
+                                                            this.setColumnFilter(column.id, val);
+                                                        }}
+                                                        onClose={() => {
+                                                            this.openFilterMenu = null;
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                            {canResize && (
+                                                <div
+                                                    className={`resizer ${isResizing ? "isResizing" : ""}`}
+                                                    onMouseDown={header.getResizeHandler()}
+                                                    onTouchStart={header.getResizeHandler()}
+                                                    onClick={(e) => e.stopPropagation()}
                                                 />
                                             )}
                                         </div>
@@ -625,30 +1038,105 @@ export class Grid extends LightComponent {
                             }
                         }}
                     >
-                        {rowModel.rows.map((row) => (
+                        <div style={{ height: `${paddingTop}px` }}></div>
+                        {visibleRows.map((row) => (
                             <div
                                 key={row.id}
-                                className="grid-row"
+                                className={`grid-row ${row.getIsGrouped() ? 'grid-row-grouped' : ''}`}
                                 data-row-id={row.id}
+                                data-selected={row.getIsSelected()}
+                                onClick={() => {
+                                    if (row.getIsGrouped()) {
+                                        this.toggleGroup(row.id, !row.getIsExpanded());
+                                    } else if (this._selectionConfigIsSet && this._selectionConfig?.enabled !== false && this._selectionConfig?.mode === 'single') {
+                                        this.selectRow(row.id);
+                                    }
+                                }}
                             >
                                 {row.getVisibleCells().map((cell) => {
-                                    const rendered = flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    );
+                                    let rendered: any;
+                                    
+                                    if (cell.getIsGrouped()) {
+                                        rendered = (
+                                            <div className="grid-cell-group" style={{ paddingLeft: `${row.depth * 20}px` }}>
+                                                <span className="grid-group-toggle" style={{ cursor: "pointer", marginRight: "8px" }}>
+                                                    {row.getIsExpanded() ? '▼' : '▶'}
+                                                </span>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())} ({row.subRows.length})
+                                            </div>
+                                        );
+                                    } else if (cell.getIsAggregated()) {
+                                        rendered = flexRender(
+                                            cell.column.columnDef.aggregatedCell ?? cell.column.columnDef.cell,
+                                            cell.getContext()
+                                        );
+                                    } else if (cell.getIsPlaceholder()) {
+                                        rendered = null;
+                                    } else {
+                                        rendered = flexRender(
+                                            cell.column.columnDef.cell,
+                                            cell.getContext(),
+                                        );
+                                    }
+                                    
+                                    const column = cell.column;
+                                    const isPinnedLeft = column.getIsPinned() === 'left';
+                                    const isPinnedRight = column.getIsPinned() === 'right';
+                                    const pinnedStyle = isPinnedLeft 
+                                        ? { left: `${column.getStart("left")}px`, position: 'sticky' as const, zIndex: 2 }
+                                        : isPinnedRight
+                                            ? { right: `${column.getAfter("right")}px`, position: 'sticky' as const, zIndex: 2 }
+                                            : {};
+
+                                    const isEditing = this._editingConfigIsSet && this._editingConfig?.enabled !== false && 
+                                                      this.editingState.rowId === row.id && 
+                                                      this.editingState.columnId === column.id;
 
                                     return (
                                         <div
                                             key={cell.id}
                                             className="grid-cell"
+                                            data-pinned={column.getIsPinned() || undefined}
+                                            style={{ ...pinnedStyle }}
+                                            onDoubleClick={() => {
+                                                if (this._editingConfigIsSet && this._editingConfig?.enabled !== false && (column.columnDef as unknown as { enableEditing?: boolean }).enableEditing !== false) {
+                                                    this.startEdit(row.id, column.id, cell.getValue());
+                                                }
+                                            }}
                                         >
-                                            <div>{rendered}</div>
+                                            {isEditing ? (
+                                                <wsx-ac-cell-editor
+                                                    value={this.editingState.value}
+                                                    type={(column.columnDef as any).filterType === 'number' ? 'number' : 'text'}
+                                                    onSave={() => {
+                                                        // HACK: Read value from DOM as event detail might vary
+                                                        const editor = this.shadowRoot?.querySelector('wsx-ac-cell-editor') as any;
+                                                        if (editor) this.saveEdit(editor.value);
+                                                    }}
+                                                    onCancel={() => this.cancelEdit()}
+                                                />
+                                            ) : (
+                                                <div>{rendered}</div>
+                                            )}
                                         </div>
                                     );
                                 })}
                             </div>
                         ))}
+                        <div style={{ height: `${paddingBottom}px` }}></div>
                     </div>
+                    {/* Pagination Controls */}
+                    {this._paginationConfigIsSet && this._paginationConfig?.enabled !== false && (
+                        <wsx-ac-pagination-controls
+                            pageIndex={this.pagination.pageIndex}
+                            pageSize={this.pagination.pageSize}
+                            totalRows={(() => { const m = this.table.getFilteredRowModel(); return m && m.rows ? m.rows.length : 0; })()}
+                            totalPages={this.table.getPageCount()}
+                            pageSizeOptions={this._paginationConfig?.pageSizeOptions}
+                            onPageChange={(page: number) => this.setPageIndex(page)}
+                            onPageSizeChange={(size: number) => this.setPageSize(size)}
+                        />
+                    )}
                 </div>
             </div>
         );
@@ -677,6 +1165,168 @@ export class Grid extends LightComponent {
         this.updateTable();
     }
 
+    private notifyFilterChange(): void {
+        if (
+            this._filteringConfigIsSet &&
+            this._filteringConfig?.onFilterChange
+        ) {
+            const filterState: FilterState = {
+                globalFilter: this.globalFilter || undefined,
+                columnFilters: { ...this.columnFilters },
+            };
+            this._filteringConfig.onFilterChange(filterState);
+        }
+    }
+
+    /** RFC-0003: 设置全局过滤（供外部搜索框等调用） */
+    public setGlobalFilter(value: string): void {
+        this.globalFilter = value;
+        this.notifyFilterChange();
+        this.updateTable();
+        this.updateVirtualization();
+    }
+
+    /** RFC-0003: 设置列过滤 */
+    public setColumnFilter(columnId: string, value: string): void {
+        if (value === "") {
+            const next = { ...this.columnFilters };
+            delete next[columnId];
+            this.columnFilters = next;
+        } else {
+            this.columnFilters = {
+                ...this.columnFilters,
+                [columnId]: value,
+            };
+        }
+        this.notifyFilterChange();
+        this.updateTable();
+        this.updateVirtualization();
+    }
+
+    /** RFC-0003: 清除所有过滤 */
+    public clearFilters(): void {
+        this.globalFilter = "";
+        this.columnFilters = {};
+        this.notifyFilterChange();
+        this.updateTable();
+        this.updateVirtualization();
+    }
+
+    /** RFC-0003: 获取当前过滤状态 */
+    public getFilterState(): FilterState {
+        return {
+            globalFilter: this.globalFilter || undefined,
+            columnFilters: { ...this.columnFilters },
+        };
+    }
+
+    /**
+     * 公共 API: 固定列
+     */
+    public pinColumn(columnId: string, position: 'left' | 'right' | false): void {
+        const next = { ...this.columnPinning };
+        // Remove from existing
+        if (next.left) next.left = next.left.filter(id => id !== columnId);
+        if (next.right) next.right = next.right.filter(id => id !== columnId);
+        
+        // Add to new
+        if (position === 'left') {
+            next.left = [...(next.left || []), columnId];
+        } else if (position === 'right') {
+            next.right = [...(next.right || []), columnId];
+        }
+        
+        this.columnPinning = next;
+        this._pinningConfig?.onPinningChange?.(next);
+        this.updateTable();
+    }
+
+    /**
+     * 公共 API: 取消固定列
+     */
+    public unpinColumn(columnId: string): void {
+        this.pinColumn(columnId, false);
+    }
+
+    /**
+     * 公共 API: 获取固定列
+     */
+    public getPinnedColumns(): ColumnPinningState {
+        return {
+            left: this.columnPinning.left || [],
+            right: this.columnPinning.right || []
+        };
+    }
+
+    // Editing Methods
+    public startEdit(rowId: string, columnId: string, initialValue?: any) {
+        if (!this._editingConfig?.enabled) return;
+        
+        // Find current value if not provided
+        if (initialValue === undefined && this.table) {
+            const row = this.table.getRow(rowId);
+            if (row) {
+                initialValue = row.getValue(columnId);
+            }
+        }
+
+        this.editingState = { rowId, columnId, value: initialValue };
+        this._editingConfig.onEditStart?.(rowId, columnId);
+        this.updateTable();
+    }
+
+    public saveEdit(newValue: any) {
+        const { rowId, columnId } = this.editingState;
+        if (rowId && columnId) {
+            this._editingConfig.onEditSave?.(rowId, columnId, newValue);
+            // In a real app, data update happens via props change, but we clear edit state now
+            this.cancelEdit(); 
+        }
+    }
+
+    public cancelEdit() {
+        const { rowId, columnId } = this.editingState;
+        if (rowId && columnId) {
+            this._editingConfig.onEditCancel?.(rowId, columnId);
+        }
+        this.editingState = { rowId: null, columnId: null, value: null };
+        this.updateTable();
+    }
+
+    // Grouping Methods
+    public setGrouping(columnIds: string[]) {
+        this.grouping = columnIds;
+        this._groupingConfig.onGroupingChange?.(columnIds);
+        this.updateTable();
+    }
+
+    public toggleGroup(rowId: string, isExpanded?: boolean) {
+        // With tanstack table, we toggle expanded state via table handler or state update
+        // Here we update state directly for control
+        if (typeof this.expanded === 'boolean') {
+            this.expanded = { [rowId]: isExpanded !== undefined ? isExpanded : !this.expanded };
+        } else {
+            const next = { ...this.expanded };
+            if (isExpanded !== undefined) {
+                next[rowId] = isExpanded;
+            } else {
+                next[rowId] = !next[rowId];
+            }
+            this.expanded = next;
+        }
+        this.updateTable();
+    }
+
+    public expandAll() {
+        this.expanded = true;
+        this.updateTable();
+    }
+
+    public collapseAll() {
+        this.expanded = {};
+        this.updateTable();
+    }
+
     /**
      * 同步表头水平滚动
      */
@@ -692,22 +1342,8 @@ export class Grid extends LightComponent {
         }
 
         // 监听内容区域滚动，同步表头
-        const handler = () => {
-            if (this.isSyncingScroll) {
-                return;
-            }
-            this.isSyncingScroll = true;
-            if (this.headerScrollElement) {
-                this.headerScrollElement.scrollLeft =
-                    this.bodyScrollElement!.scrollLeft;
-            }
-            requestAnimationFrame(() => {
-                this.isSyncingScroll = false;
-            });
-        };
-
-        this.bodyScrollElement.addEventListener("scroll", handler);
-        (this.bodyScrollElement as any).__headerScrollHandler = handler;
+        this.bodyScrollElement.addEventListener("scroll", this.handleScroll);
+        (this.bodyScrollElement as any).__headerScrollHandler = this.handleScroll;
     }
 
     /**
@@ -741,70 +1377,6 @@ export class Grid extends LightComponent {
 
         this.headerScrollElement.addEventListener("scroll", handler);
         (this.headerScrollElement as any).__bodyScrollHandler = handler;
-    }
-
-    /**
-     * 通知过滤状态变化
-     */
-    private notifyFilterChange(): void {
-        if (
-            this._filteringConfigIsSet &&
-            this._filteringConfig?.onFilterChange
-        ) {
-            const filterState: FilterState = {
-                globalFilter: this.globalFilter || undefined,
-                columnFilters: { ...this.columnFilters },
-            };
-            this._filteringConfig.onFilterChange(filterState);
-        }
-    }
-
-    /**
-     * 公共 API: 设置全局过滤条件
-     */
-    public setGlobalFilter(value: string): void {
-        this.globalFilter = value;
-        this.notifyFilterChange();
-        this.updateTable();
-    }
-
-    /**
-     * 公共 API: 设置列过滤条件
-     */
-    public setColumnFilter(columnId: string, value: string): void {
-        if (value === "") {
-            // 删除过滤条件
-            const newFilters = { ...this.columnFilters };
-            delete newFilters[columnId];
-            this.columnFilters = newFilters;
-        } else {
-            this.columnFilters = {
-                ...this.columnFilters,
-                [columnId]: value,
-            };
-        }
-        this.notifyFilterChange();
-        this.updateTable();
-    }
-
-    /**
-     * 公共 API: 清除所有过滤条件
-     */
-    public clearFilters(): void {
-        this.globalFilter = "";
-        this.columnFilters = {};
-        this.notifyFilterChange();
-        this.updateTable();
-    }
-
-    /**
-     * 公共 API: 获取当前过滤状态
-     */
-    public getFilterState(): FilterState {
-        return {
-            globalFilter: this.globalFilter || undefined,
-            columnFilters: { ...this.columnFilters },
-        };
     }
 }
 

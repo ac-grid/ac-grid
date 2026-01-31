@@ -1,19 +1,22 @@
 # RFC-0002: 排序功能
 
-**状态**: ✔️ 已完成  
+**状态**: ✔️ 已完成 (Phase 1)  
 **版本**: 0.1.0  
 **作者**: Albert Li  
 **日期**: 2026-01-24  
+**最后更新**: 2026-01-31  
 **相关 RFC**: [0001-ac-grid-architecture](../0001-ac-grid-architecture.md)
 
 ## 目录
 
 - [概述](#概述)
+- [AG Grid 功能对比](#ag-grid-功能对比)
 - [动机](#动机)
 - [设计目标](#设计目标)
 - [技术方案](#技术方案)
 - [API 设计](#api-设计)
 - [实现细节](#实现细节)
+- [缺失功能 (Phase 2)](#缺失功能-phase-2)
 - [测试策略](#测试策略)
 - [性能考虑](#性能考虑)
 - [向后兼容性](#向后兼容性)
@@ -24,6 +27,68 @@
 ## 概述
 
 为 AC Grid 添加列排序功能，支持单列排序和多列排序，提供升序/降序/无序三种状态，并支持自定义排序函数。
+
+## AG Grid 功能对比
+
+> **对比日期**: 2026-01-31  
+> **AG Grid 版本**: Community Edition (Latest)
+
+### 功能对比矩阵
+
+| Feature | AG Grid (Community) | AC Grid | Status | Priority |
+|---------|---------------------|---------|--------|----------|
+| **基础排序** |||||
+| 启用/禁用列排序 | `sortable: true/false` | `enableSorting: true/false` | ✅ 已实现 | - |
+| 点击列头排序 | ✅ | ✅ | ✅ 已实现 | - |
+| 升序 → 降序 → 无 循环 | ✅ | ✅ | ✅ 已实现 | - |
+| **多列排序** |||||
+| Shift+Click 多列排序 | ✅ | ✅ | ✅ 已实现 | - |
+| `multiSortKey` 配置 (ctrl/shift) | `multiSortKey='ctrl'` | ❌ | ❌ 缺失 | P2 |
+| `suppressMultiSort` | ✅ | ❌ | ❌ 缺失 | P3 |
+| `alwaysMultiSort` | ✅ | ❌ | ❌ 缺失 | P3 |
+| 排序索引指示器 | ✅ | ✅ | ✅ 已实现 | - |
+| **自定义排序** |||||
+| 自定义比较器 | `comparator(valueA, valueB, nodeA, nodeB, isDesc)` | `sortingFn(rowA, rowB, columnId)` | ✅ 已实现 | - |
+| 内置排序函数 | ✅ | ✅ (via TanStack) | ✅ 已实现 | - |
+| `accentedSort` 本地化排序 | `accentedSort: true` | ❌ | ❌ 缺失 | P2 |
+| **排序顺序配置** |||||
+| `sortingOrder` 自定义循环 | `['asc', 'desc', null]` | ❌ | ❌ 缺失 | P1 |
+| `sortDescFirst` | ✅ | ✅ (via TanStack) | ✅ 已实现 | - |
+| `invertSorting` | ✅ | ✅ (via TanStack) | ✅ 已实现 | - |
+| Absolute sorting (按绝对值) | `type: 'absolute'` | ❌ | ❌ 缺失 | P3 |
+| **排序 API** |||||
+| 获取排序状态 | Column State API | `getSorting()` | ✅ 已实现 | - |
+| 设置排序状态 | Column State API | `setSorting(state)` | ✅ 已实现 | - |
+| 重置排序 | ✅ | `resetSorting()` | ✅ 已实现 | - |
+| **视觉效果** |||||
+| 排序指示器图标 | ✅ | ✅ (SVG arrows) | ✅ 已实现 | - |
+| 未排序列图标 | 可自定义 | ✅ (半透明双箭头) | ✅ 已实现 | - |
+| 排序动画 | `animateRows` | ❌ | ❌ 缺失 | P3 |
+| **事件** |||||
+| 排序变化回调 | 事件系统 | `onSortingChange` | ✅ 已实现 | - |
+| **高级功能** |||||
+| `postSortRows` 后处理 | ✅ | ❌ | ❌ 缺失 | P2 |
+| 服务端排序 | ✅ | ❌ | ❌ 未来版本 | P3 |
+
+### 实现状态汇总
+
+| 类别 | AG Grid 功能数 | AC Grid 已实现 | 覆盖率 |
+|------|---------------|----------------|--------|
+| 基础排序 | 3 | 3 | **100%** |
+| 多列排序 | 4 | 2 | **50%** |
+| 自定义排序 | 3 | 2 | **67%** |
+| 排序顺序 | 4 | 2 | **50%** |
+| 排序 API | 3 | 3 | **100%** |
+| 视觉效果 | 3 | 2 | **67%** |
+| 事件 | 1 | 1 | **100%** |
+| 高级功能 | 2 | 0 | **0%** |
+| **总计** | **23** | **15** | **~65%** |
+
+### 优先级说明
+
+- **P1 (高)**: 影响核心用户体验，应尽快实现
+- **P2 (中)**: 常用功能，建议在 v0.2.0 实现
+- **P3 (低)**: 高级功能，可延后实现
 
 ## 动机
 
@@ -60,15 +125,9 @@ const columns = [
 ];
 ```
 
-### 与 ag-Grid 的对比
-ag-Grid 社区版提供：
-- ✅ 单列排序
-- ✅ 多列排序
-- ✅ 自定义排序函数
-- ✅ 编程式排序 API
-- ✅ 排序状态持久化
-
 ## 设计目标
+
+### Phase 1 (✅ 已完成)
 
 - [x] **目标 1**: 支持单列排序（升序/降序/无序）
 - [x] **目标 2**: 支持多列排序（Shift + 点击）
@@ -77,10 +136,18 @@ ag-Grid 社区版提供：
 - [x] **目标 5**: 排序状态可视化（列头指示器）
 - [x] **目标 6**: 类型安全的 API
 
-### 非目标
-- ❌ 服务端排序（将在未来版本中考虑）
-- ❌ 排序动画（将在未来版本中考虑）
-- ❌ 排序性能分析工具
+### Phase 2 (📋 计划中)
+
+- [ ] **目标 7**: 支持 `sortingOrder` 自定义排序循环
+- [ ] **目标 8**: 支持 `multiSortKey` 配置 (ctrl/shift)
+- [ ] **目标 9**: 支持 `accentedSort` 本地化排序
+- [ ] **目标 10**: 支持 `postSortRows` 后处理回调
+- [ ] **目标 11**: 支持 `suppressMultiSort` / `alwaysMultiSort`
+
+### 非目标 (未来版本)
+- ❌ 服务端排序（将在 v0.3.0+ 考虑）
+- ❌ 排序动画（将在 v0.4.0+ 考虑）
+- ❌ Absolute sorting（将在未来版本考虑）
 
 ## 技术方案
 
@@ -92,7 +159,7 @@ ag-Grid 社区版提供：
 ```
 用户点击列头
     ↓
-DraggableTableHeader 组件捕获点击事件
+Grid 组件捕获点击事件
     ↓
 检测是否按住 Shift 键（多列排序）
     ↓
@@ -126,47 +193,24 @@ interface SortingIndicatorProps {
 }
 ```
 
-#### 组件 2: 增强的 DraggableTableHeader
-**职责**：处理列头点击事件，触发排序
+**实现状态**: ✅ 已完成
+- SVG 箭头图标
+- 未排序状态显示半透明双箭头
+- 多列排序显示索引数字
 
-**新增功能**：
-- 监听点击事件
-- 检测 Shift 键状态
-- 调用排序 API
-- 显示排序指示器
-
-#### 组件 3: 增强的 Grid
+#### 组件 2: Grid 组件（排序集成）
 **职责**：管理排序状态，配置排序模型
 
-**新增功能**：
-- 维护 `sorting` 状态
-- 集成 `getSortedRowModel`
-- 提供编程式排序 API
-
-### 数据流
-
-```
-初始数据
-    ↓
-Grid 组件接收 data 和 columns
-    ↓
-配置 @tanstack/table-core（包含 getSortedRowModel）
-    ↓
-用户点击列头触发排序
-    ↓
-更新 sorting 状态 [{ id: 'columnId', desc: false }]
-    ↓
-getSortedRowModel 自动排序数据
-    ↓
-重新渲染 Grid（显示排序后的数据）
-```
+**实现状态**: ✅ 已完成
+- `sorting` 状态管理
+- `getSortedRowModel` 集成
+- 编程式 API (`setSorting`, `getSorting`, `resetSorting`)
 
 ### 依赖关系
-- **新增依赖**: 无（@tanstack/table-core 已包含排序功能）
+- **外部依赖**: `@tanstack/table-core` (已包含排序功能)
 - **内部依赖**: 
   - Grid.wsx
-  - DraggableTableHeader.wsx
-  - @tanstack/table-core 的 `getSortedRowModel`
+  - SortingIndicator.wsx
 
 ## API 设计
 
@@ -174,22 +218,25 @@ getSortedRowModel 自动排序数据
 
 #### 配置选项
 ```typescript
-interface GridOptions<TData> {
-  /** 数据源 */
-  data: TData[];
-  /** 列定义 */
-  columns: ColumnDef<TData>[];
-  /** 排序配置（可选） */
-  sorting?: {
-    /** 是否启用排序（默认：true） */
-    enabled?: boolean;
-    /** 是否允许多列排序（默认：true） */
-    multiColumn?: boolean;
-    /** 初始排序状态 */
-    initialState?: SortingState;
-    /** 排序状态变化回调 */
-    onSortingChange?: (sorting: SortingState) => void;
-  };
+interface GridSortingConfig {
+  /** 是否启用排序（默认：true） */
+  enabled?: boolean;
+  /** 是否允许多列排序（默认：true） */
+  multiColumn?: boolean;
+  /** 初始排序状态 */
+  initialState?: SortingState;
+  /** 排序状态变化回调 */
+  onSortingChange?: (sorting: SortingState) => void;
+  
+  // === Phase 2 新增 ===
+  /** 多列排序触发键（默认：'shift'）*/
+  // multiSortKey?: 'shift' | 'ctrl';
+  /** 禁止多列排序 */
+  // suppressMultiSort?: boolean;
+  /** 始终多列排序（无需按键） */
+  // alwaysMultiSort?: boolean;
+  /** 排序后处理回调 */
+  // postSortRows?: (params: PostSortRowsParams) => void;
 }
 ```
 
@@ -206,6 +253,10 @@ interface ColumnDef<TData> {
   sortDescFirst?: boolean;
   /** 是否反转排序顺序（默认：false） */
   invertSorting?: boolean;
+  
+  // === Phase 2 新增 ===
+  /** 自定义排序顺序循环 */
+  // sortingOrder?: ('asc' | 'desc' | null)[];
 }
 ```
 
@@ -230,21 +281,13 @@ type SortingFn<TData> = (
 #### 方法
 ```typescript
 class Grid<TData> {
-  /**
-   * 设置排序状态
-   * @param sorting - 排序状态数组
-   */
+  /** 设置排序状态 */
   setSorting(sorting: SortingState): void;
   
-  /**
-   * 获取当前排序状态
-   * @returns 当前排序状态
-   */
+  /** 获取当前排序状态 */
   getSorting(): SortingState;
   
-  /**
-   * 重置排序状态
-   */
+  /** 重置排序状态 */
   resetSorting(): void;
 }
 ```
@@ -257,15 +300,9 @@ interface GridEvents<TData> {
 }
 ```
 
-### 类型定义
-```typescript
-// 从 @tanstack/table-core 导出
-export type { SortingState, SortingFn } from '@tanstack/table-core';
-```
-
 ### 使用示例
 
-#### 基础用法（默认排序）
+#### 基础用法
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
 import { Grid } from '@ac-grid/core';
@@ -286,22 +323,13 @@ const columns = [
   { 
     id: 'actions', 
     header: 'Actions',
-    enableSorting: false  // 禁用此列排序
+    enableSorting: false
   }
 ];
 ```
 
-#### 自定义排序函数（Comparator）
-
-AC Grid 支持通过 `sortingFn` 属性定义自定义比较器（comparator）。比较器函数接收两个行对象和列 ID，返回数字：
-- **负数**: `rowA` 应该排在 `rowB` 之前
-- **正数**: `rowA` 应该排在 `rowB` 之后
-- **0**: 两者相等，保持原顺序
-
-**基础示例**：
+#### 自定义排序函数
 ```typescript
-import { sortingFns } from '@tanstack/table-core';
-
 const columns = [
   {
     id: 'name',
@@ -314,468 +342,200 @@ const columns = [
         'zh-CN'
       );
     }
-  },
-  {
-    id: 'date',
-    accessorKey: 'date',
-    header: 'Date',
-    sortingFn: 'datetime'  // 使用内置排序函数
-  }
-];
-```
-
-**更多自定义比较器示例**：
-
-**示例 1: 数字排序（处理 null/undefined）**
-```typescript
-const columns = [
-  {
-    id: 'age',
-    accessorKey: 'age',
-    header: 'Age',
-    sortingFn: (rowA, rowB, columnId) => {
-      const a = rowA.getValue(columnId) as number | null | undefined;
-      const b = rowB.getValue(columnId) as number | null | undefined;
-      // null/undefined 排在最后
-      if (a == null && b == null) return 0;
-      if (a == null) return 1;
-      if (b == null) return -1;
-      return a - b;
-    }
-  }
-];
-```
-
-**示例 2: 日期排序**
-```typescript
-const columns = [
-  {
-    id: 'createdAt',
-    accessorKey: 'createdAt',
-    header: 'Created At',
-    sortingFn: (rowA, rowB, columnId) => {
-      const dateA = new Date(rowA.getValue(columnId) as string);
-      const dateB = new Date(rowB.getValue(columnId) as string);
-      return dateA.getTime() - dateB.getTime();
-    }
-  }
-];
-```
-
-**示例 3: 自定义优先级排序**
-```typescript
-const columns = [
-  {
-    id: 'status',
-    accessorKey: 'status',
-    header: 'Status',
-    sortingFn: (rowA, rowB, columnId) => {
-      const statusOrder = { 'active': 1, 'pending': 2, 'inactive': 3 };
-      const a = rowA.getValue(columnId) as keyof typeof statusOrder;
-      const b = rowB.getValue(columnId) as keyof typeof statusOrder;
-      return (statusOrder[a] || 999) - (statusOrder[b] || 999);
-    }
-  }
-];
-```
-
-**示例 4: 多字段组合排序**
-```typescript
-const columns = [
-  {
-    id: 'fullName',
-    accessorKey: 'fullName',
-    header: 'Full Name',
-    sortingFn: (rowA, rowB, columnId) => {
-      // 先按姓氏排序，再按名字排序
-      const a = rowA.original as Person;
-      const b = rowB.original as Person;
-      const lastNameCompare = a.lastName.localeCompare(b.lastName);
-      if (lastNameCompare !== 0) return lastNameCompare;
-      return a.firstName.localeCompare(b.firstName);
-    }
-  }
-];
-```
-
-**示例 5: 使用内置排序函数**
-```typescript
-import { sortingFns } from '@tanstack/table-core';
-
-const columns = [
-  {
-    id: 'name',
-    accessorKey: 'name',
-    header: 'Name',
-    sortingFn: sortingFns.alphanumeric,  // 字母数字排序
-  },
-  {
-    id: 'date',
-    accessorKey: 'date',
-    header: 'Date',
-    sortingFn: sortingFns.datetime,     // 日期时间排序
-  },
-  {
-    id: 'number',
-    accessorKey: 'number',
-    header: 'Number',
-    sortingFn: sortingFns.basic,        // 基础排序
-  }
-];
-```
-
-**示例 6: 可复用的比较器工具函数**
-```typescript
-// utils/sorters.ts
-import type { SortingFn } from '@tanstack/table-core';
-import type { Row } from '@ac-grid/core';
-
-export const nullsLastSorter = <TData>(
-  rowA: Row<TData>,
-  rowB: Row<TData>,
-  columnId: string
-): number => {
-  const a = rowA.getValue(columnId);
-  const b = rowB.getValue(columnId);
-  if (a == null && b == null) return 0;
-  if (a == null) return 1;
-  if (b == null) return -1;
-  if (a < b) return -1;
-  if (a > b) return 1;
-  return 0;
-};
-
-export const caseInsensitiveSorter = <TData>(
-  rowA: Row<TData>,
-  rowB: Row<TData>,
-  columnId: string
-): number => {
-  const a = String(rowA.getValue(columnId)).toLowerCase();
-  const b = String(rowB.getValue(columnId)).toLowerCase();
-  return a.localeCompare(b);
-};
-
-// 使用
-import { nullsLastSorter, caseInsensitiveSorter } from './utils/sorters';
-
-const columns = [
-  {
-    id: 'name',
-    sortingFn: caseInsensitiveSorter
-  },
-  {
-    id: 'optionalField',
-    sortingFn: nullsLastSorter
   }
 ];
 ```
 
 #### 编程式排序
 ```typescript
-import { createGrid } from '@ac-grid/core';
+const gridElement = document.querySelector('wsx-ac-grid') as any;
 
-const gridElement = createGrid({
-  data,
-  columns,
-  sorting: {
-    initialState: [
-      { id: 'name', desc: false },  // 先按 name 升序
-      { id: 'age', desc: true }     // 再按 age 降序
-    ],
-    onSortingChange: (sorting) => {
-      console.log('Sorting changed:', sorting);
-      // 可以持久化到 localStorage
-      localStorage.setItem('gridSorting', JSON.stringify(sorting));
-    }
-  }
-});
+// 设置排序
+gridElement.setSorting([
+  { id: 'name', desc: false },
+  { id: 'age', desc: true }
+]);
 
-// 获取和设置排序状态
-const currentSorting = (gridElement as any).getSorting();
-(gridElement as any).setSorting([{ id: 'age', desc: false }]);
+// 获取排序状态
+const sorting = gridElement.getSorting();
+
+// 重置排序
+gridElement.resetSorting();
 ```
 
-#### 在 wsxjs 组件中使用
+## 缺失功能 (Phase 2)
+
+以下功能 AG Grid 支持但 AC Grid 尚未实现，计划在后续版本中添加：
+
+### P1: sortingOrder 自定义排序循环
+
+**AG Grid 用法**:
 ```typescript
-/** @jsxImportSource @wsxjs/wsx-core */
-import { LightComponent, state, autoRegister } from '@wsxjs/wsx-core';
-import type { SortingState } from '@ac-grid/core';
-
-@autoRegister({ tagName: 'my-app' })
-export class App extends LightComponent {
-  @state private sorting: SortingState = [
-    { id: 'name', desc: false }
-  ];
-
-  private handleSortingChange = (newSorting: SortingState) => {
-    this.sorting = newSorting;
-    console.log('Sorting updated:', newSorting);
-  };
-
-  render() {
-    return (
-      <wsx-ac-grid 
-        data={this.data} 
-        columns={this.columns}
-        sorting={{
-          initialState: this.sorting,
-          onSortingChange: this.handleSortingChange
-        }}
-      />
-    );
+// AG Grid
+columnDefs: [
+  { 
+    field: 'athlete',
+    sortingOrder: ['asc', 'desc']  // 只有升序和降序，无 null
+  },
+  {
+    field: 'age',
+    sortingOrder: ['desc', 'asc', null]  // 降序优先
   }
-}
+]
 ```
 
-## 实现细节
-
-### 阶段 1: 核心排序功能（2-3 天）
-
-**任务清单**：
-- [ ] 在 Grid 组件中集成 `getSortedRowModel`
-- [ ] 添加 `sorting` 状态管理（使用 @state 装饰器）
-- [ ] 实现 `onSortingChange` 回调
-- [ ] 添加排序相关的 property getters/setters
-
-**关键代码示例**：
+**AC Grid 计划实现**:
 ```typescript
-// Grid.wsx
-import { getSortedRowModel, type SortingState } from '@tanstack/table-core';
-
-@autoRegister({ tagName: "wsx-ac-grid" })
-export class Grid extends LightComponent {
-  @state private sorting: SortingState = [];
-  
-  // Property for sorting configuration
-  get sortingConfig(): GridSortingConfig | undefined {
-    return this._sortingConfig;
+// AC Grid (计划)
+columns: [
+  {
+    id: 'athlete',
+    sortingOrder: ['asc', 'desc']
   }
-  set sortingConfig(value: GridSortingConfig | undefined) {
-    if (value !== this._sortingConfig) {
-      this._sortingConfig = value;
-      if (value?.initialState) {
-        this.sorting = value.initialState;
-      }
-      this.updateTable();
-    }
-  }
-  @state private _sortingConfig: GridSortingConfig | undefined;
-  
-  private updateTable() {
-    this.table = createTable({
-      data: this.gridData,
-      columns: this._columns,
-      state: {
-        sorting: this.sorting,
-        // ... 其他状态
-      },
-      onSortingChange: (updater) => {
-        const newSorting = 
-          typeof updater === 'function' 
-            ? updater(this.sorting) 
-            : updater;
-        this.sorting = newSorting;
-        this._sortingConfig?.onSortingChange?.(newSorting);
-        this.updateTable();
-      },
-      getCoreRowModel: getCoreRowModel(),
-      getSortedRowModel: getSortedRowModel(),  // 新增
-      // ...
-    });
-  }
-  
-  // 公共 API
-  public setSorting(sorting: SortingState): void {
-    this.sorting = sorting;
-    this.updateTable();
-  }
-  
-  public getSorting(): SortingState {
-    return this.sorting;
-  }
-  
-  public resetSorting(): void {
-    this.sorting = [];
-    this.updateTable();
-  }
-}
+]
 ```
 
-### 阶段 2: 排序指示器组件（1-2 天）
+**实现方案**:
+- 在列定义中添加 `sortingOrder` 属性
+- 修改 `toggleSorting` 逻辑，按自定义顺序循环
+- 预计工作量: 1 天
 
-**任务清单**：
-- [ ] 创建 `SortingIndicator.wsx` 组件
-- [ ] 设计排序指示器样式（↑ ↓ 图标）
-- [ ] 支持多列排序时显示排序索引
+### P2: multiSortKey 配置
 
-**关键代码示例**：
+**AG Grid 用法**:
 ```typescript
-// components/SortingIndicator.wsx
-/** @jsxImportSource @wsxjs/wsx-core */
-import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
-
-interface SortingIndicatorProps {
-  direction: 'asc' | 'desc' | false;
-  index?: number;
-}
-
-@autoRegister({ tagName: 'wsx-ac-sorting-indicator' })
-export class SortingIndicator extends LightComponent {
-  get direction(): 'asc' | 'desc' | false {
-    return this._direction;
-  }
-  set direction(value: 'asc' | 'desc' | false) {
-    this._direction = value;
-  }
-  private _direction: 'asc' | 'desc' | false = false;
-  
-  get index(): number | undefined {
-    return this._index;
-  }
-  set index(value: number | undefined) {
-    this._index = value;
-  }
-  private _index: number | undefined;
-  
-  render() {
-    if (!this.direction) {
-      return <span className="sort-indicator"></span>;
-    }
-    
-    const icon = this.direction === 'asc' ? '↑' : '↓';
-    const indexText = this.index !== undefined ? ` ${this.index + 1}` : '';
-    
-    return (
-      <span className="sort-indicator active">
-        {icon}{indexText}
-      </span>
-    );
-  }
+// AG Grid
+gridOptions: {
+  multiSortKey: 'ctrl'  // 使用 Ctrl 键而非 Shift 键
 }
 ```
 
-### 阶段 3: 增强列头组件（1-2 天）
-
-**任务清单**：
-- [ ] 在 `DraggableTableHeader` 中添加排序点击处理
-- [ ] 集成 `SortingIndicator` 组件
-- [ ] 处理单列和多列排序逻辑
-- [ ] 添加排序相关的 CSS 类名
-
-**关键代码示例**：
+**AC Grid 计划实现**:
 ```typescript
-// DraggableTableHeader.wsx（增强）
-@autoRegister({ tagName: "wsx-ac-draggable-table-header" })
-export class DraggableTableHeader extends LightComponent {
-  // ... 现有代码
-  
-  private handleHeaderClick = (e: MouseEvent) => {
-    const column = this._header.column;
-    
-    // 检查是否启用排序
-    if (!column.getCanSort()) {
-      return;
-    }
-    
-    // 切换排序（Shift 键支持多列排序）
-    column.toggleSorting(
-      undefined,  // 循环：asc -> desc -> none
-      e.shiftKey  // 是否多列排序
-    );
-  };
-  
-  render() {
-    const column = this._header.column;
-    const sortDirection = column.getIsSorted();  // 'asc' | 'desc' | false
-    const sortIndex = column.getSortIndex();     // 多列排序时的索引
-    
-    return (
-      <th
-        onClick={this.handleHeaderClick}
-        className={`
-          ${column.getCanSort() ? 'cursor-pointer select-none' : ''}
-          ${sortDirection ? 'sorting-active' : ''}
-        `}
-      >
-        <div className="header-content">
-          {flexRender(
-            this._header.column.columnDef.header,
-            this._header.getContext()
-          )}
-          {column.getCanSort() && (
-            <wsx-ac-sorting-indicator 
-              direction={sortDirection}
-              index={sortIndex}
-            />
-          )}
-        </div>
-      </th>
-    );
+// AC Grid (计划)
+<Grid 
+  sortingConfig={{
+    multiSortKey: 'ctrl'
+  }}
+/>
+```
+
+**实现方案**:
+- 在 `GridSortingConfig` 中添加 `multiSortKey` 属性
+- 修改事件处理逻辑，检测对应按键
+- 预计工作量: 0.5 天
+
+### P2: accentedSort 本地化排序
+
+**AG Grid 用法**:
+```typescript
+// AG Grid
+gridOptions: {
+  accentedSort: true
+}
+```
+
+**AC Grid 计划实现**:
+```typescript
+// AC Grid (计划)
+<Grid 
+  sortingConfig={{
+    accentedSort: true
+  }}
+/>
+```
+
+**实现方案**:
+- 使用 `String.prototype.localeCompare()` with options
+- 提供全局配置和列级配置
+- 预计工作量: 0.5 天
+
+### P2: postSortRows 后处理回调
+
+**AG Grid 用法**:
+```typescript
+// AG Grid
+gridOptions: {
+  postSortRows: (params) => {
+    // 将 Ireland 行置顶
+    const irelandRows = params.nodes.filter(n => n.data.country === 'Ireland');
+    const otherRows = params.nodes.filter(n => n.data.country !== 'Ireland');
+    params.nodes.length = 0;
+    params.nodes.push(...irelandRows, ...otherRows);
   }
 }
 ```
 
-### 阶段 4: 样式和 CSS（1 天）
+**AC Grid 计划实现**:
+```typescript
+// AC Grid (计划)
+<Grid 
+  sortingConfig={{
+    postSortRows: (rows) => {
+      // 自定义后处理
+      return rows.sort((a, b) => /* custom logic */);
+    }
+  }}
+/>
+```
 
-**任务清单**：
-- [ ] 添加排序指示器样式
-- [ ] 添加可排序列头的悬停效果
-- [ ] 添加排序激活状态样式
-- [ ] 确保样式在 Shadow DOM 中正确工作
+**实现方案**:
+- 在 `getSortedRowModel` 后应用回调
+- 预计工作量: 1 天
 
-**关键代码示例**：
-```css
-/* Grid.css */
-.draggable-header.cursor-pointer:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
+### P3: suppressMultiSort / alwaysMultiSort
 
-.draggable-header.sorting-active {
-  background-color: rgba(0, 120, 212, 0.1);
-}
-
-.sort-indicator {
-  display: inline-block;
-  margin-left: 4px;
-  font-size: 12px;
-  color: #999;
-  min-width: 16px;
-}
-
-.sort-indicator.active {
-  color: #0078d4;
-  font-weight: bold;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+**AG Grid 用法**:
+```typescript
+// AG Grid
+gridOptions: {
+  suppressMultiSort: true,   // 禁止多列排序
+  // 或
+  alwaysMultiSort: true      // 始终多列排序
 }
 ```
 
-### 阶段 5: 测试和文档（2 天）
+**AC Grid 计划实现**:
+```typescript
+// AC Grid (计划)
+<Grid 
+  sortingConfig={{
+    suppressMultiSort: true,
+    // 或
+    alwaysMultiSort: true
+  }}
+/>
+```
 
-**任务清单**：
-- [ ] 编写单元测试
-- [ ] 编写集成测试
-- [ ] 创建 Storybook 示例
-- [ ] 编写使用文档
-- [ ] 性能测试
+**实现方案**:
+- 修改点击事件处理逻辑
+- 预计工作量: 0.5 天
 
-### 技术难点
+### P3: 排序动画
 
-1. **难点 1: 自定义排序函数的类型安全**
-   - **问题**：TypeScript 泛型类型推导复杂
-   - **解决方案**：使用 @tanstack/table-core 的类型定义，确保类型安全
+**AG Grid 用法**:
+```typescript
+// AG Grid
+gridOptions: {
+  animateRows: true  // 默认 true
+}
+```
 
-2. **难点 2: 排序状态与拖拽重排序的冲突**
-   - **问题**：列拖拽重排序后，排序状态的列 ID 需要更新
-   - **解决方案**：在列顺序变化时，保持排序状态的 ID 引用不变，因为是基于列 ID 而非位置
+**AC Grid 计划实现**:
+- 使用 CSS transitions 或 FLIP 动画
+- 预计工作量: 2 天
 
-3. **难点 3: Web Components 中的事件处理**
-   - **问题**：在 Shadow DOM 中处理事件冒泡
-   - **解决方案**：使用 wsxjs 的事件绑定机制，确保事件正确传递
+### Phase 2 总工作量估算
+
+| 功能 | 优先级 | 工作量 |
+|------|--------|--------|
+| sortingOrder | P1 | 1 天 |
+| multiSortKey | P2 | 0.5 天 |
+| accentedSort | P2 | 0.5 天 |
+| postSortRows | P2 | 1 天 |
+| suppressMultiSort / alwaysMultiSort | P3 | 0.5 天 |
+| 排序动画 | P3 | 2 天 |
+| **总计** | - | **5.5 天** |
 
 ## 测试策略
 
@@ -798,11 +558,8 @@ describe('Sorting Feature', () => {
     ];
     
     const gridElement = createGrid({ data, columns }) as any;
-    
-    // 设置排序
     gridElement.setSorting([{ id: 'name', desc: false }]);
     
-    // 验证排序后的数据
     const sortedData = gridElement.getSortedData();
     expect(sortedData[0].name).toBe('Alice');
     expect(sortedData[1].name).toBe('Bob');
@@ -823,17 +580,6 @@ describe('Sorting Feature', () => {
 });
 ```
 
-### 集成测试
-- 测试排序与其他功能（如拖拽）的集成
-- 测试排序状态持久化
-- 测试在不同浏览器中的表现
-
-### E2E 测试
-使用浏览器测试工具（如 Playwright）测试：
-- 用户点击列头排序
-- 多列排序（Shift + 点击）
-- 排序指示器显示正确
-
 ### 测试覆盖率目标
 - **语句覆盖率**: 100%
 - **分支覆盖率**: 100%
@@ -846,99 +592,38 @@ describe('Sorting Feature', () => {
 - **小数据集（< 1000 行）**: 排序时间 < 10ms
 - **中数据集（1000-10000 行）**: 排序时间 < 50ms
 - **大数据集（10000-50000 行）**: 排序时间 < 200ms
-- **内存占用增加**: < 5MB（相比无排序）
 
 ### 性能优化策略
-1. **使用 @tanstack/table-core 的优化排序算法**
-   - 内部使用高效的排序算法
-   - 支持缓存和增量更新
-
-2. **避免不必要的重新渲染**
-   - 利用 wsxjs 的 @state 装饰器精确控制渲染
-   - 只有排序状态变化时才重新渲染
-
-3. **大数据集优化**
-   - 结合虚拟滚动（后续版本）
-   - 考虑 Web Worker 排序（可选）
-
-### 性能测试方案
-```typescript
-import { performance } from 'perf_hooks';
-
-describe('Sorting Performance', () => {
-  it('should sort 10000 rows in less than 50ms', () => {
-    const data = generateLargeDataset(10000);
-    const gridElement = createGrid({ data, columns }) as any;
-    
-    const start = performance.now();
-    gridElement.setSorting([{ id: 'name', desc: false }]);
-    const end = performance.now();
-    
-    expect(end - start).toBeLessThan(50);
-  });
-});
-```
+1. 使用 @tanstack/table-core 的优化排序算法
+2. 避免不必要的重新渲染
+3. 结合虚拟滚动（v0.2.0）
 
 ## 向后兼容性
 
 ### 破坏性变更
-**无破坏性变更**。排序功能是纯新增功能，不影响现有 API。
+**无破坏性变更**。排序功能是纯新增功能。
 
 ### 迁移指南
 不需要迁移，现有代码可以无缝升级。
 
-### 默认行为
-- 排序功能默认**启用**
-- 如需禁用某列排序，设置 `enableSorting: false`
-- 如需禁用全局排序，可在未来版本中添加全局配置
-
 ## 替代方案
 
-### 方案 A: 自研排序算法
-**描述**: 不使用 @tanstack/table-core 的排序，自己实现排序逻辑
-
-**优点**:
-- 完全控制排序逻辑
-- 可以高度定制
-
-**缺点**:
-- 重复造轮子
-- 需要处理大量边界情况
-- 测试成本高
-- 性能可能不如成熟库
-
-### 方案 B: 使用第三方排序库（如 lodash）
-**描述**: 使用 lodash 的 `orderBy` 等函数实现排序
-
-**优点**:
-- API 简单
-- 成熟稳定
-
-**缺点**:
-- 增加额外依赖
-- 需要自己管理排序状态
-- 与 @tanstack/table-core 集成度低
-
-### 为什么选择当前方案
-1. **已有依赖**: @tanstack/table-core 已是项目依赖，无需额外引入
+### 为什么选择 @tanstack/table-core
+1. **已有依赖**: 无需额外引入
 2. **紧密集成**: 与表格状态管理无缝集成
 3. **成熟稳定**: 经过大量项目验证
 4. **类型安全**: 完整的 TypeScript 支持
-5. **功能完整**: 支持多列排序、自定义排序函数等高级功能
 
 ## 开放问题
 
 - [ ] **问题 1**: 是否需要支持服务端排序？
-  - 当前方案是客户端排序，对于超大数据集可能需要服务端排序
   - 建议在 v0.3.0 后根据用户反馈决定
 
 - [ ] **问题 2**: 是否需要排序动画？
-  - 排序时行的位置变化是否需要过渡动画
   - 可能影响性能，建议作为可选功能
 
-- [ ] **问题 3**: 排序状态持久化的最佳实践？
-  - 是否应该内置 localStorage 支持
-  - 还是让用户通过 `onSortingChange` 自己处理
+- [ ] **问题 3**: sortingOrder 的默认值如何处理？
+  - 建议默认为 `['asc', 'desc', null]`
 
 ## 参考资料
 
@@ -946,3 +631,17 @@ describe('Sorting Performance', () => {
 - [@tanstack/table-core 排序文档](https://tanstack.com/table/latest/docs/guide/sorting)
 - [MDN: Array.prototype.sort()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
 - [0001-ac-grid-architecture.md](../0001-ac-grid-architecture.md)
+
+---
+
+## 变更日志
+
+### 2026-01-31
+- 添加 AG Grid 功能对比矩阵
+- 添加 Phase 2 缺失功能文档
+- 更新实现状态和优先级
+- 添加工作量估算
+
+### 2026-01-24
+- 初始 RFC 创建
+- Phase 1 实现完成

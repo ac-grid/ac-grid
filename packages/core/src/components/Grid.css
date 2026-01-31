@@ -5,6 +5,7 @@
 
 .ac-grid {
   width: 100%;
+  height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Roboto', sans-serif;
   display: flex;
   flex-direction: column;
@@ -14,7 +15,42 @@
   border: var(--ac-grid-border-width-base, 1px) solid var(--ac-grid-border, rgba(139, 92, 246, 0.3));
   border-radius: var(--ac-grid-border-radius-lg, 0.5rem);
   overflow: hidden;
-  max-height: 100%;
+  min-height: 0;
+}
+
+/* Pinning */
+.ac-grid .grid-header-cell[data-pinned="left"],
+.ac-grid .grid-cell[data-pinned="left"] {
+  position: sticky;
+  left: 0;
+  z-index: 2; /* Header z-index is higher */
+  background-color: var(--ac-grid-bg, #fff); /* Must have background to cover scrolling content */
+}
+
+.ac-grid .grid-header-cell[data-pinned="right"],
+.ac-grid .grid-cell[data-pinned="right"] {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background-color: var(--ac-grid-bg, #fff);
+}
+
+.ac-grid .grid-header-cell[data-pinned="left"] {
+  z-index: 3; /* Higher than cell pinned */
+}
+.ac-grid .grid-header-cell[data-pinned="right"] {
+  z-index: 3;
+}
+
+/* Add shadow to show pinning edge */
+.ac-grid .grid-header-cell[data-pinned="left"]:last-child,
+.ac-grid .grid-cell[data-pinned="left"]:last-child {
+  box-shadow: 2px 0 5px -2px rgba(0,0,0,0.1);
+}
+
+.ac-grid .grid-header-cell[data-pinned="right"]:first-child,
+.ac-grid .grid-cell[data-pinned="right"]:first-child {
+  box-shadow: -2px 0 5px -2px rgba(0,0,0,0.1);
 }
 
 /* Grid container - 固定宽度，不换行，水平滚动 */
@@ -27,6 +63,8 @@
   line-height: var(--ac-grid-line-height-normal, 1.5);
   background-color: transparent;
   overflow: hidden;
+  min-height: 0;
+  flex: 1;
 }
 
 /* Header row - 固定表头 */

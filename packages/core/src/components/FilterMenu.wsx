@@ -1,297 +1,44 @@
 /** @jsxImportSource @wsxjs/wsx-core */
-
 import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
-import type { Column } from "@tanstack/table-core";
-import { type ColumnDef } from "../types/column";
 import "./FilterMenu.css";
+import "./FilterInput.wsx";
+import type { Column } from "@tanstack/table-core";
 
-export interface FilterMenuProps {
-    /**
-     * 列对象
-     */
-    column: Column<any, unknown>;
-    /**
-     * 当前过滤值
-     */
-    value: string;
-    /**
-     * 值变化回调
-     */
-    onChange: (value: string) => void;
-    /**
-     * 是否显示菜单
-     */
-    visible?: boolean;
-    /**
-     * 关闭菜单回调
-     */
-    onClose?: () => void;
-}
-
-/**
- * 过滤菜单组件
- * 现代化设计的过滤输入菜单
- */
 @autoRegister({ tagName: "wsx-ac-filter-menu" })
 export class FilterMenu extends LightComponent {
-    get column(): Column<any, unknown> {
-        return this._column;
-    }
-    set column(value: Column<any, unknown>) {
-        if (value !== this._column) {
-            this._column = value;
-        }
-    }
+    get column(): Column<any, unknown> { return this._column; }
+    set column(val: Column<any, unknown>) { this._column = val; }
     private _column: Column<any, unknown> = null as any;
 
-    get value(): string {
-        return this._value;
-    }
-    set value(value: string) {
-        if (value !== this._value) {
-            this._value = value;
-            this.inputValue = value;
-        }
-    }
+    get value(): string { return this._value; }
+    set value(val: string) { this._value = val; }
     private _value: string = "";
 
-    get onChange(): ((value: string) => void) | undefined {
-        return this._onChange;
+    get onChange(): ((value: string) => void) | undefined { return this._onChange; }
+    set onChange(val: ((value: string) => void) | undefined) { this._onChange = val; }
+    private _onChange: ((value: string) => void) | undefined;
+
+    get onClose(): (() => void) | undefined { return this._onClose; }
+    set onClose(val: (() => void) | undefined) { this._onClose = val; }
+    private _onClose: (() => void) | undefined;
+
+    onConnected() {
+        super.onConnected?.();
+        const el = this as any;
+        if (el.column) this.column = el.column;
+        if (el.value !== undefined) this.value = el.value;
+        if (el.onChange) this.onChange = el.onChange;
+        if (el.onClose) this.onClose = el.onClose;
     }
-    set onChange(value: ((value: string) => void) | undefined) {
-        this._onChange = value;
-    }
-    private _onChange: ((value: string) => void) | undefined = undefined;
-
-    get visible(): boolean {
-        return this._visible;
-    }
-    set visible(value: boolean) {
-        if (value !== this._visible) {
-            this._visible = value;
-            if (value) {
-                this.setupClickOutside();
-                // 聚焦输入框
-                requestAnimationFrame(() => {
-                    const input = this.querySelector("input") as HTMLInputElement;
-                    input?.focus();
-                });
-            } else {
-                this.removeClickOutside();
-            }
-        }
-    }
-    private _visible: boolean = false;
-
-    get onClose(): (() => void) | undefined {
-        return this._onClose;
-    }
-    set onClose(value: (() => void) | undefined) {
-        this._onClose = value;
-    }
-    private _onClose: (() => void) | undefined = undefined;
-
-    @state private inputValue: string = "";
-
-    private clickOutsideHandler: ((e: MouseEvent) => void) | null = null;
-
-    connectedCallback() {
-        super.connectedCallback();
-        const element = this as any;
-        if (element.column) {
-            this.column = element.column;
-        }
-        if (element.value !== undefined) {
-            this.value = element.value || "";
-        }
-        if (element.onChange) {
-            this.onChange = element.onChange;
-        }
-        if (element.visible !== undefined) {
-            this.visible = element.visible;
-        }
-        if (element.onClose) {
-            this.onClose = element.onClose;
-        }
-
-        if (this._visible) {
-            this.setupClickOutside();
-        }
-    }
-
-    onDisconnected() {
-        super.onDisconnected?.();
-        this.removeClickOutside();
-    }
-
-    private setupClickOutside() {
-        this.removeClickOutside();
-
-        this.clickOutsideHandler = (e: MouseEvent) => {
-            const target = e.target as Node;
-            const menuElement = this.querySelector(".filter-menu");
-
-            if (menuElement && !menuElement.contains(target)) {
-                this._onClose?.();
-            }
-        };
-
-        setTimeout(() => {
-            document.addEventListener("click", this.clickOutsideHandler!);
-        }, 0);
-    }
-
-    private removeClickOutside() {
-        if (this.clickOutsideHandler) {
-            document.removeEventListener("click", this.clickOutsideHandler);
-            this.clickOutsideHandler = null;
-        }
-    }
-
-    private handleInputChange = (e: Event) => {
-        const target = e.target as HTMLInputElement;
-        const newValue = target.value;
-        this.inputValue = newValue;
-        this._onChange?.(newValue);
-    };
-
-    private handleClear = () => {
-        this.inputValue = "";
-        this._onChange?.("");
-    };
-
-    private handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") {
-            this._onClose?.();
-        }
-    };
 
     render() {
-        if (!this._visible) {
-            return <span style={{ display: "none" }}></span>;
-        }
-
-        const columnId = this._column?.id || "";
-        const columnDef = this._column?.columnDef as ColumnDef<any>;
-        const filterType = columnDef?.filterType || "text";
-        const header = columnDef?.header || columnId;
-
         return (
-            <div className="filter-menu" onKeyDown={this.handleKeyDown}>
-                <div className="filter-menu-header">
-                    <div className="filter-menu-title">
-                        <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                            <circle cx="11" cy="11" r="8"></circle>
-                        </svg>
-                        <span>Filter {header}</span>
-                    </div>
-                    <button
-                        type="button"
-                        className="filter-menu-close"
-                        onClick={() => this._onClose?.()}
-                        aria-label="Close filter menu"
-                    >
-                        <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
-                </div>
-
-                <div className="filter-menu-body">
-                    <div className="filter-input-wrapper">
-                        <input
-                            type={filterType === "number" ? "number" : "text"}
-                            className="filter-input"
-                            value={this.inputValue}
-                            onInput={this.handleInputChange}
-                            placeholder={
-                                filterType === "number"
-                                    ? "e.g., >30, <50, 25-35"
-                                    : `Search ${header.toLowerCase()}...`
-                            }
-                        />
-                        {this.inputValue && (
-                            <button
-                                type="button"
-                                className="filter-input-clear"
-                                onClick={this.handleClear}
-                                aria-label="Clear filter"
-                            >
-                                <svg
-                                    width="14"
-                                    height="14"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                            </button>
-                        )}
-                    </div>
-
-                    {filterType === "number" && (
-                        <div className="filter-hint">
-                            <span className="filter-hint-label">Examples:</span>
-                            <div className="filter-hint-examples">
-                                <button
-                                    type="button"
-                                    className="filter-hint-example"
-                                    onClick={() => {
-                                        this.inputValue = ">30";
-                                        this._onChange?.(">30");
-                                    }}
-                                >
-                                    &gt;30
-                                </button>
-                                <button
-                                    type="button"
-                                    className="filter-hint-example"
-                                    onClick={() => {
-                                        this.inputValue = "<50";
-                                        this._onChange?.("<50");
-                                    }}
-                                >
-                                    &lt;50
-                                </button>
-                                <button
-                                    type="button"
-                                    className="filter-hint-example"
-                                    onClick={() => {
-                                        this.inputValue = "25-35";
-                                        this._onChange?.("25-35");
-                                    }}
-                                >
-                                    25-35
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
+            <div className="filter-menu">
+                <wsx-ac-filter-input
+                    column={this._column}
+                    value={this._value}
+                    onChange={this._onChange}
+                />
             </div>
         );
     }
