@@ -1,5 +1,6 @@
 /**
- * AC Grid - Standard Theme (AG Grid-like)
+ * AC Grid - 使用主题变量，未应用主题时回退到默认色
+ * 主题由 @ac-grid/theme-base 的 themeManager.applyTheme() 设置到 document
  */
 
 .ac-grid {
@@ -9,9 +10,9 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #ffffff;
-  border: 1px solid #babfc7;
-  color: #181d1f;
+  background-color: var(--ac-grid-bg-cell, #ffffff);
+  border: 1px solid var(--ac-grid-border, #babfc7);
+  color: var(--ac-grid-text-primary, #181d1f);
   font-size: 13px;
   box-sizing: border-box;
 }
@@ -33,8 +34,8 @@
   flex-shrink: 0;
   overflow-x: auto;
   overflow-y: hidden;
-  background-color: #f8f8f8;
-  border-bottom: 1px solid #babfc7;
+  background-color: var(--ac-grid-bg-header, #f8f8f8);
+  border-bottom: 1px solid var(--ac-grid-border, #babfc7);
   scrollbar-width: none;
 }
 
@@ -53,10 +54,10 @@
 .ac-grid .grid-header-cell {
   padding: 8px 12px;
   text-align: left;
-  color: #585d61;
-  background-color: #f8f8f8;
+  color: var(--ac-grid-text-secondary, #585d61);
+  background-color: var(--ac-grid-bg-header, #f8f8f8);
   font-weight: 600;
-  border-right: 1px solid #dde2eb;
+  border-right: 1px solid var(--ac-grid-border, #dde2eb);
   box-sizing: border-box;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -68,7 +69,7 @@
 }
 
 .ac-grid .grid-header-cell:hover {
-  background-color: #f0f0f0;
+  background-color: var(--ac-grid-bg-hover, #f0f0f0);
 }
 
 .ac-grid .header-content {
@@ -112,16 +113,16 @@
   grid-template-columns: var(--grid-columns, repeat(7, 150px));
   width: max-content;
   min-width: 100%;
-  border-bottom: 1px solid #dde2eb;
-  background-color: #ffffff;
+  border-bottom: 1px solid var(--ac-grid-border, #dde2eb);
+  background-color: var(--ac-grid-bg-cell, #ffffff);
 }
 
 .ac-grid .grid-row:hover {
-  background-color: #f0f4f7;
+  background-color: var(--ac-grid-bg-hover, #f0f4f7);
 }
 
 .ac-grid .grid-row[data-selected="true"] {
-  background-color: #e6f7ff;
+  background-color: var(--ac-grid-bg-selected, #e6f7ff);
 }
 
 /* Cells */
@@ -129,7 +130,7 @@
   padding: 0 12px;
   line-height: 32px; /* Match row height */
   border-right: 1px solid transparent; /* Cleaner look */
-  color: #181d1f;
+  color: var(--ac-grid-text-primary, #181d1f);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -137,14 +138,14 @@
 
 /* Floating Filters */
 .ac-grid .floating-filter-row {
-  background-color: #f8f8f8;
-  border-bottom: 1px solid #babfc7;
+  background-color: var(--ac-grid-bg-header, #f8f8f8);
+  border-bottom: 1px solid var(--ac-grid-border, #babfc7);
 }
 
 .ac-grid .floating-filter-cell {
   padding: 4px 8px;
-  background-color: #f8f8f8;
-  border-right: 1px solid #dde2eb;
+  background-color: var(--ac-grid-bg-header, #f8f8f8);
+  border-right: 1px solid var(--ac-grid-border, #dde2eb);
   display: flex;
   align-items: center;
   height: 32px;
@@ -154,15 +155,15 @@
   width: 100%;
   padding: 4px;
   font-size: 12px;
-  border: 1px solid #babfc7;
-  border-radius: 3px;
-  background-color: #ffffff;
-  color: #181d1f;
+  border: 1px solid var(--ac-grid-border, #babfc7);
+  border-radius: var(--ac-grid-border-radius-sm, 3px);
+  background-color: var(--ac-grid-bg-cell, #ffffff);
+  color: var(--ac-grid-text-primary, #181d1f);
 }
 
 .ac-grid .filter-input.floating:focus {
   outline: none;
-  border-color: #2196f3;
+  border-color: var(--ac-grid-primary, #2196f3);
 }
 
 /* Scrollbars */
@@ -171,11 +172,11 @@
   height: 10px;
 }
 .ac-grid .grid-body::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--ac-grid-text-secondary, #c1c1c1);
   border-radius: 5px;
 }
 .ac-grid .grid-body::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--ac-grid-bg-hover, #f1f1f1);
 }
 
 /* Drag Handles */
@@ -183,9 +184,9 @@
   background: none;
   border: none;
   cursor: grab;
-  color: #babfc7;
+  color: var(--ac-grid-text-secondary, #babfc7);
   padding: 0;
 }
 .ac-grid .drag-handle-button:hover {
-  color: #181d1f;
+  color: var(--ac-grid-text-primary, #181d1f);
 }

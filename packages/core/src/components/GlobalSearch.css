@@ -1,11 +1,24 @@
+/* 使用主题变量，与网格主题一致 */
 .global-search {
     display: flex;
     align-items: center;
     width: 100%;
 }
+
 .global-search-input {
     width: 100%;
     padding: 8px;
     border: 1px solid var(--ac-grid-border, #ddd);
-    border-radius: 4px;
+    border-radius: var(--ac-grid-border-radius-md, 4px);
+    background: var(--ac-grid-bg-cell, #fff);
+    color: var(--ac-grid-text-primary, #181d1f);
+}
+
+.global-search-input::placeholder {
+    color: var(--ac-grid-text-disabled, #94a3b8);
+}
+
+.global-search-input:focus {
+    outline: none;
+    border-color: var(--ac-grid-primary, #8b5cf6);
 }

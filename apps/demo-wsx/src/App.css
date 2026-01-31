@@ -1,5 +1,6 @@
 /**
- * Demo App Styles - Standard Light Theme (AG Grid Alpine Style)
+ * Demo App Styles - 使用 AC Grid 主题变量，与网格主题一致
+ * themeManager.applyTheme() 会将变量设置到 document.documentElement
  */
 
 * {
@@ -8,8 +9,8 @@
 
 body {
     margin: 0;
-    background-color: #f0f2f5;
-    color: #181d1f;
+    background-color: var(--ac-grid-bg-hover, #f0f2f5);
+    color: var(--ac-grid-text-primary, #181d1f);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -25,18 +26,18 @@ body {
     width: 100%;
     max-width: 1200px;
     height: calc(100vh - 40px);
-    background: #ffffff;
-    border: 1px solid #babfc7;
+    background: var(--ac-grid-bg-cell, #ffffff);
+    border: 1px solid var(--ac-grid-border, #babfc7);
     display: flex;
     flex-direction: column;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: var(--ac-grid-shadow-md, 0 2px 5px rgba(0, 0, 0, 0.1));
 }
 
 /* Header */
 .demo-header {
     padding: 16px 24px;
-    background: #f8f8f8;
-    border-bottom: 1px solid #babfc7;
+    background: var(--ac-grid-bg-header, #f8f8f8);
+    border-bottom: 1px solid var(--ac-grid-border, #babfc7);
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -45,7 +46,7 @@ body {
 .demo-header h1 {
     margin: 0;
     font-size: 20px;
-    color: #181d1f;
+    color: var(--ac-grid-text-primary, #181d1f);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -57,14 +58,14 @@ body {
 
 .demo-header .subtitle {
     font-size: 13px;
-    color: #585d61;
+    color: var(--ac-grid-text-secondary, #585d61);
 }
 
 /* Toolbar */
 .demo-toolbar {
     padding: 12px 24px;
-    background: #ffffff;
-    border-bottom: 1px solid #dde2eb;
+    background: var(--ac-grid-bg-cell, #ffffff);
+    border-bottom: 1px solid var(--ac-grid-border, #dde2eb);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -72,10 +73,10 @@ body {
 
 .demo-button {
     padding: 6px 12px;
-    background: #ffffff;
-    border: 1px solid #babfc7;
-    border-radius: 3px;
-    color: #181d1f;
+    background: var(--ac-grid-bg-cell, #ffffff);
+    border: 1px solid var(--ac-grid-border, #babfc7);
+    border-radius: var(--ac-grid-border-radius-sm, 3px);
+    color: var(--ac-grid-text-primary, #181d1f);
     font-size: 13px;
     cursor: pointer;
     display: flex;
@@ -84,8 +85,8 @@ body {
 }
 
 .demo-button:hover {
-    background: #f0f0f0;
-    border-color: #686c6f;
+    background: var(--ac-grid-bg-hover, #f0f0f0);
+    border-color: var(--ac-grid-primary, #686c6f);
 }
 
 /* Grid Container */
@@ -103,15 +104,16 @@ body {
 /* Footer */
 .demo-footer {
     padding: 12px 24px;
-    background: #f8f8f8;
-    border-top: 1px solid #babfc7;
+    background: var(--ac-grid-bg-header, #f8f8f8);
+    border-top: 1px solid var(--ac-grid-border, #babfc7);
     font-size: 12px;
-    color: #585d61;
+    color: var(--ac-grid-text-secondary, #585d61);
 }
 
 .demo-footer p {
     margin: 0 0 8px 0;
     font-weight: 600;
+    color: var(--ac-grid-text-primary, #181d1f);
 }
 
 .demo-footer ul {

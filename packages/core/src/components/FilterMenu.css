@@ -1,11 +1,12 @@
+/* 使用主题变量，未应用主题时回退到默认色 */
 .filter-menu {
-    padding: 8px;
-    background: #ffffff;
-    border: 1px solid #babfc7;
-    border-radius: 3px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: var(--ac-grid-spacing-sm, 8px);
+    background: var(--ac-grid-bg-cell, #ffffff);
+    border: 1px solid var(--ac-grid-border, #babfc7);
+    border-radius: var(--ac-grid-border-radius-sm, 3px);
+    box-shadow: var(--ac-grid-shadow-md, 0 2px 5px rgba(0, 0, 0, 0.2));
     min-width: 200px;
-    color: #181d1f;
+    color: var(--ac-grid-text-primary, #181d1f);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size: 13px;
     z-index: 1000;
@@ -14,33 +15,33 @@
 .filter-input-container {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--ac-grid-spacing-sm, 8px);
 }
 
-.filter-operator, 
+.filter-operator,
 .filter-input {
     padding: 4px 8px;
-    border: 1px solid #babfc7;
-    border-radius: 3px;
-    background: #ffffff;
-    color: #181d1f;
+    border: 1px solid var(--ac-grid-border, #babfc7);
+    border-radius: var(--ac-grid-border-radius-sm, 3px);
+    background: var(--ac-grid-bg-cell, #ffffff);
+    color: var(--ac-grid-text-primary, #181d1f);
     font-size: 13px;
     width: 100%;
     box-sizing: border-box;
     height: 28px;
 }
 
-.filter-operator:focus, 
+.filter-operator:focus,
 .filter-input:focus {
     outline: none;
-    border-color: #2196f3;
+    border-color: var(--ac-grid-primary, #2196f3);
 }
 
 .filter-operator option {
-    background-color: #ffffff;
-    color: #181d1f;
+    background-color: var(--ac-grid-bg-cell, #ffffff);
+    color: var(--ac-grid-text-primary, #181d1f);
 }
 
 .filter-input::placeholder {
-    color: #949494;
+    color: var(--ac-grid-text-disabled, #949494);
 }

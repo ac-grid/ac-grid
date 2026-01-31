@@ -48,11 +48,13 @@ export class FilterInput extends LightComponent {
         try {
             if (val && val.startsWith("{")) {
                 const parsed = JSON.parse(val);
-                this.operator = parsed.operator || "contains";
-                this.inputValue = parsed.value || "";
+                this.operator = parsed.operator ?? "contains";
+                this.inputValue = parsed.value ?? "";
             } else {
                 this.inputValue = val || "";
-                this.operator = "contains";
+                const colDef = this._column?.columnDef as ColumnDef<any>;
+                const isNumber = colDef?.filterType === "number";
+                this.operator = isNumber ? "equals" : "contains";
             }
         } catch {
             this.inputValue = val || "";
@@ -87,14 +89,25 @@ export class FilterInput extends LightComponent {
         const type = colDef?.filterType === "number" ? "number" : "text";
 
         if (type === "number") {
-             return (
-                <input
-                    type="number"
-                    className="filter-input"
-                    value={this.inputValue}
-                    onInput={this.handleInput}
-                    placeholder="Filter number..."
-                />
+            return (
+                <div className="filter-input-container">
+                    <select
+                        className="filter-operator"
+                        value={this.operator}
+                        onChange={this.handleOperatorChange}
+                    >
+                        <option value="equals">Equals</option>
+                        <option value="greaterThan">Greater than</option>
+                        <option value="lessThan">Less than</option>
+                    </select>
+                    <input
+                        type="number"
+                        className="filter-input"
+                        value={this.inputValue}
+                        onInput={this.handleInput}
+                        placeholder="Filter number..."
+                    />
+                </div>
             );
         }
 
