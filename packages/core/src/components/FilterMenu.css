@@ -1,7 +1,56 @@
 .filter-menu {
     padding: 8px;
-    background: var(--ac-grid-bg, #fff);
-    border: 1px solid var(--ac-grid-border, #ddd);
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    background: var(--ac-grid-bg-header, rgba(30, 27, 75, 0.95)); /* Dark blue background */
+    border: 1px solid var(--ac-grid-border, rgba(139, 92, 246, 0.3));
+    border-radius: var(--ac-grid-border-radius-lg, 0.5rem);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Stronger shadow for floating */
+    min-width: 220px;
+    backdrop-filter: blur(12px);
+    color: var(--ac-grid-text-primary, #e2e8f0);
+    z-index: 1000;
+}
+
+.filter-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filter-operator, 
+.filter-input {
+    padding: 8px 12px;
+    border: 1px solid var(--ac-grid-border, rgba(139, 92, 246, 0.3));
+    border-radius: var(--ac-grid-border-radius-sm, 4px);
+    background: rgba(0, 0, 0, 0.2); /* Darker input background */
+    color: var(--ac-grid-text-primary, #f1f5f9);
+    font-size: 13px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.filter-operator:hover,
+.filter-input:hover {
+    border-color: var(--ac-grid-primary, #8b5cf6);
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.filter-operator:focus, 
+.filter-input:focus {
+    outline: none;
+    border-color: var(--ac-grid-primary, #8b5cf6);
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+/* Dropdown options styling */
+.filter-operator option {
+    background-color: #1e1b4b; /* Dark background for options */
+    color: #e2e8f0;
+}
+
+/* Placeholder color */
+.filter-input::placeholder {
+    color: rgba(226, 232, 240, 0.4);
 }

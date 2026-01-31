@@ -19,7 +19,7 @@ export class FilterInput extends LightComponent {
     set value(val: string) {
         if (val !== this._value) {
             this._value = val;
-            this.inputValue = val;
+            this.parseValue(val);
         }
     }
     private _value: string = "";
@@ -29,6 +29,7 @@ export class FilterInput extends LightComponent {
     private _onChange: ((value: string) => void) | undefined;
 
     @state private inputValue: string = "";
+    @state private operator: string = "contains";
 
     onConnected() {
         super.onConnected?.();
@@ -38,23 +39,85 @@ export class FilterInput extends LightComponent {
         if (el.onChange) this.onChange = el.onChange;
     }
 
+    private parseValue(val: string) {
+        try {
+            if (val && val.startsWith("{")) {
+                const parsed = JSON.parse(val);
+                this.operator = parsed.operator || "contains";
+                this.inputValue = parsed.value || "";
+            } else {
+                this.inputValue = val || "";
+                this.operator = "contains";
+            }
+        } catch {
+            this.inputValue = val || "";
+            this.operator = "contains";
+        }
+    }
+
+    private emitChange() {
+        const payload = JSON.stringify({
+            value: this.inputValue,
+            operator: this.operator
+        });
+        this._onChange?.(payload);
+    }
+
     private handleInput = (e: Event) => {
-        const val = (e.target as HTMLInputElement).value;
-        this.inputValue = val;
-        this._onChange?.(val);
+        this.inputValue = (e.target as HTMLInputElement).value;
+        this.emitChange();
+    };
+
+    private handleOperatorChange = (e: Event) => {
+        this.operator = (e.target as HTMLSelectElement).value;
+        this.emitChange();
     };
 
     render() {
+        // Only run parsing if value changed from external source, 
+        // effectively handled by the setter of `value` calling parseValue eventually
+        // But here we rely on state.
+        
         const colDef = this._column?.columnDef as ColumnDef<any>;
         const type = colDef?.filterType === "number" ? "number" : "text";
+
+        if (type === "number") {
+             return (
+                <input
+                    type="number"
+                    className="filter-input"
+                    value={this.inputValue}
+                    onInput={this.handleInput}
+                    placeholder="Filter number..."
+                />
+            );
+        }
+
         return (
-            <input
-                type={type}
-                className="filter-input"
-                value={this.inputValue}
-                onInput={this.handleInput}
-                placeholder="Filter..."
-            />
+            <div className="filter-input-container">
+                <select 
+                    className="filter-operator"
+                    value={this.operator}
+                    onChange={this.handleOperatorChange}
+                >
+                    <option value="contains">Contains</option>
+                    <option value="notContains">Not contains</option>
+                    <option value="equals">Equals</option>
+                    <option value="notEqual">Not equal</option>
+                    <option value="startsWith">Starts with</option>
+                    <option value="endsWith">Ends with</option>
+                    <option value="blank">Blank</option>
+                    <option value="notBlank">Not blank</option>
+                </select>
+                <input
+                    type="text"
+                    className="filter-input"
+                    value={this.inputValue}
+                    onInput={this.handleInput}
+                    placeholder="Filter..."
+                    disabled={this.operator === 'blank' || this.operator === 'notBlank'}
+                />
+            </div>
         );
     }
 }

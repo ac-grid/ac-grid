@@ -104,12 +104,13 @@
   font-size: var(--ac-grid-font-size-sm, 0.875rem);
   border-right: var(--ac-grid-border-width-base, 1px) solid var(--ac-grid-border, rgba(139, 92, 246, 0.3));
   box-sizing: border-box;
-  overflow: hidden;
+  /* overflow: hidden; Removed to allow dropdown overflow */
   text-overflow: ellipsis;
   white-space: nowrap;
   display: flex;
   align-items: center;
   min-height: 2.5rem;
+  position: relative; /* Context for absolute dropdown */
 }
 
 .ac-grid .grid-header-cell:last-child {

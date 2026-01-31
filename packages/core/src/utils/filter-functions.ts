@@ -1,8 +1,43 @@
 export const defaultTextFilter = (row: any, columnId: string, filterValue: unknown) => {
-    const value = row.getValue(columnId);
-    return String(value ?? "")
-        .toLowerCase()
-        .includes(String(filterValue).toLowerCase());
+    const rowValue = String(row.getValue(columnId) ?? "").toLowerCase();
+    
+    let filterStr = String(filterValue);
+    let operator = "contains";
+    let searchTerm = filterStr.toLowerCase();
+
+    // Try to parse complex filter object
+    try {
+        if (filterStr.startsWith("{")) {
+            const parsed = JSON.parse(filterStr);
+            if (parsed.operator) {
+                operator = parsed.operator;
+                searchTerm = (parsed.value ?? "").toLowerCase();
+            }
+        }
+    } catch (e) {
+        // Not a JSON object, use default simple filter
+    }
+
+    switch (operator) {
+        case "equals":
+            return rowValue === searchTerm;
+        case "startsWith":
+            return rowValue.startsWith(searchTerm);
+        case "endsWith":
+            return rowValue.endsWith(searchTerm);
+        case "contains":
+            return rowValue.includes(searchTerm);
+        case "notContains":
+            return !rowValue.includes(searchTerm);
+        case "notEqual":
+            return rowValue !== searchTerm;
+        case "blank":
+            return rowValue === "";
+        case "notBlank":
+            return rowValue !== "";
+        default:
+            return rowValue.includes(searchTerm);
+    }
 };
 
 export const numberFilter = (row: any, columnId: string, filterValue: unknown) => {
