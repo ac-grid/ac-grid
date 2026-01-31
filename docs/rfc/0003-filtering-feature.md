@@ -4,7 +4,8 @@
 **版本**: 0.1.0  
 **作者**: Albert Li  
 **日期**: 2026-01-24  
-**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md), [0002-sorting-feature](./0002-sorting-feature.md)
+**最后更新**: 2026-01-31  
+**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md), [0002-sorting-feature](./completed/0002-sorting-feature.md)
 
 ### 实现状态（当前代码库）
 
@@ -19,6 +20,74 @@
 
 - 启用方式：`filteringConfig={{ enabled: true }}` 或 `enableFiltering={true}`，或通过 `setGlobalFilter`/`setColumnFilter` 触发。
 - 搜索框在 Grid 外：使用 `<wsx-ac-global-search>` + `grid.setGlobalFilter(value)`。
+
+## AG Grid 功能对比
+
+> **对比日期**: 2026-01-31  
+> **AG Grid 版本**: Community Edition (Latest)
+
+### 功能对比矩阵
+
+| Feature | AG Grid (Community) | AC Grid | Status | Priority |
+|---------|---------------------|---------|--------|----------|
+| **列过滤** |||||
+| 启用/禁用列过滤 | `filter: true/false` | `enableColumnFilter: true/false` | ✅ 已实现 | - |
+| 文本过滤 | `agTextColumnFilter` | `filterType: 'text'` | ✅ 已实现 | - |
+| 数字过滤 | `agNumberColumnFilter` | `filterType: 'number'` | ✅ 已实现 | - |
+| 日期过滤 | `agDateColumnFilter` | `filterType: 'date'` | ✅ 已实现 | - |
+| Set Filter (多选) | `agSetColumnFilter` (Enterprise) | ❌ | ⏳ Enterprise feature | P3 |
+| Multi Filter | `agMultiColumnFilter` (Enterprise) | ❌ | ⏳ Enterprise feature | P3 |
+| **过滤选项** |||||
+| Contains/Not Contains | ✅ | ✅ (text) | ✅ 已实现 | - |
+| Equals/Not Equals | ✅ | ✅ (text) | ✅ 已实现 | - |
+| Starts With/Ends With | ✅ | ❌ | ❌ 缺失 | P2 |
+| 大于/小于/范围 | ✅ | ✅ (`>30`, `25-35`) | ✅ 已实现 | - |
+| Blank/Not Blank | ✅ | ❌ | ❌ 缺失 | P3 |
+| 多条件 (AND/OR) | ✅ `maxNumConditions` | ❌ | ❌ 缺失 | P2 |
+| **过滤 UI** |||||
+| 过滤图标 | ✅ | ✅ | ✅ 已实现 | - |
+| 过滤菜单/弹出框 | ✅ | ✅ | ✅ 已实现 | - |
+| 浮动过滤器 (Floating Filter) | ✅ | ❌ | ❌ 缺失 | P2 |
+| Apply/Clear/Reset 按钮 | ✅ `buttons` | ❌ | ❌ 缺失 | P3 |
+| **快速过滤** |||||
+| 全局快速过滤 | ✅ `quickFilterText` | ✅ `globalFilter` | ✅ 已实现 | - |
+| 大小写敏感 | ✅ `caseSensitive` | ❌ (always insensitive) | ❌ 缺失 | P3 |
+| 快速过滤缓存 | ✅ `cacheQuickFilter` | ❌ | ❌ 缺失 | P3 |
+| 自定义快速过滤文本 | ✅ `getQuickFilterText` | ❌ | ❌ 缺失 | P3 |
+| 快速过滤解析器 | ✅ `quickFilterParser` | ❌ | ❌ 缺失 | P3 |
+| **自定义过滤** |||||
+| 自定义过滤函数 | ✅ `filterValueGetter` | ✅ `filterFn` | ✅ 已实现 | - |
+| 文本格式化器 | ✅ `textFormatter` | ❌ | ❌ 缺失 | P2 |
+| 自定义过滤组件 | ✅ | ❌ | ❌ 缺失 | P2 |
+| **编程式 API** |||||
+| 设置过滤 | ✅ `setFilterModel` | ✅ `setColumnFilter` | ✅ 已实现 | - |
+| 获取过滤状态 | ✅ `getFilterModel` | ✅ `getFilterState` | ✅ 已实现 | - |
+| 清除过滤 | ✅ `setFilterModel(null)` | ✅ `clearFilters` | ✅ 已实现 | - |
+| 过滤变更事件 | ✅ `onFilterChanged` | ✅ `onFilterChange` | ✅ 已实现 | - |
+| **性能** |||||
+| 防抖 (debounce) | ✅ `debounceMs` | ⚠️ 待验证 | ⚠️ 需测试 | - |
+| 过滤缓存 | ✅ | ✅ (tanstack) | ✅ 已实现 | - |
+
+### 覆盖率估算
+
+- **核心功能**: ~75% (文本/数字/日期过滤、全局搜索、自定义过滤、API)
+- **高级选项**: ~30% (缺少多条件、浮动过滤器、Apply按钮等)
+- **总体估算**: ~60%
+
+### Phase 2 缺失功能 (优先级排序)
+
+| Priority | Feature | Effort | Description |
+|----------|---------|--------|-------------|
+| P2 | `startsWith`/`endsWith` | 0.5d | 文本过滤增加开头/结尾匹配 |
+| P2 | 多条件过滤 (AND/OR) | 2d | 支持多个条件组合 |
+| P2 | 浮动过滤器 | 2d | 列头下方的内联过滤输入框 |
+| P2 | 文本格式化器 | 0.5d | 过滤前格式化文本（如去除重音符号） |
+| P2 | 自定义过滤组件 | 2d | 允许用户自定义过滤 UI |
+| P3 | `caseSensitive` | 0.5d | 大小写敏感过滤选项 |
+| P3 | Blank/Not Blank | 0.5d | 空值过滤选项 |
+| P3 | Apply/Reset 按钮 | 1d | 过滤菜单增加应用/重置按钮 |
+
+**Phase 2 总估算**: ~9 天
 
 ## 目录
 
