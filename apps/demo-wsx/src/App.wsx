@@ -152,6 +152,7 @@ export class App extends LightComponent {
                                 data={this.data}
                                 columns={this.columns}
                                 filteringConfig={this.filteringConfig}
+                                enable-floating-filter="true"
                             />
                         </div>
                     </div>

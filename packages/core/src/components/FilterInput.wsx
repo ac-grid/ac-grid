@@ -28,6 +28,10 @@ export class FilterInput extends LightComponent {
     set onChange(val: ((value: string) => void) | undefined) { this._onChange = val; }
     private _onChange: ((value: string) => void) | undefined;
 
+    get variant(): "default" | "floating" { return this._variant; }
+    set variant(val: "default" | "floating") { this._variant = val; }
+    private _variant: "default" | "floating" = "default";
+
     @state private inputValue: string = "";
     @state private operator: string = "contains";
 
@@ -37,6 +41,7 @@ export class FilterInput extends LightComponent {
         if (el.column) this.column = el.column;
         if (el.value !== undefined) this.value = el.value;
         if (el.onChange) this.onChange = el.onChange;
+        if (el.variant) this.variant = el.variant;
     }
 
     private parseValue(val: string) {
@@ -90,6 +95,21 @@ export class FilterInput extends LightComponent {
                     onInput={this.handleInput}
                     placeholder="Filter number..."
                 />
+            );
+        }
+
+        if (this._variant === "floating") {
+            return (
+                <div className="filter-input-container floating">
+                    <input
+                        type={type}
+                        className="filter-input floating"
+                        value={this.inputValue}
+                        onInput={this.handleInput}
+                        placeholder="Filter..."
+                        disabled={this.operator === 'blank' || this.operator === 'notBlank'}
+                    />
+                </div>
             );
         }
 

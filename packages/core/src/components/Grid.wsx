@@ -356,6 +356,17 @@ export class Grid extends LightComponent {
     }
     @state private _enableFiltering: boolean = false;
 
+    get enableFloatingFilter(): boolean {
+        return this._enableFloatingFilter;
+    }
+    set enableFloatingFilter(value: boolean) {
+        if (value !== this._enableFloatingFilter) {
+            this._enableFloatingFilter = Boolean(value);
+            this.updateTable();
+        }
+    }
+    @state private _enableFloatingFilter: boolean = false;
+
     private get isFilteringEnabled(): boolean {
         const hasFilterState =
             this.globalFilter !== "" ||
@@ -876,11 +887,15 @@ export class Grid extends LightComponent {
                                     
                                     const isPinnedLeft = column.getIsPinned() === 'left';
                                     const isPinnedRight = column.getIsPinned() === 'right';
+                                    
+                                    // Dynamic zIndex: active filter menu raises the header cell
+                                    const activeZIndex = isFilterMenuOpen ? 100 : undefined;
+                                    
                                     const pinnedStyle = isPinnedLeft 
-                                        ? { left: `${column.getStart("left")}px`, position: 'sticky' as const, zIndex: 3 }
+                                        ? { left: `${column.getStart("left")}px`, position: 'sticky' as const, zIndex: activeZIndex || 3 }
                                         : isPinnedRight
-                                            ? { right: `${column.getAfter("right")}px`, position: 'sticky' as const, zIndex: 3 }
-                                            : {};
+                                            ? { right: `${column.getAfter("right")}px`, position: 'sticky' as const, zIndex: activeZIndex || 3 }
+                                            : (activeZIndex ? { zIndex: activeZIndex } : {});
 
                                     return (
                                         <div
@@ -1026,6 +1041,50 @@ export class Grid extends LightComponent {
                                 })}
                             </div>
                         ))}
+                        {this.isFilteringEnabled && this.enableFloatingFilter && headerGroups.length > 0 && (
+                            <div className="grid-header-row floating-filter-row">
+                                {headerGroups[headerGroups.length - 1].headers.map((header) => {
+                                    if (header.isPlaceholder) {
+                                        return <div key={header.id} className="grid-header-cell" style={{ visibility: 'hidden' }} />;
+                                    }
+                                    
+                                    const column = header.column;
+                                    const canFilter = (column.columnDef as any).enableColumnFilter !== false;
+                                    const filterValue = this.columnFilters[column.id] ?? "";
+                                    
+                                    const isPinnedLeft = column.getIsPinned() === 'left';
+                                    const isPinnedRight = column.getIsPinned() === 'right';
+                                    
+                                    const pinnedStyle = isPinnedLeft 
+                                        ? { left: `${column.getStart("left")}px`, position: 'sticky' as const, zIndex: 3 }
+                                        : isPinnedRight
+                                            ? { right: `${column.getAfter("right")}px`, position: 'sticky' as const, zIndex: 3 }
+                                            : {};
+
+                                    return (
+                                        <div
+                                            key={header.id}
+                                            className="grid-header-cell floating-filter-cell"
+                                            data-pinned={column.getIsPinned() || undefined}
+                                            style={{
+                                                gridColumn: header.colSpan > 1 ? `span ${header.colSpan}` : "auto",
+                                                position: "relative" as const,
+                                                ...pinnedStyle
+                                            }}
+                                        >
+                                            {canFilter ? (
+                                                <wsx-ac-filter-input
+                                                    column={column}
+                                                    value={filterValue}
+                                                    onChange={(val: string) => this.setColumnFilter(column.id, val)}
+                                                    variant="floating"
+                                                />
+                                            ) : null}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
                     {/* Body */}
