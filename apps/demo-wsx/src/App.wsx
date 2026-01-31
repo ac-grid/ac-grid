@@ -17,6 +17,7 @@ export class App extends LightComponent {
 
     private filteringConfig: GridFilteringConfig = {
         enabled: true,
+        floatingFilter: true,
         onFilterChange: (state: FilterState) => {
             console.log("Filter Change:", state);
             // Grid 内部已经管理过滤状态，这里只需要日志记录
@@ -152,7 +153,6 @@ export class App extends LightComponent {
                                 data={this.data}
                                 columns={this.columns}
                                 filteringConfig={this.filteringConfig}
-                                enable-floating-filter="true"
                             />
                         </div>
                     </div>

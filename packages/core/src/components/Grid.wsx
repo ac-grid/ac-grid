@@ -75,6 +75,8 @@ export class Grid extends LightComponent {
     @state private columnFilters: Record<string, string> = {};
     @state private globalFilter: string = "";
     @state private openFilterMenu: string | null = null;
+    @state private filterMenuPosition: { x: number; y: number } = { x: 0, y: 0 };
+    private activeFilterColumn: any = null;
 
     private get columnFiltersArray(): Array<{ id: string; value: unknown }> {
         return Object.entries(this.columnFilters).map(([id, value]) => ({
@@ -497,6 +499,60 @@ export class Grid extends LightComponent {
             this.virtualState = this.virtualizer.getVirtualState();
         });
     };
+
+    private filterMenuContainer: HTMLElement | null = null;
+
+    private updateFilterMenuPortal() {
+        console.log('updateFilterMenuPortal', this.openFilterMenu, !!this.activeFilterColumn);
+        if (this.openFilterMenu && this.activeFilterColumn) {
+            if (!this.filterMenuContainer) {
+                this.filterMenuContainer = document.createElement("div");
+                this.filterMenuContainer.className = "ac-grid-filter-menu-portal";
+                document.body.appendChild(this.filterMenuContainer);
+                
+                const closeHandler = (e: MouseEvent) => {
+                    if (this.filterMenuContainer && !this.filterMenuContainer.contains(e.target as Node)) {
+                         this.openFilterMenu = null;
+                         this.activeFilterColumn = null;
+                         this.updateFilterMenuPortal();
+                         document.removeEventListener('click', closeHandler);
+                    }
+                };
+                setTimeout(() => document.addEventListener('click', closeHandler), 0);
+            }
+
+            this.filterMenuContainer.innerHTML = '';
+            
+            const menu = document.createElement('wsx-ac-filter-menu') as any;
+            menu.column = this.activeFilterColumn;
+            menu.value = this.columnFilters[this.activeFilterColumn.id] ?? "";
+            
+            menu.onChange = (val: string) => {
+                this.setColumnFilter(this.activeFilterColumn.id, val);
+            };
+            menu.onClose = () => {
+                this.openFilterMenu = null;
+                this.activeFilterColumn = null;
+                this.updateFilterMenuPortal();
+            };
+            
+            const { x, y } = this.filterMenuPosition;
+            this.filterMenuContainer.style.position = 'absolute';
+            this.filterMenuContainer.style.top = `${y}px`;
+            this.filterMenuContainer.style.left = `${x}px`;
+            this.filterMenuContainer.style.zIndex = '99999';
+            
+            this.filterMenuContainer.appendChild(menu);
+            
+        } else {
+            if (this.filterMenuContainer) {
+                if (this.filterMenuContainer.parentNode) {
+                    this.filterMenuContainer.parentNode.removeChild(this.filterMenuContainer);
+                }
+                this.filterMenuContainer = null;
+            }
+        }
+    }
 
     private updateVirtualization() {
         if (this.bodyScrollElement && this.table) {
@@ -1014,20 +1070,6 @@ export class Grid extends LightComponent {
                                                     </button>
                                                 </div>
                                             </div>
-                                            {canFilter && isFilterMenuOpen && (
-                                                <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 10 }}>
-                                                    <wsx-ac-filter-menu
-                                                        column={column}
-                                                        value={filterValue}
-                                                        onChange={(val: string) => {
-                                                            this.setColumnFilter(column.id, val);
-                                                        }}
-                                                        onClose={() => {
-                                                            this.openFilterMenu = null;
-                                                        }}
-                                                    />
-                                                </div>
-                                            )}
                                             {canResize && (
                                                 <div
                                                     className={`resizer ${isResizing ? "isResizing" : ""}`}
@@ -1196,6 +1238,10 @@ export class Grid extends LightComponent {
                             onPageSizeChange={(size: number) => this.setPageSize(size)}
                         />
                     )}
+                </div>
+                {/* Trigger portal update side-effect */}
+                <div style={{ display: 'none' }}>
+                     {this.updateFilterMenuPortal() as any}
                 </div>
             </div>
         );
