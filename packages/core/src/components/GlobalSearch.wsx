@@ -40,7 +40,16 @@ export class GlobalSearch extends LightComponent {
     private handleInput = (e: Event) => {
         const val = (e.target as HTMLInputElement).value;
         this.inputValue = val;
-        this._onChange?.(val);
+        // Try direct callback first, then fall back to WSX event listener
+        if (this._onChange) {
+            this._onChange(val);
+        } else {
+            // WSX framework stores onChange as __wsxListener_change
+            const listener = (this as any).__wsxListener_change;
+            if (typeof listener === 'function') {
+                listener(val);
+            }
+        }
     };
 
     render() {

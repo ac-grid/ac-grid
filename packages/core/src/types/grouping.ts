@@ -1,4 +1,4 @@
-import type { GroupingState, AggregationFn } from "@tanstack/table-core";
+import type { GroupingState } from "@tanstack/table-core";
 
 export interface GridGroupingConfig {
     /**
