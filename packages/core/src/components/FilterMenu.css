@@ -1,56 +1,46 @@
 .filter-menu {
     padding: 8px;
-    background: var(--ac-grid-bg-header, rgba(30, 27, 75, 0.95)); /* Dark blue background */
-    border: 1px solid var(--ac-grid-border, rgba(139, 92, 246, 0.3));
-    border-radius: var(--ac-grid-border-radius-lg, 0.5rem);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Stronger shadow for floating */
-    min-width: 220px;
-    backdrop-filter: blur(12px);
-    color: var(--ac-grid-text-primary, #e2e8f0);
+    background: #ffffff;
+    border: 1px solid #babfc7;
+    border-radius: 3px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    min-width: 200px;
+    color: #181d1f;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
     z-index: 1000;
 }
 
 .filter-input-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 .filter-operator, 
 .filter-input {
-    padding: 8px 12px;
-    border: 1px solid var(--ac-grid-border, rgba(139, 92, 246, 0.3));
-    border-radius: var(--ac-grid-border-radius-sm, 4px);
-    background: rgba(0, 0, 0, 0.2); /* Darker input background */
-    color: var(--ac-grid-text-primary, #f1f5f9);
+    padding: 4px 8px;
+    border: 1px solid #babfc7;
+    border-radius: 3px;
+    background: #ffffff;
+    color: #181d1f;
     font-size: 13px;
     width: 100%;
     box-sizing: border-box;
-    transition: all 0.2s ease;
-    font-family: inherit;
-}
-
-.filter-operator:hover,
-.filter-input:hover {
-    border-color: var(--ac-grid-primary, #8b5cf6);
-    background: rgba(0, 0, 0, 0.3);
+    height: 28px;
 }
 
 .filter-operator:focus, 
 .filter-input:focus {
     outline: none;
-    border-color: var(--ac-grid-primary, #8b5cf6);
-    background: rgba(0, 0, 0, 0.4);
-    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    border-color: #2196f3;
 }
 
-/* Dropdown options styling */
 .filter-operator option {
-    background-color: #1e1b4b; /* Dark background for options */
-    color: #e2e8f0;
+    background-color: #ffffff;
+    color: #181d1f;
 }
 
-/* Placeholder color */
 .filter-input::placeholder {
-    color: rgba(226, 232, 240, 0.4);
+    color: #949494;
 }

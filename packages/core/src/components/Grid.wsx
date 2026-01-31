@@ -74,7 +74,17 @@ export class Grid extends LightComponent {
     @state private sorting: SortingState = [];
     @state private columnFilters: Record<string, string> = {};
     @state private globalFilter: string = "";
-    @state private openFilterMenu: string | null = null;
+    
+    get openFilterMenu(): string | null { return this._openFilterMenu; }
+    set openFilterMenu(val: string | null) {
+        if (this._openFilterMenu !== val) {
+            this._openFilterMenu = val;
+            // Update portal when state changes
+            this.updateFilterMenuPortal();
+        }
+    }
+    @state private _openFilterMenu: string | null = null;
+    
     @state private filterMenuPosition: { x: number; y: number } = { x: 0, y: 0 };
     private activeFilterColumn: any = null;
 
@@ -1025,10 +1035,18 @@ export class Grid extends LightComponent {
                                                         <span
                                                             onClick={(e: MouseEvent) => {
                                                                 e.stopPropagation();
-                                                                this.openFilterMenu =
-                                                                    isFilterMenuOpen
-                                                                        ? null
-                                                                        : column.id;
+                                                                if (this.openFilterMenu === column.id) {
+                                                                    this.activeFilterColumn = null;
+                                                                    this.openFilterMenu = null;
+                                                                } else {
+                                                                    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                                                                    this.filterMenuPosition = {
+                                                                        x: rect.left + window.scrollX,
+                                                                        y: rect.bottom + window.scrollY
+                                                                    };
+                                                                    this.activeFilterColumn = column;
+                                                                    this.openFilterMenu = column.id;
+                                                                }
                                                             }}
                                                             style={{ cursor: "pointer" }}
                                                         >
@@ -1239,10 +1257,6 @@ export class Grid extends LightComponent {
                         />
                     )}
                 </div>
-                {/* Trigger portal update side-effect */}
-                <div style={{ display: 'none' }}>
-                     {this.updateFilterMenuPortal() as any}
-                </div>
             </div>
         );
     }
@@ -1306,6 +1320,7 @@ export class Grid extends LightComponent {
         this.notifyFilterChange();
         this.updateTable();
         this.updateVirtualization();
+        this.updateFilterMenuPortal();
     }
 
     /** RFC-0003: 清除所有过滤 */
@@ -1315,6 +1330,7 @@ export class Grid extends LightComponent {
         this.notifyFilterChange();
         this.updateTable();
         this.updateVirtualization();
+        this.updateFilterMenuPortal();
     }
 
     /** RFC-0003: 获取当前过滤状态 */
