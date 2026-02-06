@@ -18,7 +18,7 @@ import {
 import { type ColumnDef } from "../types/column";
 import { arrayMove } from "../utils/array-move";
 import { flexRender } from "../utils/flex-render";
-import type { FilterState, GridFilteringConfig } from "../types/filtering";
+import type { FilterState, GridFilteringConfig, FilterCondition } from "../types/filtering";
 import type { GridResizingConfig } from "../types/resizing";
 import type { GridVirtualizationConfig, VirtualizerState } from "../types/virtualization";
 import type { GridPaginationConfig } from "../types/pagination";
@@ -38,6 +38,8 @@ import "./DraggableTableRow.wsx";
 import "./SortingIndicator.wsx";
 import "./FilterIcon.wsx";
 import "./FilterMenu.wsx";
+// GlobalSearch is needed for tests, but maybe not automatically imported here?
+import "./GlobalSearch.wsx";
 
 /** 默认列宽信息，保证 table.getState().columnSizingInfo 永不为 undefined，避免 "reading 'isResizingColumn'" 报错 */
 const DEFAULT_COLUMN_SIZING_INFO = {
@@ -72,7 +74,7 @@ export class Grid extends LightComponent {
     @state private columnOrder: string[] = [];
     @state private gridData: any[] = [];
     @state private sorting: SortingState = [];
-    @state private columnFilters: Record<string, string> = {};
+    @state private columnFilters: Record<string, FilterCondition | string> = {};
     @state private globalFilter: string = "";
     
     get openFilterMenu(): string | null { return this._openFilterMenu; }
@@ -88,7 +90,7 @@ export class Grid extends LightComponent {
     @state private filterMenuPosition: { x: number; y: number } = { x: 0, y: 0 };
     private activeFilterColumn: any = null;
 
-    private get columnFiltersArray(): Array<{ id: string; value: unknown }> {
+    private get columnFiltersArray(): Array<{ id: string; value: FilterCondition | string }> {
         return Object.entries(this.columnFilters).map(([id, value]) => ({
             id,
             value,
@@ -536,7 +538,7 @@ export class Grid extends LightComponent {
             menu.column = this.activeFilterColumn;
             menu.value = this.columnFilters[this.activeFilterColumn.id] ?? "";
             
-            menu.onChange = (val: string) => {
+            menu.onChange = (val: FilterCondition | string) => {
                 this.setColumnFilter(this.activeFilterColumn.id, val);
             };
             menu.onClose = () => {
@@ -546,6 +548,7 @@ export class Grid extends LightComponent {
             };
             
             const { x, y } = this.filterMenuPosition;
+            // Portal 容器仅设置定位，样式由 CSS 处理
             this.filterMenuContainer.style.position = 'absolute';
             this.filterMenuContainer.style.top = `${y}px`;
             this.filterMenuContainer.style.left = `${x}px`;
@@ -768,16 +771,13 @@ export class Grid extends LightComponent {
             ...(isFilteringEnabled && {
                 onColumnFiltersChange: (updater) => {
                     const currentArray = this.columnFiltersArray;
-                    const newArray =
-                        typeof updater === "function"
-                            ? updater(currentArray)
-                            : currentArray;
-                    const record: Record<string, string> = {};
+                    const newArray = typeof updater === "function" ? updater(currentArray) : currentArray;
+                    const record: Record<string, FilterCondition | string> = {};
                     if (Array.isArray(newArray)) {
                         newArray.forEach((f) => {
-                            if (f?.id != null && f?.value != null) {
-                                const s = String(f.value).trim();
-                                if (s !== "") record[f.id] = s;
+                            if (f?.id != null && f.value != null) {
+                                // 允许空字符串，它表示"清除过滤"或"blank 操作符"
+                                record[f.id] = f.value as FilterCondition | string;
                             }
                         });
                     }
@@ -1304,22 +1304,30 @@ export class Grid extends LightComponent {
         this.updateVirtualization();
     }
 
-    /** RFC-0003: 设置列过滤 */
-    public setColumnFilter(columnId: string, value: string): void {
-        if (value === "") {
-            const next = { ...this.columnFilters };
-            delete next[columnId];
-            this.columnFilters = next;
-        } else {
-            this.columnFilters = {
-                ...this.columnFilters,
-                [columnId]: value,
-            };
+    /**
+     * 将传入的过滤值规范为 FilterCondition | string
+     * 若为 JSON 字符串（如 '{"value":"B","operator":"contains"}'）则解析为对象再存储，
+     * 避免跨自定义元素时被序列化导致 filterFn 收到整串而匹配不到任何行
+     */
+    private normalizeColumnFilterValue(condition: FilterCondition | string): FilterCondition | string {
+        if (typeof condition !== "string") return condition;
+        const trimmed = condition.trim();
+        if (!trimmed.startsWith("{")) return condition;
+        try {
+            const parsed = JSON.parse(condition) as FilterCondition;
+            return parsed?.value !== undefined && parsed?.operator ? parsed : condition;
+        } catch {
+            return condition;
         }
+    }
+
+    /** RFC-0003: 设置列过滤 */
+    public setColumnFilter(columnId: string, condition: FilterCondition | string): void {
+        const normalized = this.normalizeColumnFilterValue(condition);
+        this.columnFilters = { ...this.columnFilters, [columnId]: normalized };
         this.notifyFilterChange();
         this.updateTable();
         this.updateVirtualization();
-        this.updateFilterMenuPortal();
     }
 
     /** RFC-0003: 清除所有过滤 */

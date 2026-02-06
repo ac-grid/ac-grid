@@ -1,29 +1,28 @@
-/* 使用主题变量，未应用主题时回退到默认色 */
+/* 过滤菜单 - 继承 portal 容器样式 */
 .filter-menu {
-    padding: var(--ac-grid-spacing-sm, 8px);
-    background: var(--ac-grid-bg-cell, #ffffff);
-    border: 1px solid var(--ac-grid-border, #babfc7);
-    border-radius: var(--ac-grid-border-radius-sm, 3px);
-    box-shadow: var(--ac-grid-shadow-md, 0 2px 5px rgba(0, 0, 0, 0.2));
+    padding: 8px;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
     min-width: 200px;
-    color: var(--ac-grid-text-primary, #181d1f);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 13px;
-    z-index: 1000;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
 }
 
 .filter-input-container {
     display: flex;
     flex-direction: column;
-    gap: var(--ac-grid-spacing-sm, 8px);
+    gap: 8px;
 }
 
 .filter-operator,
 .filter-input {
     padding: 4px 8px;
     border: 1px solid var(--ac-grid-border, #babfc7);
-    border-radius: var(--ac-grid-border-radius-sm, 3px);
-    background: var(--ac-grid-bg-cell, #ffffff);
+    border-radius: 3px;
+    background-color: var(--ac-grid-bg-cell, #ffffff);
     color: var(--ac-grid-text-primary, #181d1f);
     font-size: 13px;
     width: 100%;
@@ -44,4 +43,29 @@
 
 .filter-input::placeholder {
     color: var(--ac-grid-text-disabled, #949494);
+}
+
+/* ========== 数字输入框原生 Spinner 样式 ========== */
+/* Webkit (Chrome, Safari, Edge) */
+.filter-input[type="number"]::-webkit-inner-spin-button,
+.filter-input[type="number"]::-webkit-outer-spin-button {
+    opacity: 1;
+    height: 100%;
+    width: 20px;
+    cursor: pointer;
+    background-color: var(--ac-grid-bg-header, #f8f8f8);
+    border-left: 1px solid var(--ac-grid-border, #babfc7);
+    border-radius: 0 3px 3px 0;
+    margin: 0;
+    padding: 0;
+}
+
+.filter-input[type="number"]::-webkit-inner-spin-button:hover,
+.filter-input[type="number"]::-webkit-outer-spin-button:hover {
+    background-color: var(--ac-grid-bg-hover, #e5e5e5);
+}
+
+.filter-input[type="number"]::-webkit-inner-spin-button:active,
+.filter-input[type="number"]::-webkit-outer-spin-button:active {
+    background-color: var(--ac-grid-primary, #2196f3);
 }

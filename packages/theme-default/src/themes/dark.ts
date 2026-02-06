@@ -16,6 +16,7 @@ export const darkTheme: ACGridTheme = {
         bgHeader: "#1f2937",
         bgHover: "#374151",
         bgCell: "#111827",
+        bgPopup: "#111827", // 弹出菜单背景（不透明）
         bgSelected: "#4c1d95",
         textPrimary: "#f9fafb",
         textSecondary: "#d1d5db",

@@ -1,0 +1,323 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
+import "./Dropdown.css";
+
+/** Dropdown 选项接口 */
+export interface DropdownOption {
+    /** 选项值（提交/比较用） */
+    value: string;
+    /** 选项显示文本 */
+    label: string;
+    /** 是否禁用此选项 */
+    disabled?: boolean;
+}
+
+export interface DropdownProps {
+    /** 选项列表，支持 { value, label } 或字符串数组 */
+    options: DropdownOption[] | string[];
+    /** 当前选中值（受控） */
+    value: string;
+    /** 选中变更回调 */
+    onChange: (value: string) => void;
+    /** 占位符文本 */
+    placeholder?: string;
+    /** 是否禁用 */
+    disabled?: boolean;
+    /** 自定义类名 */
+    className?: string;
+}
+
+/** 将 options 统一为 DropdownOption[] 格式 */
+function normalizeOptions(options: DropdownOption[] | string[]): DropdownOption[] {
+    if (!Array.isArray(options)) return [];
+    return options.map((opt) =>
+        typeof opt === "string" ? { value: opt, label: opt } : opt
+    );
+}
+
+/**
+ * Dropdown - 自定义下拉选择组件
+ * 不使用原生 <select>，完全自定义 UI
+ */
+@autoRegister({ tagName: "wsx-ac-dropdown" })
+export class Dropdown extends LightComponent {
+    // ========== Props ==========
+    get options(): DropdownOption[] | string[] {
+        return this._options;
+    }
+    set options(val: DropdownOption[] | string[]) {
+        this._options = Array.isArray(val) ? val : [];
+    }
+    private _options: DropdownOption[] | string[] = [];
+
+    get value(): string {
+        return this._value;
+    }
+    set value(val: string) {
+        const next = val == null ? "" : String(val);
+        if (next !== this._value) {
+            this._value = next;
+        }
+    }
+    private _value: string = "";
+
+    get onChange(): ((value: string) => void) | undefined {
+        return this._onChange;
+    }
+    set onChange(val: ((value: string) => void) | undefined) {
+        this._onChange = val;
+    }
+    private _onChange: ((value: string) => void) | undefined;
+
+    get placeholder(): string {
+        return this._placeholder;
+    }
+    set placeholder(val: string) {
+        this._placeholder = val ?? "";
+    }
+    private _placeholder: string = "";
+
+    get disabled(): boolean {
+        return this._disabled;
+    }
+    set disabled(val: boolean) {
+        this._disabled = Boolean(val);
+    }
+    private _disabled: boolean = false;
+
+    get className(): string {
+        return this._className;
+    }
+    set className(val: string) {
+        this._className = val ?? "";
+    }
+    private _className: string = "";
+
+    // ========== State ==========
+    /** 下拉菜单是否展开 */
+    @state private isOpen: boolean = false;
+    /** 键盘导航高亮索引 */
+    @state private highlightedIndex: number = -1;
+
+    // ========== Refs ==========
+    private triggerRef: HTMLElement | null = null;
+    private listRef: HTMLElement | null = null;
+
+    // ========== Lifecycle ==========
+    onConnected() {
+        super.onConnected?.();
+        const el = this as any;
+        if (el.options !== undefined) this.options = el.options;
+        if (el.value !== undefined) this.value = el.value;
+        if (el.onChange) this.onChange = el.onChange;
+        if (el.placeholder !== undefined) this.placeholder = el.placeholder;
+        if (el.disabled !== undefined) this.disabled = el.disabled;
+        if (el.className !== undefined) this.className = el.className;
+
+        // 全局点击监听，用于关闭下拉
+        document.addEventListener("click", this.handleDocumentClick);
+        document.addEventListener("keydown", this.handleGlobalKeyDown);
+    }
+
+    onDisconnected() {
+        super.onDisconnected?.();
+        document.removeEventListener("click", this.handleDocumentClick);
+        document.removeEventListener("keydown", this.handleGlobalKeyDown);
+    }
+
+    // ========== Handlers ==========
+    /** 文档点击：若点击在组件外部则关闭 */
+    private handleDocumentClick = (e: MouseEvent) => {
+        if (!this.isOpen) return;
+        const target = e.target as Node;
+        // 检查是否点击在组件内部
+        if (this.triggerRef && this.triggerRef.contains(target)) return;
+        if (this.listRef && this.listRef.contains(target)) return;
+        this.closeDropdown();
+    };
+
+    /** 全局键盘事件：仅在展开时处理 */
+    private handleGlobalKeyDown = (e: KeyboardEvent) => {
+        if (!this.isOpen) return;
+        const opts = normalizeOptions(this._options);
+        const enabledCount = opts.filter((o) => !o.disabled).length;
+        if (enabledCount === 0) return;
+
+        switch (e.key) {
+            case "ArrowDown":
+                e.preventDefault();
+                this.moveHighlight(1, opts);
+                break;
+            case "ArrowUp":
+                e.preventDefault();
+                this.moveHighlight(-1, opts);
+                break;
+            case "Enter":
+                e.preventDefault();
+                if (this.highlightedIndex >= 0 && this.highlightedIndex < opts.length) {
+                    const opt = opts[this.highlightedIndex];
+                    if (!opt.disabled) {
+                        this.selectOption(opt.value);
+                    }
+                }
+                break;
+            case "Escape":
+                e.preventDefault();
+                this.closeDropdown();
+                break;
+            case "Tab":
+                this.closeDropdown();
+                break;
+        }
+    };
+
+    /** 移动高亮索引，跳过禁用项 */
+    private moveHighlight(delta: number, opts: DropdownOption[]) {
+        if (opts.length === 0) return;
+        let newIndex = this.highlightedIndex + delta;
+
+        // 循环边界
+        if (newIndex < 0) newIndex = opts.length - 1;
+        if (newIndex >= opts.length) newIndex = 0;
+
+        // 跳过禁用项（最多循环一圈）
+        let attempts = 0;
+        while (opts[newIndex]?.disabled && attempts < opts.length) {
+            newIndex += delta > 0 ? 1 : -1;
+            if (newIndex < 0) newIndex = opts.length - 1;
+            if (newIndex >= opts.length) newIndex = 0;
+            attempts++;
+        }
+
+        this.highlightedIndex = newIndex;
+        this.scrollToHighlighted();
+    }
+
+    /** 滚动列表使高亮项可见 */
+    private scrollToHighlighted() {
+        if (!this.listRef) return;
+        const item = this.listRef.querySelector(`[data-index="${this.highlightedIndex}"]`) as HTMLElement;
+        if (item) {
+            item.scrollIntoView({ block: "nearest" });
+        }
+    }
+
+    /** 点击触发器：切换展开/关闭 */
+    private handleTriggerClick = (e: MouseEvent) => {
+        e.stopPropagation();
+        if (this._disabled) return;
+        if (this.isOpen) {
+            this.closeDropdown();
+        } else {
+            this.openDropdown();
+        }
+    };
+
+    /** 展开下拉 */
+    private openDropdown() {
+        this.isOpen = true;
+        // 高亮当前选中项
+        const opts = normalizeOptions(this._options);
+        const selectedIdx = opts.findIndex((o) => o.value === this._value);
+        this.highlightedIndex = selectedIdx >= 0 ? selectedIdx : 0;
+    }
+
+    /** 关闭下拉 */
+    private closeDropdown() {
+        this.isOpen = false;
+        this.highlightedIndex = -1;
+    }
+
+    /** 选中选项 */
+    private selectOption(value: string) {
+        this._value = value;
+        this._onChange?.(value);
+        this.closeDropdown();
+    }
+
+    /** 鼠标悬停选项 */
+    private handleOptionMouseEnter = (index: number) => {
+        this.highlightedIndex = index;
+    };
+
+    /** 点击选项 */
+    private handleOptionClick = (e: MouseEvent, opt: DropdownOption) => {
+        e.stopPropagation();
+        if (opt.disabled) return;
+        this.selectOption(opt.value);
+    };
+
+    // ========== Render ==========
+    render() {
+        const opts = normalizeOptions(this._options);
+        const selectedOpt = opts.find((o) => o.value === this._value);
+        const displayText = selectedOpt ? selectedOpt.label : this._placeholder || "Select...";
+        const hasValue = !!selectedOpt;
+
+        const containerClasses = [
+            "ac-dropdown",
+            this.isOpen ? "ac-dropdown--open" : "",
+            this._disabled ? "ac-dropdown--disabled" : "",
+            this._className,
+        ].filter(Boolean).join(" ");
+
+        return (
+            <div className={containerClasses}>
+                {/* 触发器 */}
+                <button
+                    type="button"
+                    className="ac-dropdown__trigger"
+                    ref={(el: HTMLElement | null) => { this.triggerRef = el; }}
+                    onClick={this.handleTriggerClick}
+                    disabled={this._disabled}
+                    aria-haspopup="listbox"
+                    aria-expanded={this.isOpen}
+                >
+                    <span className={`ac-dropdown__value ${hasValue ? "" : "ac-dropdown__value--placeholder"}`}>
+                        {displayText}
+                    </span>
+                    <span className="ac-dropdown__arrow">
+                        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </span>
+                </button>
+
+                {/* 下拉列表 */}
+                {this.isOpen && (
+                    <ul
+                        className="ac-dropdown__list"
+                        ref={(el: HTMLElement | null) => { this.listRef = el; }}
+                        role="listbox"
+                    >
+                        {opts.map((opt, index) => {
+                            const isSelected = opt.value === this._value;
+                            const isHighlighted = index === this.highlightedIndex;
+                            const itemClasses = [
+                                "ac-dropdown__item",
+                                isSelected ? "ac-dropdown__item--selected" : "",
+                                isHighlighted ? "ac-dropdown__item--highlighted" : "",
+                                opt.disabled ? "ac-dropdown__item--disabled" : "",
+                            ].filter(Boolean).join(" ");
+
+                            return (
+                                <li
+                                    key={opt.value}
+                                    data-index={index}
+                                    className={itemClasses}
+                                    role="option"
+                                    aria-selected={isSelected}
+                                    aria-disabled={opt.disabled}
+                                    onMouseEnter={() => this.handleOptionMouseEnter(index)}
+                                    onClick={(e: MouseEvent) => this.handleOptionClick(e, opt)}
+                                >
+                                    {opt.label}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                )}
+            </div>
+        );
+    }
+}

@@ -2,11 +2,13 @@
 import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
 import type { Column } from "@tanstack/table-core";
 import { type ColumnDef } from "../types/column";
+import { type FilterCondition, type FilterOperator } from "../types/filtering";
+import "./Dropdown.wsx";
 
 export interface FilterInputProps {
     column: Column<any, unknown>;
-    value: string;
-    onChange: (value: string) => void;
+    value: FilterCondition | string;
+    onChange: (condition: FilterCondition) => void;
 }
 
 @autoRegister({ tagName: "wsx-ac-filter-input" })
@@ -15,25 +17,25 @@ export class FilterInput extends LightComponent {
     set column(val: Column<any, unknown>) { this._column = val; }
     private _column: Column<any, unknown> = null as any;
 
-    get value(): string { return this._value; }
-    set value(val: string) {
+    get value(): FilterCondition | string { return this._value; }
+    set value(val: FilterCondition | string) {
         if (val !== this._value) {
             this._value = val;
             this.parseValue(val);
         }
     }
-    private _value: string = "";
+    private _value: FilterCondition | string = "";
 
-    get onChange(): ((value: string) => void) | undefined { return this._onChange; }
-    set onChange(val: ((value: string) => void) | undefined) { this._onChange = val; }
-    private _onChange: ((value: string) => void) | undefined;
+    get onChange(): ((condition: FilterCondition) => void) | undefined { return this._onChange; }
+    set onChange(val: ((condition: FilterCondition) => void) | undefined) { this._onChange = val; }
+    private _onChange: ((condition: FilterCondition) => void) | undefined;
 
     get variant(): "default" | "floating" { return this._variant; }
     set variant(val: "default" | "floating") { this._variant = val; }
     private _variant: "default" | "floating" = "default";
 
     @state private inputValue: string = "";
-    @state private operator: string = "contains";
+    @state private operator: FilterOperator = "contains";
 
     onConnected() {
         super.onConnected?.();
@@ -44,29 +46,25 @@ export class FilterInput extends LightComponent {
         if (el.variant) this.variant = el.variant;
     }
 
-    private parseValue(val: string) {
-        try {
-            if (val && val.startsWith("{")) {
-                const parsed = JSON.parse(val);
-                this.operator = parsed.operator ?? "contains";
-                this.inputValue = parsed.value ?? "";
-            } else {
-                this.inputValue = val || "";
-                const colDef = this._column?.columnDef as ColumnDef<any>;
-                const isNumber = colDef?.filterType === "number";
-                this.operator = isNumber ? "equals" : "contains";
-            }
-        } catch {
+    private parseValue(val: FilterCondition | string) {
+        if (typeof val === "string") {
+            // 字符串输入：设置值并根据列类型选择默认操作符
             this.inputValue = val || "";
-            this.operator = "contains";
+            const colDef = this._column?.columnDef as ColumnDef<any>;
+            const isNumber = colDef?.filterType === "number";
+            this.operator = isNumber ? "equals" : "contains";
+        } else {
+            // FilterCondition 对象输入：直接解构赋值
+            this.inputValue = val.value ?? "";
+            this.operator = val.operator ?? "contains";
         }
     }
 
     private emitChange() {
-        const payload = JSON.stringify({
+        const payload: FilterCondition = {
             value: this.inputValue,
             operator: this.operator
-        });
+        };
         this._onChange?.(payload);
     }
 
@@ -80,26 +78,46 @@ export class FilterInput extends LightComponent {
         this.emitChange();
     };
 
+    /** Dropdown operator change handler (receives operator string directly) */
+    private handleDropdownChange = (newOperator: FilterOperator) => {
+        this.operator = newOperator;
+        this.emitChange();
+    };
+
     render() {
-        // Only run parsing if value changed from external source, 
-        // effectively handled by the setter of `value` calling parseValue eventually
-        // But here we rely on state.
-        
+        // 获取列定义，判断过滤类型
         const colDef = this._column?.columnDef as ColumnDef<any>;
         const type = colDef?.filterType === "number" ? "number" : "text";
 
+        // 数字过滤选项
+        const numberOptions = [
+            { value: "equals", label: "Equals" },
+            { value: "greaterThan", label: "Greater than" },
+            { value: "lessThan", label: "Less than" },
+        ];
+
+        // 文本过滤选项
+        const textOptions = [
+            { value: "contains", label: "Contains" },
+            { value: "notContains", label: "Not contains" },
+            { value: "equals", label: "Equals" },
+            { value: "notEqual", label: "Not equal" },
+            { value: "startsWith", label: "Starts with" },
+            { value: "endsWith", label: "Ends with" },
+            { value: "blank", label: "Blank" },
+            { value: "notBlank", label: "Not blank" },
+        ];
+
+        // 数字类型过滤 UI
         if (type === "number") {
             return (
                 <div className="filter-input-container">
-                    <select
-                        className="filter-operator"
+                    <wsx-ac-dropdown
+                        options={numberOptions}
                         value={this.operator}
-                        onChange={this.handleOperatorChange}
-                    >
-                        <option value="equals">Equals</option>
-                        <option value="greaterThan">Greater than</option>
-                        <option value="lessThan">Less than</option>
-                    </select>
+                        onChange={this.handleDropdownChange}
+                        placeholder="Select operator"
+                    />
                     <input
                         type="number"
                         className="filter-input"
@@ -111,11 +129,12 @@ export class FilterInput extends LightComponent {
             );
         }
 
+        // 浮动过滤器（简化 UI，只显示输入框）
         if (this._variant === "floating") {
             return (
                 <div className="filter-input-container floating">
                     <input
-                        type={type}
+                        type="text"
                         className="filter-input floating"
                         value={this.inputValue}
                         onInput={this.handleInput}
@@ -126,22 +145,15 @@ export class FilterInput extends LightComponent {
             );
         }
 
+        // 默认文本类型过滤 UI
         return (
             <div className="filter-input-container">
-                <select 
-                    className="filter-operator"
+                <wsx-ac-dropdown
+                    options={textOptions}
                     value={this.operator}
-                    onChange={this.handleOperatorChange}
-                >
-                    <option value="contains">Contains</option>
-                    <option value="notContains">Not contains</option>
-                    <option value="equals">Equals</option>
-                    <option value="notEqual">Not equal</option>
-                    <option value="startsWith">Starts with</option>
-                    <option value="endsWith">Ends with</option>
-                    <option value="blank">Blank</option>
-                    <option value="notBlank">Not blank</option>
-                </select>
+                    onChange={this.handleDropdownChange}
+                    placeholder="Select operator"
+                />
                 <input
                     type="text"
                     className="filter-input"

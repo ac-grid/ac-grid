@@ -16,6 +16,7 @@ export const violetTheme: ACGridTheme = {
         bgHeader: "rgba(49, 46, 129, 0.6)", // 深紫色表头背景
         bgHover: "rgba(76, 29, 149, 0.4)", // 悬停效果
         bgCell: "rgba(30, 27, 75, 0.5)", // 深色单元格背景
+        bgPopup: "#1e1b4b", // 弹出菜单背景（不透明深紫色）
         bgSelected: "rgba(109, 40, 217, 0.3)", // 紫色选中状态
         textPrimary: "#c4b5fd", // Violet 300 - 浅紫色文字
         textSecondary: "rgba(196, 181, 253, 0.7)", // 次要文字

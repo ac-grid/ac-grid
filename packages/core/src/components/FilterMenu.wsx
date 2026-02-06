@@ -3,6 +3,7 @@ import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
 import "./FilterMenu.css";
 import "./FilterInput.wsx";
 import type { Column } from "@tanstack/table-core";
+import { type FilterCondition } from "../types/filtering";
 
 @autoRegister({ tagName: "wsx-ac-filter-menu" })
 export class FilterMenu extends LightComponent {
@@ -10,13 +11,13 @@ export class FilterMenu extends LightComponent {
     set column(val: Column<any, unknown>) { this._column = val; }
     private _column: Column<any, unknown> = null as any;
 
-    get value(): string { return this._value; }
-    set value(val: string) { this._value = val; }
-    private _value: string = "";
+    get value(): FilterCondition | string { return this._value; }
+    set value(val: FilterCondition | string) { this._value = val; }
+    private _value: FilterCondition | string = "";
 
-    get onChange(): ((value: string) => void) | undefined { return this._onChange; }
-    set onChange(val: ((value: string) => void) | undefined) { this._onChange = val; }
-    private _onChange: ((value: string) => void) | undefined;
+    get onChange(): ((condition: FilterCondition) => void) | undefined { return this._onChange; }
+    set onChange(val: ((condition: FilterCondition) => void) | undefined) { this._onChange = val; }
+    private _onChange: ((condition: FilterCondition) => void) | undefined;
 
     get onClose(): (() => void) | undefined { return this._onClose; }
     set onClose(val: (() => void) | undefined) { this._onClose = val; }

@@ -16,6 +16,7 @@ export const lightTheme: ACGridTheme = {
         bgHeader: "#f8fafc", // 更清爽的表头背景
         bgHover: "#f1f5f9", // 优雅的悬停效果
         bgCell: "#ffffff",
+        bgPopup: "#ffffff", // 弹出菜单背景（不透明）
         bgSelected: "#f5f3ff", // 紫色选中状态
         textPrimary: "#0f172a", // 更深的文字，提高对比度
         textSecondary: "#64748b", // 次要文字

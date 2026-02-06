@@ -190,3 +190,16 @@
 .ac-grid .drag-handle-button:hover {
   color: var(--ac-grid-text-primary, #181d1f);
 }
+
+/* ========== Filter Menu Portal ========== */
+/* Portal 渲染到 document.body，需要不透明背景 */
+.ac-grid-filter-menu-portal {
+  /* 使用专用弹出背景变量，回退到深色实心背景 */
+  background-color: var(--ac-grid-bg-popup, #1e1b4b);
+  border: 1px solid var(--ac-grid-border, #babfc7);
+  border-radius: 3px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  color: var(--ac-grid-text-primary, #181d1f);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+}

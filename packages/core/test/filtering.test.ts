@@ -2,9 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { Grid } from "../src/components/Grid.wsx";
 import "../src/components/Grid.wsx"; // Register component
-// We will need these later
-// import "../src/components/GlobalSearch.wsx";
-// import "../src/components/FilterMenu.wsx";
+import { waitFor } from "@testing-library/dom";
 
 describe("Grid Filtering", () => {
     let container: HTMLElement;
@@ -32,18 +30,18 @@ describe("Grid Filtering", () => {
         container.appendChild(grid);
 
         // Wait for render
-        await new Promise(r => setTimeout(r, 0));
+        await waitFor(() => {
+            const root = grid.shadowRoot || grid;
+            const headerCell = root.querySelector(".grid-header-cell");
+            expect(headerCell).toBeTruthy();
+            const filterIcon = headerCell?.querySelector("wsx-ac-filter-icon");
+            expect(filterIcon).toBeTruthy();
+        });
 
-        // Expect GlobalSearch to be present
-        const globalSearch = grid.shadowRoot?.querySelector("wsx-ac-global-search") || grid.querySelector("wsx-ac-global-search");
-        expect(globalSearch).toBeTruthy();
-
-        // Expect Filter Icon in header
-        const headerCell = grid.shadowRoot?.querySelector(".grid-header-cell");
-        // We'll need to check how Filter Icon is implemented in RFC
-        // It might be wsx-ac-filter-icon
-        const filterIcon = headerCell?.querySelector("wsx-ac-filter-icon");
-        expect(filterIcon).toBeTruthy();
+        // Expect GlobalSearch to NOT be present by default (it's external)
+        const root = grid.shadowRoot || grid;
+        const globalSearch = root.querySelector("wsx-ac-global-search");
+        expect(globalSearch).toBeFalsy();
     });
 
     it("should not render filtering UI when disabled", async () => {
@@ -57,7 +55,15 @@ describe("Grid Filtering", () => {
         container.appendChild(grid);
         await new Promise(r => setTimeout(r, 0));
 
-        const globalSearch = grid.shadowRoot?.querySelector("wsx-ac-global-search");
+        const root = grid.shadowRoot || grid;
+        const globalSearch = root.querySelector("wsx-ac-global-search");
         expect(globalSearch).toBeFalsy();
+        
+        const headerCell = root.querySelector(".grid-header-cell");
+        // Header cell might exist, but filter icon should not
+        if (headerCell) {
+            const filterIcon = headerCell.querySelector("wsx-ac-filter-icon");
+            expect(filterIcon).toBeFalsy();
+        }
     });
 });

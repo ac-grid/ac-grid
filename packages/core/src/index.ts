@@ -49,6 +49,10 @@ export { PaginationControls } from "./components/PaginationControls.wsx";
 export { SelectionCheckbox } from "./components/SelectionCheckbox.wsx";
 // @ts-ignore
 export { CellEditor } from "./components/CellEditor.wsx";
+// @ts-ignore - 自定义下拉组件
+export { Dropdown } from "./components/Dropdown.wsx";
+// @ts-ignore
+export type { DropdownOption, DropdownProps } from "./components/Dropdown.wsx";
 
 // 导出工具函数
 export { arrayMove } from "./utils/array-move";

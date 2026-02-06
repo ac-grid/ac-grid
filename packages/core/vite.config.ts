@@ -33,10 +33,16 @@ export default defineConfig({
     resolve: {
         alias: {
             "@": resolve(__dirname, "./src"),
+            "loglevel": resolve(__dirname, "./test/loglevel-wrapper.js"),
         },
     },
     test: {
         environment: "jsdom",
         include: ["test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+        server: {
+            deps: {
+                inline: true,
+            },
+        },
     },
 });

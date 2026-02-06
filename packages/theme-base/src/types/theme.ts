@@ -18,6 +18,8 @@ export interface ACGridThemeColors {
   bgHover: string;
   /** 单元格背景色 */
   bgCell: string;
+  /** 弹出菜单背景色（不透明，用于 portal/dropdown） */
+  bgPopup?: string;
   /** 选中行背景色 */
   bgSelected: string;
   /** 主文本颜色 */
