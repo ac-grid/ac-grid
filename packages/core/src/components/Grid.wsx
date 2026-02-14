@@ -1224,13 +1224,10 @@ export class Grid extends LightComponent {
                                         >
                                             {isEditing ? (
                                                 <wsx-ac-cell-editor
+                                                    key={`editor-${row.id}-${column.id}`}
                                                     value={this.editingState.value}
                                                     type={(column.columnDef as any).filterType === 'number' ? 'number' : 'text'}
-                                                    onSave={() => {
-                                                        // HACK: Read value from DOM as event detail might vary
-                                                        const editor = this.shadowRoot?.querySelector('wsx-ac-cell-editor') as any;
-                                                        if (editor) this.saveEdit(editor.value);
-                                                    }}
+                                                    onSave={(value: any) => this.saveEdit(value)}
                                                     onCancel={() => this.cancelEdit()}
                                                 />
                                             ) : (

@@ -6,7 +6,8 @@ export interface CellEditorProps {
     value: any;
     type?: 'text' | 'number' | 'date';
     onChange: (value: any) => void;
-    onSave: () => void;
+    /** 保存时传入当前输入值，避免依赖 querySelector 取 DOM */
+    onSave: (value: any) => void;
     onCancel: () => void;
 }
 
@@ -29,9 +30,9 @@ export class CellEditor extends LightComponent {
     set onChange(v: ((v: any) => void) | undefined) { this._onChange = v; }
     private _onChange: ((v: any) => void) | undefined;
 
-    get onSave(): (() => void) | undefined { return this._onSave; }
-    set onSave(v: (() => void) | undefined) { this._onSave = v; }
-    private _onSave: (() => void) | undefined;
+    get onSave(): ((value: any) => void) | undefined { return this._onSave; }
+    set onSave(v: ((value: any) => void) | undefined) { this._onSave = v; }
+    private _onSave: ((value: any) => void) | undefined;
 
     get onCancel(): (() => void) | undefined { return this._onCancel; }
     set onCancel(v: (() => void) | undefined) { this._onCancel = v; }
@@ -63,7 +64,7 @@ export class CellEditor extends LightComponent {
 
     private handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Enter") {
-            this._onSave?.();
+            this._onSave?.(this.inputValue);
         } else if (e.key === "Escape") {
             this._onCancel?.();
         }
@@ -71,8 +72,8 @@ export class CellEditor extends LightComponent {
     };
 
     private handleBlur = () => {
-        // Auto save on blur
-        this._onSave?.();
+        // Auto save on blur，传入当前值避免 Grid 端 querySelector 取错实例
+        this._onSave?.(this.inputValue);
     };
 
     render() {
