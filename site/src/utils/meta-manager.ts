@@ -8,6 +8,8 @@
  * - 管理结构化数据（JSON-LD）
  */
 
+import { SITE_BASE_URL, SITE_OG_IMAGE_PATH } from "../config/site";
+
 export interface RouteMeta {
     title: string;
     description: string;
@@ -21,8 +23,6 @@ export interface RouteMeta {
 }
 
 export class MetaManager {
-    private static readonly BASE_URL = "https://wsxjs.dev";
-    private static readonly DEFAULT_IMAGE = "/og-image.png";
     private static readonly DEFAULT_TYPE = "website";
 
     /**
@@ -46,15 +46,16 @@ export class MetaManager {
         this.setOGMeta("og:description", meta.description);
         this.setOGMeta("og:type", meta.type || this.DEFAULT_TYPE);
         this.setOGMeta("og:url", meta.url || this.getCurrentUrl());
-        this.setOGMeta("og:image", meta.image || this.getFullUrl(this.DEFAULT_IMAGE));
+        this.setOGMeta("og:image", meta.image || this.getFullUrl(SITE_OG_IMAGE_PATH));
 
         // 更新 Twitter Card 标签
         this.setMeta("twitter:card", "summary_large_image");
         this.setMeta("twitter:title", meta.title);
         this.setMeta("twitter:description", meta.description);
-        if (meta.image) {
-            this.setMeta("twitter:image", this.getFullUrl(meta.image));
-        }
+        this.setMeta(
+            "twitter:image",
+            this.getFullUrl(meta.image || SITE_OG_IMAGE_PATH),
+        );
 
         // 更新文章相关 meta（如果有）
         if (meta.publishedTime) {
@@ -116,7 +117,7 @@ export class MetaManager {
      * 获取当前页面的完整 URL
      */
     private static getCurrentUrl(): string {
-        return this.BASE_URL + window.location.pathname;
+        return SITE_BASE_URL + window.location.pathname;
     }
 
     /**
@@ -126,6 +127,11 @@ export class MetaManager {
         if (path.startsWith("http://") || path.startsWith("https://")) {
             return path;
         }
-        return this.BASE_URL + (path.startsWith("/") ? path : "/" + path);
+        return SITE_BASE_URL + (path.startsWith("/") ? path : "/" + path);
+    }
+
+    /** updateMeta 为 update 的别名，保持调用方兼容 */
+    static updateMeta(meta: RouteMeta): void {
+        this.update(meta);
     }
 }

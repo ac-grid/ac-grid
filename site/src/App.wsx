@@ -20,28 +20,12 @@ import "@ac-grid/core";
 import { MetaManager, type RouteMeta } from "./utils/meta-manager";
 import { getRouteMeta, routeMeta } from "./config/route-meta";
 
-// Define ResponsiveNavConfig locally
-interface NavItem {
-    label: string;
-    to: string;
-    exact?: boolean;
-    hideOnMobile?: boolean;
-}
-
-interface ResponsiveNavConfig {
-    brand?: string;
-    brandIcon?: HTMLElement | string;
-    items: NavItem[];
-    actionTags?: string[];
-    mobileBreakpoint?: number;
-    autoOverflow?: boolean;
-}
-
 // Import route-based section components
 import "./components/BrandLogo.wsx";
 import "./components/HomeSection.wsx";
 import "./components/ExamplesSection.wsx";
 import "./components/DocsSection.wsx";
+import "./components/DocsWsxPressSection.wsx";
 import "./components/NotFoundSection.wsx";
 
 export interface AppConfig {
@@ -51,6 +35,9 @@ export interface AppConfig {
 
 @autoRegister({ tagName: "ac-grid-app" })
 export default class App extends LightComponent {
+    /** 路由变化监听的清理函数，在 onDisconnected 时调用 */
+    private unsubscribeRouteChange: (() => void) | null = null;
+
     constructor(config: AppConfig = {}) {
         super({
             styles,
@@ -74,11 +61,11 @@ export default class App extends LightComponent {
                         ></wsx-view>
                         <wsx-view
                             route="/docs"
-                            component="docs-section"
+                            component="docs-wsx-press-section"
                         ></wsx-view>
                         <wsx-view
                             route="/docs/*"
-                            component="docs-section"
+                            component="docs-wsx-press-section"
                         ></wsx-view>
                         <wsx-view
                             route="*"
@@ -90,18 +77,29 @@ export default class App extends LightComponent {
         );
     }
 
+    /** 顶栏导航：直接在本组件内渲染，保证始终可见（不依赖 wsx-responsive-nav 的 config 时机） */
     private renderNavigation() {
-        const navConfig: ResponsiveNavConfig = {
-            brand: "AC Grid",
-            brandIcon: "<brand-logo></brand-logo>",
-            items: [
-                { label: "Home", to: "/", exact: true },
-                { label: "Examples", to: "/examples" },
-                { label: "Documentation", to: "/docs" },
-            ],
-        };
-
-        return <wsx-responsive-nav config={navConfig}></wsx-responsive-nav>;
+        return (
+            <header class="site-nav" role="banner">
+                <div class="site-nav-inner">
+                    <wsx-link to="/" class="site-nav-brand" exact>
+                        <brand-logo class="site-nav-logo"></brand-logo>
+                        <span class="site-nav-brand-text">AC Grid</span>
+                    </wsx-link>
+                    <nav class="site-nav-menu" aria-label="主导航">
+                        <wsx-link to="/" class="site-nav-link" active-class="site-nav-link-active" exact>
+                            Home
+                        </wsx-link>
+                        <wsx-link to="/docs" class="site-nav-link" active-class="site-nav-link-active">
+                            Docs
+                        </wsx-link>
+                        <wsx-link to="/examples" class="site-nav-link" active-class="site-nav-link-active">
+                            Samples
+                        </wsx-link>
+                    </nav>
+                </div>
+            </header>
+        );
     }
 
     protected onConnected(): void {
@@ -111,16 +109,20 @@ export default class App extends LightComponent {
     }
 
     private setupRouter() {
-        const router = RouterUtils.getRouter();
-        if (router) {
-            router.onRouteChange((route) => {
-                this.updateMeta(route);
-            });
-        }
+        // RouterUtils 提供静态 onRouteChange，无 getRouter()；监听 route-changed 以更新 meta
+        this.unsubscribeRouteChange = RouterUtils.onRouteChange((route) => {
+            this.updateMeta(route.path);
+        });
+    }
+
+    protected onDisconnected(): void {
+        this.unsubscribeRouteChange?.();
+        this.unsubscribeRouteChange = null;
+        super.onDisconnected?.();
     }
 
     private setupMeta() {
-        const currentRoute = RouterUtils.getCurrentRoute() || "/";
+        const currentRoute = RouterUtils.getCurrentRoute()?.path ?? "/";
         this.updateMeta(currentRoute);
     }
 

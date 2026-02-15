@@ -41,7 +41,10 @@ export class FilterInput extends LightComponent {
         super.onConnected?.();
         const el = this as any;
         if (el.column) this.column = el.column;
-        if (el.value !== undefined) this.value = el.value;
+        if (el.value !== undefined) {
+            this._value = el.value;
+            this.parseValue(el.value);
+        }
         if (el.onChange) this.onChange = el.onChange;
         if (el.variant) this.variant = el.variant;
     }

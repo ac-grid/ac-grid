@@ -1,57 +1,72 @@
 .examples-section {
     width: 100%;
     min-height: 100vh;
-    padding: 2rem;
-    background: #f7fafc;
+    padding: 1rem;
+    background: var(--color-bg, #faf5ff);
 }
 
-.container {
-    max-width: 1400px;
+@media (min-width: 768px) {
+    .examples-section {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .examples-section {
+        padding: 2rem;
+    }
+}
+
+.examples-section .container {
+    max-width: 1200px;
     margin: 0 auto;
 }
 
-.page-title {
-    font-size: 3rem;
+.examples-section .page-title {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: clamp(1.75rem, 4vw, 3rem);
     font-weight: 700;
     margin-bottom: 1rem;
-    color: #1a202c;
+    color: var(--color-text, #1e1b4b);
 }
 
-.page-description {
+.examples-section .page-description {
     font-size: 1.25rem;
-    color: #4a5568;
+    color: var(--color-text-muted, #5b21b6);
     margin-bottom: 3rem;
 }
 
 .example-section {
-    margin-bottom: 4rem;
+    margin-bottom: 3rem;
     background: white;
-    border-radius: 0.5rem;
-    padding: 2rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border, #c4b5fd);
+    box-shadow: 0 1px 3px rgba(124, 58, 237, 0.06);
 }
 
-.section-title {
-    font-size: 2rem;
+.examples-section .section-title {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: #2d3748;
+    color: var(--color-text, #1e1b4b);
 }
 
-.section-description {
+.examples-section .section-description {
     font-size: 1rem;
-    color: #4a5568;
+    color: var(--color-text-muted, #5b21b6);
     margin-bottom: 1.5rem;
     line-height: 1.6;
 }
 
 .example-container {
-    border: 1px solid #e2e8f0;
-    border-radius: 0.5rem;
+    border: 1px solid var(--color-border, #c4b5fd);
+    border-radius: 8px;
     overflow: hidden;
     background: white;
 }
 
 .custom-grid {
-    border: 2px solid #667eea;
+    border: 2px solid var(--color-primary, #7c3aed);
 }

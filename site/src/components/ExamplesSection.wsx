@@ -82,17 +82,15 @@ export default class ExamplesSection extends LightComponent {
         return (
             <div class="examples-section">
                 <div class="container">
-                    <h1 class="page-title">AC Grid Examples</h1>
+                    <h1 class="page-title">Samples</h1>
                     <p class="page-description">
-                        Explore interactive examples showcasing AC Grid
-                        capabilities.
+                        Feature-by-feature demos: basic grid, sorting, filtering, theming. Use the docs for API details.
                     </p>
 
-                    {/* Basic Grid Example */}
                     <section class="example-section">
                         <h2 class="section-title">Basic Grid</h2>
                         <p class="section-description">
-                            A simple data grid with sorting enabled.
+                            Minimal setup. Sorting on headers is enabled by default.
                         </p>
                         <div class="example-container">
                             <wsx-ac-grid
@@ -102,12 +100,10 @@ export default class ExamplesSection extends LightComponent {
                         </div>
                     </section>
 
-                    {/* Sorting Example */}
                     <section class="example-section">
                         <h2 class="section-title">Sorting</h2>
                         <p class="section-description">
-                            Click column headers to sort. Hold Shift for
-                            multi-column sorting.
+                            Click column headers to sort. Hold Shift for multi-column sorting. Initial sort: Name ascending.
                         </p>
                         <div class="example-container">
                             <wsx-ac-grid
@@ -120,11 +116,24 @@ export default class ExamplesSection extends LightComponent {
                         </div>
                     </section>
 
-                    {/* Custom Styling Example */}
                     <section class="example-section">
-                        <h2 class="section-title">Custom Styling</h2>
+                        <h2 class="section-title">Filtering</h2>
                         <p class="section-description">
-                            Grid with custom className for styling.
+                            Column filters and global search. Enable filtering and use the filter icon in headers.
+                        </p>
+                        <div class="example-container">
+                            <wsx-ac-grid
+                                data={this.exampleData}
+                                columns={this.columns}
+                                enableFiltering={true}
+                            ></wsx-ac-grid>
+                        </div>
+                    </section>
+
+                    <section class="example-section">
+                        <h2 class="section-title">Theming</h2>
+                        <p class="section-description">
+                            Grid with custom className. Use theme CSS variables or your own classes.
                         </p>
                         <div class="example-container">
                             <wsx-ac-grid

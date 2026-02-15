@@ -6,7 +6,9 @@
 .ac-grid {
   width: 100%;
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -191,6 +193,72 @@
   color: var(--ac-grid-text-primary, #181d1f);
 }
 
+/* ========== Drag & Drop Visual Feedback ========== */
+
+/* Header cell being dragged */
+.ac-grid .grid-header-cell.dragging {
+  opacity: 0.7;
+  background-color: var(--ac-grid-bg-selected, #e6f7ff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: grabbing;
+}
+
+/* Header cell as drop target */
+.ac-grid .grid-header-cell.drag-over {
+  background-color: var(--ac-grid-bg-hover, #e8f4fd);
+  border-left: 3px solid var(--ac-grid-primary, #2196f3);
+}
+
+/* Row being dragged */
+.ac-grid .grid-row.dragging {
+  opacity: 0.7;
+  background-color: var(--ac-grid-bg-selected, #e6f7ff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: grabbing;
+}
+
+/* Row as drop target */
+.ac-grid .grid-row.drag-over {
+  background-color: var(--ac-grid-bg-hover, #e8f4fd);
+  border-top: 2px solid var(--ac-grid-primary, #2196f3);
+}
+
+/* Drag cursor states */
+.ac-grid .grid-header-cell[draggable="true"],
+.ac-grid .grid-row[draggable="true"] {
+  cursor: grab;
+}
+
+.ac-grid .grid-header-cell[draggable="true"]:active,
+.ac-grid .grid-row[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+/* ========== Column-Wide Drag Visual Feedback ========== */
+
+/* All cells in a column being dragged */
+.ac-grid .grid-cell.column-dragging {
+  background-color: var(--ac-grid-bg-selected, #e6f7ff);
+  opacity: 0.8;
+}
+
+/* All cells in a column that is a drop target */
+.ac-grid .grid-cell.column-drag-over {
+  background-color: var(--ac-grid-bg-hover, #e8f4fd);
+}
+
+/* When dragging a column, highlight the entire column including header */
+.ac-grid .grid-header-cell.dragging,
+.ac-grid .grid-cell.column-dragging {
+  background-color: var(--ac-grid-bg-selected, #e6f7ff);
+}
+
+/* Drop target indicator for entire column */
+.ac-grid .grid-header-cell.drag-over,
+.ac-grid .grid-cell.column-drag-over {
+  background-color: var(--ac-grid-bg-hover, #e8f4fd);
+}
+
 /* ========== Filter Menu Portal ========== */
 /* Portal 渲染到 document.body，需要不透明背景 */
 .ac-grid-filter-menu-portal {
@@ -200,6 +268,7 @@
   border-radius: 3px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   color: var(--ac-grid-text-primary, #181d1f);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 13px;
 }

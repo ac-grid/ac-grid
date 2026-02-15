@@ -1,0 +1,16 @@
+---
+description: "Before feature or site work, read ROADMAP.md and TASK_TRACKING.md; keep them in sync when completing tasks."
+globs: ["**/ROADMAP.md", "**/TASK_TRACKING.md", "site/**", "docs/**", "packages/core/**"]
+---
+
+# ROADMAP & Task Tracking (Subagent)
+
+When working on **AC Grid** (features, site, docs, packages):
+
+1. **Before starting**: Read the relevant part of `ROADMAP.md` (version/milestone) and `TASK_TRACKING.md` (current focus and site/docs list).
+2. **When implementing**: Prefer tasks listed under "Current focus" and "Site & docs" in TASK_TRACKING.md.
+3. **When finishing a task**: Update TASK_TRACKING.md (mark done) and, if it maps to a ROADMAP checklist item, update ROADMAP.md as well.
+4. **When adding work**: Add to "Current focus" or "Backlog" in TASK_TRACKING.md with a short scope.
+
+ROADMAP = version scope, RFCs, release targets.  
+TASK_TRACKING = concrete next steps and site/docs chores. Keep both in sync.

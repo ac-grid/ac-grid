@@ -12,12 +12,21 @@ export class FilterMenu extends LightComponent {
     private _column: Column<any, unknown> = null as any;
 
     get value(): FilterCondition | string { return this._value; }
-    set value(val: FilterCondition | string) { this._value = val; }
-    private _value: FilterCondition | string = "";
+    set value(val: FilterCondition | string) { 
+        if (val !== this._value) {
+            this._value = val;
+            this.requestUpdate();
+        }
+    }
+    @state private _value: FilterCondition | string = "";
 
-    get onChange(): ((condition: FilterCondition) => void) | undefined { return this._onChange; }
-    set onChange(val: ((condition: FilterCondition) => void) | undefined) { this._onChange = val; }
-    private _onChange: ((condition: FilterCondition) => void) | undefined;
+    // 使用 @state 来存储回调，确保响应式更新
+    @state private _filterChangeCallback: ((condition: FilterCondition) => void) | null = null;
+
+    get filterChange(): ((condition: FilterCondition) => void) | null { return this._filterChangeCallback; }
+    set filterChange(val: ((condition: FilterCondition) => void) | null) { 
+        this._filterChangeCallback = val;
+    }
 
     get onClose(): (() => void) | undefined { return this._onClose; }
     set onClose(val: (() => void) | undefined) { this._onClose = val; }
@@ -28,8 +37,17 @@ export class FilterMenu extends LightComponent {
         const el = this as any;
         if (el.column) this.column = el.column;
         if (el.value !== undefined) this.value = el.value;
-        if (el.onChange) this.onChange = el.onChange;
-        if (el.onClose) this.onClose = el.onClose;
+        // 优先使用直接设置的 _filterChangeCallback，其次尝试从 property 读取
+        if (el._filterChangeCallback) {
+            this._filterChangeCallback = el._filterChangeCallback;
+        } else if (el.filterChange) {
+            this.filterChange = el.filterChange;
+        }
+        if (el._onClose) {
+            this._onClose = el._onClose;
+        } else if (el.onClose) {
+            this.onClose = el.onClose;
+        }
     }
 
     render() {
@@ -38,7 +56,7 @@ export class FilterMenu extends LightComponent {
                 <wsx-ac-filter-input
                     column={this._column}
                     value={this._value}
-                    onChange={this._onChange}
+                    onChange={this._filterChangeCallback || undefined}
                 />
             </div>
         );

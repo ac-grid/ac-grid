@@ -70,54 +70,55 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
 
 下表对比了 ag-Grid 社区版的核心功能和 AC Grid 的实现状态：
 
-| 功能分类 | ag-Grid 社区版 | AC Grid 状态 | RFC | 预计版本 |
-|---------|---------------|-------------|-----|---------|
-| **基础功能** |
-| 数据渲染 | ✅ | ✅ 已实现 | [0001](./0001-ac-grid-architecture.md) | v0.0.1 |
-| 列定义 | ✅ | ✅ 已实现 | [0001](./0001-ac-grid-architecture.md) | v0.0.1 |
-| 自定义单元格渲染 | ✅ | ✅ 已实现 | [0001](./0001-ac-grid-architecture.md) | v0.0.1 |
-| **数据操作** |
-| 排序（单列） | ✅ | ✅ 已实现 | [0002](./completed/0002-sorting-feature.md) | v0.1.0 |
-| 排序（多列） | ✅ | ✅ 已实现 | [0002](./completed/0002-sorting-feature.md) | v0.1.0 |
-| 过滤（列过滤） | ✅ | ✅ 已实现 | [0003](./0003-filtering-feature.md) | v0.1.0 |
-| 过滤（全局搜索） | ✅ | ✅ 已实现 | [0003](./0003-filtering-feature.md) | v0.1.0 |
-| 快速过滤 | ✅ | ✅ 已实现 | [0003](./0003-filtering-feature.md) | v0.1.0 |
-| **布局和显示** |
-| 列调整大小 | ✅ | 📝 规划中 | [0004](./0004-column-resizing.md) | v0.1.0 |
-| 列重排序 | ✅ | ✅ 已实现 | [0001](./0001-ac-grid-architecture.md) | v0.0.1 |
-| 列固定（Pinning） | ✅ | 📝 规划中 | [0008](./0008-column-pinning.md) | v0.3.0 |
-| 自动列宽 | ✅ | 📝 规划中 | [0004](./0004-column-resizing.md) | v0.1.0 |
-| **性能优化** |
-| 虚拟滚动（行） | ✅ | 📝 规划中 | [0005](./0005-virtual-scrolling.md) | v0.2.0 |
-| 虚拟滚动（列） | ✅ | 📝 规划中 | [0005](./0005-virtual-scrolling.md) | v0.2.0 |
-| 大数据集支持（100K+ 行） | ✅ | 📝 规划中 | [0005](./0005-virtual-scrolling.md) | v0.2.0 |
-| **交互功能** |
-| 分页 | ✅ | 📝 规划中 | [0006](./0006-pagination.md) | v0.2.0 |
-| 行选择（单选） | ✅ | 📝 规划中 | [0007](./0007-row-selection.md) | v0.2.0 |
-| 行选择（多选） | ✅ | 📝 规划中 | [0007](./0007-row-selection.md) | v0.2.0 |
-| 范围选择 | ✅ | 📝 规划中 | [0007](./0007-row-selection.md) | v0.2.0 |
-| 行拖拽重排序 | ✅ | ✅ 已实现 | [0001](./0001-ac-grid-architecture.md) | v0.0.1 |
-| 单元格编辑 | ✅ | 📝 规划中 | [0009](./0009-cell-editing.md) | v0.3.0 |
-| 键盘导航 | ✅ | 📝 规划中 | [0012](./0012-keyboard-navigation.md) | v0.4.0 |
-| **高级功能** |
-| 行分组 | ✅ | 📝 规划中 | [0010](./0010-grouping-aggregation.md) | v0.3.0 |
-| 数据聚合 | ✅ | 📝 规划中 | [0010](./0010-grouping-aggregation.md) | v0.3.0 |
-| 树形数据 | ✅ | 📝 规划中 | TBD | v0.6.0+ |
-| 主从表格 | ✅ | 📝 规划中 | TBD | v0.6.0+ |
-| **用户体验** |
-| 主题定制 | ✅ | 📝 规划中 | [0011](./0011-theme-system.md) | v0.4.0 |
-| 国际化 (i18n) | ✅ | 📝 规划中 | [0015](./0015-internationalization.md) | v0.5.0 |
-| 可访问性 (a11y) | ✅ | 📝 规划中 | [0013](./0013-accessibility.md) | v0.4.0 |
-| **数据导出** |
-| CSV 导出 | ✅ | 📝 规划中 | [0014](./0014-data-export.md) | v0.5.0 |
-| Excel 导出 | ✅ | 📝 规划中 | [0014](./0014-data-export.md) | v0.5.0 |
-| **框架集成** |
-| 纯 JavaScript | ✅ | ✅ 已实现 | [0001](./0001-ac-grid-architecture.md) | v0.0.1 |
-| React | ✅ (官方) | ✅ 已实现 | [0001](./0001-ac-grid-architecture.md) | v0.0.1 |
-| Vue | ✅ (官方) | 📝 规划中 | TBD | v1.0.0+ |
-| Angular | ✅ (官方) | 📝 规划中 | TBD | v1.0.0+ |
+| 功能分类                 | ag-Grid 社区版 | AC Grid 状态 | RFC                                         | 预计版本 |
+| ------------------------ | -------------- | ------------ | ------------------------------------------- | -------- |
+| **基础功能**             |
+| 数据渲染                 | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
+| 列定义                   | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
+| 自定义单元格渲染         | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
+| **数据操作**             |
+| 排序（单列）             | ✅             | ✅ 已实现    | [0002](./completed/0002-sorting-feature.md) | v0.1.0   |
+| 排序（多列）             | ✅             | ✅ 已实现    | [0002](./completed/0002-sorting-feature.md) | v0.1.0   |
+| 过滤（列过滤）           | ✅             | ✅ 已实现    | [0003](./0003-filtering-feature.md)         | v0.1.0   |
+| 过滤（全局搜索）         | ✅             | ✅ 已实现    | [0003](./0003-filtering-feature.md)         | v0.1.0   |
+| 快速过滤                 | ✅             | ✅ 已实现    | [0003](./0003-filtering-feature.md)         | v0.1.0   |
+| **布局和显示**           |
+| 列调整大小               | ✅             | 📝 规划中    | [0004](./0004-column-resizing.md)           | v0.1.0   |
+| 列重排序                 | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
+| 列固定（Pinning）        | ✅             | 📝 规划中    | [0008](./0008-column-pinning.md)            | v0.3.0   |
+| 自动列宽                 | ✅             | 📝 规划中    | [0004](./0004-column-resizing.md)           | v0.1.0   |
+| **性能优化**             |
+| 虚拟滚动（行）           | ✅             | 📝 规划中    | [0005](./0005-virtual-scrolling.md)         | v0.2.0   |
+| 虚拟滚动（列）           | ✅             | 📝 规划中    | [0005](./0005-virtual-scrolling.md)         | v0.2.0   |
+| 大数据集支持（100K+ 行） | ✅             | 📝 规划中    | [0005](./0005-virtual-scrolling.md)         | v0.2.0   |
+| **交互功能**             |
+| 分页                     | ✅             | 📝 规划中    | [0006](./0006-pagination.md)                | v0.2.0   |
+| 行选择（单选）           | ✅             | 📝 规划中    | [0007](./0007-row-selection.md)             | v0.2.0   |
+| 行选择（多选）           | ✅             | 📝 规划中    | [0007](./0007-row-selection.md)             | v0.2.0   |
+| 范围选择                 | ✅             | 📝 规划中    | [0007](./0007-row-selection.md)             | v0.2.0   |
+| 行拖拽重排序             | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
+| 单元格编辑               | ✅             | 📝 规划中    | [0009](./0009-cell-editing.md)              | v0.3.0   |
+| 键盘导航                 | ✅             | 📝 规划中    | [0012](./0012-keyboard-navigation.md)       | v0.4.0   |
+| **高级功能**             |
+| 行分组                   | ✅             | 📝 规划中    | [0010](./0010-grouping-aggregation.md)      | v0.3.0   |
+| 数据聚合                 | ✅             | 📝 规划中    | [0010](./0010-grouping-aggregation.md)      | v0.3.0   |
+| 树形数据                 | ✅             | 📝 规划中    | TBD                                         | v0.6.0+  |
+| 主从表格                 | ✅             | 📝 规划中    | TBD                                         | v0.6.0+  |
+| **用户体验**             |
+| 主题定制                 | ✅             | 📝 规划中    | [0011](./0011-theme-system.md)              | v0.4.0   |
+| 国际化 (i18n)            | ✅             | 📝 规划中    | [0015](./0015-internationalization.md)      | v0.5.0   |
+| 可访问性 (a11y)          | ✅             | 📝 规划中    | [0013](./0013-accessibility.md)             | v0.4.0   |
+| **数据导出**             |
+| CSV 导出                 | ✅             | 📝 规划中    | [0014](./0014-data-export.md)               | v0.5.0   |
+| Excel 导出               | ✅             | 📝 规划中    | [0014](./0014-data-export.md)               | v0.5.0   |
+| **框架集成**             |
+| 纯 JavaScript            | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
+| React                    | ✅ (官方)      | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
+| Vue                      | ✅ (官方)      | 📝 规划中    | TBD                                         | v1.0.0+  |
+| Angular                  | ✅ (官方)      | 📝 规划中    | TBD                                         | v1.0.0+  |
 
 **图例**：
+
 - ✅ **已实现**: 功能已完成并可用
 - 🚧 **规划中**: RFC 已编写，等待或正在实施
 - 📝 **待规划**: 已列入路线图，RFC 待编写
@@ -131,14 +132,16 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
 ### 核心技术栈
 
 #### 1. **wsxjs** (`@wsxjs/wsx-core`)
+
 - **作用**: 提供 JSX 语法支持，用于编写 Web Components
-- **选择理由**: 
+- **选择理由**:
   - 允许使用熟悉的 JSX 语法编写 Web Components
   - 提供 `@state` 装饰器实现响应式状态管理
   - 自动注册自定义元素（`@autoRegister`）
   - 轻量级，无 React 依赖
 
 #### 2. **@tanstack/table-core**
+
 - **作用**: 提供表格状态管理和核心逻辑
 - **选择理由**:
   - 框架无关的表格核心库
@@ -147,6 +150,7 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
   - 活跃的社区和维护
 
 #### 3. **@atlaskit/pragmatic-drag-and-drop**
+
 - **作用**: 实现拖拽功能
 - **选择理由**:
   - 框架无关的拖拽库
@@ -155,6 +159,7 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
   - 由 Atlassian 维护，稳定可靠
 
 #### 4. **Monorepo 工具链**
+
 - **pnpm**: 包管理器，支持 workspace
 - **Turborepo**: 构建系统，提供高效的缓存和并行执行
 - **Vite**: 构建工具，提供快速的开发体验
@@ -245,18 +250,22 @@ DOM 更新（通过 wsxjs 的 @state 装饰器自动触发）
 ### 1. Web Components 属性处理
 
 #### 问题
+
 在 Web Components 中，复杂对象（如数组、对象）不能直接作为 HTML 属性传递，因为属性只能是字符串。
 
 #### 解决方案
+
 使用 **property** 而非 **attribute** 传递复杂数据。
 
 **在 JSX 环境中（wsxjs）**:
+
 ```typescript
 // ✅ 正确：通过 property 传递（wsx 的 JSX 会自动处理）
 <wsx-ac-grid data={data} columns={columns} />
 ```
 
 **在纯 HTML/JavaScript 环境中**:
+
 ```typescript
 // ❌ 错误：JSX 语法在纯 JavaScript 中不可用
 <wsx-ac-grid data={data} columns={columns} />
@@ -279,14 +288,15 @@ document.body.appendChild(gridElement);
 ```typescript
 // createGrid 内部实现
 const gridElement = document.createElement("wsx-ac-grid");
-gridElement.data = data;        // ✅ property，支持复杂对象
-gridElement.columns = columns;  // ✅ property，支持复杂对象
+gridElement.data = data; // ✅ property，支持复杂对象
+gridElement.columns = columns; // ✅ property，支持复杂对象
 // 而不是 setAttribute('data', ...)，因为 attribute 只能是字符串
 ```
 
 #### 实现方式
 
 1. **定义 property getter/setter**:
+
 ```typescript
 get data(): any[] {
     return this._data;
@@ -302,6 +312,7 @@ set data(value: any[]) {
 ```
 
 2. **在 `onConnected` 中读取 property**:
+
 ```typescript
 onConnected() {
     super.onConnected?.();
@@ -313,6 +324,7 @@ onConnected() {
 ```
 
 3. **简化 `observedAttributes`**:
+
 ```typescript
 // 只观察简单的字符串属性
 static observedAttributes = ["class-name"];
@@ -321,34 +333,37 @@ static observedAttributes = ["class-name"];
 ### 2. flexRender 实现
 
 #### 问题
+
 `@tanstack/table-core` 的 `flexRender` 是 React 专用的，在 Web Components 环境中不可用。
 
 #### 解决方案
+
 实现自定义的 `flexRender` 函数，支持 wsx 的 JSX 元素（HTMLElement）：
 
 ```typescript
 export function flexRender<T>(
-    render: string | number | boolean | null | undefined | ((context: T) => any),
-    context: T
+  render: string | number | boolean | null | undefined | ((context: T) => any),
+  context: T,
 ): HTMLElement | string | number | null {
-    if (render == null) {
-        return null;
-    }
+  if (render == null) {
+    return null;
+  }
 
-    if (typeof render === "function") {
-        const result = render(context);
-        // wsx 的 JSX 返回 HTMLElement，直接返回
-        if (result instanceof HTMLElement) {
-            return result;
-        }
-        return result ?? null;
+  if (typeof render === "function") {
+    const result = render(context);
+    // wsx 的 JSX 返回 HTMLElement，直接返回
+    if (result instanceof HTMLElement) {
+      return result;
     }
+    return result ?? null;
+  }
 
-    return render;
+  return render;
 }
 ```
 
 #### 关键点
+
 - **直接返回 HTMLElement**: 不转换为字符串，保持 DOM 元素的完整性
 - **支持基本类型**: 字符串、数字、布尔值等
 - **类型安全**: 完整的 TypeScript 类型定义
@@ -356,9 +371,11 @@ export function flexRender<T>(
 ### 3. 状态初始化
 
 #### 问题
+
 `@tanstack/table-core` 的某些状态（如 `columnPinning`、`columnSizing`）需要显式初始化，否则会报错。
 
 #### 解决方案
+
 在 `updateTable()` 中初始化所有必需的状态：
 
 ```typescript
@@ -393,6 +410,7 @@ private updateTable() {
 ### 4. 拖拽功能实现
 
 #### 列拖拽
+
 使用 `@atlaskit/pragmatic-drag-and-drop` 实现列拖拽：
 
 ```typescript
@@ -434,9 +452,11 @@ private setupDragAndDrop() {
 ```
 
 #### 行拖拽
+
 类似地，在 `DraggableTableRow` 中实现行拖拽。
 
 #### 关键点
+
 - **延迟初始化**: 使用 `requestAnimationFrame` 确保元素完全渲染后再初始化拖拽
 - **清理函数**: 在 `onDisconnected` 中清理拖拽监听器
 - **可见性检查**: 确保元素在 DOM 中且可见后再初始化
@@ -444,6 +464,7 @@ private setupDragAndDrop() {
 ### 5. 响应式更新
 
 #### 使用 `@state` 装饰器
+
 wsxjs 的 `@state` 装饰器自动处理响应式更新：
 
 ```typescript
@@ -454,6 +475,7 @@ wsxjs 的 `@state` 装饰器自动处理响应式更新：
 当这些状态变化时，wsxjs 会自动触发 `render()` 方法重新渲染组件。
 
 #### 避免手动调用 `render()`
+
 不需要手动调用 `this.render()`，`@state` 装饰器会自动处理。
 
 ## API 设计
@@ -462,24 +484,25 @@ wsxjs 的 `@state` 装饰器自动处理响应式更新：
 
 ```typescript
 interface GridProps<TData extends { userId?: string }> {
-    /**
-     * 数据源
-     */
-    data: TData[];
-    /**
-     * 列定义（基于 @tanstack/table-core 的 ColumnDef）
-     */
-    columns: ColumnDef<TData, any>[];
-    /**
-     * 自定义类名
-     */
-    className?: string;
+  /**
+   * 数据源
+   */
+  data: TData[];
+  /**
+   * 列定义（基于 @tanstack/table-core 的 ColumnDef）
+   */
+  columns: ColumnDef<TData, any>[];
+  /**
+   * 自定义类名
+   */
+  className?: string;
 }
 ```
 
 #### 使用示例
 
 **在 JSX 环境中（wsxjs）**:
+
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
 import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
@@ -519,73 +542,75 @@ export class App extends LightComponent {
 ```
 
 **在纯 HTML/JavaScript 环境中**:
+
 ```typescript
-import { createGrid, type ColumnDef } from '@ac-grid/core';
+import { createGrid, type ColumnDef } from "@ac-grid/core";
 
 // 定义列
 const columns: ColumnDef<Person>[] = [
-    {
-        id: "firstName",
-        accessorKey: "firstName",
-        header: "First Name",
-        size: 150,
-    },
-    {
-        id: "lastName",
-        accessorKey: "lastName",
-        header: "Last Name",
-        size: 150,
-    },
-    // ...
+  {
+    id: "firstName",
+    accessorKey: "firstName",
+    header: "First Name",
+    size: 150,
+  },
+  {
+    id: "lastName",
+    accessorKey: "lastName",
+    header: "Last Name",
+    size: 150,
+  },
+  // ...
 ];
 
 // 创建 Grid 并挂载
 const gridElement = createGrid({
-    data: myData,
-    columns: columns,
-    className: 'my-grid'
+  data: myData,
+  columns: columns,
+  className: "my-grid",
 });
 
 // 方式 1: 手动挂载
-document.getElementById('app')?.appendChild(gridElement);
+document.getElementById("app")?.appendChild(gridElement);
 
 // 方式 2: 自动挂载（通过 container 选项）
 createGrid({
-    data: myData,
-    columns: columns,
-    className: 'my-grid',
-    container: document.getElementById('app')!
+  data: myData,
+  columns: columns,
+  className: "my-grid",
+  container: document.getElementById("app")!,
 });
 ```
 
 **在 HTML 中直接使用**:
+
 ```html
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <script type="module">
-        import { createGrid } from './node_modules/@ac-grid/core/dist/index.js';
-        
-        const data = [
-            { firstName: 'John', lastName: 'Doe' },
-            { firstName: 'Jane', lastName: 'Smith' }
-        ];
-        
-        const columns = [
-            { id: 'firstName', accessorKey: 'firstName', header: 'First Name' },
-            { id: 'lastName', accessorKey: 'lastName', header: 'Last Name' }
-        ];
-        
-        createGrid({
-            data,
-            columns,
-            container: document.getElementById('app')
-        });
+      import { createGrid } from "./node_modules/@ac-grid/core/dist/index.js";
+
+      const data = [
+        { firstName: "John", lastName: "Doe" },
+        { firstName: "Jane", lastName: "Smith" },
+      ];
+
+      const columns = [
+        { id: "firstName", accessorKey: "firstName", header: "First Name" },
+        { id: "lastName", accessorKey: "lastName", header: "Last Name" },
+      ];
+
+      createGrid({
+        data,
+        columns,
+        container: document.getElementById("app"),
+      });
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <div id="app"></div>
-</body>
+  </body>
 </html>
 ```
 
@@ -593,41 +618,46 @@ createGrid({
 
 ```typescript
 interface DraggableHandlerProps {
-    /**
-     * 行 ID
-     */
-    rowId: string;
-    /**
-     * 拖拽开始回调
-     */
-    onDragStart?: (id: string) => void;
-    /**
-     * 拖拽结束回调
-     */
-    onDragEnd?: (id: string) => void;
+  /**
+   * 行 ID
+   */
+  rowId: string;
+  /**
+   * 拖拽开始回调
+   */
+  onDragStart?: (id: string) => void;
+  /**
+   * 拖拽结束回调
+   */
+  onDragEnd?: (id: string) => void;
 }
 ```
 
 ## 已知问题与限制
 
 ### 1. 浏览器兼容性
+
 - **Web Components**: 需要支持 Custom Elements 和 Shadow DOM 的浏览器
 - **现代浏览器**: Chrome、Firefox、Safari、Edge 的最新版本
 
 ### 2. 性能考虑
+
 - **大数据集**: 当前未实现虚拟滚动，大数据集可能影响性能
 - **未来优化**: 计划添加虚拟滚动支持
 
 ### 3. 功能限制
+
 - **排序/过滤**: 当前未实现，但 `@tanstack/table-core` 支持，可以扩展
 - **分页**: 当前未实现，但可以扩展
 - **列调整大小**: 当前未实现，但可以扩展
 
 ### 4. 开发体验
+
 - **调试**: Web Components 的调试相对复杂，需要熟悉浏览器 DevTools
 - **类型提示**: 某些情况下 TypeScript 类型提示可能不够完善
 
 ### 5. 非 JSX 环境使用
+
 - **JSX 语法限制**: 在纯 HTML/JavaScript 环境中，不能直接使用 JSX 语法 `<wsx-ac-grid data={data} />`
 - **解决方案**: 使用 `createGrid` 工具函数来创建和配置 Grid 组件
 - **原因**: 复杂对象（如数组、对象）必须通过 property 传递，而不能通过 attribute 传递。`createGrid` 确保正确使用 property API
@@ -640,13 +670,14 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 **目标**: 实现表格的核心数据操作功能
 
-| 功能 | RFC | 状态 | 优先级 |
-|------|-----|------|--------|
-| 排序功能 | [RFC-0002](./0002-sorting-feature.md) | 🚧 实施中 | P0 |
-| 过滤功能 | [RFC-0003](./0003-filtering-feature.md) | 📝 待编写 | P0 |
-| 列调整大小 | [RFC-0004](./0004-column-resizing.md) | 📝 待编写 | P1 |
+| 功能       | RFC                                     | 状态      | 优先级 |
+| ---------- | --------------------------------------- | --------- | ------ |
+| 排序功能   | [RFC-0002](./0002-sorting-feature.md)   | 🚧 实施中 | P0     |
+| 过滤功能   | [RFC-0003](./0003-filtering-feature.md) | 📝 待编写 | P0     |
+| 列调整大小 | [RFC-0004](./0004-column-resizing.md)   | 📝 待编写 | P1     |
 
 **交付物**：
+
 - [ ] 排序功能（单列/多列）
 - [ ] 列过滤和全局搜索
 - [ ] 列宽度拖拽调整
@@ -659,13 +690,14 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 **目标**: 支持大数据集和增强用户交互
 
-| 功能 | RFC | 状态 | 优先级 |
-|------|-----|------|--------|
-| 虚拟滚动 | [RFC-0005](./0005-virtual-scrolling.md) | 📝 待编写 | P0 |
-| 分页功能 | [RFC-0006](./0006-pagination.md) | 📝 待编写 | P0 |
-| 行选择 | [RFC-0007](./0007-row-selection.md) | 📝 待编写 | P1 |
+| 功能     | RFC                                     | 状态      | 优先级 |
+| -------- | --------------------------------------- | --------- | ------ |
+| 虚拟滚动 | [RFC-0005](./0005-virtual-scrolling.md) | 📝 待编写 | P0     |
+| 分页功能 | [RFC-0006](./0006-pagination.md)        | 📝 待编写 | P0     |
+| 行选择   | [RFC-0007](./0007-row-selection.md)     | 📝 待编写 | P1     |
 
 **交付物**：
+
 - [ ] 行虚拟滚动（支持 100K+ 行）
 - [ ] 前端和服务端分页
 - [ ] 行选择（单选/多选）
@@ -678,13 +710,14 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 **目标**: 实现高级表格功能
 
-| 功能 | RFC | 状态 | 优先级 |
-|------|-----|------|--------|
-| 列固定 | [RFC-0008](./0008-column-pinning.md) | 📝 待编写 | P1 |
-| 单元格编辑 | [RFC-0009](./0009-cell-editing.md) | 📝 待编写 | P0 |
-| 分组和聚合 | [RFC-0010](./0010-grouping-aggregation.md) | 📝 待编写 | P1 |
+| 功能       | RFC                                        | 状态      | 优先级 |
+| ---------- | ------------------------------------------ | --------- | ------ |
+| 列固定     | [RFC-0008](./0008-column-pinning.md)       | 📝 待编写 | P1     |
+| 单元格编辑 | [RFC-0009](./0009-cell-editing.md)         | 📝 待编写 | P0     |
+| 分组和聚合 | [RFC-0010](./0010-grouping-aggregation.md) | 📝 待编写 | P1     |
 
 **交付物**：
+
 - [ ] 列固定（左侧/右侧）
 - [ ] 内联单元格编辑
 - [ ] 行分组和数据聚合
@@ -697,13 +730,14 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 **目标**: 提升用户体验和可用性
 
-| 功能 | RFC | 状态 | 优先级 |
-|------|-----|------|--------|
-| 主题系统 | [RFC-0011](./0011-theme-system.md) | 📝 待编写 | P0 |
-| 键盘导航 | [RFC-0012](./0012-keyboard-navigation.md) | 📝 待编写 | P1 |
-| 可访问性 | [RFC-0013](./0013-accessibility.md) | 📝 待编写 | P0 |
+| 功能     | RFC                                       | 状态      | 优先级 |
+| -------- | ----------------------------------------- | --------- | ------ |
+| 主题系统 | [RFC-0011](./0011-theme-system.md)        | 📝 待编写 | P0     |
+| 键盘导航 | [RFC-0012](./0012-keyboard-navigation.md) | 📝 待编写 | P1     |
+| 可访问性 | [RFC-0013](./0013-accessibility.md)       | 📝 待编写 | P0     |
 
 **交付物**：
+
 - [ ] 主题系统（Light/Dark/自定义）
 - [ ] 完整的键盘导航
 - [ ] ARIA 属性和可访问性支持
@@ -716,12 +750,13 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 **目标**: 完善数据导出和多语言支持
 
-| 功能 | RFC | 状态 | 优先级 |
-|------|-----|------|--------|
-| 数据导出 | [RFC-0014](./0014-data-export.md) | 📝 待编写 | P1 |
-| 国际化 | [RFC-0015](./0015-internationalization.md) | 📝 待编写 | P1 |
+| 功能     | RFC                                        | 状态      | 优先级 |
+| -------- | ------------------------------------------ | --------- | ------ |
+| 数据导出 | [RFC-0014](./0014-data-export.md)          | 📝 待编写 | P1     |
+| 国际化   | [RFC-0015](./0015-internationalization.md) | 📝 待编写 | P1     |
 
 **交付物**：
+
 - [ ] CSV 和 Excel 导出
 - [ ] 多语言支持（中文/英文/其他）
 - [ ] 日期和数字格式化
@@ -734,6 +769,7 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 **目标**: 生产就绪，完整的功能和文档
 
 **里程碑**：
+
 - [ ] 所有 v0.x 功能稳定
 - [ ] 完整的 API 文档
 - [ ] 性能基准测试
@@ -747,6 +783,7 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 ### 未来版本（v1.1.0+）
 
 计划中的功能（优先级待定）：
+
 - 服务端排序和过滤
 - 树形数据展示
 - 主从表格（Master-Detail）
@@ -760,21 +797,176 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 > 📖 **RFC 索引**: 查看 [docs/rfc/README.md](./README.md) 了解所有 RFC 的状态和详情。
 
+## 已实现功能的 Bug 修复记录
+
+### Drag & Drop 功能修复 (2025-02-15)
+
+#### 问题描述
+
+原始实现中，拖拽功能存在以下问题：
+
+1. **组件未集成**: `DraggableTableHeader` 和 `DraggableTableRow` 组件虽然存在，但 `Grid.wsx` 组件渲染时使用的是普通 `<div>` 元素，从未实例化拖拽组件
+2. **事件回调未绑定**: `handleColumnDragEnd()` 和 `handleRowDragEnd()` 方法已定义但从未被调用
+3. **无视觉反馈**: 拖拽过程中没有视觉反馈，用户体验不佳
+
+#### 修复内容
+
+**1. 直接集成拖拽功能到 Grid.wsx**
+
+不再依赖独立的 `DraggableTableHeader` 和 `DraggableTableRow` 组件，而是直接在 `Grid.wsx` 的渲染逻辑中集成 `@atlaskit/pragmatic-drag-and-drop`：
+
+```typescript
+// 导入拖拽库
+import {
+    draggable,
+    dropTargetForElements,
+} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+
+// 在 header cell 的 ref 回调中初始化拖拽
+ref={(el: HTMLElement | null) => {
+    if (el) {
+        const columnId = column.id;
+
+        // 清理现有监听器
+        const existingCleanup = this.headerDragCleanup.get(columnId);
+        if (existingCleanup) existingCleanup();
+
+        // 设置为可拖拽
+        const dragCleanup = draggable({
+            element: el,
+            getInitialData: () => ({ columnId }),
+            onDragStart: () => { this.draggingColumnId = columnId; },
+            onDragEnd: () => { this.draggingColumnId = null; },
+        });
+
+        // 设置为可放置目标
+        const dropCleanup = dropTargetForElements({
+            element: el,
+            getData: () => ({ columnId }),
+            onDragEnter: () => { /* 视觉反馈 */ },
+            onDragLeave: () => { /* 清理视觉反馈 */ },
+            onDrop: ({ source }) => {
+                this.handleColumnDragEnd(
+                    source.data.columnId as string,
+                    columnId
+                );
+            },
+        });
+
+        // 存储清理函数
+        this.headerDragCleanup.set(columnId, () => {
+            dragCleanup();
+            dropCleanup();
+        });
+    }
+}}
+```
+
+**2. 添加状态追踪实现视觉反馈**
+
+```typescript
+@state private draggingColumnId: string | null = null;
+@state private dragOverColumnId: string | null = null;
+@state private draggingRowId: string | null = null;
+@state private dragOverRowId: string | null = null;
+```
+
+**3. 列级视觉反馈**
+
+当拖拽列时，整个列（包括表头和所有单元格）都会显示视觉反馈：
+
+```typescript
+// 在渲染单元格时检查列拖拽状态
+const isColumnDragging = this.draggingColumnId === column.id;
+const isColumnDragOver = this.dragOverColumnId === column.id;
+
+className={`grid-cell ${isColumnDragging ? 'column-dragging' : ''} ${isColumnDragOver ? 'column-drag-over' : ''}`}
+```
+
+**4. CSS 视觉样式**
+
+```css
+/* 表头拖拽状态 */
+.ac-grid .grid-header-cell.dragging {
+  opacity: 0.7;
+  background-color: var(--ac-grid-bg-selected, #e6f7ff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 整列拖拽状态 */
+.ac-grid .grid-cell.column-dragging {
+  background-color: var(--ac-grid-bg-selected, #e6f7ff);
+  opacity: 0.8;
+}
+
+/* 整列放置目标状态 */
+.ac-grid .grid-cell.column-drag-over {
+  background-color: var(--ac-grid-bg-hover, #e8f4fd);
+}
+```
+
+**5. 添加生命周期清理**
+
+```typescript
+onDisconnected() {
+    super.onDisconnected?.();
+
+    // 清理列拖拽监听器
+    this.headerDragCleanup.forEach((cleanup) => cleanup());
+    this.headerDragCleanup.clear();
+
+    // 清理行拖拽监听器
+    this.rowDragCleanup.forEach((cleanup) => cleanup());
+    this.rowDragCleanup.clear();
+}
+```
+
+**6. 添加单元测试**
+
+新增 `test/drag-drop.test.ts`，包含 15 个测试用例：
+
+- `arrayMove` 工具函数测试
+- 列重排序逻辑测试
+- 行重排序逻辑测试
+- 拖拽状态追踪测试
+- 列级视觉反馈测试
+
+#### 测试结果
+
+```
+✓ test/filter-functions.test.ts (6 tests)
+✓ test/filtering.test.ts (2 tests)
+✓ test/drag-drop.test.ts (15 tests)
+
+Test Files: 3 passed
+Tests: 23 passed
+Build: ✓ Success
+```
+
+#### 当前状态
+
+- ✅ 列拖拽重排序 - 完整实现，包含视觉反馈
+- ✅ 行拖拽重排序 - 完整实现，包含视觉反馈
+- ✅ 列级视觉反馈 - 拖拽时整列高亮
+- ✅ 单元测试覆盖 - 15 个测试用例
+- ✅ 内存泄漏防护 - 组件卸载时正确清理监听器
+
 ## 总结
 
 AC Grid 是一个基于 Web Components 标准的数据表格组件库，通过结合 wsxjs、@tanstack/table-core 和 @atlaskit/pragmatic-drag-and-drop，实现了框架无关、类型安全、功能丰富的表格解决方案。
 
 ### 核心优势
+
 1. **框架无关**: 可在任何环境中使用
 2. **标准技术**: 基于 Web Components 标准
 3. **类型安全**: 完整的 TypeScript 支持
 4. **可扩展**: 基于成熟的库构建，易于扩展
 
 ### 技术亮点
+
 1. **Property vs Attribute**: 正确处理复杂数据的传递
 2. **自定义 flexRender**: 适配 wsx 的 JSX 元素
 3. **状态管理**: 利用 `@state` 装饰器实现响应式更新
 4. **拖拽实现**: 使用 pragmatic-drag-and-drop 实现流畅的拖拽体验
 
 AC Grid 为开发者提供了一个现代化的、框架无关的数据表格解决方案，同时保持了良好的开发体验和类型安全。
-

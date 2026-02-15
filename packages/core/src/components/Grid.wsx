@@ -32,6 +32,10 @@ import {
     numberFilter,
     dateFilter,
 } from "../utils/filter-functions";
+import {
+    draggable,
+    dropTargetForElements,
+} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import "./Grid.css";
 import "./DraggableTableHeader.wsx";
 import "./DraggableTableRow.wsx";
@@ -97,12 +101,22 @@ export class Grid extends LightComponent {
         }));
     }
 
-    private table: Table<any> | null = null;
+    @state private table: Table<any> | null = null;
     private headerScrollElement: HTMLElement | null = null;
     private bodyScrollElement: HTMLElement | null = null;
     private isSyncingScroll: boolean = false;
 
-    // Property getters/setters - wsx jsx-factory 会设置这些 properties
+    // Drag-drop cleanup functions
+    private headerDragCleanup: Map<string, () => void> = new Map();
+    private rowDragCleanup: Map<string, () => void> = new Map();
+
+    // Drag-drop state tracking for visual feedback
+    @state private draggingColumnId: string | null = null;
+    @state private dragOverColumnId: string | null = null;
+    @state private draggingRowId: string | null = null;
+    @state private dragOverRowId: string | null = null;
+
+    // Property getters/setters - wsx jsx-factory 会设置 these properties
     get data(): any[] {
         return this._data;
     }
@@ -419,6 +433,28 @@ export class Grid extends LightComponent {
         ) {
             this.columns = element.columns;
         }
+
+        // Read boolean properties from element (WSX may not call setters for boolean props)
+        // Boolean attributes in HTML are represented as empty string when true
+        // Attribute names are lowercase due to HTML normalization
+        if (this.hasAttribute("enablefiltering")) {
+            this.enableFiltering = true;
+        }
+        if (this.hasAttribute("enablefloatingfilter")) {
+            this.enableFloatingFilter = true;
+        }
+    }
+
+    onDisconnected() {
+        super.onDisconnected?.();
+
+        // Cleanup header drag-drop listeners
+        this.headerDragCleanup.forEach((cleanup) => cleanup());
+        this.headerDragCleanup.clear();
+
+        // Cleanup row drag-drop listeners
+        this.rowDragCleanup.forEach((cleanup) => cleanup());
+        this.rowDragCleanup.clear();
     }
 
     // Pagination Methods
@@ -538,10 +574,14 @@ export class Grid extends LightComponent {
             menu.column = this.activeFilterColumn;
             menu.value = this.columnFilters[this.activeFilterColumn.id] ?? "";
             
-            menu.onChange = (val: FilterCondition | string) => {
+            // 先添加到 DOM
+            this.filterMenuContainer.appendChild(menu);
+            
+            // 直接设置内部属性（避免 WSX 属性代理问题）
+            menu._filterChangeCallback = (val: FilterCondition | string) => {
                 this.setColumnFilter(this.activeFilterColumn.id, val);
             };
-            menu.onClose = () => {
+            menu._onClose = () => {
                 this.openFilterMenu = null;
                 this.activeFilterColumn = null;
                 this.updateFilterMenuPortal();
@@ -553,8 +593,6 @@ export class Grid extends LightComponent {
             this.filterMenuContainer.style.top = `${y}px`;
             this.filterMenuContainer.style.left = `${x}px`;
             this.filterMenuContainer.style.zIndex = '99999';
-            
-            this.filterMenuContainer.appendChild(menu);
             
         } else {
             if (this.filterMenuContainer) {
@@ -868,7 +906,7 @@ export class Grid extends LightComponent {
         }
 
         const headerGroups = this.table.getHeaderGroups();
-        const rowModel = this.table.getRowModel();
+        const rowModel = this.table.getFilteredRowModel();
         const allRows = rowModel && rowModel.rows ? rowModel.rows : [];
         let visibleRows = allRows;
         let paddingTop = 0;
@@ -956,16 +994,19 @@ export class Grid extends LightComponent {
                                     // Dynamic zIndex: active filter menu raises the header cell
                                     const activeZIndex = isFilterMenuOpen ? 100 : undefined;
                                     
-                                    const pinnedStyle = isPinnedLeft 
+                                    const pinnedStyle = isPinnedLeft
                                         ? { left: `${column.getStart("left")}px`, position: 'sticky' as const, zIndex: activeZIndex || 3 }
                                         : isPinnedRight
                                             ? { right: `${column.getAfter("right")}px`, position: 'sticky' as const, zIndex: activeZIndex || 3 }
                                             : (activeZIndex ? { zIndex: activeZIndex } : {});
 
+                                    const isDraggingColumn = this.draggingColumnId === column.id;
+                                    const isDragOverColumn = this.dragOverColumnId === column.id;
+
                                     return (
                                         <div
                                             key={header.id}
-                                            className={`grid-header-cell ${canSort ? "sortable" : ""} ${sortDirection ? "sorting-active" : ""}`}
+                                            className={`grid-header-cell ${canSort ? "sortable" : ""} ${sortDirection ? "sorting-active" : ""} ${isDraggingColumn ? "dragging" : ""} ${isDragOverColumn ? "drag-over" : ""}`}
                                             data-column-id={column.id}
                                             data-pinned={column.getIsPinned() || undefined}
                                             data-can-sort={
@@ -983,47 +1024,100 @@ export class Grid extends LightComponent {
                                                 ...pinnedStyle,
                                             }}
                                             ref={(el: HTMLElement | null) => {
-                                                if (el && canSort) {
-                                                    // 移除旧的事件监听器（如果存在）
-                                                    const oldHandler = (
-                                                        el as any
-                                                    ).__sortHandler;
-                                                    if (oldHandler) {
-                                                        el.removeEventListener(
-                                                            "click",
-                                                            oldHandler,
-                                                        );
+                                                if (el) {
+                                                    const columnId = column.id;
+
+                                                    // Cleanup existing drag-drop if any
+                                                    const existingCleanup = this.headerDragCleanup.get(columnId);
+                                                    if (existingCleanup) {
+                                                        existingCleanup();
                                                     }
 
-                                                    // 添加新的事件监听器
-                                                    const handler = (
-                                                        e: MouseEvent,
-                                                    ) => {
-                                                        // 如果点击的是拖拽按钮，不触发排序
-                                                        const target =
-                                                            e.target as HTMLElement;
-                                                        if (
-                                                            target.closest(
-                                                                ".drag-handle-button",
-                                                            ) ||
-                                                            target.closest(
-                                                                "wsx-ac-filter-icon",
-                                                            )
-                                                        ) {
-                                                            return;
-                                                        }
-                                                        column.toggleSorting(
-                                                            undefined, // 循环：asc -> desc -> none
-                                                            e.shiftKey, // 是否多列排序
-                                                        );
-                                                    };
+                                                    // Make element draggable
+                                                    const dragCleanup = draggable({
+                                                        element: el,
+                                                        getInitialData: () => ({ columnId }),
+                                                        onDragStart: () => {
+                                                            this.draggingColumnId = columnId;
+                                                        },
+                                                        onDragEnd: () => {
+                                                            this.draggingColumnId = null;
+                                                        },
+                                                    });
 
-                                                    el.addEventListener(
-                                                        "click",
-                                                        handler,
-                                                    );
-                                                    (el as any).__sortHandler =
-                                                        handler;
+                                                    // Make element a drop target
+                                                    const dropCleanup = dropTargetForElements({
+                                                        element: el,
+                                                        getData: () => ({ columnId }),
+                                                        onDragEnter: () => {
+                                                            if (this.draggingColumnId && this.draggingColumnId !== columnId) {
+                                                                this.dragOverColumnId = columnId;
+                                                            }
+                                                        },
+                                                        onDragLeave: () => {
+                                                            if (this.dragOverColumnId === columnId) {
+                                                                this.dragOverColumnId = null;
+                                                            }
+                                                        },
+                                                        onDrop: ({ source }) => {
+                                                            const activeId = source.data.columnId as string;
+                                                            const overId = columnId;
+                                                            this.dragOverColumnId = null;
+                                                            this.draggingColumnId = null;
+                                                            if (activeId && activeId !== overId) {
+                                                                this.handleColumnDragEnd(activeId, overId);
+                                                            }
+                                                        },
+                                                    });
+
+                                                    // Store cleanup function
+                                                    this.headerDragCleanup.set(columnId, () => {
+                                                        dragCleanup();
+                                                        dropCleanup();
+                                                    });
+
+                                                    if (canSort) {
+                                                        // 移除旧的事件监听器（如果存在）
+                                                        const oldHandler = (
+                                                            el as any
+                                                        ).__sortHandler;
+                                                        if (oldHandler) {
+                                                            el.removeEventListener(
+                                                                "click",
+                                                                oldHandler,
+                                                            );
+                                                        }
+
+                                                        // 添加新的事件监听器
+                                                        const handler = (
+                                                            e: MouseEvent,
+                                                        ) => {
+                                                            // 如果点击的是拖拽按钮，不触发排序
+                                                            const target =
+                                                                e.target as HTMLElement;
+                                                            if (
+                                                                target.closest(
+                                                                    ".drag-handle-button",
+                                                                ) ||
+                                                                target.closest(
+                                                                    "wsx-ac-filter-icon",
+                                                                )
+                                                            ) {
+                                                                return;
+                                                            }
+                                                            column.toggleSorting(
+                                                                undefined, // 循环：asc -> desc -> none
+                                                                e.shiftKey, // 是否多列排序
+                                                            );
+                                                        };
+
+                                                        el.addEventListener(
+                                                            "click",
+                                                            handler,
+                                                        );
+                                                        (el as any).__sortHandler =
+                                                            handler;
+                                                    }
                                                 }
                                             }}
                                         >
@@ -1157,10 +1251,14 @@ export class Grid extends LightComponent {
                         }}
                     >
                         <div style={{ height: `${paddingTop}px` }}></div>
-                        {visibleRows.map((row) => (
+                        {visibleRows.map((row) => {
+                            const isDraggingRow = this.draggingRowId === row.id;
+                            const isDragOverRow = this.dragOverRowId === row.id;
+
+                            return (
                             <div
                                 key={row.id}
-                                className={`grid-row ${row.getIsGrouped() ? 'grid-row-grouped' : ''}`}
+                                className={`grid-row ${row.getIsGrouped() ? 'grid-row-grouped' : ''} ${isDraggingRow ? 'dragging' : ''} ${isDragOverRow ? 'drag-over' : ''}`}
                                 data-row-id={row.id}
                                 data-selected={row.getIsSelected()}
                                 onClick={() => {
@@ -1168,6 +1266,60 @@ export class Grid extends LightComponent {
                                         this.toggleGroup(row.id, !row.getIsExpanded());
                                     } else if (this._selectionConfigIsSet && this._selectionConfig?.enabled !== false && this._selectionConfig?.mode === 'single') {
                                         this.selectRow(row.id);
+                                    }
+                                }}
+                                ref={(el: HTMLElement | null) => {
+                                    if (el && !row.getIsGrouped()) {
+                                        const rowId = row.id;
+
+                                        // Cleanup existing drag-drop if any
+                                        const existingCleanup = this.rowDragCleanup.get(rowId);
+                                        if (existingCleanup) {
+                                            existingCleanup();
+                                        }
+
+                                        // Make row draggable
+                                        const dragCleanup = draggable({
+                                            element: el,
+                                            getInitialData: () => ({ rowId }),
+                                            onDragStart: () => {
+                                                this.draggingRowId = rowId;
+                                            },
+                                            onDragEnd: () => {
+                                                this.draggingRowId = null;
+                                            },
+                                        });
+
+                                        // Make row a drop target
+                                        const dropCleanup = dropTargetForElements({
+                                            element: el,
+                                            getData: () => ({ rowId }),
+                                            onDragEnter: () => {
+                                                if (this.draggingRowId && this.draggingRowId !== rowId) {
+                                                    this.dragOverRowId = rowId;
+                                                }
+                                            },
+                                            onDragLeave: () => {
+                                                if (this.dragOverRowId === rowId) {
+                                                    this.dragOverRowId = null;
+                                                }
+                                            },
+                                            onDrop: ({ source }) => {
+                                                const activeId = source.data.rowId as string;
+                                                const overId = rowId;
+                                                this.dragOverRowId = null;
+                                                this.draggingRowId = null;
+                                                if (activeId && activeId !== overId) {
+                                                    this.handleRowDragEnd(activeId, overId);
+                                                }
+                                            },
+                                        });
+
+                                        // Store cleanup function
+                                        this.rowDragCleanup.set(rowId, () => {
+                                            dragCleanup();
+                                            dropCleanup();
+                                        });
                                     }
                                 }}
                             >
@@ -1206,14 +1358,17 @@ export class Grid extends LightComponent {
                                             ? { right: `${column.getAfter("right")}px`, position: 'sticky' as const, zIndex: 2 }
                                             : {};
 
-                                    const isEditing = this._editingConfigIsSet && this._editingConfig?.enabled !== false && 
-                                                      this.editingState.rowId === row.id && 
+                                    const isEditing = this._editingConfigIsSet && this._editingConfig?.enabled !== false &&
+                                                      this.editingState.rowId === row.id &&
                                                       this.editingState.columnId === column.id;
+
+                                    const isColumnDragging = this.draggingColumnId === column.id;
+                                    const isColumnDragOver = this.dragOverColumnId === column.id;
 
                                     return (
                                         <div
                                             key={cell.id}
-                                            className="grid-cell"
+                                            className={`grid-cell ${isColumnDragging ? 'column-dragging' : ''} ${isColumnDragOver ? 'column-drag-over' : ''}`}
                                             data-pinned={column.getIsPinned() || undefined}
                                             style={{ ...pinnedStyle }}
                                             onDoubleClick={() => {
@@ -1237,7 +1392,7 @@ export class Grid extends LightComponent {
                                     );
                                 })}
                             </div>
-                        ))}
+                        )})}
                         <div style={{ height: `${paddingBottom}px` }}></div>
                     </div>
                     {/* Pagination Controls */}

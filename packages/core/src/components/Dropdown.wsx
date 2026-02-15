@@ -57,6 +57,7 @@ export class Dropdown extends LightComponent {
         const next = val == null ? "" : String(val);
         if (next !== this._value) {
             this._value = next;
+            this.requestUpdate(); // 外部传入的值变化时强制重新渲染
         }
     }
     private _value: string = "";

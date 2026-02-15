@@ -19,15 +19,16 @@ export default class HomeSection extends LightComponent {
                 {/* Hero Section */}
                 <section class="hero-section">
                     <div class="hero-content">
+                        <span class="hero-badge">Open source · MIT</span>
                         <brand-logo class="hero-logo"></brand-logo>
                         <h1 class="hero-title">AC Grid</h1>
                         <p class="hero-subtitle">
-                            High-Performance Data Grid Component
+                            The fully open source data grid to replace AG Grid
                         </p>
                         <p class="hero-description">
-                            A framework-agnostic data grid built with Web
-                            Components and @tanstack/table-core.
-                            TypeScript-first, production-ready, and designed for
+                            Framework-agnostic, high-performance grid built with
+                            Web Components and @tanstack/table-core.
+                            TypeScript-first, MIT-licensed, and designed for
                             modern web applications.
                         </p>
                         <div class="hero-actions">

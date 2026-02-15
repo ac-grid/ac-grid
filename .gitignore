@@ -31,6 +31,9 @@ lerna-debug.log*
 # Turbo
 .turbo
 
+# Vite config cache (generated at build time)
+**/vite.config.ts.timestamp-*.mjs
+
 # IDE
 .vscode
 .idea

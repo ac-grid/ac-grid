@@ -1,0 +1,25 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Docs section using @wsxjs/wsx-press layout (sidebar + content).
+ * Pattern from quizerjs/site: import client in the docs page so wsx-doc-layout is registered.
+ */
+
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+// 导入 wsx-press 客户端组件（触发自动注册）
+import "@wsxjs/wsx-press/client";
+import styles from "./DocsWsxPressSection.css?inline";
+
+@autoRegister({ tagName: "docs-wsx-press-section" })
+export default class DocsWsxPressSection extends LightComponent {
+    constructor() {
+        super({ styles, styleName: "docs-wsx-press-section" });
+    }
+
+    render() {
+        return (
+            <div class="docs-wsx-press-section">
+                <wsx-doc-layout />
+            </div>
+        );
+    }
+}

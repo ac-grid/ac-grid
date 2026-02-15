@@ -6,6 +6,7 @@ import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
 import styles from "./DocsSection.css?inline";
 import "@wsxjs/wsx-base-components";
 import "@wsxjs/wsx-router";
+import { SITE_GITHUB_REPO } from "../config/site";
 
 @autoRegister({ tagName: "docs-section" })
 export default class DocsSection extends LightComponent {
@@ -19,32 +20,44 @@ export default class DocsSection extends LightComponent {
                 <div class="container">
                     <h1 class="page-title">AC Grid Documentation</h1>
                     <p class="page-description">
-                        Complete documentation for AC Grid, including guides, API reference, and RFCs.
+                        Guides, features, and design docs for the open source data grid that replaces AG Grid.
                     </p>
 
                     <div class="docs-grid">
                         <div class="doc-card">
                             <h3>Getting Started</h3>
-                            <p>Learn how to install and use AC Grid in your project.</p>
-                            <wsx-link to="/docs/getting-started" class="doc-link">
+                            <p>Install and use AC Grid in your project.</p>
+                            <wsx-link to="/docs/guide/essentials/getting-started" class="doc-link">
                                 Read More →
                             </wsx-link>
                         </div>
 
                         <div class="doc-card">
-                            <h3>API Reference</h3>
-                            <p>Complete API documentation for all components and utilities.</p>
-                            <wsx-link to="/docs/api" class="doc-link">
-                                Read More →
+                            <h3>Features</h3>
+                            <p>Sorting, filtering, theming.</p>
+                            <wsx-link to="/docs/guide/features/sorting" class="doc-link">
+                                Sorting →
+                            </wsx-link>
+                            <span class="doc-link-sep"> · </span>
+                            <wsx-link to="/docs/guide/features/filtering" class="doc-link">
+                                Filtering →
+                            </wsx-link>
+                            <span class="doc-link-sep"> · </span>
+                            <wsx-link to="/docs/guide/features/theming" class="doc-link">
+                                Theming →
                             </wsx-link>
                         </div>
 
                         <div class="doc-card">
-                            <h3>RFCs</h3>
-                            <p>Request for Comments - detailed design documents for features.</p>
-                            <wsx-link to="/docs/rfc" class="doc-link">
-                                Read More →
-                            </wsx-link>
+                            <h3>API & RFCs</h3>
+                            <p>Types and design docs on GitHub.</p>
+                            <a href={`${SITE_GITHUB_REPO}/tree/main/packages/core/src`} class="doc-link" target="_blank" rel="noopener noreferrer">
+                                API (source) →
+                            </a>
+                            <span class="doc-link-sep"> · </span>
+                            <a href={`${SITE_GITHUB_REPO}/tree/main/docs/rfc`} class="doc-link" target="_blank" rel="noopener noreferrer">
+                                RFCs →
+                            </a>
                         </div>
 
                         <div class="doc-card">

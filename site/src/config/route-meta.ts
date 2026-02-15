@@ -7,30 +7,31 @@ import type { RouteMeta } from "../utils/meta-manager";
 
 export const routeMeta: Record<string, RouteMeta> = {
     "/": {
-        title: "AC Grid - High-Performance Data Grid Component",
+        title: "AC Grid – Open Source Data Grid to Replace AG Grid | acgrid.dev",
         description:
-            "A high-performance data grid component library built with Web Components and @tanstack/table-core. Framework-agnostic, TypeScript-first, production-ready.",
-        keywords: "AC Grid, Data Grid, Web Components, Table, @tanstack/table-core, TypeScript",
+            "Fully open source data grid to replace AG Grid. Framework-agnostic, high-performance, Web Components + TypeScript.",
+        keywords:
+            "AC Grid, ag-grid alternative, open source data grid, Web Components, Table, TypeScript, acgrid.dev",
         image: "/og-image.png",
         type: "website",
     },
     "/examples": {
-        title: "Examples - AC Grid",
+        title: "Samples | AC Grid – acgrid.dev",
         description:
-            "Explore interactive examples showcasing AC Grid capabilities: sorting, filtering, column resizing, and more.",
-        keywords: "AC Grid examples, data grid examples, table examples",
+            "Interactive examples: sorting, filtering, column reorder, theming. AC Grid – open source AG Grid alternative.",
+        keywords: "AC Grid examples, data grid examples, ag-grid alternative examples",
         image: "/og-image.png",
     },
     "/docs": {
-        title: "Documentation - AC Grid",
+        title: "Documentation | AC Grid – acgrid.dev",
         description:
-            "Complete documentation for AC Grid, including guides, API reference, RFCs, and examples.",
-        keywords: "AC Grid documentation, AC Grid guide, AC Grid API",
+            "Guides, API reference, and RFCs for AC Grid – the open source data grid to replace AG Grid.",
+        keywords: "AC Grid documentation, AC Grid guide, AC Grid API, ag-grid alternative",
         image: "/og-image.png",
     },
     // 404 页面（通配符路由）
     "*": {
-        title: "404 - Page Not Found | AC Grid",
+        title: "404 – Page Not Found | AC Grid",
         description: "The page you're looking for doesn't exist or has been moved.",
         keywords: "404, page not found, AC Grid",
         image: "/og-image.png",
@@ -57,7 +58,7 @@ export function getRouteMeta(path: string): RouteMeta {
             const lastPart = docPath.split("/").pop() || docPath;
             return {
                 ...baseMeta,
-                title: `${lastPart} - Documentation | AC Grid`,
+                title: `${lastPart} | Documentation – AC Grid`,
                 description: baseMeta.description || "AC Grid Documentation",
             };
         }

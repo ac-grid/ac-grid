@@ -1,29 +1,37 @@
 /* WSXJS App Styles - 基于Vue.js设计风格 */
 
 :root {
-    /* 极致紫罗兰主题变量 */
-    --primary-red: #8b5cf6;
-    --secondary-red: #7c3aed;
-    --accent-orange: #6366f1;
+    /* Violet theme (design-system/ac-grid/pages/site.md) */
+    --color-primary: #7c3aed;
+    --color-secondary: #a78bfa;
+    --color-cta: #a78bfa;
+    --color-bg: #faf5ff;
+    --color-bg-alt: #ede9fe;
+    --color-text: #1e1b4b;
+    --color-text-muted: #5b21b6;
+    --color-border: #c4b5fd;
+
+    /* Legacy aliases for existing CSS */
+    --primary-red: var(--color-primary);
+    --secondary-red: var(--color-secondary);
+    --accent-orange: var(--color-secondary);
     --dark-red: #6d28d9;
-    --light-orange: #a78bfa;
+    --light-orange: var(--color-secondary);
 
-    /* 浅色主题变量 */
-    --hero-gradient-start: #8b5cf6;
-    --hero-gradient-end: #8b5cf6;
-    --btn-primary-bg: #8b5cf6;
-    --btn-primary-hover: #7c3aed;
-    --btn-primary-shadow: rgba(139, 92, 246, 0.4);
-    --btn-primary-shadow-hover: rgba(139, 92, 246, 0.5);
+    --hero-gradient-start: var(--color-primary);
+    --hero-gradient-end: #6d28d9;
+    --btn-primary-bg: #fff;
+    --btn-primary-hover: #f5f3ff;
+    --btn-primary-shadow: rgba(0, 0, 0, 0.12);
+    --btn-primary-shadow-hover: rgba(0, 0, 0, 0.18);
 
-    /* 浅色模式变量 */
-    --text-primary: #2c3e50;
-    --text-secondary: #7f8c8d;
-    --bg-primary: #f8faff;
-    --bg-secondary: #f0f4ff;
-    --border-color: #e0e7ff;
-    --card-shadow: rgba(139, 92, 246, 0.1);
-    --card-shadow-hover: rgba(139, 92, 246, 0.15);
+    --text-primary: var(--color-text);
+    --text-secondary: var(--color-text-muted);
+    --bg-primary: var(--color-bg);
+    --bg-secondary: var(--color-bg-alt);
+    --border-color: var(--color-border);
+    --card-shadow: rgba(124, 58, 237, 0.08);
+    --card-shadow-hover: rgba(124, 58, 237, 0.15);
 
     /* 焦点颜色变量 - 使用主题颜色 */
     --wsx-theme-focus-color: var(--primary-red);
@@ -33,8 +41,8 @@
     --wsx-theme-combobox-focus-border: var(--primary-red);
     --wsx-theme-combobox-focus-outline: rgba(139, 92, 246, 0.2);
 
-    /* 布局间距变量 */
-    --nav-height: 70px;
+    /* 布局间距变量（与 wsx-responsive-nav 高度一致） */
+    --nav-height: 72px;
     --doc-section-padding: 10rem;
     --doc-section-padding-top: var(--nav-height);
     --doc-layout-main-padding-y: 1.5rem;
@@ -237,13 +245,13 @@ wsx-link[active]::part(link)::after {
 
 /* 手动浅色模式类 */
 .light {
-    --text-primary: #2c3e50;
-    --text-secondary: #7f8c8d;
-    --bg-primary: #fef2e5;
-    --bg-secondary: #fde8d1;
-    --border-color: #fed7aa;
-    --card-shadow: rgba(220, 38, 38, 0.1);
-    --card-shadow-hover: rgba(220, 38, 38, 0.15);
+    --text-primary: var(--color-text);
+    --text-secondary: var(--color-text-muted);
+    --bg-primary: var(--color-bg);
+    --bg-secondary: var(--color-bg-alt);
+    --border-color: var(--color-border);
+    --card-shadow: rgba(124, 58, 237, 0.1);
+    --card-shadow-hover: rgba(124, 58, 237, 0.15);
 }
 
 /* 手动深色模式类 */
@@ -288,21 +296,20 @@ wsx-link[active]::part(link)::after {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: rgba(254, 242, 229, 0.8);
+    background: rgba(250, 245, 255, 0.85);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border-color);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    /* 玻璃态效果增强 */
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .main-nav.nav-scrolled {
-    background: rgba(254, 242, 229, 0.95);
+    background: rgba(250, 245, 255, 0.95);
     box-shadow:
-        0 4px 30px rgba(220, 38, 38, 0.1),
+        0 4px 30px rgba(124, 58, 237, 0.12),
         0 1px 0 rgba(0, 0, 0, 0.05);
-    border-bottom-color: rgba(220, 38, 38, 0.2);
+    border-bottom-color: rgba(124, 58, 237, 0.2);
 }
 
 /* 深色模式导航栏 */
@@ -672,7 +679,7 @@ html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
     transform: translateY(-3px) scale(1.02);
     box-shadow:
         0 8px 25px var(--btn-primary-shadow-hover),
-        0 0 20px rgba(220, 38, 38, 0.3);
+        0 0 20px rgba(6, 182, 212, 0.25);
 }
 
 .btn-primary:active {
@@ -768,7 +775,7 @@ html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
 /* 特性区域样式 */
 .features-section {
     padding: 6rem 2rem;
-    background: linear-gradient(135deg, var(--bg-secondary), rgba(220, 38, 38, 0.05));
+    background: linear-gradient(135deg, var(--bg-secondary), rgba(124, 58, 237, 0.05));
 }
 
 .features-grid {
@@ -814,8 +821,8 @@ html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
     transform: translateY(-12px) scale(1.02);
     box-shadow:
         0 20px 40px var(--card-shadow-hover),
-        0 0 0 1px rgba(220, 38, 38, 0.1);
-    border-color: rgba(220, 38, 38, 0.3);
+        0 0 0 1px rgba(124, 58, 237, 0.12);
+    border-color: rgba(124, 58, 237, 0.3);
 }
 
 .feature-icon {
@@ -862,7 +869,7 @@ html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
 /* 快速开始区域 */
 .quick-start-section {
     padding: 6rem 2rem;
-    background: linear-gradient(135deg, var(--bg-primary), rgba(234, 88, 12, 0.03));
+    background: linear-gradient(135deg, var(--bg-primary), rgba(124, 58, 237, 0.04));
 }
 
 .quick-start-grid {
@@ -880,7 +887,7 @@ html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
     overflow: hidden;
     box-shadow:
         0 8px 30px var(--card-shadow-hover),
-        0 0 0 1px rgba(220, 38, 38, 0.05);
+        0 0 0 1px rgba(124, 58, 237, 0.06);
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
     position: relative;
@@ -889,7 +896,7 @@ html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
 .code-example:hover {
     box-shadow:
         0 12px 40px var(--card-shadow-hover),
-        0 0 0 1px rgba(220, 38, 38, 0.1);
+        0 0 0 1px rgba(124, 58, 237, 0.12);
     transform: translateY(-2px);
 }
 
@@ -930,7 +937,7 @@ html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba(220, 38, 38, 0.2);
+    background: rgba(124, 58, 237, 0.2);
     transform: translate(-50%, -50%);
     transition:
         width 0.6s,
@@ -942,7 +949,7 @@ html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
     background: var(--primary-red);
     color: white;
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
 }
 
 .copy-btn:active {
@@ -1014,7 +1021,7 @@ html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
 /* 示例区域 */
 .examples-section {
     padding: 6rem 2rem;
-    background: linear-gradient(135deg, var(--bg-secondary), rgba(220, 38, 38, 0.03));
+    background: linear-gradient(135deg, var(--bg-secondary), rgba(124, 58, 237, 0.04));
 }
 
 .examples-grid {
@@ -1057,8 +1064,8 @@ html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
     transform: translateY(-8px) scale(1.01);
     box-shadow:
         0 12px 30px var(--card-shadow-hover),
-        0 0 0 1px rgba(220, 38, 38, 0.1);
-    border-color: rgba(220, 38, 38, 0.3);
+        0 0 0 1px rgba(124, 58, 237, 0.12);
+    border-color: rgba(124, 58, 237, 0.3);
 }
 
 .example-header {
@@ -1110,7 +1117,7 @@ html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
 /* 生态系统区域 */
 .ecosystem-section {
     padding: 6rem 2rem;
-    background: linear-gradient(135deg, var(--bg-primary), rgba(234, 88, 12, 0.05));
+    background: linear-gradient(135deg, var(--bg-primary), rgba(124, 58, 237, 0.05));
 }
 
 .ecosystem-grid {
@@ -1153,8 +1160,8 @@ html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
     transform: translateY(-8px) scale(1.02);
     box-shadow:
         0 12px 30px var(--card-shadow-hover),
-        0 0 0 1px rgba(220, 38, 38, 0.1);
-    border-color: rgba(220, 38, 38, 0.3);
+        0 0 0 1px rgba(124, 58, 237, 0.12);
+    border-color: rgba(124, 58, 237, 0.3);
 }
 
 .ecosystem-icon {
@@ -1853,12 +1860,12 @@ html {
 
 /* 选择文本样式 */
 ::selection {
-    background: rgba(220, 38, 38, 0.3);
+    background: rgba(124, 58, 237, 0.25);
     color: var(--text-primary);
 }
 
 ::-moz-selection {
-    background: rgba(220, 38, 38, 0.3);
+    background: rgba(124, 58, 237, 0.25);
     color: var(--text-primary);
 }
 

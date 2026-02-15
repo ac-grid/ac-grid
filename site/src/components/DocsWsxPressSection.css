@@ -1,0 +1,7 @@
+/* Docs section wrapper - full height for wsx-doc-layout (quizerjs pattern) */
+.docs-wsx-press-section {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
