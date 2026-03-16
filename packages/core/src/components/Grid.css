@@ -272,3 +272,44 @@
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 13px;
 }
+
+/* ========== Column Resizer ========== */
+.ac-grid .resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: transparent;
+  cursor: col-resize;
+  touch-action: none;
+  z-index: 10;
+}
+
+.ac-grid .resizer:hover {
+  background-color: var(--ac-grid-primary, #2196f3);
+}
+
+.ac-grid .resizer.isResizing {
+  background-color: var(--ac-grid-primary, #2196f3);
+  width: 2px;
+}
+
+/* Resizer handle indicator */
+.ac-grid .resizer::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='16' viewBox='0 0 6 16'%3E%3Ccircle cx='3' cy='2' r='1' fill='%23c1c1c1'/%3E%3Ccircle cx='3' cy='8' r='1' fill='%23c1c1c1'/%3E%3Ccircle cx='3' cy='14' r='1' fill='%23c1c1c1'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ac-grid .grid-header-cell:hover .resizer::after {
+  opacity: 1;
+}

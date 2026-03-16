@@ -13,6 +13,9 @@ export interface FilterInputProps {
 
 @autoRegister({ tagName: "wsx-ac-filter-input" })
 export class FilterInput extends LightComponent {
+    // Define observed attributes for WSX property binding
+    static observedAttributes: string[] = [];
+
     get column(): Column<any, unknown> { return this._column; }
     set column(val: Column<any, unknown>) { this._column = val; }
     private _column: Column<any, unknown> = null as any;
@@ -22,6 +25,7 @@ export class FilterInput extends LightComponent {
         if (val !== this._value) {
             this._value = val;
             this.parseValue(val);
+            this.requestUpdate();
         }
     }
     private _value: FilterCondition | string = "";
@@ -68,7 +72,16 @@ export class FilterInput extends LightComponent {
             value: this.inputValue,
             operator: this.operator
         };
-        this._onChange?.(payload);
+        // 如果有直接设置的回调，调用它
+        if (this._onChange) {
+            this._onChange(payload);
+        }
+        // 同时触发原生事件，让父组件可以监听
+        this.dispatchEvent(new CustomEvent('filter-input-change', {
+            detail: payload,
+            bubbles: true,
+            composed: true
+        }));
     }
 
     private handleInput = (e: Event) => {

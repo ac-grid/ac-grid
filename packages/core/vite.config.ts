@@ -38,7 +38,7 @@ export default defineConfig({
     },
     test: {
         environment: "jsdom",
-        include: ["test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+        include: ["test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx,wsx}"],
         server: {
             deps: {
                 inline: true,

@@ -1,0 +1,23 @@
+@@ -524,14 +524,14 @@
+ 
+     private handleScroll = (e: Event) => {
++        const target = e.target as HTMLElement;
++        
++        // ALWAYS sync header scroll first - regardless of virtualization
++        if (this.headerScrollElement) {
++            this.headerScrollElement.scrollLeft = target.scrollLeft;
++        }
++
++        // If virtualization is not enabled, we're done
+         if (!this._virtualizationConfig.enabled) {
+-            this.syncHeaderScroll();
+             return;
+         }
+         
+-        const target = e.target as HTMLElement;
+-        // Sync header scroll
+-        if (this.headerScrollElement) {
+-            this.headerScrollElement.scrollLeft = target.scrollLeft;
+-        }
+-
+-        // Update virtual state

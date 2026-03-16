@@ -1,0 +1,74 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import type { ColumnDef } from "@ac-grid/core";
+import type { GridSortingConfig, GridFilteringConfig } from "@ac-grid/core";
+import type { FilterState } from "@ac-grid/core";
+import "@ac-grid/core";
+import type { Person } from "../makeData";
+
+const FILTERING_COLUMNS: ColumnDef<Person, any>[] = [
+    { accessorKey: "firstName", header: "First Name", size: 150, filterType: "text", enableSorting: true },
+    { accessorKey: "lastName", header: "Last Name", size: 150, filterType: "text", enableSorting: true },
+    { accessorKey: "age", header: "Age", size: 100, filterType: "number", enableSorting: true },
+    { accessorKey: "status", header: "Status", size: 150, filterType: "text", enableSorting: true },
+    { accessorKey: "visits", header: "Visits", size: 100, filterType: "number", enableSorting: true },
+];
+
+const SORTING_CONFIG: GridSortingConfig = {
+    enabled: true,
+};
+
+const FILTERING_CONFIG: GridFilteringConfig = {
+    enabled: true,
+    floatingFilter: true,
+    onFilterChange: (state: FilterState) => console.log("Filter:", state),
+};
+
+@autoRegister({ tagName: "demo-filtering-grid" })
+export class DemoFilteringGrid extends LightComponent {
+    get data(): Person[] {
+        return this._data;
+    }
+    set data(value: Person[]) {
+        this._data = value;
+    }
+    @state private _data: Person[] = [];
+
+    private handleGlobalSearch = (value: string) => {
+        const grid = this.querySelector("wsx-ac-grid") as any;
+        if (grid?.setGlobalFilter) grid.setGlobalFilter(value);
+    };
+
+    private handleClearFilters = () => {
+        const grid = this.querySelector("wsx-ac-grid") as any;
+        if (grid?.clearFilters) grid.clearFilters();
+    };
+
+    render() {
+        return (
+            <div className="demo-filtering-wrap">
+                <div className="demo-toolbar">
+                    <div className="demo-toolbar-left">
+                        <wsx-ac-global-search
+                            value=""
+                            onChange={this.handleGlobalSearch}
+                            placeholder="Search all columns..."
+                        />
+                    </div>
+                    <div className="demo-toolbar-right">
+                        <button className="demo-button" type="button" onClick={this.handleClearFilters}>
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
+                <wsx-ac-grid
+                    data={this.data}
+                    columns={FILTERING_COLUMNS}
+                    sortingConfig={SORTING_CONFIG}
+                    filteringConfig={FILTERING_CONFIG}
+                />
+            </div>
+        );
+    }
+}

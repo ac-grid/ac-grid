@@ -36,7 +36,15 @@ export class FilterMenu extends LightComponent {
         super.onConnected?.();
         const el = this as any;
         if (el.column) this.column = el.column;
-        if (el.value !== undefined) this.value = el.value;
+        
+        // 优先使用直接设置的 _value（这是在 appendChild 之后设置的）
+        // 因为 WSX 属性代理在元素连接前不会调用 setter
+        if (el._value !== undefined) {
+            this._value = el._value;
+        } else if (el.value !== undefined) {
+            this.value = el.value;
+        }
+        
         // 优先使用直接设置的 _filterChangeCallback，其次尝试从 property 读取
         if (el._filterChangeCallback) {
             this._filterChangeCallback = el._filterChangeCallback;
@@ -50,13 +58,36 @@ export class FilterMenu extends LightComponent {
         }
     }
 
+    // 存储 handleFilterChange 的引用，确保每次 render 使用同一个函数
+    private _handleFilterChange: ((condition: FilterCondition) => void) | null = null;
+
     render() {
+        // 创建一个包装的回调，既调用原始回调又触发自定义事件
+        // 存储引用以确保 FilterInput 能稳定访问
+        this._handleFilterChange = (condition: FilterCondition) => {
+            // 过滤掉无效值（null/undefined），避免意外清除过滤器
+            if (condition == null) {
+                console.log('[FilterMenu] Ignoring null/undefined condition');
+                return;
+            }
+            // 如果有直接设置的回调，调用它
+            if (this._filterChangeCallback) {
+                this._filterChangeCallback(condition);
+            }
+            // 同时触发自定义事件，让 Grid 可以监听
+            this.dispatchEvent(new CustomEvent('filter-change', {
+                detail: condition,
+                bubbles: true,
+                composed: true
+            }));
+        };
+        
         return (
             <div className="filter-menu">
                 <wsx-ac-filter-input
                     column={this._column}
                     value={this._value}
-                    onChange={this._filterChangeCallback || undefined}
+                    onChange={this._handleFilterChange}
                 />
             </div>
         );

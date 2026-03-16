@@ -1,0 +1,50 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import type { ColumnDef } from "@ac-grid/core";
+import type { GridSortingConfig, GridPaginationConfig } from "@ac-grid/core";
+import "@ac-grid/core";
+import type { Person } from "../makeData";
+
+const PAGINATION_COLUMNS: ColumnDef<Person, any>[] = [
+    { accessorKey: "firstName", header: "First Name", size: 150, enableSorting: true },
+    { accessorKey: "lastName", header: "Last Name", size: 150, enableSorting: true },
+    { accessorKey: "age", header: "Age", size: 100, enableSorting: true },
+    { accessorKey: "status", header: "Status", size: 150, enableSorting: true },
+    { accessorKey: "visits", header: "Visits", size: 100, enableSorting: true },
+    { accessorKey: "progress", header: "Progress", size: 100, enableSorting: true },
+];
+
+const SORTING_CONFIG: GridSortingConfig = {
+    enabled: true,
+};
+
+const PAGINATION_CONFIG: GridPaginationConfig = {
+    enabled: true,
+    initialPageIndex: 0,
+    pageSize: 10,
+    pageSizeOptions: [10, 25, 50, 100],
+    onPaginationChange: (state) => console.log("Pagination:", state),
+};
+
+@autoRegister({ tagName: "demo-pagination-grid" })
+export class DemoPaginationGrid extends LightComponent {
+    get data(): Person[] {
+        return this._data;
+    }
+    set data(value: Person[]) {
+        this._data = value;
+    }
+    @state private _data: Person[] = [];
+
+    render() {
+        return (
+            <wsx-ac-grid
+                data={this.data}
+                columns={PAGINATION_COLUMNS}
+                sortingConfig={SORTING_CONFIG}
+                paginationConfig={PAGINATION_CONFIG}
+            />
+        );
+    }
+}

@@ -1,0 +1,48 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import type { ColumnDef } from "@ac-grid/core";
+import type { GridSortingConfig, GridResizingConfig } from "@ac-grid/core";
+import "@ac-grid/core";
+import type { Person } from "../makeData";
+
+const RESIZING_COLUMNS: ColumnDef<Person, any>[] = [
+    { accessorKey: "firstName", header: "First Name", size: 150, minSize: 80, maxSize: 300, enableSorting: true },
+    { accessorKey: "lastName", header: "Last Name", size: 150, minSize: 80, maxSize: 300, enableSorting: true },
+    { accessorKey: "age", header: "Age", size: 100, minSize: 50, maxSize: 200, enableSorting: true },
+    { accessorKey: "status", header: "Status", size: 150, minSize: 80, maxSize: 250, enableSorting: true },
+    { accessorKey: "visits", header: "Visits", size: 100, minSize: 60, maxSize: 200, enableSorting: true },
+];
+
+const SORTING_CONFIG: GridSortingConfig = {
+    enabled: true,
+};
+
+const RESIZING_CONFIG: GridResizingConfig = {
+    enabled: true,
+    minColumnWidth: 50,
+    maxColumnWidth: 500,
+    onColumnSizingChange: (state) => console.log("Resizing:", state),
+};
+
+@autoRegister({ tagName: "demo-resizing-grid" })
+export class DemoResizingGrid extends LightComponent {
+    get data(): Person[] {
+        return this._data;
+    }
+    set data(value: Person[]) {
+        this._data = value;
+    }
+    @state private _data: Person[] = [];
+
+    render() {
+        return (
+            <wsx-ac-grid
+                data={this.data}
+                columns={RESIZING_COLUMNS}
+                sortingConfig={SORTING_CONFIG}
+                resizingConfig={RESIZING_CONFIG}
+            />
+        );
+    }
+}
