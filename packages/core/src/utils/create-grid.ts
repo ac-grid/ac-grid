@@ -11,6 +11,7 @@ import type { GridSortingConfig } from "../components/Grid.wsx";
 import type { GridFilteringConfig } from "../types/filtering";
 import type { GridResizingConfig } from "../types/resizing";
 import type { GridVirtualizationConfig } from "../types/virtualization";
+import type { GridSelectionConfig } from "../types/selection";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
     /**
@@ -41,6 +42,10 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
      * 虚拟滚动配置（RFC-0005）
      */
     virtualization?: GridVirtualizationConfig;
+    /**
+     * 行选择配置（RFC-0007）
+     */
+    selection?: GridSelectionConfig;
     /**
      * 容器元素（可选，如果不提供则返回元素本身）
      */
@@ -76,7 +81,7 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
 export function createGrid<TData extends { userId?: string }>(
     options: CreateGridOptions<TData>,
 ): HTMLElement {
-    const { data, columns, className, sorting, filtering, resizing, virtualization, container } =
+    const { data, columns, className, sorting, filtering, resizing, virtualization, selection, container } =
         options;
 
     // 确保组件已注册（导入时会自动注册）
@@ -102,6 +107,10 @@ export function createGrid<TData extends { userId?: string }>(
 
     if (resizing) {
         gridElement.resizingConfig = resizing;
+    }
+
+    if (selection) {
+        gridElement.selectionConfig = selection;
     }
 
     gridElement.columns = columns;
