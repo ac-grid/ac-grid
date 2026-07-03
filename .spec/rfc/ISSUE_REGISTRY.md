@@ -10,7 +10,7 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 | 0001 | AC Grid architecture | [ACG-3](mention://issue/a56d2f5f-8b68-4a6e-836a-062f76b7f67f) | done | 1 |
 | 0002 | Sorting | [ACG-5](mention://issue/ede0ff8b-09b5-477f-802b-377d3ab6655a) | done | 2 |
 | 0003 | Filtering | [ACG-6](mention://issue/47c4afa8-d498-4dc0-b100-a6e3f53dee3e) | done | 2 |
-| 0004 | Column resizing | [ACG-7](mention://issue/77eabd0d-7a3e-4dbe-994d-d8a18f0a1a24) | todo | 2 |
+| 0004 | Column resizing | [ACG-7](mention://issue/77eabd0d-7a3e-4dbe-994d-d8a18f0a1a24) | done | 2 |
 | 0005 | Virtual scrolling | [ACG-8](mention://issue/0d1a757b-d482-41bf-be12-7a92dfd585f1) | done | 3 |
 | 0006 | Pagination | [ACG-9](mention://issue/49ce20a9-b580-4471-a70c-128ea821ae81) | backlog | 3 |
 | 0007 | Row selection | [ACG-10](mention://issue/7eb0775c-99ad-49c6-92c6-8b38dbe3cd0a) | backlog | 3 |

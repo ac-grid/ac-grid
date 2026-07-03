@@ -34,7 +34,7 @@ docs/rfc/
 **推荐顺序（基于依赖关系）**：
 1. ✅ **0002-sorting-feature** - 排序功能（已有 RFC）
 2. 📝 **0003-filtering-feature** - 过滤功能（依赖排序）
-3. 📝 **0004-column-resizing** - 列调整大小（独立功能）
+3. ✔️ **0004-column-resizing** - 列调整大小（已完成，见 [completed/0004-column-resizing.md](./completed/0004-column-resizing.md)）
 4. 📝 **0005-virtual-scrolling** - 虚拟滚动（性能优化）
 5. 📝 **0006-pagination** - 分页功能（与虚拟滚动二选一）
 

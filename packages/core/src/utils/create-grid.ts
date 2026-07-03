@@ -9,6 +9,7 @@ import type { ColumnDef } from "@tanstack/table-core";
 // @ts-ignore - .wsx 文件在构建时会被处理
 import type { GridSortingConfig } from "../components/Grid.wsx";
 import type { GridFilteringConfig } from "../types/filtering";
+import type { GridResizingConfig } from "../types/resizing";
 import type { GridVirtualizationConfig } from "../types/virtualization";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
@@ -32,6 +33,10 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
      * 过滤配置
      */
     filtering?: GridFilteringConfig;
+    /**
+     * 列宽调整配置（RFC-0004）
+     */
+    resizing?: GridResizingConfig;
     /**
      * 虚拟滚动配置（RFC-0005）
      */
@@ -71,7 +76,7 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
 export function createGrid<TData extends { userId?: string }>(
     options: CreateGridOptions<TData>,
 ): HTMLElement {
-    const { data, columns, className, sorting, filtering, virtualization, container } =
+    const { data, columns, className, sorting, filtering, resizing, virtualization, container } =
         options;
 
     // 确保组件已注册（导入时会自动注册）
@@ -93,6 +98,10 @@ export function createGrid<TData extends { userId?: string }>(
 
     if (filtering) {
         gridElement.filteringConfig = filtering;
+    }
+
+    if (resizing) {
+        gridElement.resizingConfig = resizing;
     }
 
     gridElement.columns = columns;

@@ -83,10 +83,10 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
 | 过滤（全局搜索）         | ✅             | ✅ 已实现    | [0003](./0003-filtering-feature.md)         | v0.1.0   |
 | 快速过滤                 | ✅             | ✅ 已实现    | [0003](./0003-filtering-feature.md)         | v0.1.0   |
 | **布局和显示**           |
-| 列调整大小               | ✅             | 📝 规划中    | [0004](./0004-column-resizing.md)           | v0.1.0   |
+| 列调整大小               | ✅             | ✔️ 已完成    | [0004](./completed/0004-column-resizing.md)           | v0.1.0   |
 | 列重排序                 | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
 | 列固定（Pinning）        | ✅             | 📝 规划中    | [0008](./0008-column-pinning.md)            | v0.3.0   |
-| 自动列宽                 | ✅             | 📝 规划中    | [0004](./0004-column-resizing.md)           | v0.1.0   |
+| 自动列宽                 | ✅             | ✔️ 已完成    | [0004](./completed/0004-column-resizing.md)           | v0.1.0   |
 | **性能优化**             |
 | 虚拟滚动（行）           | ✅             | ✅ 已实现    | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0   |
 | 虚拟滚动（列）           | ✅             | 📝 规划中    | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0   |
@@ -674,7 +674,7 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 | ---------- | --------------------------------------- | --------- | ------ |
 | 排序功能   | [RFC-0002](./0002-sorting-feature.md)   | 🚧 实施中 | P0     |
 | 过滤功能   | [RFC-0003](./0003-filtering-feature.md) | 📝 待编写 | P0     |
-| 列调整大小 | [RFC-0004](./0004-column-resizing.md)   | 📝 待编写 | P1     |
+| 列调整大小 | [RFC-0004](./completed/0004-column-resizing.md)   | ✔️ 已完成 | P1     |
 
 **交付物**：
 

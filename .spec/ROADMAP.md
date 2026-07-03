@@ -104,13 +104,13 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 |------|-----|------|--------|-----------|--------|
 | 排序功能 | [0002](./rfc/completed/0002-sorting-feature.md) | ✔️ 已完成 | P0 | 7-9天 | TBD |
 | 过滤功能 | [0003](./rfc/0003-filtering-feature.md) | ✅ 已完成 | P0 | 7-10天 | Albert Li |
-| 列调整大小 | [0004](./rfc/0004-column-resizing.md) | ⏳ 待规划 | P1 | 5-7天 | TBD |
+| 列调整大小 | [0004](./rfc/completed/0004-column-resizing.md) | ✔️ 已完成 | P1 | 5-7天 | Albert Li |
 
 **里程碑**:
 - [x] 完成所有 RFC 编写
 - [x] 实施排序功能
 - [x] 实施过滤功能
-- [ ] 实施列调整大小
+- [x] 实施列调整大小
 - [ ] 单元测试覆盖率达到 100%
 - [ ] 创建 Storybook 示例
 - [ ] 发布 v0.1.0-alpha

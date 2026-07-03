@@ -4,7 +4,8 @@
 **版本**: 0.1.0  
 **作者**: Albert Li  
 **日期**: 2026-01-24  
-**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md)
+**最后更新**: 2026-07-03  
+**相关 RFC**: [0001-ac-grid-architecture](../0001-ac-grid-architecture.md)
 
 ## 目录
 
