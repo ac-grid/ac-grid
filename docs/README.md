@@ -19,7 +19,7 @@
 ### 快速链接
 
 - [项目路线图](../ROADMAP.md) - 了解开发计划和版本规划
-- [RFC 文档](./rfc/README.md) - 查看详细的设计文档
+- [RFC 文档](./spec/rfc/README.md) - 查看详细的设计文档
 - [站点文档指南](../apps/site/public/docs/guide/) - 完整的用户指南
 
 ## 📖 指南详情

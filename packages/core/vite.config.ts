@@ -38,7 +38,16 @@ export default defineConfig({
     },
     test: {
         environment: "jsdom",
-        include: ["test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx,wsx}"],
+        include: ["test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+        coverage: {
+            provider: "v8",
+            include: [
+                "src/utils/virtualizer.ts",
+                "src/utils/virtual-scroll.ts",
+                "src/utils/create-grid.ts",
+            ],
+            reporter: ["text", "text-summary"],
+        },
         server: {
             deps: {
                 inline: true,

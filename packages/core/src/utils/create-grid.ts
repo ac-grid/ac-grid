@@ -1,22 +1,107 @@
-import { Grid } from '../components/Grid.wsx';
-import type { GridOptions, FullGridOptions } from '../components/Grid.wsx';
-
 /**
- * 创建网格实例（支持虚拟滚动）
+ * createGrid 工具函数 - 用于在纯 HTML/JavaScript 环境中创建和配置 Grid 组件
+ *
+ * 在非 JSX 环境中，不能直接使用 JSX 语法，需要通过 DOM API 创建元素
+ * 并通过 property（而非 attribute）设置复杂数据
  */
-export function createGrid(options: FullGridOptions): Grid {
-  // TODO: 初始化网格配置和虚拟滚动逻辑
-  return new Grid();
+
+import type { ColumnDef } from "@tanstack/table-core";
+// @ts-ignore - .wsx 文件在构建时会被处理
+import type { GridSortingConfig } from "../components/Grid.wsx";
+import type { GridFilteringConfig } from "../types/filtering";
+import type { GridVirtualizationConfig } from "../types/virtualization";
+
+export interface CreateGridOptions<TData extends { userId?: string }> {
+    /**
+     * 数据源
+     */
+    data: TData[];
+    /**
+     * 列定义
+     */
+    columns: ColumnDef<TData, any>[];
+    /**
+     * 自定义类名
+     */
+    className?: string;
+    /**
+     * 排序配置
+     */
+    sorting?: GridSortingConfig;
+    /**
+     * 过滤配置
+     */
+    filtering?: GridFilteringConfig;
+    /**
+     * 虚拟滚动配置（RFC-0005）
+     */
+    virtualization?: GridVirtualizationConfig;
+    /**
+     * 容器元素（可选，如果不提供则返回元素本身）
+     */
+    container?: HTMLElement;
 }
 
 /**
- * 创建虚拟滚动网格实例
+ * 创建并配置 Grid 组件
+ *
+ * @example
+ * ```typescript
+ * import { createGrid } from '@ac-grid/core';
+ *
+ * const gridElement = createGrid({
+ *   data: myData,
+ *   columns: myColumns,
+ *   className: 'my-grid'
+ * });
+ *
+ * document.body.appendChild(gridElement);
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // 直接挂载到容器
+ * createGrid({
+ *   data: myData,
+ *   columns: myColumns,
+ *   container: document.getElementById('app')
+ * });
+ * ```
  */
-export function createVirtualizedGrid<T extends Record<string, any>>(
-  options: Omit<FullGridOptions, 'enableVirtualScrolling'> & { enableVirtualScrolling: true }
-): Grid {
-  const virtualScrollConfig = options;
+export function createGrid<TData extends { userId?: string }>(
+    options: CreateGridOptions<TData>,
+): HTMLElement {
+    const { data, columns, className, sorting, filtering, virtualization, container } =
+        options;
 
-  // TODO: 配置虚拟滚动参数
-  return new Grid({ ...options, enableVirtualScrolling: true });
+    // 确保组件已注册（导入时会自动注册）
+    // 创建自定义元素
+    const gridElement = document.createElement("wsx-ac-grid") as any;
+
+    // Apply virtualization before data so the first render never mounts the full dataset
+    if (virtualization) {
+        gridElement.virtualizationConfig = virtualization;
+    }
+
+    if (className) {
+        gridElement.className = className;
+    }
+
+    if (sorting) {
+        gridElement.sortingConfig = sorting;
+    }
+
+    if (filtering) {
+        gridElement.filteringConfig = filtering;
+    }
+
+    gridElement.columns = columns;
+    gridElement.data = data;
+
+    // 如果提供了容器，直接挂载
+    if (container) {
+        container.appendChild(gridElement);
+    }
+
+    return gridElement;
 }
