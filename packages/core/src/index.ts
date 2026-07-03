@@ -63,3 +63,10 @@ export {
     numberFilter,
     dateFilter,
 } from "./utils/filter-functions";
+export {
+    calculateVisibleRange,
+    scrollToRow,
+    getVisibleRowRange,
+    createScrollHandler,
+} from "./utils/virtual-scroll";
+export { Virtualizer } from "./utils/virtualizer";

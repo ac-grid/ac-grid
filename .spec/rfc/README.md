@@ -21,6 +21,9 @@
    - 更新 `README.md` 中的链接路径
    - 更新 `ROADMAP.md` 中的状态和里程碑
    - 修复文件中的相对链接路径（使用 `../` 指向父目录）
+   - 关闭对应的 Multica issue（见 [ISSUE_REGISTRY.md](./ISSUE_REGISTRY.md)）
+
+5. **RFC ↔ Issue 映射**：每个 RFC 对应一个 Multica 子 issue（父 issue [ACG-2](mention://issue/b7f108c7-583f-4986-9f38-a30cec79d5a0)）。完整对照表见 [ISSUE_REGISTRY.md](./ISSUE_REGISTRY.md)。
 
 ## RFC 列表
 
@@ -43,7 +46,7 @@
 
 | RFC | 标题 | 状态 | 版本 | 作者 | 日期 |
 |-----|------|------|------|------|------|
-| [0005](./0005-virtual-scrolling.md) | 虚拟滚动 | 📝 草稿 | 0.2.0 | Albert Li | 2026-01-24 |
+| [0005](./completed/0005-virtual-scrolling.md) | 虚拟滚动 | ✔️ 已完成 | 0.2.0 | Albert Li | 2026-06-28 |
 | [0006](./0006-pagination.md) | 分页功能 | 📝 草稿 | 0.2.0 | Albert Li | 2026-01-24 |
 | [0007](./0007-row-selection.md) | 行选择 | 📝 草稿 | 0.2.0 | Albert Li | 2026-01-24 |
 
@@ -87,9 +90,43 @@
 5. **实施**：开始实施，状态更新为"实施中"
 6. **完成**：实施完成并测试通过后，状态更新为"已完成"
 
+### 第六阶段：Community 补齐 (v0.4.0–v0.5.0)
+
+| RFC | 标题 | 状态 | 版本 | 作者 | 日期 |
+|-----|------|------|------|------|------|
+| [0017](./0017-framework-bindings.md) | 框架绑定 (Vue/Angular/Svelte) | 📝 草稿 | 0.5.0 | Albert Li | 2026-06-28 |
+| [0018](./0018-grid-state-api.md) | Grid 状态 API 与持久化 | 📝 草稿 | 0.5.0 | Albert Li | 2026-06-28 |
+| [0019](./0019-custom-components.md) | 自定义组件 (Header/Filter/Overlay) | 📝 草稿 | 0.4.0 | Albert Li | 2026-06-28 |
+
+### 第七阶段：Enterprise 对标 (v1.1.0–v1.2.0)
+
+| RFC | 标题 | 状态 | 版本 | 作者 | 日期 |
+|-----|------|------|------|------|------|
+| [0020](./0020-tree-data.md) | 树形数据 | 📝 草稿 | 1.1.0 | Albert Li | 2026-06-28 |
+| [0021](./0021-master-detail.md) | 主从表格 | 📝 草稿 | 1.1.0 | Albert Li | 2026-06-28 |
+| [0022](./0022-range-selection.md) | 范围选择 | 📝 草稿 | 1.1.0 | Albert Li | 2026-06-28 |
+| [0023](./0023-clipboard-operations.md) | 剪贴板操作 | 📝 草稿 | 1.1.0 | Albert Li | 2026-06-28 |
+| [0024](./0024-pivot-mode.md) | 透视模式 | 📝 草稿 | 1.2.0 | Albert Li | 2026-06-28 |
+| [0025](./0025-excel-export-advanced.md) | Excel 高级导出 | 📝 草稿 | 1.2.0 | Albert Li | 2026-06-28 |
+| [0026](./0026-context-menu-column-menu.md) | 右键/列菜单 | 📝 草稿 | 1.1.0 | Albert Li | 2026-06-28 |
+| [0027](./0027-tool-panels-status-bar.md) | 工具面板与状态栏 | 📝 草稿 | 1.2.0 | Albert Li | 2026-06-28 |
+| [0028](./0028-advanced-filtering.md) | 高级过滤 | 📝 草稿 | 1.2.0 | Albert Li | 2026-06-28 |
+| [0029](./0029-integrated-charts.md) | 集成图表 | 📝 草稿 | 1.2.0 | Albert Li | 2026-06-28 |
+
+### 第八阶段：Stretch (v2.0.0+)
+
+| RFC | 标题 | 状态 | 版本 | 作者 | 日期 |
+|-----|------|------|------|------|------|
+| [0030](./0030-formulas.md) | 单元格公式 | 🔮 Stretch | 2.0.0 | Albert Li | 2026-06-28 |
+| [0031](./0031-server-side-row-model.md) | 服务端行模型 | 🔮 Stretch | 2.0.0 | Albert Li | 2026-06-28 |
+| [0032](./0032-ai-toolkit.md) | AI Toolkit | 🔮 Stretch | TBD | Albert Li | 2026-06-28 |
+
 ## 相关资源
 
-- [项目路线图](../../ROADMAP.md) - 📅 查看开发进度和时间规划
+- [**RFC → Issue 对照表**](./ISSUE_REGISTRY.md) - 🔗 每个 RFC 的 Multica issue
+- [**AG Grid 功能对标矩阵**](./PARITY_MATRIX.md) - ⚖️ Community/Enterprise 全覆盖
+- [项目路线图](../ROADMAP.md) - 📅 查看开发进度和时间规划
+- [任务追踪](../TASK_TRACKING.md) - ✅ 当前冲刺任务
 - [快速开始指南](./GETTING-STARTED.md) - 🚀 如何开始开发功能
 - [总体架构文档](./0001-ac-grid-architecture.md) - 🏗️ 技术架构和设计
 - [项目主 README](../../README.md) - 📖 项目介绍

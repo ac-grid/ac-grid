@@ -27,6 +27,7 @@ import type { GridPinningConfig } from "../types/pinning";
 import type { GridEditingConfig } from "../types/editing";
 import type { GridGroupingConfig } from "../types/grouping";
 import { Virtualizer } from "../utils/virtualizer";
+import { scrollToRow as scrollOffsetForRow } from "../utils/virtual-scroll";
 import {
     defaultTextFilter,
     numberFilter,
@@ -104,6 +105,7 @@ export class Grid extends LightComponent {
     @state private table: Table<any> | null = null;
     private headerScrollElement: HTMLElement | null = null;
     private bodyScrollElement: HTMLElement | null = null;
+    private bodyResizeObserver: ResizeObserver | null = null;
     private isSyncingScroll: boolean = false;
 
     // Drag-drop cleanup functions
@@ -125,6 +127,7 @@ export class Grid extends LightComponent {
             this._data = value;
             this.gridData = [...value];
             this.updateTable();
+            this.updateVirtualization();
         }
     }
     @state private _data: any[] = [];
@@ -248,8 +251,10 @@ export class Grid extends LightComponent {
         scrollTop: 0,
         containerHeight: 0,
         totalHeight: 0,
-        visibleRange: { start: 0, end: 0 }
+        visibleRange: { start: 0, end: 0 },
     };
+    /** Bumps on each virtualization recompute to force WSX re-render after layout measure */
+    @state private virtualRevision: number = 0;
 
     // Pagination config
     get paginationConfig(): GridPaginationConfig | undefined {
@@ -537,14 +542,14 @@ export class Grid extends LightComponent {
 
         // Update virtual state
         requestAnimationFrame(() => {
-            const rm = this.table?.getRowModel();
+            const rm = this.table?.getFilteredRowModel();
             const rowCount = rm && rm.rows ? rm.rows.length : 0;
             this.virtualizer.updateState(
                 target.scrollTop,
                 target.clientHeight,
                 rowCount
             );
-            this.virtualState = this.virtualizer.getVirtualState();
+            this.commitVirtualState();
         });
     };
 
@@ -604,16 +609,57 @@ export class Grid extends LightComponent {
         }
     }
 
+    private getBodyScrollElement(): HTMLElement | null {
+        return (
+            this.bodyScrollElement ??
+            (this.querySelector(".grid-body") as HTMLElement | null)
+        );
+    }
+
+    private commitVirtualState() {
+        const nextState = this.virtualizer.getVirtualState();
+        const prevRange = this.virtualState.visibleRange;
+        const nextRange = nextState.visibleRange;
+        const heightChanged =
+            this.virtualState.containerHeight !== nextState.containerHeight;
+        this.virtualState = nextState;
+        if (
+            prevRange.start !== nextRange.start ||
+            prevRange.end !== nextRange.end ||
+            heightChanged
+        ) {
+            this.virtualRevision += 1;
+        }
+    }
+
     private updateVirtualization() {
-        if (this.bodyScrollElement && this.table) {
-            const rm = this.table.getRowModel();
+        const bodyScrollElement = this.getBodyScrollElement();
+        if (bodyScrollElement && this.table) {
+            const rm = this.table.getFilteredRowModel();
             const rowCount = rm && rm.rows ? rm.rows.length : 0;
+            const rowHeight = this._virtualizationConfig.rowHeight ?? 35;
+            const containerHeight = bodyScrollElement.clientHeight;
+
+            if (
+                this._virtualizationConfig.enabled &&
+                containerHeight > 0 &&
+                rowCount > 0
+            ) {
+                const maxScrollTop = Math.max(
+                    0,
+                    rowCount * rowHeight - containerHeight,
+                );
+                if (bodyScrollElement.scrollTop > maxScrollTop) {
+                    bodyScrollElement.scrollTop = maxScrollTop;
+                }
+            }
+
             this.virtualizer.updateState(
-                this.bodyScrollElement.scrollTop,
-                this.bodyScrollElement.clientHeight,
-                rowCount
+                bodyScrollElement.scrollTop,
+                containerHeight,
+                rowCount,
             );
-            this.virtualState = this.virtualizer.getVirtualState();
+            this.commitVirtualState();
         }
     }
 
@@ -911,13 +957,19 @@ export class Grid extends LightComponent {
         let visibleRows = allRows;
         let paddingTop = 0;
         let paddingBottom = 0;
+        const rowHeight = this._virtualizationConfig.rowHeight || 35;
 
-        if (this._virtualizationConfig.enabled && this.virtualState.totalHeight > 0) {
-            const { start, end } = this.virtualState.visibleRange;
-            visibleRows = allRows.slice(start, end);
-            const rowHeight = this._virtualizationConfig.rowHeight || 35;
-            paddingTop = start * rowHeight;
-            paddingBottom = Math.max(0, (allRows.length - end) * rowHeight);
+        if (this._virtualizationConfig.enabled) {
+            if (this.virtualRevision > 0) {
+                const { start, end } = this.virtualState.visibleRange;
+                visibleRows = allRows.slice(start, end);
+                paddingTop = start * rowHeight;
+                paddingBottom = Math.max(0, (allRows.length - end) * rowHeight);
+            } else {
+                // Defer row mount until body viewport is measured — avoids 10K+ DOM flash
+                visibleRows = [];
+                paddingBottom = allRows.length * rowHeight;
+            }
         }
 
         // 计算列宽模板 - 固定宽度，不换行
@@ -1242,12 +1294,26 @@ export class Grid extends LightComponent {
 
                     {/* Body */}
                     <div
+                        key={`grid-body-${this.virtualRevision}`}
                         className="grid-body"
+                        data-virtual-rev={this.virtualRevision}
                         ref={(el: HTMLElement | null) => {
-                            if (el) {
-                                this.bodyScrollElement = el;
-                                this.syncBodyScroll();
+                            if (!el) {
+                                this.bodyResizeObserver?.disconnect();
+                                this.bodyResizeObserver = null;
+                                this.bodyScrollElement = null;
+                                return;
                             }
+                            this.bodyScrollElement = el;
+                            this.syncBodyScroll();
+                            this.bodyResizeObserver?.disconnect();
+                            if (typeof ResizeObserver !== "undefined") {
+                                this.bodyResizeObserver = new ResizeObserver(() => {
+                                    this.updateVirtualization();
+                                });
+                                this.bodyResizeObserver.observe(el);
+                            }
+                            requestAnimationFrame(() => this.updateVirtualization());
                         }}
                     >
                         <div style={{ height: `${paddingTop}px` }}></div>
@@ -1446,6 +1512,29 @@ export class Grid extends LightComponent {
             };
             this._filteringConfig.onFilterChange(filterState);
         }
+    }
+
+    /** RFC-0005: 滚动到指定行（固定行高，需启用 virtual scrolling） */
+    public scrollToRow(rowIndex: number): void {
+        const bodyScrollElement = this.getBodyScrollElement();
+        if (!this._virtualizationConfig.enabled || !bodyScrollElement) {
+            return;
+        }
+        const rm = this.table?.getFilteredRowModel();
+        const rowCount = rm?.rows?.length ?? 0;
+        if (rowCount === 0) {
+            return;
+        }
+        const clampedIndex = Math.max(0, Math.min(rowIndex, rowCount - 1));
+        const rowHeight = this._virtualizationConfig.rowHeight ?? 35;
+        bodyScrollElement.scrollTop = scrollOffsetForRow(clampedIndex, rowHeight);
+        this.updateVirtualization();
+    }
+
+    /** RFC-0005: 当前可见行索引区间 [start, end) */
+    public getVisibleRowRange(): { start: number; end: number } {
+        const { start, end } = this.virtualState.visibleRange;
+        return { start, end };
     }
 
     /** RFC-0003: 设置全局过滤（供外部搜索框等调用） */

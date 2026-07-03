@@ -4,7 +4,7 @@
 **版本**: 0.2.0  
 **作者**: Albert Li  
 **日期**: 2026-01-24  
-**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md), [0005-virtual-scrolling](./0005-virtual-scrolling.md)
+**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md), [0005-virtual-scrolling](./completed/0005-virtual-scrolling.md)
 
 ## 目录
 

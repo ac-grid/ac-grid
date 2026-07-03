@@ -1,8 +1,9 @@
 # AC Grid 项目路线图
 
-> **最后更新**: 2026-01-24  
-> **当前版本**: v0.0.1  
-> **下一版本**: v0.1.0（目标：2026年3月）
+> **最后更新**: 2026-06-28  
+> **当前版本**: v0.0.2  
+> **下一版本**: v0.1.0（目标：2026年3月）  
+> **对标文档**: [PARITY_MATRIX.md](./rfc/PARITY_MATRIX.md)
 
 ## 📍 项目愿景
 
@@ -34,7 +35,7 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 ### ✅ 已完成（v0.0.2）
 
-- [x] [RFC-0016: 主题系统架构](./docs/rfc/0016-theme-system.md) - ✅ RFC 完成
+- [x] [RFC-0016: 主题系统架构](./rfc/0016-theme-system.md) - ✅ RFC 完成
 - [x] 创建 `@ac-grid/theme-base` 包 - ✅ 已完成
 - [x] 创建 `@ac-grid/theme-default` 包 - ✅ 已完成
 - [x] 更新 `@ac-grid/core` 使用主题系统 - ✅ 已完成（使用CSS Grid，硬编码值）
@@ -51,9 +52,9 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 | 包名 | 版本 | 描述 | RFC | 工作量 | 状态 |
 |------|------|------|-----|--------|------|
-| @ac-grid/theme-base | 0.1.0 | 主题系统基础架构 | [0016](./docs/rfc/0016-theme-system.md) | 2天 | ✅ 已完成 |
-| @ac-grid/theme-default | 0.1.0 | Light & Dark 预设主题 | [0016](./docs/rfc/0016-theme-system.md) | 1天 | ✅ 已完成 |
-| @ac-grid/core | 0.0.2 | 更新使用主题系统 | [0016](./docs/rfc/0016-theme-system.md) | 1天 | ✅ 已完成 |
+| @ac-grid/theme-base | 0.1.0 | 主题系统基础架构 | [0016](./rfc/0016-theme-system.md) | 2天 | ✅ 已完成 |
+| @ac-grid/theme-default | 0.1.0 | Light & Dark 预设主题 | [0016](./rfc/0016-theme-system.md) | 1天 | ✅ 已完成 |
+| @ac-grid/core | 0.0.2 | 更新使用主题系统 | [0016](./rfc/0016-theme-system.md) | 1天 | ✅ 已完成 |
 
 **里程碑**:
 - [x] 完成 RFC-0016 编写
@@ -101,9 +102,9 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 | 功能 | RFC | 状态 | 优先级 | 预计工作量 | 负责人 |
 |------|-----|------|--------|-----------|--------|
-| 排序功能 | [0002](./docs/rfc/completed/0002-sorting-feature.md) | ✔️ 已完成 | P0 | 7-9天 | TBD |
-| 过滤功能 | [0003](./docs/rfc/0003-filtering-feature.md) | ✅ 已完成 | P0 | 7-10天 | Albert Li |
-| 列调整大小 | [0004](./docs/rfc/0004-column-resizing.md) | ⏳ 待规划 | P1 | 5-7天 | TBD |
+| 排序功能 | [0002](./rfc/completed/0002-sorting-feature.md) | ✔️ 已完成 | P0 | 7-9天 | TBD |
+| 过滤功能 | [0003](./rfc/0003-filtering-feature.md) | ✅ 已完成 | P0 | 7-10天 | Albert Li |
+| 列调整大小 | [0004](./rfc/0004-column-resizing.md) | ⏳ 待规划 | P1 | 5-7天 | TBD |
 
 **里程碑**:
 - [x] 完成所有 RFC 编写
@@ -125,9 +126,9 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 | 功能 | RFC | 状态 | 优先级 | 预计工作量 | 负责人 |
 |------|-----|------|--------|-----------|--------|
-| 虚拟滚动 | [0005](./docs/rfc/0005-virtual-scrolling.md) | ⏳ 待规划 | P0 | 10-14天 | TBD |
-| 分页功能 | [0006](./docs/rfc/0006-pagination.md) | ⏳ 待规划 | P0 | 5-7天 | TBD |
-| 行选择 | [0007](./docs/rfc/0007-row-selection.md) | ⏳ 待规划 | P1 | 5-7天 | TBD |
+| 虚拟滚动 | [0005](./rfc/completed/0005-virtual-scrolling.md) | ✔️ 已完成 | P0 | 10-14天 | TBD |
+| 分页功能 | [0006](./rfc/0006-pagination.md) | ⏳ 待规划 | P0 | 5-7天 | TBD |
+| 行选择 | [0007](./rfc/0007-row-selection.md) | ⏳ 待规划 | P1 | 5-7天 | TBD |
 
 **里程碑**:
 - [ ] 完成所有 RFC 编写
@@ -148,9 +149,9 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 | 功能 | RFC | 状态 | 优先级 | 预计工作量 | 负责人 |
 |------|-----|------|--------|-----------|--------|
-| 列固定 | [0008](./docs/rfc/0008-column-pinning.md) | ⏳ 待规划 | P1 | 7-9天 | TBD |
-| 单元格编辑 | [0009](./docs/rfc/0009-cell-editing.md) | ⏳ 待规划 | P0 | 10-12天 | TBD |
-| 分组和聚合 | [0010](./docs/rfc/0010-grouping-aggregation.md) | ⏳ 待规划 | P1 | 10-14天 | TBD |
+| 列固定 | [0008](./rfc/0008-column-pinning.md) | ⏳ 待规划 | P1 | 7-9天 | TBD |
+| 单元格编辑 | [0009](./rfc/0009-cell-editing.md) | ⏳ 待规划 | P0 | 10-12天 | TBD |
+| 分组和聚合 | [0010](./rfc/0010-grouping-aggregation.md) | ⏳ 待规划 | P1 | 10-14天 | TBD |
 
 **里程碑**:
 - [ ] 完成所有 RFC 编写
@@ -171,9 +172,9 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 | 功能 | RFC | 状态 | 优先级 | 预计工作量 | 负责人 |
 |------|-----|------|--------|-----------|--------|
-| 主题系统 | [0011](./docs/rfc/0011-theme-system.md) | ⏳ 待规划 | P0 | 7-10天 | TBD |
-| 键盘导航 | [0012](./docs/rfc/0012-keyboard-navigation.md) | ⏳ 待规划 | P1 | 5-7天 | TBD |
-| 可访问性 | [0013](./docs/rfc/0013-accessibility.md) | ⏳ 待规划 | P0 | 7-9天 | TBD |
+| 主题系统 | [0011](./rfc/0011-theme-system.md) | ⏳ 待规划 | P0 | 7-10天 | TBD |
+| 键盘导航 | [0012](./rfc/0012-keyboard-navigation.md) | ⏳ 待规划 | P1 | 5-7天 | TBD |
+| 可访问性 | [0013](./rfc/0013-accessibility.md) | ⏳ 待规划 | P0 | 7-9天 | TBD |
 
 **里程碑**:
 - [ ] 完成所有 RFC 编写
@@ -194,8 +195,8 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 | 功能 | RFC | 状态 | 优先级 | 预计工作量 | 负责人 |
 |------|-----|------|--------|-----------|--------|
-| 数据导出 | [0014](./docs/rfc/0014-data-export.md) | ⏳ 待规划 | P1 | 5-7天 | TBD |
-| 国际化 | [0015](./docs/rfc/0015-internationalization.md) | ⏳ 待规划 | P1 | 5-7天 | TBD |
+| 数据导出 | [0014](./rfc/0014-data-export.md) | ⏳ 待规划 | P1 | 5-7天 | TBD |
+| 国际化 | [0015](./rfc/0015-internationalization.md) | ⏳ 待规划 | P1 | 5-7天 | TBD |
 
 **里程碑**:
 - [ ] 完成所有 RFC 编写
@@ -230,26 +231,48 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 ---
 
-## 🎯 未来版本（v1.1.0+）
+## 🎯 v1.1.0 - Enterprise 基础（2026年Q4）
 
-这些功能在 v1.0.0 之后考虑，具体优先级根据用户反馈确定：
+**目标**: AG Grid Enterprise 核心能力对标（见 [PARITY_MATRIX](./rfc/PARITY_MATRIX.md) Phase 2）
 
-### 高优先级
-- [ ] 服务端排序和过滤
-- [ ] 树形数据展示
-- [ ] 主从表格（Master-Detail）
-- [ ] 右键菜单
+| 功能 | RFC | 状态 | 优先级 |
+|------|-----|------|--------|
+| 树形数据 | [0020](./rfc/0020-tree-data.md) | 📝 草稿 | P1 |
+| 主从表格 | [0021](./rfc/0021-master-detail.md) | 📝 草稿 | P1 |
+| 范围选择 | [0022](./rfc/0022-range-selection.md) | 📝 草稿 | P1 |
+| 剪贴板 | [0023](./rfc/0023-clipboard-operations.md) | 📝 草稿 | P1 |
+| 右键/列菜单 | [0026](./rfc/0026-context-menu-column-menu.md) | 📝 草稿 | P2 |
+| 分组聚合 | [0010](./rfc/0010-grouping-aggregation.md) | 📝 草稿 | P1 |
 
-### 中优先级
-- [ ] 列配置持久化
-- [ ] 图表集成
-- [ ] 打印功能
-- [ ] 数据透视表
+---
 
-### 框架适配器
-- [ ] Vue 适配器
-- [ ] Angular 适配器
-- [ ] Svelte 适配器
+## 🎯 v1.2.0 - Enterprise 高级（2027年Q1）
+
+| 功能 | RFC | 状态 | 优先级 |
+|------|-----|------|--------|
+| 透视模式 | [0024](./rfc/0024-pivot-mode.md) | 📝 草稿 | P1 |
+| Excel 高级导出 | [0025](./rfc/0025-excel-export-advanced.md) | 📝 草稿 | P2 |
+| 工具面板/状态栏 | [0027](./rfc/0027-tool-panels-status-bar.md) | 📝 草稿 | P2 |
+| 高级过滤 | [0028](./rfc/0028-advanced-filtering.md) | 📝 草稿 | P1 |
+| 集成图表 | [0029](./rfc/0029-integrated-charts.md) | 📝 草稿 | P2 |
+
+---
+
+## 🎯 v2.0.0+ - Stretch
+
+| 功能 | RFC | 状态 |
+|------|-----|------|
+| 单元格公式 | [0030](./rfc/0030-formulas.md) | 🔮 Stretch |
+| 服务端行模型 | [0031](./rfc/0031-server-side-row-model.md) | 🔮 Stretch |
+| AI Toolkit | [0032](./rfc/0032-ai-toolkit.md) | 🔮 Stretch |
+
+### Community 补齐（v0.4.0–v0.5.0，原「未来版本」）
+
+| 功能 | RFC | 状态 |
+|------|-----|------|
+| 框架绑定 Vue/Angular/Svelte | [0017](./rfc/0017-framework-bindings.md) | 📝 草稿 |
+| Grid 状态 API | [0018](./rfc/0018-grid-state-api.md) | 📝 草稿 |
+| 自定义 Header/Filter/Overlay | [0019](./rfc/0019-custom-components.md) | 📝 草稿 |
 
 ---
 
@@ -328,7 +351,7 @@ v1.0.0 ░░░░░░░░░░░░░░░░░░░░░░░░�
 我们欢迎社区贡献！以下是参与方式：
 
 ### 1. 选择一个任务
-查看 [RFC 索引](./docs/rfc/README.md) 选择一个待实施的功能。
+查看 [RFC 索引](./rfc/README.md) 选择一个待实施的功能。
 
 ### 2. 编写或审查 RFC
 - 如果 RFC 不存在，使用模板创建
@@ -347,21 +370,27 @@ v1.0.0 ░░░░░░░░░░░░░░░░░░░░░░░░�
 ### 5. 更新路线图
 功能完成后，在本文件中更新状态。
 
-**详细指南**: 查看 [GETTING-STARTED.md](./docs/rfc/GETTING-STARTED.md)
+**详细指南**: 查看 [GETTING-STARTED.md](./rfc/GETTING-STARTED.md)
 
 ---
 
 ## 📚 相关资源
 
-- [RFC 索引](./docs/rfc/README.md) - 所有 RFC 列表和状态
-- [快速开始指南](./docs/rfc/GETTING-STARTED.md) - 如何开始开发
-- [架构文档](./docs/rfc/0001-ac-grid-architecture.md) - 总体架构设计
+- [RFC 索引](./rfc/README.md) - 所有 RFC 列表和状态
+- [快速开始指南](./rfc/GETTING-STARTED.md) - 如何开始开发
+- [架构文档](./rfc/0001-ac-grid-architecture.md) - 总体架构设计
 - [开发规范](./CLAUDE.md) - 编码规范和最佳实践
 - [项目 README](./README.md) - 项目介绍和使用指南
 
 ---
 
 ## 📝 变更日志
+
+### 2026-06-28
+- ✅ ACG-2: 完成 AG Grid 功能对标审查
+- ✅ 新增 `PARITY_MATRIX.md`（Community + Enterprise）
+- ✅ 新增 RFC 0017–0032（Community 缺口 + Enterprise + Stretch）
+- ✅ 更新 RFC 索引、TASK_TRACKING、路线图 Phase 2/3
 
 ### 2026-01-24
 - ✅ 创建 ROADMAP.md
@@ -398,7 +427,7 @@ MIT License
 
 ---
 
-**最后更新**: 2026-01-24  
+**最后更新**: 2026-06-28  
 **维护者**: AC Grid Team
 
 > 💡 **提示**: 本路线图会定期更新。建议定期查看以了解最新进展。
