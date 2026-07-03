@@ -69,4 +69,12 @@ export {
     getVisibleRowRange,
     createScrollHandler,
 } from "./utils/virtual-scroll";
+export {
+    clampColumnWidth,
+    calculateColumnContentWidth,
+    findColumnDefById,
+    getColumnSizeBounds,
+    measureTextWidth,
+    resolveColumnId,
+} from "./utils/column-sizing";
 export { Virtualizer } from "./utils/virtualizer";

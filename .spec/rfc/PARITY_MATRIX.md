@@ -47,8 +47,8 @@
 | 单列/多列排序 | Community | ✅ | [0002](./completed/0002-sorting-feature.md) | v0.1.0 |
 | 列过滤 | Community | ✅ | [0003](./0003-filtering-feature.md) | v0.1.0 |
 | 全局快速过滤 | Community | ✅ | [0003](./0003-filtering-feature.md) | v0.1.0 |
-| 列调整大小 | Community | 📝 | [0004](./0004-column-resizing.md) | v0.1.0 |
-| 自动列宽 | Community | 📝 | [0004](./0004-column-resizing.md) | v0.1.0 |
+| 列调整大小 | Community | ✅ | [0004](./completed/0004-column-resizing.md) | v0.1.0 |
+| 自动列宽 | Community | ✅ | [0004](./completed/0004-column-resizing.md) | v0.1.0 |
 
 ### 布局与性能
 
@@ -152,10 +152,10 @@
 | 范围 | RFC 数 | 已实现 | 进行中 | 草稿 |
 |------|--------|--------|--------|------|
 | Phase 0 | 2 | 2 | 0 | 0 |
-| Phase 1 (0002–0019) | 18 | 4 | 0 | 14 |
+| Phase 1 (0002–0019) | 18 | 5 | 0 | 13 |
 | Phase 2 (0020–0029) | 10 | 0 | 0 | 10 |
 | Phase 3 (0030–0032) | 3 | 0 | 0 | 3 |
-| **合计** | **33** | **6** | **0** | **27** |
+| **合计** | **33** | **7** | **0** | **26** |
 
 ---
 

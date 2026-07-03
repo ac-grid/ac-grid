@@ -34,6 +34,12 @@ import {
     dateFilter,
 } from "../utils/filter-functions";
 import {
+    clampColumnWidth,
+    calculateColumnContentWidth,
+    findColumnDefById,
+    resolveColumnId,
+} from "../utils/column-sizing";
+import {
     draggable,
     dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -782,6 +788,13 @@ export class Grid extends LightComponent {
             },
             enableColumnResizing: isResizingEnabled,
             ...(isResizingEnabled && {
+                defaultColumn: {
+                    minSize: this._resizingConfig?.minColumnWidth ?? 20,
+                    maxSize:
+                        this._resizingConfig?.maxColumnWidth ??
+                        Number.MAX_SAFE_INTEGER,
+                    size: this._resizingConfig?.defaultColumnWidth ?? 150,
+                },
                 columnResizeMode: "onChange",
                 onColumnSizingChange: (updater: any) => {
                     const newSizing =
@@ -1239,6 +1252,10 @@ export class Grid extends LightComponent {
                                                     onMouseDown={header.getResizeHandler()}
                                                     onTouchStart={header.getResizeHandler()}
                                                     onClick={(e) => e.stopPropagation()}
+                                                    onDoubleClick={(e) => {
+                                                        e.stopPropagation();
+                                                        this.autoSizeColumn(column.id);
+                                                    }}
                                                 />
                                             )}
                                         </div>
@@ -1587,6 +1604,60 @@ export class Grid extends LightComponent {
             globalFilter: this.globalFilter || undefined,
             columnFilters: { ...this.columnFilters },
         };
+    }
+
+    /** RFC-0004: 设置列宽（自动应用 min/max 约束） */
+    public setColumnWidth(columnId: string, width: number): void {
+        const columnDef = findColumnDefById(this._columns, columnId);
+        const clampedWidth = clampColumnWidth(
+            width,
+            columnDef,
+            this._resizingConfigIsSet ? this._resizingConfig : undefined,
+        );
+        const newSizing = {
+            ...this.columnSizing,
+            [columnId]: clampedWidth,
+        };
+        this.columnSizing = newSizing;
+        this._resizingConfig?.onColumnSizingChange?.(newSizing);
+        this.updateTable();
+    }
+
+    /** RFC-0004: 获取列宽 */
+    public getColumnWidth(columnId: string): number {
+        const column = this.table?.getColumn(columnId);
+        if (column) {
+            return column.getSize();
+        }
+
+        const columnDef = findColumnDefById(this._columns, columnId);
+        return (
+            this.columnSizing[columnId] ??
+            columnDef?.size ??
+            this._resizingConfig?.defaultColumnWidth ??
+            150
+        );
+    }
+
+    /** RFC-0004: 根据内容自动调整单列宽度 */
+    public autoSizeColumn(columnId: string): void {
+        const contentWidth = calculateColumnContentWidth(
+            columnId,
+            this._columns,
+            this.gridData,
+        );
+        this.setColumnWidth(columnId, contentWidth);
+    }
+
+    /** RFC-0004: 自动调整所有可调整列的宽度 */
+    public autoSizeAllColumns(): void {
+        for (const column of this._columns) {
+            const columnId = resolveColumnId(column);
+            if (!columnId || column.enableResizing === false) {
+                continue;
+            }
+            this.autoSizeColumn(columnId);
+        }
     }
 
     /**

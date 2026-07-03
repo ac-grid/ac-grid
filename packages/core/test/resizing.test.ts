@@ -54,7 +54,7 @@ describe("Grid Column Resizing", () => {
     expect(root.querySelectorAll(".resizer").length).toBe(0);
   });
 
-  it.skip("should expose resizing methods (RFC-0004: setColumnWidth API not implemented)", async () => {
+  it("should expose resizing methods (RFC-0004)", async () => {
     const grid = document.createElement("wsx-ac-grid") as any;
     grid.data = [{ id: 1, name: "Test", userId: "1" }];
     grid.columns = [{ accessorKey: "name", header: "Name", size: 150 }];
@@ -73,7 +73,7 @@ describe("Grid Column Resizing", () => {
     expect(typeof grid.autoSizeAllColumns).toBe("function");
   });
 
-  it.skip("should set and get column width (RFC-0004: setColumnWidth API not implemented)", async () => {
+  it("should set and get column width (RFC-0004)", async () => {
     const grid = document.createElement("wsx-ac-grid") as any;
     grid.data = [{ id: 1, name: "Test User", userId: "1" }];
     grid.columns = [
@@ -98,7 +98,7 @@ describe("Grid Column Resizing", () => {
     expect(grid.getColumnWidth("name")).toBe(200);
   });
 
-  it.skip("should clamp width to min/max constraints (RFC-0004: setColumnWidth API not implemented)", async () => {
+  it("should clamp width to min/max constraints (RFC-0004)", async () => {
     const grid = document.createElement("wsx-ac-grid") as any;
     grid.data = [{ id: 1, name: "Test", userId: "1" }];
     grid.columns = [
@@ -126,7 +126,7 @@ describe("Grid Column Resizing", () => {
     expect(grid.getColumnWidth("name")).toBe(200);
   });
 
-  it.skip("should call onColumnSizingChange callback (RFC-0004: setColumnWidth API not implemented)", async () => {
+  it("should call onColumnSizingChange callback (RFC-0004)", async () => {
     const onSizingChange = vi.fn();
     const grid = document.createElement("wsx-ac-grid") as any;
     grid.data = [{ id: 1, name: "Test", userId: "1" }];
