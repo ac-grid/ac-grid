@@ -53,7 +53,7 @@ export default defineConfig({
         globals: true,
         environment: "happy-dom",
         setupFiles: ["./test/setup.ts"],
-        include: ["src/**/*.test.ts", "src/**/*.test.tsx", "test/**/*.test.ts"],
+        include: ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.test.wsx", "test/**/*.test.ts", "test/**/*.test.wsx"],
         typecheck: {
             include: ["src/**/*.{ts,tsx,wsx}", "src/types.d.ts"],
         },
@@ -62,7 +62,7 @@ export default defineConfig({
             reporter: ["text", "json", "html"],
             reportsDirectory: "./coverage",
             include: ["src/**/*.{ts,tsx,wsx}"],
-            exclude: ["src/**/*.d.ts", "src/**/*.test.{ts,tsx}", "src/main.ts"],
+            exclude: ["src/**/*.d.ts", "src/**/*.test.{ts,tsx,wsx}", "src/main.ts"],
         },
     },
     resolve: {

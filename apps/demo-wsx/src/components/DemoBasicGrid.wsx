@@ -1,0 +1,41 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import type { ColumnDef } from "@ac-grid/core";
+import type { GridSortingConfig } from "@ac-grid/core";
+import "@ac-grid/core";
+import type { Person } from "../makeData";
+
+const BASIC_COLUMNS: ColumnDef<Person, any>[] = [
+    { accessorKey: "firstName", header: "First Name", size: 150, enableSorting: true },
+    { accessorKey: "lastName", header: "Last Name", size: 150, enableSorting: true },
+    { accessorKey: "age", header: "Age", size: 100, enableSorting: true },
+    { accessorKey: "status", header: "Status", size: 150, enableSorting: true },
+    { accessorKey: "visits", header: "Visits", size: 100, enableSorting: true },
+];
+
+const SORTING_CONFIG: GridSortingConfig = {
+    enabled: true,
+    onSortingChange: (state) => console.log("Sorting:", state),
+};
+
+@autoRegister({ tagName: "demo-basic-grid" })
+export class DemoBasicGrid extends LightComponent {
+    get data(): Person[] {
+        return this._data;
+    }
+    set data(value: Person[]) {
+        this._data = value;
+    }
+    @state private _data: Person[] = [];
+
+    render() {
+        return (
+            <wsx-ac-grid
+                data={this.data}
+                columns={BASIC_COLUMNS}
+                sortingConfig={SORTING_CONFIG}
+            />
+        );
+    }
+}

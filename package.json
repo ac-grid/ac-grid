@@ -19,6 +19,7 @@
         "lint": "turbo run lint",
         "test": "turbo run test",
         "clean": "turbo run clean && rm -rf node_modules",
+        "clean:vite-config-cache": "find . -name 'vite.config.ts.timestamp-*.mjs' -not -path './node_modules/*' -delete",
         "format": "prettier --write \"**/*.{ts,tsx,wsx,md,json}\"",
         "storybook": "turbo run storybook",
         "build-storybook": "turbo run build-storybook"

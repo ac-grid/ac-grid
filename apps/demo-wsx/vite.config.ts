@@ -36,9 +36,9 @@ export default defineConfig({
     plugins: [
         // pino 浏览器版本修复插件 - 必须在最前面
         pinoBrowserPlugin(),
-        // wsx 插件 - 处理 .wsx 文件
+        // wsx 插件 - 处理 .wsx 文件（debug: false 关闭 WSX 插件日志）
         wsx({
-            debug: process.env.NODE_ENV === "development",
+            debug: false,
             jsxFactory: "h",
             jsxFragment: "Fragment",
         }),

@@ -780,8 +780,8 @@ export class Grid extends LightComponent {
                 pagination: this.pagination,
                 rowSelection: this.rowSelection,
             },
+            enableColumnResizing: isResizingEnabled,
             ...(isResizingEnabled && {
-                enableColumnResizing: true,
                 columnResizeMode: "onChange",
                 onColumnSizingChange: (updater: any) => {
                     const newSizing =

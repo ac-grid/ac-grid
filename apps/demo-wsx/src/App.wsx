@@ -1,179 +1,129 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 
 import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
-import {
-    type ColumnDef,
-    type FilterState,
-    type GridFilteringConfig,
-} from "@ac-grid/core";
-// 导入组件以触发注册
 import "@ac-grid/core";
 import { makeData, type Person } from "./makeData";
 import "./App.css";
 
+import "./components/DemoBasicGrid.wsx";
+import "./components/DemoSortingGrid.wsx";
+import "./components/DemoFilteringGrid.wsx";
+import "./components/DemoResizingGrid.wsx";
+import "./components/DemoSelectionGrid.wsx";
+import "./components/DemoPaginationGrid.wsx";
+
+type DemoTab = "basic" | "sorting" | "filtering" | "resizing" | "selection" | "pagination";
+
 @autoRegister({ tagName: "wsx-app" })
 export class App extends LightComponent {
-    @state private data = makeData(500); // 增加数据量以演示过滤性能
-
-    private filteringConfig: GridFilteringConfig = {
-        enabled: true,
-        floatingFilter: true,
-        onFilterChange: (state: FilterState) => {
-            console.log("Filter Change:", state);
-            // Grid 内部已经管理过滤状态，这里只需要日志记录
-        },
-    };
-
-    @state private columns: ColumnDef<Person, any>[] = [
-        {
-            id: "drag-handle",
-            header: "Move",
-            cell: ({ row }) => (
-                <wsx-ac-draggable-handler rowId={row.original.userId} />
-            ),
-            size: 60,
-            enableColumnFilter: false, // 禁用此列过滤
-        },
-        {
-            accessorKey: "firstName",
-            cell: (info) => info.getValue(),
-            id: "firstName",
-            header: "First Name",
-            size: 150,
-            filterType: "text",
-        },
-        {
-            accessorKey: "lastName",
-            cell: (info) => info.getValue(),
-            header: "Last Name",
-            id: "lastName",
-            size: 150,
-            filterType: "text",
-        },
-        {
-            accessorKey: "age",
-            header: "Age",
-            id: "age",
-            size: 100,
-            filterType: "number", // 使用数字过滤器
-        },
-        {
-            accessorKey: "status",
-            header: "Status",
-            id: "status",
-            size: 150,
-            filterType: "text",
-        },
-        {
-            accessorKey: "visits",
-            header: "Visits",
-            id: "visits",
-            size: 100,
-            filterType: "number",
-        },
-        {
-            accessorKey: "progress",
-            header: "Progress",
-            id: "progress",
-            size: 100,
-            filterType: "number",
-        },
-    ];
-
-    private handleGlobalSearch = (value: string) => {
-        // 获取 Grid 实例并调用 setGlobalFilter
-        const grid = this.querySelector("wsx-ac-grid") as any;
-        if (grid?.setGlobalFilter) {
-            grid.setGlobalFilter(value);
-        }
-    };
-
-    private handleClearFilters = () => {
-        const grid = this.querySelector("wsx-ac-grid") as any;
-        if (grid?.clearFilters) {
-            grid.clearFilters();
-        }
-    };
+    @state private activeTab: DemoTab = "basic";
+    @state private data: Person[] = makeData(500);
 
     render() {
         return (
             <div className="demo-container">
                 <div className="demo-content">
-                    {/* Header */}
                     <div className="demo-header">
                         <h1>
-                            <img 
-                                src="/favicon.svg" 
-                                alt="AC Grid Logo" 
-                                className="demo-logo"
-                            />
+                            <img src="/favicon.svg" alt="Logo" className="demo-logo" />
                             AC Grid
                         </h1>
-                        <div className="subtitle">
-                            Powerful data grid with advanced filtering and global search capabilities
-                        </div>
+                        <div className="subtitle">Feature demos</div>
                     </div>
 
-                    {/* Toolbar */}
-                    <div className="demo-toolbar">
-                        <div className="demo-toolbar-left">
-                            <wsx-ac-global-search
-                                value=""
-                                onChange={this.handleGlobalSearch}
-                                placeholder="Search all columns..."
-                            />
-                        </div>
-                        <div className="demo-toolbar-right">
-                            <button
-                                className="demo-button"
-                                onClick={this.handleClearFilters}
-                            >
-                                <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
-                                Clear Filters
-                            </button>
-                        </div>
+                    <div className="demo-tabs">
+                        <button
+                            type="button"
+                            className={`demo-tab ${this.activeTab === "basic" ? "active" : ""}`}
+                            onClick={() => (this.activeTab = "basic")}
+                        >
+                            Basic
+                        </button>
+                        <button
+                            type="button"
+                            className={`demo-tab ${this.activeTab === "sorting" ? "active" : ""}`}
+                            onClick={() => (this.activeTab = "sorting")}
+                        >
+                            Sorting
+                        </button>
+                        <button
+                            type="button"
+                            className={`demo-tab ${this.activeTab === "filtering" ? "active" : ""}`}
+                            onClick={() => (this.activeTab = "filtering")}
+                        >
+                            Filtering
+                        </button>
+                        <button
+                            type="button"
+                            className={`demo-tab ${this.activeTab === "resizing" ? "active" : ""}`}
+                            onClick={() => (this.activeTab = "resizing")}
+                        >
+                            Resizing
+                        </button>
+                        <button
+                            type="button"
+                            className={`demo-tab ${this.activeTab === "selection" ? "active" : ""}`}
+                            onClick={() => (this.activeTab = "selection")}
+                        >
+                            Selection
+                        </button>
+                        <button
+                            type="button"
+                            className={`demo-tab ${this.activeTab === "pagination" ? "active" : ""}`}
+                            onClick={() => (this.activeTab = "pagination")}
+                        >
+                            Pagination
+                        </button>
                     </div>
 
-                    {/* Grid Container */}
+                    <div className="demo-feature-info">{this.getFeatureDescription()}</div>
+
                     <div className="demo-grid-container">
                         <div className="demo-grid-wrapper">
-                            <wsx-ac-grid
-                                data={this.data}
-                                columns={this.columns}
-                                filteringConfig={this.filteringConfig}
-                            />
+                            {this.activeTab === "basic" && (
+                                <demo-basic-grid data={this.data} />
+                            )}
+                            {this.activeTab === "sorting" && (
+                                <demo-sorting-grid data={this.data} />
+                            )}
+                            {this.activeTab === "filtering" && (
+                                <demo-filtering-grid data={this.data} />
+                            )}
+                            {this.activeTab === "resizing" && (
+                                <demo-resizing-grid data={this.data} />
+                            )}
+                            {this.activeTab === "selection" && (
+                                <demo-selection-grid data={this.data} />
+                            )}
+                            {this.activeTab === "pagination" && (
+                                <demo-pagination-grid data={this.data} />
+                            )}
                         </div>
                     </div>
 
-                    {/* Footer */}
-                    <div className="demo-footer">
-                        <p>Quick Tips</p>
-                        <ul>
-                            <li>
-                                <strong>Column Filter:</strong> Click the filter icon in column headers. For numbers, try expressions like "&gt;30" or "25-35"
-                            </li>
-                            <li>
-                                <strong>Global Search:</strong> Use the search box above to search across all filterable columns simultaneously
-                            </li>
-                            <li>
-                                <strong>Combined Filters:</strong> Multiple filters work together with AND logic - all conditions must match
-                            </li>
-                        </ul>
-                    </div>
+                    <div className="demo-footer">{this.getFeatureTips()}</div>
                 </div>
             </div>
         );
+    }
+
+    private getFeatureDescription(): string {
+        if (this.activeTab === "basic") return "Simple data grid with basic rendering (500 rows)";
+        if (this.activeTab === "sorting") return "Click column headers to sort ascending → descending → none";
+        if (this.activeTab === "filtering") return "Use column filters (click icon) or global search box above";
+        if (this.activeTab === "resizing") return "Drag column borders to resize. Double-click border for auto-size";
+        if (this.activeTab === "selection") return "Click checkboxes to select rows. Header checkbox selects all";
+        if (this.activeTab === "pagination") return "Use page controls to navigate. Change page size with dropdown";
+        return "";
+    }
+
+    private getFeatureTips() {
+        if (this.activeTab === "basic") return <p>Basic grid rendering with 500 rows of sample data.</p>;
+        if (this.activeTab === "sorting") return <p>Shift+click for multi-column sorting. Click again to cycle through sort states.</p>;
+        if (this.activeTab === "filtering") return <p>For number columns: use expressions like &quot;&gt;30&quot; or &quot;25-35&quot; for ranges.</p>;
+        if (this.activeTab === "resizing") return <p>Each column has min/max width limits. Double-click border auto-sizes to content.</p>;
+        if (this.activeTab === "selection") return <p>Single mode: click row to select. Multiple mode: use checkboxes.</p>;
+        if (this.activeTab === "pagination") return <p>Shows current page, total rows, and allows changing page size.</p>;
+        return <p />;
     }
 }
