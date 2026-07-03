@@ -40,7 +40,7 @@ AC Grid 是一个高性能的数据表格组件库，旨在作为 AG Grid 的替
 - 📝 **过滤功能**: 列过滤、全局搜索 ([RFC-0003](./0003-filtering-feature.md))
 - ✅ **虚拟滚动**: 行虚拟化已落地 ([RFC-0005](./completed/0005-virtual-scrolling.md))
 - 📝 **分页**: 前端分页和服务端分页 ([RFC-0006](./0006-pagination.md))
-- 📝 **行选择**: 单选/多选模式 ([RFC-0007](./0007-row-selection.md))
+- 📝 **行选择**: 单选/多选模式 ([RFC-0007](./completed/0007-row-selection.md)) — ✔️ 已完成
 - 📝 **单元格编辑**: 内联编辑 ([RFC-0009](./0009-cell-editing.md))
 - 📝 **主题系统**: 可定制主题 ([RFC-0011](./0011-theme-system.md))
 
@@ -93,9 +93,9 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
 | 大数据集支持（100K+ 行） | ✅             | 📝 规划中    | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0   |
 | **交互功能**             |
 | 分页                     | ✅             | 📝 规划中    | [0006](./0006-pagination.md)                | v0.2.0   |
-| 行选择（单选）           | ✅             | 📝 规划中    | [0007](./0007-row-selection.md)             | v0.2.0   |
-| 行选择（多选）           | ✅             | 📝 规划中    | [0007](./0007-row-selection.md)             | v0.2.0   |
-| 范围选择                 | ✅             | 📝 规划中    | [0007](./0007-row-selection.md)             | v0.2.0   |
+| 行选择（单选）           | ✅             | ✅ 已实现    | [0007](./completed/0007-row-selection.md)             | v0.2.0   |
+| 行选择（多选）           | ✅             | ✅ 已实现    | [0007](./completed/0007-row-selection.md)             | v0.2.0   |
+| 范围选择                 | ✅             | ✅ 已实现    | [0007](./completed/0007-row-selection.md)             | v0.2.0   |
 | 行拖拽重排序             | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
 | 单元格编辑               | ✅             | 📝 规划中    | [0009](./0009-cell-editing.md)              | v0.3.0   |
 | 键盘导航                 | ✅             | 📝 规划中    | [0012](./0012-keyboard-navigation.md)       | v0.4.0   |

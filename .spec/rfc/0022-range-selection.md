@@ -4,7 +4,7 @@
 **版本**: 1.1.0  
 **作者**: Albert Li  
 **日期**: 2026-06-28  
-**相关 RFC**: [0007](./0007-row-selection.md), [0023](./0023-clipboard-operations.md)
+**相关 RFC**: [0007](./completed/0007-row-selection.md), [0023](./0023-clipboard-operations.md)
 
 ## 概述
 

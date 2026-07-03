@@ -78,3 +78,12 @@ export {
     resolveColumnId,
 } from "./utils/column-sizing";
 export { Virtualizer } from "./utils/virtualizer";
+export {
+    appendRowSelection,
+    buildRangeSelection,
+    buildSelectAllSelection,
+    buildSingleSelection,
+    getSelectedRowIdsFromState,
+    removeRowSelection,
+} from "./utils/selection-utils";
+export type { RowIdentifier } from "./utils/selection-utils";

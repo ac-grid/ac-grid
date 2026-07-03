@@ -40,6 +40,12 @@ import {
     resolveColumnId,
 } from "../utils/column-sizing";
 import {
+    appendRowSelection,
+    buildRangeSelection,
+    buildSelectAllSelection,
+    buildSingleSelection,
+} from "../utils/selection-utils";
+import {
     draggable,
     dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -310,6 +316,8 @@ export class Grid extends LightComponent {
     @state private _selectionConfigIsSet: boolean = false;
     @state private _selectionConfig: GridSelectionConfig = {} as GridSelectionConfig;
     @state private rowSelection: RowSelectionState = {};
+    /** 范围选择锚点行 ID（Shift + 点击） */
+    @state private lastSelectedRowId: string | null = null;
 
     // Pinning config
     get pinningConfig(): GridPinningConfig | undefined {
@@ -481,7 +489,11 @@ export class Grid extends LightComponent {
 
     // Selection Methods
     public selectRow(rowId: string) {
-        this.rowSelection = { ...this.rowSelection, [rowId]: true };
+        const isSingle = this._selectionConfig?.mode === "single";
+        this.rowSelection = isSingle
+            ? buildSingleSelection(rowId)
+            : appendRowSelection(this.rowSelection, rowId);
+        this.lastSelectedRowId = rowId;
         this.notifySelectionChange();
         this.updateTable();
     }
@@ -490,6 +502,9 @@ export class Grid extends LightComponent {
         const next = { ...this.rowSelection };
         delete next[rowId];
         this.rowSelection = next;
+        if (this.lastSelectedRowId === rowId) {
+            this.lastSelectedRowId = null;
+        }
         this.notifySelectionChange();
         this.updateTable();
     }
@@ -502,15 +517,19 @@ export class Grid extends LightComponent {
         }
     }
 
+    public selectRowRange(anchorId: string, targetId: string) {
+        if (!this.table) return;
+        const rows = this.table.getRowModel().rows ?? [];
+        this.rowSelection = buildRangeSelection(rows, anchorId, targetId, this.rowSelection);
+        this.lastSelectedRowId = targetId;
+        this.notifySelectionChange();
+        this.updateTable();
+    }
+
     public selectAll() {
         if (!this.table) return;
-        const newSelection: RowSelectionState = {};
-        const rowModel = this.table.getRowModel();
-        const rows = rowModel && rowModel.rows ? rowModel.rows : [];
-        rows.forEach(row => {
-            newSelection[row.id] = true;
-        });
-        this.rowSelection = newSelection;
+        const rows = this.table.getRowModel().rows ?? [];
+        this.rowSelection = buildSelectAllSelection(rows);
         this.notifySelectionChange();
         this.updateTable();
     }
@@ -709,7 +728,10 @@ export class Grid extends LightComponent {
                     <wsx-ac-selection-checkbox
                         checked={row.getIsSelected()}
                         indeterminate={row.getIsSomeSelected()}
-                        onChange={row.getToggleSelectedHandler()}
+                        onChange={(checked) => {
+                            row.toggleSelected(checked);
+                            this.lastSelectedRowId = row.id;
+                        }}
                     />
                 ),
                 size: 40,
@@ -1343,12 +1365,23 @@ export class Grid extends LightComponent {
                                 key={row.id}
                                 className={`grid-row ${row.getIsGrouped() ? 'grid-row-grouped' : ''} ${isDraggingRow ? 'dragging' : ''} ${isDragOverRow ? 'drag-over' : ''}`}
                                 data-row-id={row.id}
-                                data-selected={row.getIsSelected()}
-                                onClick={() => {
+                                data-selected={row.getIsSelected() ? "true" : "false"}
+                                onClick={(e: MouseEvent) => {
                                     if (row.getIsGrouped()) {
                                         this.toggleGroup(row.id, !row.getIsExpanded());
-                                    } else if (this._selectionConfigIsSet && this._selectionConfig?.enabled !== false && this._selectionConfig?.mode === 'single') {
+                                        return;
+                                    }
+                                    if (
+                                        !this._selectionConfigIsSet ||
+                                        this._selectionConfig?.enabled === false
+                                    ) {
+                                        return;
+                                    }
+                                    const mode = this._selectionConfig?.mode ?? "single";
+                                    if (mode === "single") {
                                         this.selectRow(row.id);
+                                    } else if (e.shiftKey && this.lastSelectedRowId) {
+                                        this.selectRowRange(this.lastSelectedRowId, row.id);
                                     }
                                 }}
                                 ref={(el: HTMLElement | null) => {
