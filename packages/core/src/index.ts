@@ -23,6 +23,18 @@ export type { GridSelectionConfig } from "./types/selection";
 export type { GridPinningConfig } from "./types/pinning";
 export type { GridEditingConfig } from "./types/editing";
 export type { GridGroupingConfig } from "./types/grouping";
+export type {
+    A1Range,
+    CellAddress,
+    CellRawValue,
+    CellRefToken,
+    FormulaDataSource,
+    FormulaError,
+    FormulaErrorCode,
+    FormulaParseResult,
+    FormulaValue,
+    GridFormulasConfig,
+} from "./types/formulas";
 
 // 导出组件
 // @ts-ignore - .wsx 文件在构建时会被处理
@@ -87,3 +99,42 @@ export {
     removeRowSelection,
 } from "./utils/selection-utils";
 export type { RowIdentifier } from "./utils/selection-utils";
+export {
+    cellAddressToA1,
+    cellKey,
+    cellRefTokenToA1,
+    columnIndexToLetters,
+    expandRange,
+    lettersToColumnIndex,
+    parseA1Cell,
+    parseA1Range,
+    parseCellKey,
+    rangeToA1,
+} from "./utils/a1-notation";
+export {
+    evaluateFormula,
+    evaluateParsedFormula,
+    isFormula,
+    isFormulaError,
+    normalizeFormula,
+    parseFormula,
+    FORMULA_FN_AVG,
+    FORMULA_FN_AVERAGE,
+    FORMULA_FN_COUNT,
+    FORMULA_FN_MAX,
+    FORMULA_FN_MIN,
+    FORMULA_FN_SUM,
+} from "./utils/formula-parser";
+export {
+    buildDependentsIndex,
+    clearDependencies,
+    collectAffectedCells,
+    setDependencies,
+    topologicalSortAffected,
+} from "./utils/formula-graph";
+export type { DependencyMap, TopoResult } from "./utils/formula-graph";
+export {
+    FormulaEngine,
+    InMemoryFormulaStore,
+    createFormulaEngineFromMatrix,
+} from "./utils/formula-engine";

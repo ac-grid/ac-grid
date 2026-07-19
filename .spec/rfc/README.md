@@ -117,7 +117,7 @@
 
 | RFC | 标题 | 状态 | 版本 | 作者 | 日期 |
 |-----|------|------|------|------|------|
-| [0030](./0030-formulas.md) | 单元格公式 | 🔮 Stretch | 2.0.0 | Albert Li | 2026-06-28 |
+| [0030](./completed/0030-formulas.md) | 单元格公式 | ✔️ 已完成 | 2.0.0 | Albert Li | 2026-06-28 |
 | [0031](./0031-server-side-row-model.md) | 服务端行模型 | 🔮 Stretch | 2.0.0 | Albert Li | 2026-06-28 |
 | [0032](./0032-ai-toolkit.md) | AI Toolkit | 🔮 Stretch | TBD | Albert Li | 2026-06-28 |
 

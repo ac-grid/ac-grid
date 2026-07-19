@@ -262,7 +262,7 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 | 功能 | RFC | 状态 |
 |------|-----|------|
-| 单元格公式 | [0030](./rfc/0030-formulas.md) | 🔮 Stretch |
+| 单元格公式 | [0030](./rfc/completed/0030-formulas.md) | ✔️ 已完成 |
 | 服务端行模型 | [0031](./rfc/0031-server-side-row-model.md) | 🔮 Stretch |
 | AI Toolkit | [0032](./rfc/0032-ai-toolkit.md) | 🔮 Stretch |
 
