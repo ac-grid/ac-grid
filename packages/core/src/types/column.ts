@@ -20,4 +20,8 @@ export type ColumnDef<TData, TValue = unknown> = TanStackColumnDef<
      * 自定义过滤函数
      */
     filterFn?: FilterFn<TData>;
+    /**
+     * 是否允许本列输入 / 求值公式（RFC-0030）
+     */
+    allowFormula?: boolean;
 };

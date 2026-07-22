@@ -66,7 +66,7 @@
 
 ### Phase 3 — Stretch (v2.0.0+)
 
-- Formulas (0030), SSRM (0031), AI Toolkit (0032)
+- Formulas (0030) ✔️ 引擎已完成；SSRM (0031), AI Toolkit (0032)
 
 ---
 

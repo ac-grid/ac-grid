@@ -36,7 +36,7 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 | 0027 | Tool panels and status bar | [ACG-29](mention://issue/d283e19a-0773-4963-925a-5e6d7ba15ee2) | backlog | 8 |
 | 0028 | Advanced filtering | [ACG-30](mention://issue/007cbb34-d22b-4e46-95f5-1d640c7bb39e) | backlog | 8 |
 | 0029 | Integrated charts | [ACG-31](mention://issue/9cfdb206-efb5-4f4e-9267-463f3c639873) | backlog | 8 |
-| 0030 | Formulas | [ACG-32](mention://issue/5c692c0e-607e-4606-8e9c-03166118322c) | backlog | 9 |
+| 0030 | Formulas | [ACG-32](mention://issue/5c692c0e-607e-4606-8e9c-03166118322c) | done | 9 |
 | 0031 | Server-side row model | [ACG-33](mention://issue/85eb0427-8791-478b-9830-0fad442b5d9e) | backlog | 9 |
 | 0032 | AI toolkit | [ACG-34](mention://issue/34de54e5-5c6f-40b8-8056-f503a415975c) | backlog | 9 |
 
