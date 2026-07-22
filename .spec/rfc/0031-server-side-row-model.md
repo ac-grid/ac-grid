@@ -4,7 +4,7 @@
 **版本**: 2.0.0  
 **作者**: Albert Li  
 **日期**: 2026-06-28  
-**相关 RFC**: [0006](./0006-pagination.md), [0005-virtual-scrolling](./completed/0005-virtual-scrolling.md)
+**相关 RFC**: [0006](./completed/0006-pagination.md), [0005-virtual-scrolling](./completed/0005-virtual-scrolling.md)
 
 ## 概述
 

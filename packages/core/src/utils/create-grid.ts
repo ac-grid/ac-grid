@@ -12,6 +12,7 @@ import type { GridFilteringConfig } from "../types/filtering";
 import type { GridResizingConfig } from "../types/resizing";
 import type { GridVirtualizationConfig } from "../types/virtualization";
 import type { GridSelectionConfig } from "../types/selection";
+import type { GridPaginationConfig } from "../types/pagination";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
     /**
@@ -47,6 +48,10 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
      */
     selection?: GridSelectionConfig;
     /**
+     * 分页配置（RFC-0006）
+     */
+    pagination?: GridPaginationConfig;
+    /**
      * 容器元素（可选，如果不提供则返回元素本身）
      */
     container?: HTMLElement;
@@ -81,8 +86,18 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
 export function createGrid<TData extends { userId?: string }>(
     options: CreateGridOptions<TData>,
 ): HTMLElement {
-    const { data, columns, className, sorting, filtering, resizing, virtualization, selection, container } =
-        options;
+    const {
+        data,
+        columns,
+        className,
+        sorting,
+        filtering,
+        resizing,
+        virtualization,
+        selection,
+        pagination,
+        container,
+    } = options;
 
     // 确保组件已注册（导入时会自动注册）
     // 创建自定义元素
@@ -111,6 +126,10 @@ export function createGrid<TData extends { userId?: string }>(
 
     if (selection) {
         gridElement.selectionConfig = selection;
+    }
+
+    if (pagination) {
+        gridElement.paginationConfig = pagination;
     }
 
     gridElement.columns = columns;

@@ -21,7 +21,16 @@ import { flexRender } from "../utils/flex-render";
 import type { FilterState, GridFilteringConfig, FilterCondition } from "../types/filtering";
 import type { GridResizingConfig } from "../types/resizing";
 import type { GridVirtualizationConfig, VirtualizerState } from "../types/virtualization";
-import type { GridPaginationConfig } from "../types/pagination";
+import type {
+    GridPaginationConfig,
+    PaginationInfo,
+    PaginatedData,
+} from "../types/pagination";
+import {
+    computeTotalPages,
+    clampPageIndex,
+    DEFAULT_PAGE_SIZE,
+} from "../utils/pagination";
 import type { GridSelectionConfig } from "../types/selection";
 import type { GridPinningConfig } from "../types/pinning";
 import type { GridEditingConfig } from "../types/editing";
@@ -280,19 +289,39 @@ export class Grid extends LightComponent {
             this._paginationConfigIsSet = true;
             if (value !== this._paginationConfig) {
                 this._paginationConfig = value;
-                if (value.initialPageIndex !== undefined || value.pageSize !== undefined) {
+                if (
+                    value.initialPageIndex !== undefined ||
+                    value.pageSize !== undefined
+                ) {
                     this.pagination = {
-                        pageIndex: value.initialPageIndex || 0,
-                        pageSize: value.pageSize || 10,
+                        pageIndex: value.initialPageIndex ?? 0,
+                        pageSize: value.pageSize ?? DEFAULT_PAGE_SIZE,
                     };
                 }
+                if (value.serverTotalRows !== undefined) {
+                    this.serverTotalRows = value.serverTotalRows;
+                }
                 this.updateTable();
+                if (
+                    value.mode === "server" &&
+                    value.onServerPagination &&
+                    value.enabled !== false
+                ) {
+                    void this.fetchServerPage(
+                        this.pagination.pageIndex,
+                        this.pagination.pageSize,
+                    );
+                }
             }
         }
     }
     @state private _paginationConfigIsSet: boolean = false;
     @state private _paginationConfig: GridPaginationConfig = {} as GridPaginationConfig;
-    @state private pagination: PaginationState = { pageIndex: 0, pageSize: 10 };
+    @state private pagination: PaginationState = { pageIndex: 0, pageSize: DEFAULT_PAGE_SIZE };
+    /** RFC-0006: 服务端分页总行数（由 config 或 onServerPagination 响应更新） */
+    private serverTotalRows: number | undefined = undefined;
+    /** RFC-0006: 服务端分页加载中 */
+    @state private paginationLoading = false;
 
     // Selection config
     get selectionConfig(): GridSelectionConfig | undefined {
@@ -476,15 +505,109 @@ export class Grid extends LightComponent {
         this.rowDragCleanup.clear();
     }
 
-    // Pagination Methods
-    public setPageIndex(pageIndex: number) {
-        this.pagination = { ...this.pagination, pageIndex };
+    // Pagination Methods (RFC-0006)
+    private get isPaginationEnabled(): boolean {
+        return this._paginationConfigIsSet
+            ? this._paginationConfig?.enabled !== false
+            : false;
+    }
+
+    private get isServerPaginationMode(): boolean {
+        return (
+            this.isPaginationEnabled &&
+            this._paginationConfig?.mode === "server"
+        );
+    }
+
+    private getPaginationTotalRows(): number {
+        if (this.isServerPaginationMode) {
+            return (
+                this.serverTotalRows ??
+                this._paginationConfig?.serverTotalRows ??
+                0
+            );
+        }
+        const prePagination = this.table?.getPrePaginationRowModel();
+        return prePagination?.rows?.length ?? 0;
+    }
+
+    private getDisplayRows() {
+        const rowModel = this.table?.getRowModel();
+        return rowModel?.rows ?? [];
+    }
+
+    private applyPaginationChange(next: PaginationState) {
+        if (
+            next.pageIndex === this.pagination.pageIndex &&
+            next.pageSize === this.pagination.pageSize
+        ) {
+            return;
+        }
+        const totalRows = this.getPaginationTotalRows();
+        const totalPages = computeTotalPages(totalRows, next.pageSize);
+        const pageIndex = clampPageIndex(next.pageIndex, totalPages);
+        const normalized = { ...next, pageIndex };
+        this.pagination = normalized;
+        this._paginationConfig?.onPaginationChange?.(normalized);
         this.updateTable();
+        if (this.isServerPaginationMode && this._paginationConfig?.onServerPagination) {
+            void this.fetchServerPage(pageIndex, normalized.pageSize);
+        }
+    }
+
+    private async fetchServerPage(pageIndex: number, pageSize: number) {
+        const fetchPage = this._paginationConfig?.onServerPagination;
+        if (!fetchPage) {
+            return;
+        }
+        this.paginationLoading = true;
+        try {
+            const result: PaginatedData = await fetchPage(pageIndex, pageSize);
+            if (Array.isArray(result?.data)) {
+                this.gridData = [...result.data];
+            }
+            if (typeof result?.total === "number") {
+                this.serverTotalRows = result.total;
+            }
+            if (typeof result?.page === "number" || typeof result?.pageSize === "number") {
+                this.pagination = {
+                    pageIndex: result.page ?? pageIndex,
+                    pageSize: result.pageSize ?? pageSize,
+                };
+            }
+            this.updateTable();
+            this.updateVirtualization();
+        } finally {
+            this.paginationLoading = false;
+        }
+    }
+
+    public setPageIndex(pageIndex: number) {
+        this.applyPaginationChange({ ...this.pagination, pageIndex });
+    }
+
+    /** RFC-0006: goToPage 为 setPageIndex 别名 */
+    public goToPage(page: number) {
+        this.setPageIndex(page);
     }
 
     public setPageSize(pageSize: number) {
-        this.pagination = { ...this.pagination, pageSize, pageIndex: 0 };
-        this.updateTable();
+        this.applyPaginationChange({
+            ...this.pagination,
+            pageSize,
+            pageIndex: 0,
+        });
+    }
+
+    /** RFC-0006: 获取当前分页信息 */
+    public getPaginationState(): PaginationInfo {
+        const totalRows = this.getPaginationTotalRows();
+        const totalPages = computeTotalPages(totalRows, this.pagination.pageSize);
+        return {
+            ...this.pagination,
+            totalRows,
+            totalPages,
+        };
     }
 
     // Selection Methods
@@ -567,8 +690,7 @@ export class Grid extends LightComponent {
 
         // Update virtual state
         requestAnimationFrame(() => {
-            const rm = this.table?.getFilteredRowModel();
-            const rowCount = rm && rm.rows ? rm.rows.length : 0;
+            const rowCount = this.getDisplayRows().length;
             this.virtualizer.updateState(
                 target.scrollTop,
                 target.clientHeight,
@@ -660,8 +782,7 @@ export class Grid extends LightComponent {
     private updateVirtualization() {
         const bodyScrollElement = this.getBodyScrollElement();
         if (bodyScrollElement && this.table) {
-            const rm = this.table.getFilteredRowModel();
-            const rowCount = rm && rm.rows ? rm.rows.length : 0;
+            const rowCount = this.getDisplayRows().length;
             const rowHeight = this._virtualizationConfig.rowHeight ?? 35;
             const containerHeight = bodyScrollElement.clientHeight;
 
@@ -707,7 +828,15 @@ export class Grid extends LightComponent {
 
         const isFilteringEnabled = this.isFilteringEnabled;
         const isResizingEnabled = this._resizingConfigIsSet ? this._resizingConfig?.enabled !== false : false;
-        const isPaginationEnabled = this._paginationConfigIsSet ? this._paginationConfig?.enabled !== false : false;
+        const isPaginationEnabled = this.isPaginationEnabled;
+        const isServerPagination = this.isServerPaginationMode;
+        const paginationTotalRows = isServerPagination
+            ? (this.serverTotalRows ?? this._paginationConfig?.serverTotalRows ?? 0)
+            : undefined;
+        const serverPageCount =
+            isServerPagination && paginationTotalRows !== undefined
+                ? computeTotalPages(paginationTotalRows, this.pagination.pageSize)
+                : undefined;
         const isSelectionEnabled = this._selectionConfigIsSet ? this._selectionConfig?.enabled !== false : false;
         const isEditingEnabled = this._editingConfigIsSet ? this._editingConfig?.enabled !== false : false;
         const isGroupingEnabled = this._groupingConfigIsSet ? this._groupingConfig?.enabled !== false : false;
@@ -768,8 +897,12 @@ export class Grid extends LightComponent {
                 getGroupedRowModel: getGroupedRowModel(),
                 getExpandedRowModel: getExpandedRowModel(),
             }),
-            ...(isPaginationEnabled && {
+            ...(isPaginationEnabled && !isServerPagination && {
                 getPaginationRowModel: getPaginationRowModel(),
+            }),
+            ...(isServerPagination && {
+                manualPagination: true,
+                ...(serverPageCount !== undefined && { pageCount: serverPageCount }),
             }),
             ...(isFilteringEnabled && {
                 getFilteredRowModel: getFilteredRowModel(),
@@ -847,11 +980,12 @@ export class Grid extends LightComponent {
             }),
             ...(isPaginationEnabled && {
                 onPaginationChange: (updater: any) => {
-                    const newPagination = typeof updater === "function" ? updater(this.pagination) : updater;
-                    this.pagination = newPagination;
-                    this._paginationConfig?.onPaginationChange?.(newPagination);
-                    this.updateTable();
-                }
+                    const newPagination =
+                        typeof updater === "function"
+                            ? updater(this.pagination)
+                            : updater;
+                    this.applyPaginationChange(newPagination);
+                },
             }),
             ...(isSelectionEnabled && {
                 enableRowSelection: true,
@@ -987,8 +1121,7 @@ export class Grid extends LightComponent {
         }
 
         const headerGroups = this.table.getHeaderGroups();
-        const rowModel = this.table.getFilteredRowModel();
-        const allRows = rowModel && rowModel.rows ? rowModel.rows : [];
+        const allRows = this.getDisplayRows();
         let visibleRows = allRows;
         let paddingTop = 0;
         let paddingBottom = 0;
@@ -1516,12 +1649,22 @@ export class Grid extends LightComponent {
                         <wsx-ac-pagination-controls
                             pageIndex={this.pagination.pageIndex}
                             pageSize={this.pagination.pageSize}
-                            totalRows={(() => { const m = this.table.getFilteredRowModel(); return m && m.rows ? m.rows.length : 0; })()}
-                            totalPages={this.table.getPageCount()}
+                            totalRows={this.getPaginationTotalRows()}
+                            totalPages={this.isServerPaginationMode
+                                ? computeTotalPages(
+                                      this.getPaginationTotalRows(),
+                                      this.pagination.pageSize,
+                                  )
+                                : this.table.getPageCount()}
                             pageSizeOptions={this._paginationConfig?.pageSizeOptions}
                             onPageChange={(page: number) => this.setPageIndex(page)}
                             onPageSizeChange={(size: number) => this.setPageSize(size)}
                         />
+                    )}
+                    {this.paginationLoading && (
+                        <div className="pagination-loading" aria-live="polite">
+                            Loading…
+                        </div>
                     )}
                 </div>
             </div>

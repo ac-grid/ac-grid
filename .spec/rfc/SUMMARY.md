@@ -155,7 +155,7 @@ docs/rfc/
 ├── 0003-filtering-feature.md          # 过滤功能
 ├── 0004-column-resizing.md            # 列调整大小
 ├── 0005-virtual-scrolling.md          # 虚拟滚动
-├── 0006-pagination.md                 # 分页
+├── completed/0006-pagination.md         # 分页（已完成）
 ├── 0007-row-selection.md              # 行选择
 ├── 0008-column-pinning.md             # 列固定
 ├── 0009-cell-editing.md               # 单元格编辑
