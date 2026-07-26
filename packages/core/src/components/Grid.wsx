@@ -60,6 +60,16 @@ import {
     reorderPinnedOnColumnDrag,
 } from "../utils/pinning-utils";
 import {
+    coerceEditorValue,
+    isColumnEditable,
+    isCustomEditor,
+    resolveEditorType,
+    supportsDoubleClickTrigger,
+    supportsEnterTrigger,
+    validateEditValue,
+} from "../utils/editing-utils";
+import type { EditorProps } from "../types/editing";
+import {
     draggable,
     dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -403,7 +413,12 @@ export class Grid extends LightComponent {
     }
     @state private _editingConfigIsSet: boolean = false;
     @state private _editingConfig: GridEditingConfig = {} as GridEditingConfig;
-    @state private editingState: { rowId: string | null; columnId: string | null; value: any } = { rowId: null, columnId: null, value: null };
+    @state private editingState: {
+        rowId: string | null;
+        columnId: string | null;
+        value: unknown;
+        error?: string;
+    } = { rowId: null, columnId: null, value: null };
 
     // Grouping config
     get groupingConfig(): GridGroupingConfig | undefined {
@@ -852,7 +867,6 @@ export class Grid extends LightComponent {
                 ? computeTotalPages(paginationTotalRows, this.pagination.pageSize)
                 : undefined;
         const isSelectionEnabled = this._selectionConfigIsSet ? this._selectionConfig?.enabled !== false : false;
-        const isEditingEnabled = this._editingConfigIsSet ? this._editingConfig?.enabled !== false : false;
         const isGroupingEnabled = this._groupingConfigIsSet ? this._groupingConfig?.enabled !== false : false;
         const isPinningEnabled = this.isPinningEnabled;
         const hasPinnedColumns =
@@ -1657,33 +1671,63 @@ export class Grid extends LightComponent {
                                             ? { right: `${column.getAfter("right")}px`, position: 'sticky' as const, zIndex: 2 }
                                             : {};
 
-                                    const isEditing = this._editingConfigIsSet && this._editingConfig?.enabled !== false &&
-                                                      this.editingState.rowId === row.id &&
-                                                      this.editingState.columnId === column.id;
+                                    const columnDef = column.columnDef as ColumnDef<unknown>;
+                                    const editingActive = this.isEditingEnabled();
+                                    const cellEditable =
+                                        editingActive &&
+                                        isColumnEditable(columnDef, editingActive);
+                                    const isEditing =
+                                        cellEditable &&
+                                        this.editingState.rowId === row.id &&
+                                        this.editingState.columnId === column.id;
+                                    const editTrigger =
+                                        this._editingConfig?.editTrigger ??
+                                        (this._editingConfig?.mode === "click"
+                                            ? "enter"
+                                            : "doubleClick");
 
                                     const isColumnDragging = this.draggingColumnId === column.id;
                                     const isColumnDragOver = this.dragOverColumnId === column.id;
 
+                                    const handleStartEdit = () => {
+                                        if (cellEditable) {
+                                            this.startEdit(row.id, column.id, cell.getValue());
+                                        }
+                                    };
+
                                     return (
                                         <div
                                             key={cell.id}
-                                            className={`grid-cell ${isColumnDragging ? 'column-dragging' : ''} ${isColumnDragOver ? 'column-drag-over' : ''}`}
+                                            className={`grid-cell ${isColumnDragging ? "column-dragging" : ""} ${isColumnDragOver ? "column-drag-over" : ""}`}
                                             data-pinned={column.getIsPinned() || undefined}
                                             style={{ ...pinnedStyle }}
-                                            onDoubleClick={() => {
-                                                if (this._editingConfigIsSet && this._editingConfig?.enabled !== false && (column.columnDef as unknown as { enableEditing?: boolean }).enableEditing !== false) {
-                                                    this.startEdit(row.id, column.id, cell.getValue());
-                                                }
-                                            }}
+                                            tabIndex={cellEditable ? 0 : undefined}
+                                            onDoubleClick={
+                                                supportsDoubleClickTrigger(editTrigger)
+                                                    ? handleStartEdit
+                                                    : undefined
+                                            }
+                                            onKeyDown={
+                                                supportsEnterTrigger(editTrigger)
+                                                    ? (e: KeyboardEvent) => {
+                                                          if (
+                                                              e.key === "Enter" &&
+                                                              !isEditing
+                                                          ) {
+                                                              e.preventDefault();
+                                                              handleStartEdit();
+                                                          }
+                                                      }
+                                                    : undefined
+                                            }
                                         >
                                             {isEditing ? (
-                                                <wsx-ac-cell-editor
-                                                    key={`editor-${row.id}-${column.id}`}
-                                                    value={this.editingState.value}
-                                                    type={(column.columnDef as any).filterType === 'number' ? 'number' : 'text'}
-                                                    onSave={(value: any) => this.saveEdit(value)}
-                                                    onCancel={() => this.cancelEdit()}
-                                                />
+                                                this.renderCellEditor(
+                                                    row,
+                                                    column.id,
+                                                    columnDef,
+                                                    cell,
+                                                )
                                             ) : (
                                                 <div>{rendered}</div>
                                             )}
@@ -1917,10 +1961,59 @@ export class Grid extends LightComponent {
     }
 
     // Editing Methods
-    public startEdit(rowId: string, columnId: string, initialValue?: any) {
-        if (!this._editingConfig?.enabled) return;
-        
-        // Find current value if not provided
+    private renderCellEditor(
+        row: ReturnType<Table<any>["getRowModel"]>["rows"][number],
+        columnId: string,
+        columnDef: ColumnDef<unknown>,
+        _cell: ReturnType<typeof row.getVisibleCells>[number],
+    ) {
+        const editorProps: EditorProps = {
+            value: this.editingState.value,
+            onChange: (value: unknown) => {
+                this.editingState = {
+                    ...this.editingState,
+                    value,
+                    error: undefined,
+                };
+            },
+            onSave: (value: unknown) => this.saveEdit(value),
+            onCancel: () => this.cancelEdit(),
+            row,
+            columnId,
+            error: this.editingState.error,
+        };
+
+        if (isCustomEditor(columnDef)) {
+            const customContent = flexRender(columnDef.editor, editorProps);
+            if (customContent instanceof HTMLElement) {
+                return customContent;
+            }
+            return <div>{String(customContent ?? "")}</div>;
+        }
+
+        const editorType = resolveEditorType(columnDef);
+        return (
+            <wsx-ac-cell-editor
+                key={`editor-${row.id}-${columnId}`}
+                value={this.editingState.value}
+                type={editorType}
+                error={this.editingState.error}
+                onSave={(value: unknown) => this.saveEdit(value)}
+                onCancel={() => this.cancelEdit()}
+            />
+        );
+    }
+
+    private isEditingEnabled(): boolean {
+        return this._editingConfigIsSet && this._editingConfig?.enabled !== false;
+    }
+
+    public startEdit(rowId: string, columnId: string, initialValue?: unknown) {
+        if (!this.isEditingEnabled()) return;
+
+        const columnDef = findColumnDefById(this._columns, columnId);
+        if (!isColumnEditable(columnDef, true)) return;
+
         if (initialValue === undefined && this.table) {
             const row = this.table.getRow(rowId);
             if (row) {
@@ -1928,23 +2021,38 @@ export class Grid extends LightComponent {
             }
         }
 
-        this.editingState = { rowId, columnId, value: initialValue };
+        this.editingState = { rowId, columnId, value: initialValue, error: undefined };
         this._editingConfig.onEditStart?.(rowId, columnId);
         this.updateTable();
     }
 
-    public saveEdit(newValue: any) {
+    public saveEdit(newValue: unknown) {
         const { rowId, columnId } = this.editingState;
-        if (rowId && columnId) {
-            this._editingConfig.onEditSave?.(rowId, columnId, newValue);
-            // In a real app, data update happens via props change, but we clear edit state now
-            this.cancelEdit(); 
+        if (!rowId || !columnId) return;
+
+        const row = this.table?.getRow(rowId);
+        const columnDef = findColumnDefById(this._columns, columnId);
+        const validation = validateEditValue(newValue, row, columnDef?.validateEdit);
+
+        if (!validation.valid) {
+            this.editingState = {
+                ...this.editingState,
+                value: newValue,
+                error: validation.error,
+            };
+            this.updateTable();
+            return;
         }
+
+        const editorType = resolveEditorType(columnDef);
+        const coercedValue = coerceEditorValue(newValue, editorType);
+        this._editingConfig.onEditSave?.(rowId, columnId, coercedValue);
+        this.cancelEdit(false);
     }
 
-    public cancelEdit() {
+    public cancelEdit(notify = true) {
         const { rowId, columnId } = this.editingState;
-        if (rowId && columnId) {
+        if (rowId && columnId && notify) {
             this._editingConfig.onEditCancel?.(rowId, columnId);
         }
         this.editingState = { rowId: null, columnId: null, value: null };

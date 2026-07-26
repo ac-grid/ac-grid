@@ -67,7 +67,7 @@
 | 功能 | AG Grid | AC Grid | RFC | 版本 |
 |------|---------|---------|-----|------|
 | 行选择（单选/多选） | Community | ✅ | [0007](./completed/0007-row-selection.md) | v0.2.0 |
-| 单元格编辑 | Community | 📝 | [0009](./0009-cell-editing.md) | v0.3.0 |
+| 单元格编辑 | Community | ✅ | [0009](./completed/0009-cell-editing.md) | v0.3.0 |
 | 键盘导航 | Community | 📝 | [0012](./0012-keyboard-navigation.md) | v0.4.0 |
 | 可访问性 (ARIA) | Community | 📝 | [0013](./0013-accessibility.md) | v0.4.0 |
 

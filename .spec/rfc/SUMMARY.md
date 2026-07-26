@@ -158,7 +158,7 @@ docs/rfc/
 ├── completed/0006-pagination.md         # 分页（已完成）
 ├── 0007-row-selection.md              # 行选择
 ├── completed/0008-column-pinning.md   # 列固定
-├── 0009-cell-editing.md               # 单元格编辑
+├── completed/0009-cell-editing.md     # 单元格编辑
 ├── 0010-grouping-aggregation.md       # 分组聚合
 ├── 0011-theme-system.md               # 主题系统
 ├── 0012-keyboard-navigation.md        # 键盘导航

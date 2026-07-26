@@ -1,12 +1,19 @@
 import type { Row } from "@tanstack/table-core";
 
-export interface EditorProps {
+/** 内置编辑器类型 */
+export type EditorType = "text" | "number" | "date";
+
+/** 编辑触发方式 */
+export type EditTrigger = "doubleClick" | "enter" | "both";
+
+export interface EditorProps<TData = unknown> {
     value: unknown;
     onChange: (value: unknown) => void;
-    onSave: () => void;
+    onSave: (value: unknown) => void;
     onCancel: () => void;
-    row: Row<any>;
+    row: Row<TData>;
     columnId: string;
+    error?: string;
 }
 
 export interface GridEditingConfig {
@@ -16,8 +23,13 @@ export interface GridEditingConfig {
     enabled?: boolean;
     /**
      * 编辑触发方式（默认：'doubleClick'）
+     * @deprecated 使用 editTrigger；mode 保留以兼容旧配置
      */
-    mode?: 'doubleClick' | 'click';
+    mode?: "doubleClick" | "click";
+    /**
+     * 编辑触发方式（默认：'doubleClick'）
+     */
+    editTrigger?: EditTrigger;
     /**
      * 编辑开始回调
      */
