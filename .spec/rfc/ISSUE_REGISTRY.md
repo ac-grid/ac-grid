@@ -1,6 +1,6 @@
 # RFC → Multica Issue Registry
 
-> **Generated**: 2026-06-29
+> **Generated**: 2026-06-29 · **Synced**: 2026-07-26 (Multica pipeline)
 > **Parent**: [ACG-2](mention://issue/b7f108c7-583f-4986-9f38-a30cec79d5a0)
 
 Each RFC maps to one implementation issue. Promote `backlog` → `todo` when starting work.
@@ -14,7 +14,7 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 | 0005 | Virtual scrolling | [ACG-8](mention://issue/0d1a757b-d482-41bf-be12-7a92dfd585f1) | done | 3 |
 | 0006 | Pagination | [ACG-9](mention://issue/49ce20a9-b580-4471-a70c-128ea821ae81) | done | 3 |
 | 0007 | Row selection | [ACG-10](mention://issue/7eb0775c-99ad-49c6-92c6-8b38dbe3cd0a) | done | 3 |
-| 0008 | Column pinning | [ACG-11](mention://issue/22a51744-a4f7-4b4c-b941-b31176bbc816) | backlog | 4 |
+| 0008 | Column pinning | [ACG-11](mention://issue/22a51744-a4f7-4b4c-b941-b31176bbc816) | in_progress | 4 |
 | 0009 | Cell editing | [ACG-12](mention://issue/14e4823f-7cda-4988-882f-ae6f9cdab6a2) | backlog | 4 |
 | 0010 | Grouping and aggregation | [ACG-21](mention://issue/6d6679b3-e34d-41fa-a479-788382658423) | backlog | 7 |
 | 0011 | Theme system advanced | [ACG-14](mention://issue/2d130de1-2c23-44f5-a391-d827eea5702a) | backlog | 5 |
