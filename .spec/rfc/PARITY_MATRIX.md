@@ -45,8 +45,8 @@
 | 功能 | AG Grid | AC Grid | RFC | 版本 |
 |------|---------|---------|-----|------|
 | 单列/多列排序 | Community | ✅ | [0002](./completed/0002-sorting-feature.md) | v0.1.0 |
-| 列过滤 | Community | ✅ | [0003](./0003-filtering-feature.md) | v0.1.0 |
-| 全局快速过滤 | Community | ✅ | [0003](./0003-filtering-feature.md) | v0.1.0 |
+| 列过滤 | Community | ✅ | [0003](./completed/0003-filtering-feature.md) | v0.1.0 |
+| 全局快速过滤 | Community | ✅ | [0003](./completed/0003-filtering-feature.md) | v0.1.0 |
 | 列调整大小 | Community | ✅ | [0004](./completed/0004-column-resizing.md) | v0.1.0 |
 | 自动列宽 | Community | ✅ | [0004](./completed/0004-column-resizing.md) | v0.1.0 |
 

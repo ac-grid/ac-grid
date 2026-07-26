@@ -152,7 +152,7 @@ docs/rfc/
 └── 0002-sorting-feature.md            # 排序功能（已完成）
 
 待创建（按优先级）:
-├── 0003-filtering-feature.md          # 过滤功能
+├── completed/0003-filtering-feature.md          # 过滤功能（已完成）
 ├── 0004-column-resizing.md            # 列调整大小
 ├── 0005-virtual-scrolling.md          # 虚拟滚动
 ├── completed/0006-pagination.md         # 分页（已完成）

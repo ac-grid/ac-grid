@@ -13,7 +13,7 @@
 | 指南 | 描述 | 版本 | 状态 |
 |------|------|------|------|
 | [排序功能指南](../apps/site/public/docs/guide/features/sorting.md) | 学习如何使用排序功能，包括单列排序、多列排序和自定义比较器 | v0.1.0 | ✅ 已完成 |
-| [过滤功能指南](../apps/site/public/docs/guide/features/filtering.md) | 学习如何使用过滤功能，包括列过滤、全局搜索和自定义过滤函数 | v0.1.0 | 📝 规划中 |
+| [过滤功能指南](../apps/site/public/docs/guide/features/filtering.md) | 学习如何使用过滤功能，包括列过滤、全局搜索和自定义过滤函数 | v0.1.0 | ✅ 已完成 |
 | [主题系统指南](../apps/site/public/docs/guide/features/theming.md) | 学习如何使用和自定义主题系统 | v0.0.2 | ✅ 已完成 |
 
 ### 快速链接
@@ -48,7 +48,7 @@
 - 编程式控制过滤状态
 - 持久化过滤状态
 
-**相关 RFC**: [RFC-0003](./rfc/0003-filtering-feature.md)
+**相关 RFC**: [RFC-0003](./rfc/completed/0003-filtering-feature.md)
 
 ### 主题系统指南
 

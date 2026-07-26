@@ -4,7 +4,7 @@
 **版本**: 0.4.0  
 **作者**: Albert Li  
 **日期**: 2026-06-28  
-**相关 RFC**: [0001](./0001-ac-grid-architecture.md), [0003](./0003-filtering-feature.md)
+**相关 RFC**: [0001](./0001-ac-grid-architecture.md), [0003](./completed/0003-filtering-feature.md)
 
 ## 概述
 
