@@ -838,6 +838,11 @@ export class Grid extends LightComponent {
                 ? computeTotalPages(paginationTotalRows, this.pagination.pageSize)
                 : undefined;
         const isSelectionEnabled = this._selectionConfigIsSet ? this._selectionConfig?.enabled !== false : false;
+        const isPinningEnabled = this._pinningConfigIsSet ? this._pinningConfig?.enabled !== false : false;
+        const hasPinnedColumns =
+            (this.columnPinning.left?.length ?? 0) > 0 ||
+            (this.columnPinning.right?.length ?? 0) > 0;
+        const shouldEnableColumnPinning = isPinningEnabled || hasPinnedColumns;
         const isEditingEnabled = this._editingConfigIsSet ? this._editingConfig?.enabled !== false : false;
         const isGroupingEnabled = this._groupingConfigIsSet ? this._groupingConfig?.enabled !== false : false;
 
@@ -935,7 +940,7 @@ export class Grid extends LightComponent {
                     grouping: this.grouping,
                     expanded: this.expanded === false ? {} : this.expanded,
                 }),
-                columnPinning: { left: [], right: [] },
+                columnPinning: this.columnPinning,
                 columnSizing: currentColumnSizing,
                 columnSizingInfo: this.columnSizingInfo ?? DEFAULT_COLUMN_SIZING_INFO,
                 pagination: this.pagination,
@@ -996,6 +1001,18 @@ export class Grid extends LightComponent {
                     this.notifySelectionChange();
                     this.updateTable();
                 }
+            }),
+            ...(shouldEnableColumnPinning && {
+                enableColumnPinning: true,
+                onColumnPinningChange: (updater: any) => {
+                    const next =
+                        typeof updater === "function"
+                            ? updater(this.columnPinning)
+                            : updater;
+                    this.columnPinning = next;
+                    this._pinningConfig?.onPinningChange?.(next);
+                    this.updateTable();
+                },
             }),
             onColumnOrderChange: (updater) => {
                 const newOrder =
