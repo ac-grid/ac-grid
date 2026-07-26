@@ -55,6 +55,11 @@ import {
     buildSingleSelection,
 } from "../utils/selection-utils";
 import {
+    applyColumnDefPins,
+    pinColumnInState,
+    reorderPinnedOnColumnDrag,
+} from "../utils/pinning-utils";
+import {
     draggable,
     dropTargetForElements,
 } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -162,6 +167,9 @@ export class Grid extends LightComponent {
             this.columnOrder = value.map(
                 (col, index) => col.id || `col-${index}`,
             );
+            if (this.isPinningEnabled) {
+                this.columnPinning = applyColumnDefPins(value, this.columnPinning);
+            }
             this.updateTable();
         }
     }
@@ -362,6 +370,12 @@ export class Grid extends LightComponent {
                 this._pinningConfig = value;
                 if (value.initialState) {
                     this.columnPinning = value.initialState;
+                }
+                if (this._columns.length > 0 && value.enabled !== false) {
+                    this.columnPinning = applyColumnDefPins(
+                        this._columns,
+                        this.columnPinning,
+                    );
                 }
                 this.updateTable();
             }
@@ -840,6 +854,11 @@ export class Grid extends LightComponent {
         const isSelectionEnabled = this._selectionConfigIsSet ? this._selectionConfig?.enabled !== false : false;
         const isEditingEnabled = this._editingConfigIsSet ? this._editingConfig?.enabled !== false : false;
         const isGroupingEnabled = this._groupingConfigIsSet ? this._groupingConfig?.enabled !== false : false;
+        const isPinningEnabled = this.isPinningEnabled;
+        const hasPinnedColumns =
+            (this.columnPinning.left?.length ?? 0) > 0 ||
+            (this.columnPinning.right?.length ?? 0) > 0;
+        const shouldEnableColumnPinning = isPinningEnabled || hasPinnedColumns;
 
         // Add selection column if enabled
         let tableColumns = this._columns;
@@ -935,7 +954,9 @@ export class Grid extends LightComponent {
                     grouping: this.grouping,
                     expanded: this.expanded === false ? {} : this.expanded,
                 }),
-                columnPinning: { left: [], right: [] },
+                columnPinning: shouldEnableColumnPinning
+                    ? this.columnPinning
+                    : { left: [], right: [] },
                 columnSizing: currentColumnSizing,
                 columnSizingInfo: this.columnSizingInfo ?? DEFAULT_COLUMN_SIZING_INFO,
                 pagination: this.pagination,
@@ -1021,6 +1042,18 @@ export class Grid extends LightComponent {
                 this._groupingConfig?.onGroupingChange?.(newGrouping);
                 this.updateTable();
             },
+            ...(shouldEnableColumnPinning && {
+                enableColumnPinning: true,
+                onColumnPinningChange: (updater: any) => {
+                    const newPinning =
+                        typeof updater === "function"
+                            ? updater(this.columnPinning)
+                            : updater;
+                    this.columnPinning = newPinning;
+                    this._pinningConfig?.onPinningChange?.(newPinning);
+                    this.updateTable();
+                },
+            }),
             ...(isFilteringEnabled && {
                 onColumnFiltersChange: (updater) => {
                     const currentArray = this.columnFiltersArray;
@@ -1068,9 +1101,26 @@ export class Grid extends LightComponent {
                     oldIndex,
                     newIndex,
                 );
+                if (this.isPinningEnabled) {
+                    const nextPinning = reorderPinnedOnColumnDrag(
+                        this.columnPinning,
+                        activeId,
+                        overId,
+                    );
+                    if (nextPinning !== this.columnPinning) {
+                        this.columnPinning = nextPinning;
+                        this._pinningConfig?.onPinningChange?.(nextPinning);
+                    }
+                }
                 this.updateTable();
             }
         }
+    }
+
+    private get isPinningEnabled(): boolean {
+        return this._pinningConfigIsSet
+            ? this._pinningConfig?.enabled !== false
+            : false;
     }
 
     /**
@@ -1840,18 +1890,10 @@ export class Grid extends LightComponent {
      * 公共 API: 固定列
      */
     public pinColumn(columnId: string, position: 'left' | 'right' | false): void {
-        const next = { ...this.columnPinning };
-        // Remove from existing
-        if (next.left) next.left = next.left.filter(id => id !== columnId);
-        if (next.right) next.right = next.right.filter(id => id !== columnId);
-        
-        // Add to new
-        if (position === 'left') {
-            next.left = [...(next.left || []), columnId];
-        } else if (position === 'right') {
-            next.right = [...(next.right || []), columnId];
+        if (!this.isPinningEnabled && position !== false) {
+            return;
         }
-        
+        const next = pinColumnInState(this.columnPinning, columnId, position);
         this.columnPinning = next;
         this._pinningConfig?.onPinningChange?.(next);
         this.updateTable();

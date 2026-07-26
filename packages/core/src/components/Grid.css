@@ -313,3 +313,20 @@
 .ac-grid .grid-header-cell:hover .resizer::after {
   opacity: 1;
 }
+
+/* RFC-0008: 固定列视觉区分 */
+.ac-grid [data-pinned="left"] {
+  box-shadow: 2px 0 4px rgba(24, 29, 31, 0.08);
+}
+
+.ac-grid [data-pinned="right"] {
+  box-shadow: -2px 0 4px rgba(24, 29, 31, 0.08);
+}
+
+.ac-grid .grid-header-cell[data-pinned] {
+  background-color: var(--ac-grid-bg-header-pinned, #f3f4f6);
+}
+
+.ac-grid .grid-cell[data-pinned] {
+  background-color: var(--ac-grid-bg-cell-pinned, #fafbfc);
+}

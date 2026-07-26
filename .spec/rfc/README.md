@@ -49,12 +49,12 @@
 | [0005](./completed/0005-virtual-scrolling.md) | 虚拟滚动 | ✔️ 已完成 | 0.2.0 | Albert Li | 2026-06-28 |
 | [0006](./completed/0006-pagination.md) | 分页功能 | ✔️ 已完成 | 0.2.0 | Albert Li | 2026-01-24 |
 | [0007](./completed/0007-row-selection.md) | 行选择 | ✔️ 已完成 | 0.2.0 | Albert Li | 2026-01-24 |
+| [0008](./completed/0008-column-pinning.md) | 列固定 (Pinning) | ✔️ 已完成 | 0.3.0 | Albert Li | 2026-01-24 |
 
 ### 第三阶段：高级功能 (v0.3.0)
 
 | RFC | 标题 | 状态 | 版本 | 作者 | 日期 |
 |-----|------|------|------|------|------|
-| [0008](./0008-column-pinning.md) | 列固定 (Pinning) | 📝 草稿 | 0.3.0 | Albert Li | 2026-01-24 |
 | [0009](./0009-cell-editing.md) | 单元格编辑 | 📝 草稿 | 0.3.0 | Albert Li | 2026-01-24 |
 | [0010](./0010-grouping-aggregation.md) | 分组和聚合 | 📝 草稿 | 0.3.0 | Albert Li | 2026-01-24 |
 

@@ -150,3 +150,9 @@ export {
     InMemoryFormulaStore,
     createFormulaEngineFromMatrix,
 } from "./utils/formula-engine";
+export {
+    applyColumnDefPins,
+    buildColumnPinningFromDefs,
+    pinColumnInState,
+    reorderPinnedOnColumnDrag,
+} from "./utils/pinning-utils";

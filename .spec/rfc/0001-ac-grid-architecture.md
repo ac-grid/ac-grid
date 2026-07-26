@@ -85,7 +85,7 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
 | **布局和显示**           |
 | 列调整大小               | ✅             | ✔️ 已完成    | [0004](./completed/0004-column-resizing.md)           | v0.1.0   |
 | 列重排序                 | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
-| 列固定（Pinning）        | ✅             | 📝 规划中    | [0008](./0008-column-pinning.md)            | v0.3.0   |
+| 列固定（Pinning）        | ✅             | ✅ 已实现    | [0008](./completed/0008-column-pinning.md)  | v0.3.0   |
 | 自动列宽                 | ✅             | ✔️ 已完成    | [0004](./completed/0004-column-resizing.md)           | v0.1.0   |
 | **性能优化**             |
 | 虚拟滚动（行）           | ✅             | ✅ 已实现    | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0   |
@@ -712,7 +712,7 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 | 功能       | RFC                                        | 状态      | 优先级 |
 | ---------- | ------------------------------------------ | --------- | ------ |
-| 列固定     | [RFC-0008](./0008-column-pinning.md)       | 📝 待编写 | P1     |
+| 列固定     | [RFC-0008](./completed/0008-column-pinning.md) | ✔️ 已完成 | P1     |
 | 单元格编辑 | [RFC-0009](./0009-cell-editing.md)         | 📝 待编写 | P0     |
 | 分组和聚合 | [RFC-0010](./0010-grouping-aggregation.md) | 📝 待编写 | P1     |
 
