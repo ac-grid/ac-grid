@@ -1,11 +1,11 @@
 # RFC-0003: 过滤功能
 
-**状态**: ✅ 已实现  
-**版本**: 0.1.1  
+**状态**: ✔️ 已完成  
+**版本**: 0.1.0  
 **作者**: Albert Li  
 **日期**: 2026-01-24  
-**最后更新**: 2026-02-01  
-**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md), [0002-sorting-feature](./completed/0002-sorting-feature.md)
+**最后更新**: 2026-07-26  
+**相关 RFC**: [0001-ac-grid-architecture](../0001-ac-grid-architecture.md), [0002-sorting-feature](./0002-sorting-feature.md)
 
 ### 实现状态（当前代码库）
 

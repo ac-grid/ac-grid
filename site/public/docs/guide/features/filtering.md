@@ -547,6 +547,6 @@ A: Yes. Filtering and sorting are independent and can be used together. Filter f
 
 ## Related Resources
 
-- [RFC-0003: Filtering Feature](../../../../docs/rfc/0003-filtering-feature.md)
+- [RFC-0003: Filtering Feature](../../../../docs/rfc/completed/0003-filtering-feature.md)
 - [@tanstack/table-core Filtering Docs](https://tanstack.com/table/latest/docs/guide/filters)
 - [ag-Grid Filtering Docs](https://www.ag-grid.com/javascript-data-grid/filtering/)
