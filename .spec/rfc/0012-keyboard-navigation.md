@@ -4,7 +4,7 @@
 **版本**: 0.4.0  
 **作者**: Albert Li  
 **日期**: 2026-01-24  
-**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md), [0009-cell-editing](./0009-cell-editing.md)
+**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md), [0009](./completed/0009-cell-editing.md)
 
 ## 目录
 

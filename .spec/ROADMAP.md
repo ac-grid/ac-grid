@@ -150,7 +150,7 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | 功能 | RFC | 状态 | 优先级 | 预计工作量 | 负责人 |
 |------|-----|------|--------|-----------|--------|
 | 列固定 | [0008](./rfc/completed/0008-column-pinning.md) | ✅ 已完成 | P1 | 7-9天 | TBD |
-| 单元格编辑 | [0009](./rfc/0009-cell-editing.md) | ⏳ 待规划 | P0 | 10-12天 | TBD |
+| 单元格编辑 | [0009](./rfc/completed/0009-cell-editing.md) | ✅ 已完成 | P0 | — | 2026-07-26 |
 | 分组和聚合 | [0010](./rfc/0010-grouping-aggregation.md) | ⏳ 待规划 | P1 | 10-14天 | TBD |
 
 **里程碑**:

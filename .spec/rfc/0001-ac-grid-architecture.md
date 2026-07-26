@@ -41,7 +41,7 @@ AC Grid 是一个高性能的数据表格组件库，旨在作为 AG Grid 的替
 - ✅ **虚拟滚动**: 行虚拟化已落地 ([RFC-0005](./completed/0005-virtual-scrolling.md))
 - ✅ **分页**: 前端分页和服务端分页 ([RFC-0006](./completed/0006-pagination.md))
 - ✅ **行选择**: 单选/多选模式 ([RFC-0007](./completed/0007-row-selection.md))
-- 📝 **单元格编辑**: 内联编辑 ([RFC-0009](./0009-cell-editing.md))
+- ✅ **单元格编辑**: 内联编辑 ([RFC-0009](./completed/0009-cell-editing.md))
 - 📝 **主题系统**: 可定制主题 ([RFC-0011](./0011-theme-system.md))
 
 > 📖 **完整功能列表和实现状态**，请查看 [RFC 索引](./README.md)
@@ -97,7 +97,7 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
 | 行选择（多选）           | ✅             | ✅ 已实现    | [0007](./completed/0007-row-selection.md)             | v0.2.0   |
 | 范围选择                 | ✅             | ✅ 已实现    | [0007](./completed/0007-row-selection.md)             | v0.2.0   |
 | 行拖拽重排序             | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
-| 单元格编辑               | ✅             | 📝 规划中    | [0009](./0009-cell-editing.md)              | v0.3.0   |
+| 单元格编辑               | ✅             | ✅ 已实现    | [0009](./completed/0009-cell-editing.md)    | v0.3.0   |
 | 键盘导航                 | ✅             | 📝 规划中    | [0012](./0012-keyboard-navigation.md)       | v0.4.0   |
 | **高级功能**             |
 | 行分组                   | ✅             | 📝 规划中    | [0010](./0010-grouping-aggregation.md)      | v0.3.0   |
@@ -713,7 +713,7 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 | 功能       | RFC                                        | 状态      | 优先级 |
 | ---------- | ------------------------------------------ | --------- | ------ |
 | 列固定     | [RFC-0008](./completed/0008-column-pinning.md) | ✔️ 已完成 | P1     |
-| 单元格编辑 | [RFC-0009](./0009-cell-editing.md)         | 📝 待编写 | P0     |
+| 单元格编辑 | [RFC-0009](./completed/0009-cell-editing.md) | ✔️ 已完成 | P0     |
 | 分组和聚合 | [RFC-0010](./0010-grouping-aggregation.md) | 📝 待编写 | P1     |
 
 **交付物**：

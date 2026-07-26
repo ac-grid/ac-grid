@@ -5,7 +5,7 @@
 **作者**: Albert Li  
 **日期**: 2026-06-28  
 **最后更新**: 2026-07-18  
-**相关 RFC**: [0009](../0009-cell-editing.md), [0022](../0022-range-selection.md)
+**相关 RFC**: [0009](./0009-cell-editing.md), [0022](../0022-range-selection.md)
 
 ## 概述
 

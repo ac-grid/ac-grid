@@ -26,7 +26,7 @@ export type {
 } from "./types/pagination";
 export type { GridSelectionConfig } from "./types/selection";
 export type { GridPinningConfig } from "./types/pinning";
-export type { GridEditingConfig } from "./types/editing";
+export type { GridEditingConfig, EditorProps, EditorType, EditTrigger } from "./types/editing";
 export type { GridGroupingConfig } from "./types/grouping";
 export type {
     A1Range,
@@ -156,3 +156,13 @@ export {
     pinColumnInState,
     reorderPinnedOnColumnDrag,
 } from "./utils/pinning-utils";
+export {
+    coerceEditorValue,
+    isColumnEditable,
+    isCustomEditor,
+    resolveEditorType,
+    supportsDoubleClickTrigger,
+    supportsEnterTrigger,
+    validateEditValue,
+} from "./utils/editing-utils";
+export type { EditValidationResult } from "./utils/editing-utils";

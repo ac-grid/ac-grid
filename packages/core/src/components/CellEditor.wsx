@@ -3,39 +3,66 @@ import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
 import "./CellEditor.css";
 
 export interface CellEditorProps {
-    value: any;
-    type?: 'text' | 'number' | 'date';
-    onChange: (value: any) => void;
-    /** 保存时传入当前输入值，避免依赖 querySelector 取 DOM */
-    onSave: (value: any) => void;
-    onCancel: () => void;
+    value: unknown;
+    type?: "text" | "number" | "date";
+    error?: string;
+    onChange?: (value: unknown) => void;
+    /** 保存时传入当前输入值 */
+    onSave?: (value: unknown) => void;
+    onCancel?: () => void;
 }
 
 @autoRegister({ tagName: "wsx-ac-cell-editor" })
 export class CellEditor extends LightComponent {
-    get value(): any { return this._value; }
-    set value(v: any) { 
+    get value(): unknown {
+        return this._value;
+    }
+    set value(v: unknown) {
         if (v !== this._value) {
-            this._value = v; 
+            this._value = v;
             this.inputValue = String(v ?? "");
         }
     }
-    private _value: any = "";
+    private _value: unknown = "";
 
-    get type(): string { return this._type; }
-    set type(v: string) { this._type = v; }
+    get type(): string {
+        return this._type;
+    }
+    set type(v: string) {
+        this._type = v;
+    }
     private _type: string = "text";
 
-    get onChange(): ((v: any) => void) | undefined { return this._onChange; }
-    set onChange(v: ((v: any) => void) | undefined) { this._onChange = v; }
-    private _onChange: ((v: any) => void) | undefined;
+    get error(): string | undefined {
+        return this._error;
+    }
+    set error(v: string | undefined) {
+        this._error = v;
+    }
+    private _error: string | undefined;
 
-    get onSave(): ((value: any) => void) | undefined { return this._onSave; }
-    set onSave(v: ((value: any) => void) | undefined) { this._onSave = v; }
-    private _onSave: ((value: any) => void) | undefined;
+    get onChange(): ((v: unknown) => void) | undefined {
+        return this._onChange;
+    }
+    set onChange(v: ((v: unknown) => void) | undefined) {
+        this._onChange = v;
+    }
+    private _onChange: ((v: unknown) => void) | undefined;
 
-    get onCancel(): (() => void) | undefined { return this._onCancel; }
-    set onCancel(v: (() => void) | undefined) { this._onCancel = v; }
+    get onSave(): ((value: unknown) => void) | undefined {
+        return this._onSave;
+    }
+    set onSave(v: ((value: unknown) => void) | undefined) {
+        this._onSave = v;
+    }
+    private _onSave: ((value: unknown) => void) | undefined;
+
+    get onCancel(): (() => void) | undefined {
+        return this._onCancel;
+    }
+    set onCancel(v: (() => void) | undefined) {
+        this._onCancel = v;
+    }
     private _onCancel: (() => void) | undefined;
 
     @state private inputValue: string = "";
@@ -45,13 +72,15 @@ export class CellEditor extends LightComponent {
         const el = this as any;
         if (el.value !== undefined) this.value = el.value;
         if (el.type) this.type = el.type;
+        if (el.error) this.error = el.error;
         if (el.onChange) this.onChange = el.onChange;
         if (el.onSave) this.onSave = el.onSave;
         if (el.onCancel) this.onCancel = el.onCancel;
 
-        // Auto focus
         requestAnimationFrame(() => {
-            const input = this.shadowRoot?.querySelector("input") || this.querySelector("input");
+            const input =
+                this.shadowRoot?.querySelector("input") ||
+                this.querySelector("input");
             input?.focus();
         });
     }
@@ -68,24 +97,31 @@ export class CellEditor extends LightComponent {
         } else if (e.key === "Escape") {
             this._onCancel?.();
         }
-        e.stopPropagation(); // Prevent grid navigation during edit
+        e.stopPropagation();
     };
 
     private handleBlur = () => {
-        // Auto save on blur，传入当前值避免 Grid 端 querySelector 取错实例
         this._onSave?.(this.inputValue);
     };
 
     render() {
         return (
-            <input
-                type={this._type}
-                className="cell-editor-input"
-                value={this.inputValue}
-                onInput={this.handleInput}
-                onKeyDown={this.handleKeyDown}
-                onBlur={this.handleBlur}
-            />
+            <div className="cell-editor-wrapper">
+                <input
+                    type={this._type}
+                    className={`cell-editor-input ${this._error ? "cell-editor-input--error" : ""}`}
+                    value={this.inputValue}
+                    onInput={this.handleInput}
+                    onKeyDown={this.handleKeyDown}
+                    onBlur={this.handleBlur}
+                    aria-invalid={this._error ? "true" : undefined}
+                />
+                {this._error ? (
+                    <span className="cell-editor-error" role="alert">
+                        {this._error}
+                    </span>
+                ) : null}
+            </div>
         );
     }
 }
