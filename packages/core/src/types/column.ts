@@ -24,4 +24,8 @@ export type ColumnDef<TData, TValue = unknown> = TanStackColumnDef<
      * 是否允许本列输入 / 求值公式（RFC-0030）
      */
     allowFormula?: boolean;
+    /**
+     * 列固定位置（RFC-0008）
+     */
+    pin?: "left" | "right" | false;
 };

@@ -13,6 +13,7 @@ import type { GridResizingConfig } from "../types/resizing";
 import type { GridVirtualizationConfig } from "../types/virtualization";
 import type { GridSelectionConfig } from "../types/selection";
 import type { GridPaginationConfig } from "../types/pagination";
+import type { GridPinningConfig } from "../types/pinning";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
     /**
@@ -51,6 +52,10 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
      * 分页配置（RFC-0006）
      */
     pagination?: GridPaginationConfig;
+    /**
+     * 列固定配置（RFC-0008）
+     */
+    pinning?: GridPinningConfig;
     /**
      * 容器元素（可选，如果不提供则返回元素本身）
      */
@@ -96,6 +101,7 @@ export function createGrid<TData extends { userId?: string }>(
         virtualization,
         selection,
         pagination,
+        pinning,
         container,
     } = options;
 
@@ -130,6 +136,10 @@ export function createGrid<TData extends { userId?: string }>(
 
     if (pagination) {
         gridElement.paginationConfig = pagination;
+    }
+
+    if (pinning) {
+        gridElement.pinningConfig = pinning;
     }
 
     gridElement.columns = columns;
