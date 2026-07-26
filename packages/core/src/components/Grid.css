@@ -330,3 +330,40 @@
 .ac-grid .grid-cell[data-pinned] {
   background-color: var(--ac-grid-bg-cell-pinned, #fafbfc);
 }
+
+/* RFC-0019: 全宽行 */
+.ac-grid .grid-row-full-width {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 100%;
+}
+
+.ac-grid .grid-cell-full-width {
+  grid-column: 1 / -1;
+  width: 100%;
+  padding: 8px 12px;
+  box-sizing: border-box;
+}
+
+/* RFC-0019: 加载 / 无数据遮罩 */
+.ac-grid .grid-container {
+  position: relative;
+}
+
+.ac-grid .grid-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.72);
+  z-index: 20;
+  pointer-events: none;
+}
+
+.ac-grid .grid-overlay-content {
+  pointer-events: auto;
+  padding: 16px 24px;
+  color: var(--ac-grid-text-secondary, #585d61);
+  font-size: 14px;
+}

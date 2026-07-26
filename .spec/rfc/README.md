@@ -97,7 +97,7 @@
 |-----|------|------|------|------|------|
 | [0017](./0017-framework-bindings.md) | 框架绑定 (Vue/Angular/Svelte) | 📝 草稿 | 0.5.0 | Albert Li | 2026-06-28 |
 | [0018](./0018-grid-state-api.md) | Grid 状态 API 与持久化 | 📝 草稿 | 0.5.0 | Albert Li | 2026-06-28 |
-| [0019](./0019-custom-components.md) | 自定义组件 (Header/Filter/Overlay) | 📝 草稿 | 0.4.0 | Albert Li | 2026-06-28 |
+| [0019](./completed/0019-custom-components.md) | 自定义组件 (Header/Filter/Overlay) | ✔️ 已完成 | 0.4.0 | Albert Li | 2026-06-28 |
 
 ### 第七阶段：Enterprise 对标 (v1.1.0–v1.2.0)
 

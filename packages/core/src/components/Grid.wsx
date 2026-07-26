@@ -18,6 +18,10 @@ import {
 import { type ColumnDef } from "../types/column";
 import { arrayMove } from "../utils/array-move";
 import { flexRender } from "../utils/flex-render";
+import { resolveHeaderContent } from "../utils/resolve-header-content";
+import { renderComponent } from "../utils/render-component";
+import { ComponentPortal } from "../utils/component-portal";
+import type { GridComponentsConfig } from "../types/components";
 import type { FilterState, GridFilteringConfig, FilterCondition } from "../types/filtering";
 import type { GridResizingConfig } from "../types/resizing";
 import type { GridVirtualizationConfig, VirtualizerState } from "../types/virtualization";
@@ -472,6 +476,61 @@ export class Grid extends LightComponent {
     }
     @state private _enableFloatingFilter: boolean = false;
 
+    get componentsConfig(): GridComponentsConfig | undefined {
+        return this._componentsConfigIsSet ? this._componentsConfig : undefined;
+    }
+    set componentsConfig(value: GridComponentsConfig | undefined) {
+        if (value === undefined) {
+            this._componentsConfigIsSet = false;
+            this._componentsConfig = {} as GridComponentsConfig;
+        } else {
+            this._componentsConfigIsSet = true;
+            if (value !== this._componentsConfig) {
+                this._componentsConfig = value;
+                this.updateTable();
+            }
+        }
+    }
+    @state private _componentsConfigIsSet: boolean = false;
+    @state private _componentsConfig: GridComponentsConfig = {} as GridComponentsConfig;
+
+    private get isLoadingOverlay(): boolean {
+        return Boolean(
+            this._componentsConfigIsSet && this._componentsConfig.isLoading,
+        );
+    }
+
+    private isFullWidthRowByTableRow(row: import("@tanstack/table-core").Row<any>): boolean {
+        if (!this._componentsConfigIsSet) {
+            return false;
+        }
+        const predicate = this._componentsConfig.isFullWidthRow;
+        if (!predicate || !this._componentsConfig.fullWidthRowComponent) {
+            return false;
+        }
+        return predicate(row);
+    }
+
+    private get shouldShowNoRowsOverlay(): boolean {
+        if (!this._componentsConfigIsSet || !this._componentsConfig.noRowsOverlayComponent) {
+            return false;
+        }
+        if (this.isLoadingOverlay) {
+            return false;
+        }
+        return this.getDisplayRows().length === 0;
+    }
+
+    private get activeOverlayComponent(): import("../types/components").ComponentType | undefined {
+        if (this.isLoadingOverlay && this._componentsConfig.loadingOverlayComponent) {
+            return this._componentsConfig.loadingOverlayComponent;
+        }
+        if (this.shouldShowNoRowsOverlay && this._componentsConfig.noRowsOverlayComponent) {
+            return this._componentsConfig.noRowsOverlayComponent;
+        }
+        return undefined;
+    }
+
     private get isFilteringEnabled(): boolean {
         const hasFilterState =
             this.globalFilter !== "" ||
@@ -532,6 +591,12 @@ export class Grid extends LightComponent {
         // Cleanup row drag-drop listeners
         this.rowDragCleanup.forEach((cleanup) => cleanup());
         this.rowDragCleanup.clear();
+
+        this.filterMenuPortal.unmount();
+        if (this.filterMenuContainer?.parentNode) {
+            this.filterMenuContainer.parentNode.removeChild(this.filterMenuContainer);
+        }
+        this.filterMenuContainer = null;
     }
 
     // Pagination Methods (RFC-0006)
@@ -730,6 +795,7 @@ export class Grid extends LightComponent {
     };
 
     private filterMenuContainer: HTMLElement | null = null;
+    private filterMenuPortal: ComponentPortal = new ComponentPortal();
 
     private updateFilterMenuPortal() {
         if (this.openFilterMenu && this.activeFilterColumn) {
@@ -749,33 +815,47 @@ export class Grid extends LightComponent {
                 setTimeout(() => document.addEventListener('click', closeHandler), 0);
             }
 
-            this.filterMenuContainer.innerHTML = '';
-            
-            const menu = document.createElement('wsx-ac-filter-menu') as any;
-            menu.column = this.activeFilterColumn;
-            menu.value = this.columnFilters[this.activeFilterColumn.id] ?? "";
-            
-            // 先添加到 DOM
-            this.filterMenuContainer.appendChild(menu);
-            
-            // 直接设置内部属性（避免 WSX 属性代理问题）
-            menu._filterChangeCallback = (val: FilterCondition | string) => {
-                this.setColumnFilter(this.activeFilterColumn.id, val);
+            const columnDef = this.activeFilterColumn.columnDef as ColumnDef<any, unknown>;
+            const filterParams = {
+                ...columnDef.filterComponentParams,
+                column: this.activeFilterColumn,
+                value: this.columnFilters[this.activeFilterColumn.id] ?? "",
+                onFilterChange: (val: FilterCondition | string) => {
+                    this.setColumnFilter(this.activeFilterColumn.id, val);
+                },
+                onClose: () => {
+                    this.openFilterMenu = null;
+                    this.activeFilterColumn = null;
+                    this.updateFilterMenuPortal();
+                },
             };
-            menu._onClose = () => {
-                this.openFilterMenu = null;
-                this.activeFilterColumn = null;
-                this.updateFilterMenuPortal();
-            };
+
+            if (columnDef.filterComponent) {
+                this.filterMenuPortal.mount(
+                    this.filterMenuContainer,
+                    columnDef.filterComponent,
+                    filterParams,
+                );
+            } else {
+                this.filterMenuPortal.unmount();
+                this.filterMenuContainer.innerHTML = '';
+                
+                const menu = document.createElement('wsx-ac-filter-menu') as any;
+                menu.column = this.activeFilterColumn;
+                menu.value = this.columnFilters[this.activeFilterColumn.id] ?? "";
+                this.filterMenuContainer.appendChild(menu);
+                menu._filterChangeCallback = filterParams.onFilterChange;
+                menu._onClose = filterParams.onClose;
+            }
             
             const { x, y } = this.filterMenuPosition;
-            // Portal 容器仅设置定位，样式由 CSS 处理
             this.filterMenuContainer.style.position = 'absolute';
             this.filterMenuContainer.style.top = `${y}px`;
             this.filterMenuContainer.style.left = `${x}px`;
             this.filterMenuContainer.style.zIndex = '99999';
             
         } else {
+            this.filterMenuPortal.unmount();
             if (this.filterMenuContainer) {
                 if (this.filterMenuContainer.parentNode) {
                     this.filterMenuContainer.parentNode.removeChild(this.filterMenuContainer);
@@ -1247,10 +1327,7 @@ export class Grid extends LightComponent {
                                         return null;
                                     }
 
-                                    const headerContent = flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    );
+                                    const headerContent = resolveHeaderContent(header);
 
                                     const column = header.column;
                                     const canSort = column.getCanSort();
@@ -1557,6 +1634,25 @@ export class Grid extends LightComponent {
                             const isDraggingRow = this.draggingRowId === row.id;
                             const isDragOverRow = this.dragOverRowId === row.id;
 
+                            if (this.isFullWidthRowByTableRow(row)) {
+                                const fullWidthContent = renderComponent(
+                                    this._componentsConfig.fullWidthRowComponent!,
+                                    { row },
+                                );
+                                return (
+                                    <div
+                                        key={row.id}
+                                        className={`grid-row grid-row-full-width ${isDraggingRow ? 'dragging' : ''} ${isDragOverRow ? 'drag-over' : ''}`}
+                                        data-row-id={row.id}
+                                        data-full-width="true"
+                                    >
+                                        <div className="grid-cell grid-cell-full-width">
+                                            {fullWidthContent}
+                                        </div>
+                                    </div>
+                                );
+                            }
+
                             return (
                             <div
                                 key={row.id}
@@ -1738,6 +1834,13 @@ export class Grid extends LightComponent {
                         )})}
                         <div style={{ height: `${paddingBottom}px` }}></div>
                     </div>
+                    {this.activeOverlayComponent && (
+                        <div className="grid-overlay" data-overlay-type={this.isLoadingOverlay ? "loading" : "no-rows"}>
+                            <div className="grid-overlay-content">
+                                {renderComponent(this.activeOverlayComponent, {})}
+                            </div>
+                        </div>
+                    )}
                     {/* Pagination Controls */}
                     {this._paginationConfigIsSet && this._paginationConfig?.enabled !== false && (
                         <wsx-ac-pagination-controls
@@ -2090,6 +2193,17 @@ export class Grid extends LightComponent {
 
     public collapseAll() {
         this.expanded = {};
+        this.updateTable();
+    }
+
+    /** RFC-0019: 切换加载遮罩 */
+    public setLoading(isLoading: boolean): void {
+        if (!this._componentsConfigIsSet) {
+            this._componentsConfigIsSet = true;
+            this._componentsConfig = { isLoading };
+        } else {
+            this._componentsConfig = { ...this._componentsConfig, isLoading };
+        }
         this.updateTable();
     }
 

@@ -4,7 +4,7 @@
 **版本**: 1.2.0  
 **作者**: Albert Li  
 **日期**: 2026-06-28  
-**相关 RFC**: [0003](./completed/0003-filtering-feature.md), [0019](./0019-custom-components.md)
+**相关 RFC**: [0003](./completed/0003-filtering-feature.md), [0019](./completed/0019-custom-components.md)
 
 ## 概述
 

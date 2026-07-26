@@ -368,7 +368,7 @@ function toNumber(value: FormulaValue): number | FormulaError {
 
 function flattenNumericArgs(
     args: FormulaValue[],
-    getCell: (address: CellAddress) => FormulaValue,
+    _getCell: (address: CellAddress) => FormulaValue,
 ): number[] | FormulaError {
     const numbers: number[] = [];
     for (const arg of args) {
@@ -461,7 +461,7 @@ function evaluateFunction(
     getCell: (address: CellAddress) => FormulaValue,
 ): FormulaValue {
     const flat = flattenNumericArgs(args as FormulaValue[], getCell);
-    if (isFormulaError(flat)) {
+    if (!Array.isArray(flat)) {
         return flat;
     }
     switch (name) {
