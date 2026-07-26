@@ -18,7 +18,12 @@ export type {
 } from "./types/filtering";
 export type { GridResizingConfig } from "./types/resizing";
 export type { GridVirtualizationConfig } from "./types/virtualization";
-export type { GridPaginationConfig } from "./types/pagination";
+export type {
+    GridPaginationConfig,
+    PaginationState,
+    PaginationInfo,
+    PaginatedData,
+} from "./types/pagination";
 export type { GridSelectionConfig } from "./types/selection";
 export type { GridPinningConfig } from "./types/pinning";
 export type { GridEditingConfig } from "./types/editing";
@@ -89,6 +94,13 @@ export {
     measureTextWidth,
     resolveColumnId,
 } from "./utils/column-sizing";
+export {
+    computeTotalPages,
+    clampPageIndex,
+    computePageRange,
+    DEFAULT_PAGE_SIZE,
+    DEFAULT_PAGE_SIZE_OPTIONS,
+} from "./utils/pagination";
 export { Virtualizer } from "./utils/virtualizer";
 export {
     appendRowSelection,

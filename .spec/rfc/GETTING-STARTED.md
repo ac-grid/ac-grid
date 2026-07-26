@@ -36,7 +36,7 @@ docs/rfc/
 2. 📝 **0003-filtering-feature** - 过滤功能（依赖排序）
 3. ✔️ **0004-column-resizing** - 列调整大小（已完成，见 [completed/0004-column-resizing.md](./completed/0004-column-resizing.md)）
 4. 📝 **0005-virtual-scrolling** - 虚拟滚动（性能优化）
-5. 📝 **0006-pagination** - 分页功能（与虚拟滚动二选一）
+5. ✅ **0006-pagination** - 分页功能（与虚拟滚动二选一）
 
 ### 3. 编写或完善 RFC
 

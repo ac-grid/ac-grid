@@ -57,7 +57,7 @@
 | 行虚拟滚动 | Community | ✅ | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0 |
 | 列虚拟滚动 | Community | 📝 | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0 |
 | 100K+ 行性能 | Community | 📝 | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0 |
-| 分页（客户端） | Community | 📝 | [0006](./0006-pagination.md) | v0.2.0 |
+| 分页（客户端） | Community | ✅ | [0006](./completed/0006-pagination.md) | v0.2.0 |
 | 列固定 (Pinning) | Enterprise* | 📝 | [0008](./0008-column-pinning.md) | v0.3.0 |
 
 > \* AG Grid 文档将 Pinning 列在 Enterprise；Community 用户常需此能力，AC Grid 纳入 v0.3.0 Community 路线图。
@@ -152,10 +152,10 @@
 | 范围 | RFC 数 | 已实现 | 进行中 | 草稿 |
 |------|--------|--------|--------|------|
 | Phase 0 | 2 | 2 | 0 | 0 |
-| Phase 1 (0002–0019) | 18 | 6 | 0 | 12 |
+| Phase 1 (0002–0019) | 18 | 7 | 0 | 11 |
 | Phase 2 (0020–0029) | 10 | 0 | 0 | 10 |
 | Phase 3 (0030–0032) | 3 | 1 | 0 | 2 |
-| **合计** | **33** | **9** | **0** | **24** |
+| **合计** | **33** | **10** | **0** | **23** |
 
 ---
 

@@ -63,3 +63,10 @@
     margin: 0 8px;
     font-variant-numeric: tabular-nums;
 }
+
+.pagination-loading {
+    padding: 4px 16px 8px;
+    font-size: 0.75rem;
+    color: var(--ac-grid-text-secondary, rgba(196, 181, 253, 0.7));
+    text-align: right;
+}
