@@ -142,6 +142,92 @@ multica issue create --title "Build"   --parent <id> --assignee <agent> --stage 
 multica issue children <id> --output json
 ```
 
+## Orca-native parallel execution (the ac-grid way)
+
+This repo uses **Orca** for parallel work — not OpenClaw, not any marketplace
+"worktree" skill. Orca already provides both isolation (worktrees) and
+supervision (orchestration) natively. Pick the level by how much the subtasks
+depend on each other:
+
+### Level 1 — independent modules → parallel worktrees
+
+Split a large RFC into independent modules and give each its own worktree.
+Each worker owns its module end-to-end and ships its own PR:
+
+```bash
+# coordinator (the Multica-assigned agent) does the split:
+orca worktree create --name <rfc>-<module-a> --no-parent --agent codex \
+  --prompt "<RFC-0010 module A brief: what, where, acceptance>" --json
+orca worktree create --name <rfc>-<module-b> --no-parent --agent claude \
+  --prompt "<module B brief>" --json
+```
+
+- Use `--no-parent` + `--agent <id>` + `--prompt` → agent-first create, fully
+  independent. The create response carries `startupTerminal.handle`.
+- Independent modules must NOT touch the same files or tests. If they share
+  interfaces, that interface must already exist or be serialized first.
+- Each worker pushes its own branch + PR on completion — no coordinator merge.
+
+### Level 2 — coordinated subtasks → Orca orchestration (supervised DAG)
+
+When subtasks share state, must land in order, or need question/answer loops,
+use supervised orchestration from ONE coordinator worktree:
+
+```bash
+orca orchestration run-create --objective "<RFC-0010 brief>" --json
+orca orchestration task-create --run <run_id> --title "impl core" --agent codex --json
+orca orchestration dispatch --task <task_id> --to <handle> --inject --json
+orca orchestration check --wait --types worker_done,escalation,question --timeout-ms 300000 --json
+```
+
+- The coordinator owns the DAG, answers `ask` questions via
+  `orca orchestration reply --id <msg_id> --body ...`, and waits for
+  `worker_done` before dispatching the next dependent task.
+- Long coding tasks run 15-60 min — treat `check --wait` timeout as a
+  checkpoint, not failure.
+- Heartbeats/terminal activity = alive, not done. Never kill a worker on
+  impatience.
+
+### Level 3 — single-owner handoff (no supervision)
+
+For work that is really just "hand this to one agent, done", use a full
+handoff, NOT orchestration:
+
+```bash
+orca worktree create --name <task> --no-parent --agent codex --prompt "<brief>" --json
+```
+
+Then stop monitoring. Orchestration adds tracking state nobody asked for.
+
+### Decision rule — hybrid, not binary
+
+Real RFCs use BOTH styles, keyed on coupling between subtasks:
+
+1. **Freeze contracts first (serial, coordinator).** Any interface between
+   modules (types, data model, wire format, migration, component API) must be
+   committed to a shared branch BEFORE workers start — implementers then only
+   READ the frozen contract and touch disjoint files. One short serial step
+   unblocks a whole parallel phase; without it, parallel worktrees collide.
+2. **Parallel worktrees (Level 1) for independent modules.** Once contracts
+   are frozen: one `--no-parent` worktree per module, own agent, own PR.
+3. **Orchestration (Level 2) for the seams and gates.** Cross-module ordering
+   (module B needs module A's runtime output), integration/merge, review
+   escalations, and any Q&A run in ONE supervised DAG on a coordinator.
+4. **Handoff (Level 3) only for fire-and-forget, single-owner pieces** — never
+   wrap those in orchestration state nobody asked for.
+
+| Coupling between subtasks | Use |
+|---------------------------|-----|
+| disjoint files, contract already committed | parallel worktrees |
+| shared interface, NOT yet frozen | freeze contract (serial), then parallel |
+| B needs A's runtime output / strict ordering | orchestration gate |
+| Q&A / decision escalations expected | orchestration (ask/reply) |
+| single owner, no supervision | handoff |
+
+All three levels report into the SAME Multica issue: coordinator notes each
+worktree/PR in issue comments, sets metadata (`pr_number` per PR), and the
+loop closes when all PRs merge → `done` → registry writeback.
+
 ## Warnings — side effects
 
 - **Status changes are not cosmetic.** Promoting backlog→todo/in_progress can
@@ -169,6 +255,7 @@ multica issue children <id> --output json
 | Orca card status | `orca worktree set --worktree active --workspace-status <todo\|in-progress\|in-review\|completed> --json` |
 | Orca comment/status note | `orca worktree set --worktree active --comment "<short note>" --json` |
 | Orca supervised multi-agent | `orca orchestration run-create` → `task-create` → `dispatch --inject` → `check --wait` |
+| Orca parallel (independent) | `orca worktree create --name <m> --no-parent --agent <id> --prompt "<brief>" --json` × N |
 
 ## Diagnosis: drift already present
 
