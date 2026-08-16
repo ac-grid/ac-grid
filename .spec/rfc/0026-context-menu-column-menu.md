@@ -4,7 +4,7 @@
 **版本**: 1.1.0  
 **作者**: Albert Li  
 **日期**: 2026-06-28  
-**相关 RFC**: [0019](./0019-custom-components.md), [0008](./completed/0008-column-pinning.md)
+**相关 RFC**: [0019](./completed/0019-custom-components.md), [0008](./completed/0008-column-pinning.md)
 
 ## 概述
 

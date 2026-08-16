@@ -29,6 +29,15 @@ export type { GridPinningConfig } from "./types/pinning";
 export type { GridEditingConfig, EditorProps, EditorType, EditTrigger } from "./types/editing";
 export type { GridGroupingConfig } from "./types/grouping";
 export type {
+    ComponentType,
+    ComponentRenderFn,
+    GridComponentsConfig,
+    HeaderComponentParams,
+    FilterComponentParams,
+    OverlayComponentParams,
+    FullWidthRowComponentParams,
+} from "./types/components";
+export type {
     A1Range,
     CellAddress,
     CellRawValue,
@@ -166,3 +175,14 @@ export {
     validateEditValue,
 } from "./utils/editing-utils";
 export type { EditValidationResult } from "./utils/editing-utils";
+export {
+    registerComponent,
+    registerComponents,
+    getRegisteredComponent,
+    unregisterComponent,
+    clearComponentRegistry,
+    resolveComponentRef,
+} from "./utils/component-registry";
+export { ComponentPortal } from "./utils/component-portal";
+export { renderComponent } from "./utils/render-component";
+export { resolveHeaderContent } from "./utils/resolve-header-content";

@@ -94,7 +94,7 @@
 |------|---------|---------|-----|------|
 | 框架绑定 (Vue/Angular/Svelte) | Community | 📝 | [0017](./0017-framework-bindings.md) | v0.5.0 |
 | Grid 状态 API / 持久化 | Community | 📝 | [0018](./0018-grid-state-api.md) | v0.5.0 |
-| 自定义组件（Header/Filter/Overlay） | Community | 📝 | [0019](./0019-custom-components.md) | v0.4.0 |
+| 自定义组件（Header/Filter/Overlay） | Community | ✔️ | [0019](./completed/0019-custom-components.md) | v0.4.0 |
 
 ---
 
@@ -152,10 +152,10 @@
 | 范围 | RFC 数 | 已实现 | 进行中 | 草稿 |
 |------|--------|--------|--------|------|
 | Phase 0 | 2 | 2 | 0 | 0 |
-| Phase 1 (0002–0019) | 18 | 8 | 0 | 10 |
+| Phase 1 (0002–0019) | 18 | 9 | 0 | 9 |
 | Phase 2 (0020–0029) | 10 | 0 | 0 | 10 |
 | Phase 3 (0030–0032) | 3 | 1 | 0 | 2 |
-| **合计** | **33** | **11** | **0** | **22** |
+| **合计** | **33** | **12** | **0** | **21** |
 
 ---
 

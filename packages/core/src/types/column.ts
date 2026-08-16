@@ -1,6 +1,7 @@
 import type { ColumnDef as TanStackColumnDef, Row } from "@tanstack/table-core";
 import type { FilterFn, FilterType } from "./filtering";
 import type { EditorProps, EditorType } from "./editing";
+import type { ComponentType } from "./components";
 
 /**
  * 扩展 TanStack ColumnDef 以支持 AC Grid 的功能
@@ -41,4 +42,10 @@ export type ColumnDef<TData, TValue = unknown> = TanStackColumnDef<
      * 编辑验证；返回 true 通过，false 或字符串为失败
      */
     validateEdit?: (value: unknown, row: Row<TData>) => boolean | string;
+    /** 自定义表头组件（RFC-0019） */
+    headerComponent?: ComponentType;
+    headerComponentParams?: Record<string, unknown>;
+    /** 自定义列过滤器 UI（RFC-0019） */
+    filterComponent?: ComponentType;
+    filterComponentParams?: Record<string, unknown>;
 };

@@ -95,7 +95,7 @@ function getCellDisplayValue(
     column: ColumnDef<any, any>,
 ): string {
     const accessorKey = (column as { accessorKey?: string }).accessorKey;
-    const accessorFn = column.accessorFn;
+    const accessorFn = (column as { accessorFn?: (row: unknown, index: number) => unknown }).accessorFn;
 
     let value: unknown;
     if (typeof accessorFn === "function") {
