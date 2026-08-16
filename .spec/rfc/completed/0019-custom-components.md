@@ -5,7 +5,7 @@
 **作者**: Albert Li  
 **日期**: 2026-06-28  
 **最后更新**: 2026-07-26  
-**相关 RFC**: [0001](../0001-ac-grid-architecture.md), [0003](../0003-filtering-feature.md)
+**相关 RFC**: [0001](../0001-ac-grid-architecture.md), [0003](./0003-filtering-feature.md)
 
 ## 概述
 
