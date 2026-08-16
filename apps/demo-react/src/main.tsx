@@ -1,8 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import "@ac-grid/theme-default";
+import { themeManager } from "@ac-grid/theme-base";
+
 import App from "./App.tsx";
 import VirtualScrollingDemo from "./VirtualScrollingDemo.tsx";
 import "./index.css";
+
+themeManager.applyTheme("violet");
 
 const isVirtualScrollE2E =
     typeof window !== "undefined" &&

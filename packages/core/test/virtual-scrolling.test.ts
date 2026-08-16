@@ -90,6 +90,17 @@ describe("virtual-scroll helpers", () => {
             });
             expect(range.end).toBeGreaterThan(0);
         });
+
+        it("treats rowHeight <= 0 as 1 for visibleCount", () => {
+            const range = getVisibleRowRange({
+                scrollTop: 0,
+                rowHeight: -1,
+                gridRef: null,
+                rowCount: 10,
+            });
+            expect(range.visibleCount).toBe(0);
+            expect(range.end).toBeGreaterThanOrEqual(range.start);
+        });
     });
 
     describe("createScrollHandler", () => {

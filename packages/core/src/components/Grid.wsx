@@ -16,7 +16,11 @@ import {
     type ColumnPinningState,
 } from "@tanstack/table-core";
 import { type ColumnDef } from "../types/column";
-import { arrayMove } from "../utils/array-move";
+import {
+    bindBodyToHeaderScrollSync,
+    bindHeaderToBodyScrollSync,
+    type ScrollSyncSession,
+} from "../utils/scroll-sync";
 import { flexRender } from "../utils/flex-render";
 import type { FilterState, GridFilteringConfig, FilterCondition } from "../types/filtering";
 import type { GridResizingConfig } from "../types/resizing";
@@ -142,7 +146,7 @@ export class Grid extends LightComponent {
     private headerScrollElement: HTMLElement | null = null;
     private bodyScrollElement: HTMLElement | null = null;
     private bodyResizeObserver: ResizeObserver | null = null;
-    private isSyncingScroll: boolean = false;
+    private scrollSyncSession: ScrollSyncSession = { isSyncingScroll: false };
 
     // Drag-drop cleanup functions
     private headerDragCleanup: Map<string, () => void> = new Map();
@@ -705,25 +709,17 @@ export class Grid extends LightComponent {
         this._selectionConfig?.onRowSelectionChange?.(this.rowSelection);
     }
 
-    private handleScroll = (e: Event) => {
+    private onBodyScroll = (target: HTMLElement) => {
         if (!this._virtualizationConfig.enabled) {
-            this.syncHeaderScroll();
             return;
         }
-        
-        const target = e.target as HTMLElement;
-        // Sync header scroll
-        if (this.headerScrollElement) {
-            this.headerScrollElement.scrollLeft = target.scrollLeft;
-        }
 
-        // Update virtual state
         requestAnimationFrame(() => {
             const rowCount = this.getDisplayRows().length;
             this.virtualizer.updateState(
                 target.scrollTop,
                 target.clientHeight,
-                rowCount
+                rowCount,
             );
             this.commitVirtualState();
         });
@@ -1542,6 +1538,7 @@ export class Grid extends LightComponent {
                             }
                             this.bodyScrollElement = el;
                             this.syncBodyScroll();
+                            this.syncHeaderScroll();
                             this.bodyResizeObserver?.disconnect();
                             if (typeof ResizeObserver !== "undefined") {
                                 this.bodyResizeObserver = new ResizeObserver(() => {
@@ -1553,13 +1550,13 @@ export class Grid extends LightComponent {
                         }}
                     >
                         <div style={{ height: `${paddingTop}px` }}></div>
-                        {visibleRows.map((row) => {
+                        {visibleRows.map((row, rowIndex) => {
                             const isDraggingRow = this.draggingRowId === row.id;
                             const isDragOverRow = this.dragOverRowId === row.id;
 
                             return (
                             <div
-                                key={row.id}
+                                key={`${rowIndex}-${row.id}`}
                                 className={`grid-row ${row.getIsGrouped() ? 'grid-row-grouped' : ''} ${isDraggingRow ? 'dragging' : ''} ${isDragOverRow ? 'drag-over' : ''}`}
                                 data-row-id={row.id}
                                 data-selected={row.getIsSelected() ? "true" : "false"}
@@ -2101,15 +2098,12 @@ export class Grid extends LightComponent {
             return;
         }
 
-        // 移除旧的事件监听器（如果存在）
-        const oldHandler = (this.bodyScrollElement as any).__headerScrollHandler;
-        if (oldHandler) {
-            this.bodyScrollElement.removeEventListener("scroll", oldHandler);
-        }
-
-        // 监听内容区域滚动，同步表头
-        this.bodyScrollElement.addEventListener("scroll", this.handleScroll);
-        (this.bodyScrollElement as any).__headerScrollHandler = this.handleScroll;
+        bindBodyToHeaderScrollSync(
+            this.bodyScrollElement,
+            () => this.headerScrollElement,
+            this.scrollSyncSession,
+            (body) => this.onBodyScroll(body),
+        );
     }
 
     /**
@@ -2120,29 +2114,11 @@ export class Grid extends LightComponent {
             return;
         }
 
-        // 移除旧的事件监听器（如果存在）
-        const oldHandler = (this.headerScrollElement as any).__bodyScrollHandler;
-        if (oldHandler) {
-            this.headerScrollElement.removeEventListener("scroll", oldHandler);
-        }
-
-        // 监听表头滚动，同步内容区域
-        const handler = () => {
-            if (this.isSyncingScroll) {
-                return;
-            }
-            this.isSyncingScroll = true;
-            if (this.bodyScrollElement) {
-                this.bodyScrollElement.scrollLeft =
-                    this.headerScrollElement!.scrollLeft;
-            }
-            requestAnimationFrame(() => {
-                this.isSyncingScroll = false;
-            });
-        };
-
-        this.headerScrollElement.addEventListener("scroll", handler);
-        (this.headerScrollElement as any).__bodyScrollHandler = handler;
+        bindHeaderToBodyScrollSync(
+            this.headerScrollElement,
+            () => this.bodyScrollElement,
+            this.scrollSyncSession,
+        );
     }
 }
 

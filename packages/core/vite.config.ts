@@ -38,6 +38,7 @@ export default defineConfig({
     },
     test: {
         environment: "jsdom",
+        isolate: false,
         include: ["test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
         coverage: {
             provider: "v8",
@@ -45,8 +46,15 @@ export default defineConfig({
                 "src/utils/virtualizer.ts",
                 "src/utils/virtual-scroll.ts",
                 "src/utils/create-grid.ts",
+                "src/utils/scroll-sync.ts",
             ],
             reporter: ["text", "text-summary"],
+            thresholds: {
+                lines: 100,
+                functions: 100,
+                branches: 100,
+                statements: 100,
+            },
         },
         server: {
             deps: {
