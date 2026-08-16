@@ -1,192 +1,188 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
-// https://nodejs.org/api/packages.html#packages_self_referencing_a_package_using_its_name
-import { Grid, DraggableHandler } from "@ac-grid/core";
+import { createGrid } from "@ac-grid/core";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { makeData } from "./stories/makeData";
+import {
+    getAdjacentRfcId,
+    parseRfcIdFromUrl,
+    RFC_VALIDATION_ORDER,
+    RFC_VALIDATION_SPECS,
+    type GridHostElement,
+    type RfcValidationId,
+} from "./rfcValidationDemos";
 
-import { Person, makeData } from "./stories/makeData";
+function SearchIcon() {
+    return (
+        <svg
+            className="demo-search-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden
+        >
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20L16.5 16.5" />
+        </svg>
+    );
+}
 
 function App() {
-    const [data] = useState(() => makeData(10000)); // Increase data size for virtualization demo
-
-    // Grid resizing configuration
-    const resizingConfig = useMemo(() => ({
-        enabled: true,
-        defaultColumnWidth: 150,
-        minColumnWidth: 50,
-        onColumnSizingChange: (sizing: any) => {
-            console.log("Column sizing changed:", sizing);
-        }
-    }), []);
-
-    // Grid virtualization configuration
-    const virtualizationConfig = useMemo(() => ({
-        enabled: true,
-        rowHeight: 35,
-        overscan: 5
-    }), []);
-
-    // Grid pagination configuration
-    const paginationConfig = useMemo(() => ({
-        enabled: true,
-        pageSize: 20,
-        pageSizeOptions: [10, 20, 50, 100],
-        onPaginationChange: (state: any) => {
-            console.log("Pagination changed:", state);
-        }
-    }), []);
-
-    // Grid pinning configuration
-    const pinningConfig = useMemo(() => ({
-        enabled: true,
-        initialState: {
-            left: ['selection', 'drag-handle', 'firstName'], // Pin selection, handle and name to left
-            right: ['progress'] // Pin progress to right
-        }
-    }), []);
-
-    // Grid editing configuration
-    const editingConfig = useMemo(() => ({
-        enabled: true,
-        mode: 'doubleClick',
-        onEditStart: (rowId: any, columnId: any) => console.log('Edit start:', rowId, columnId),
-        onEditSave: (rowId: any, columnId: any, value: any) => console.log('Edit save:', rowId, columnId, value),
-        onEditCancel: (rowId: any, columnId: any) => console.log('Edit cancel:', rowId, columnId),
-    }), []);
-
-    // Grid grouping configuration
-    const groupingConfig = useMemo(() => ({
-        enabled: true,
-        initialGrouping: ['status'], // Group by status
-        initialExpanded: true, // Expand all groups by default
-        onGroupingChange: (grouping: any) => console.log('Grouping changed:', grouping),
-    }), []);
-
-    // Ref to access grid API
-    const gridRef = (el: any) => {
-        if (el) {
-            (window as any).gridApi = el; // Expose for testing
-        }
-    };
-
-    const handleGlobalSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-        // In a real app, you might update state that passes down to Grid, 
-        // or use the ref method if exposed. 
-        // Since Grid.wsx has setGlobalFilter method:
-        const el = document.querySelector('wsx-ac-grid') as any;
-        if (el && el.setGlobalFilter) {
-            el.setGlobalFilter(val);
-        }
-    };
-
-    const columns = useMemo<ColumnDef<Person>[]>(
-        () => [
-            // Create a dedicated drag handle column. Alternatively, you could just set up dnd events on the rows themselves.
-            {
-                id: "drag-handle",
-                header: "Move",
-                cell: ({ row }) => <DraggableHandler rowId={row.id} />,
-                size: 60,
-                enableColumnFilter: false,
-            },
-            {
-                accessorKey: "firstName",
-                cell: (info) => info.getValue(),
-                id: "firstName",
-                header: "First Name",
-                size: 150,
-                filterType: "text",
-            },
-            {
-                accessorFn: (row) => row.lastName,
-                cell: (info) => info.getValue(),
-                header: "Last Name",
-                id: "lastName",
-                size: 150,
-                filterType: "text",
-            },
-            {
-                accessorKey: "age",
-                header: "Age",
-                id: "age",
-                size: 120,
-                filterType: "number",
-            },
-            {
-                accessorKey: "visits",
-                header: "Visits",
-                id: "visits",
-                size: 120,
-                filterType: "number",
-            },
-            {
-                accessorKey: "status",
-                header: "Status",
-                id: "status",
-                size: 150,
-                filterType: "text",
-            },
-            {
-                accessorKey: "progress",
-                header: "Profile Progress",
-                id: "progress",
-                size: 180,
-                filterType: "number",
-            },
-            {
-                id: "createdAt",
-                header: "Created At",
-                accessorFn: () => new Date().toISOString().split('T')[0], // Mock date
-                size: 150,
-                filterType: "date",
-            }
-        ],
-        [],
+    const gridHostRef = useRef<HTMLDivElement>(null);
+    const gridRef = useRef<GridHostElement | null>(null);
+    const [rfcId, setRfcId] = useState<RfcValidationId>(() =>
+        parseRfcIdFromUrl(window.location.search),
     );
 
+    const spec = RFC_VALIDATION_SPECS[rfcId];
+    const data = useMemo(
+        () => makeData(RFC_VALIDATION_SPECS[rfcId].rowCount),
+        [rfcId],
+    );
+
+    const rfcIndex = RFC_VALIDATION_ORDER.indexOf(rfcId) + 1;
+    const rfcTotal = RFC_VALIDATION_ORDER.length;
+
+    const navigateRfc = useCallback((nextId: RfcValidationId) => {
+        const url = new URL(window.location.href);
+        url.searchParams.set("rfc", nextId);
+        url.searchParams.delete("e2e");
+        window.history.replaceState({}, "", url);
+        setRfcId(nextId);
+    }, []);
+
+    useEffect(() => {
+        const onPopState = () => {
+            setRfcId(parseRfcIdFromUrl(window.location.search));
+        };
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
+    }, []);
+
+    const columns = useMemo(() => spec.columns, [spec.columns]);
+    const gridOptions = useMemo(
+        () => spec.buildOptions(data, columns),
+        [spec, data, columns],
+    );
+
+    useEffect(() => {
+        const host = gridHostRef.current;
+        if (!host) {
+            return;
+        }
+
+        host.replaceChildren();
+        const grid = createGrid(gridOptions) as GridHostElement;
+        spec.afterMount?.(grid);
+        grid.style.display = "block";
+        grid.style.height = "100%";
+        grid.style.width = "100%";
+        gridRef.current = grid;
+        host.appendChild(grid);
+
+        return () => {
+            host.replaceChildren();
+            gridRef.current = null;
+        };
+    }, [gridOptions, spec]);
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        gridRef.current?.setGlobalFilter?.(e.target.value);
+    };
+
+    const prevId = getAdjacentRfcId(rfcId, "prev");
+    const nextId = getAdjacentRfcId(rfcId, "next");
+
     return (
-        <div className="p-4 flex flex-col gap-4 h-screen">
-            <h1 className="text-2xl font-bold mb-4">AC Grid Filtering Demo</h1>
-            
-            <div className="flex gap-4 mb-4 p-4 bg-gray-100 rounded-lg">
-                <div className="flex-1">
-                    <h3 className="font-bold mb-2">Features:</h3>
-                    <ul className="list-disc pl-5 text-sm space-y-1">
-                        <li><strong>Global Search:</strong> Use the input below.</li>
-                        <li><strong>Column Filter:</strong> Click the filter icon (Y-shape) in headers.</li>
-                    </ul>
+        <div className="demo-shell">
+            <div className="demo-panel">
+                <header className="demo-header">
+                    <div className="demo-brand">
+                        <div className="demo-brand-row">
+                            <div className="demo-logo" aria-hidden>
+                                AG
+                            </div>
+                            <h1 className="demo-title">
+                                RFC-{rfcId} · {spec.title}
+                            </h1>
+                        </div>
+                        <p className="demo-subtitle">
+                            demo-react 手动验收 · {spec.rowCount.toLocaleString()} 行
+                        </p>
+                    </div>
+                    <div className="demo-meta">
+                        <span className="demo-badge demo-badge--accent">
+                            {spec.multicaIssue}
+                        </span>
+                        <span className="demo-badge">localhost:5174</span>
+                        <span className="demo-badge">
+                            {rfcIndex}/{rfcTotal}
+                        </span>
+                    </div>
+                </header>
+
+                <div className="demo-body">
+                    <nav className="demo-rfc-nav" aria-label="RFC validation">
+                        {RFC_VALIDATION_ORDER.map((id) => (
+                            <button
+                                key={id}
+                                type="button"
+                                className={`demo-rfc-pill${id === rfcId ? " is-active" : ""}`}
+                                onClick={() => navigateRfc(id)}
+                                aria-current={id === rfcId ? "step" : undefined}
+                            >
+                                {id}
+                            </button>
+                        ))}
+                    </nav>
+
+                    <p className="demo-hint">{spec.hint}</p>
+
+                    <div className="demo-toolbar">
+                        {spec.showGlobalSearch ? (
+                            <div className="demo-search-wrap">
+                                <SearchIcon />
+                                <input
+                                    type="search"
+                                    className="demo-search"
+                                    placeholder="全局搜索所有列…"
+                                    onChange={handleSearch}
+                                    aria-label="全局搜索"
+                                />
+                            </div>
+                        ) : (
+                            <div />
+                        )}
+
+                        <div className="demo-nav-actions">
+                            <button
+                                type="button"
+                                className="demo-btn"
+                                disabled={!prevId}
+                                onClick={() => prevId && navigateRfc(prevId)}
+                            >
+                                ← 上一个
+                            </button>
+                            <button
+                                type="button"
+                                className="demo-btn demo-btn--primary"
+                                disabled={!nextId}
+                                onClick={() => nextId && navigateRfc(nextId)}
+                            >
+                                下一个 →
+                            </button>
+                        </div>
+                    </div>
+
+                    <div ref={gridHostRef} className="demo-grid-host" />
                 </div>
-            </div>
 
-            {/* External Search Bar */}
-            <div className="flex items-center gap-2">
-                <label className="font-bold">Search:</label>
-                <input 
-                    type="text" 
-                    className="border p-2 rounded" 
-                    placeholder="Search all columns..." 
-                    onChange={handleGlobalSearch}
-                />
-            </div>
-
-            <div className="flex-1 min-h-0 border rounded-lg overflow-hidden shadow-lg">
-                <Grid<Person> 
-                    ref={gridRef}
-                    data={data} 
-                    columns={columns} 
-                    // filteringConfig={filteringConfig} // Deprecated in demo: using external API
-                    resizingConfig={resizingConfig}
-                    // virtualizationConfig={virtualizationConfig} // Disable virtual scrolling to show pagination clearly
-                    paginationConfig={paginationConfig}
-                    selectionConfig={selectionConfig}
-                    pinningConfig={pinningConfig}
-                    editingConfig={editingConfig}
-                    groupingConfig={groupingConfig}
-                    className="h-full w-full"
-                />
+                <footer className="demo-footer">
+                    <span>AC Grid RFC 验收台</span>
+                    <span>Multica done: 0002–0009</span>
+                </footer>
             </div>
         </div>
     );
