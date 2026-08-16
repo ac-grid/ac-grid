@@ -16,7 +16,7 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 | 0007 | Row selection | [ACG-10](mention://issue/7eb0775c-99ad-49c6-92c6-8b38dbe3cd0a) | done | 3 |
 | 0008 | Column pinning | [ACG-11](mention://issue/22a51744-a4f7-4b4c-b941-b31176bbc816) | done | 4 |
 | 0009 | Cell editing | [ACG-12](mention://issue/14e4823f-7cda-4988-882f-ae6f9cdab6a2) | done | 4 |
-| 0010 | Grouping and aggregation | [ACG-21](mention://issue/6d6679b3-e34d-41fa-a479-788382658423) | backlog | 7 |
+| 0010 | Grouping and aggregation | [ACG-21](mention://issue/6d6679b3-e34d-41fa-a479-788382658423) | backlog | 4 |
 | 0011 | Theme system advanced | [ACG-14](mention://issue/2d130de1-2c23-44f5-a391-d827eea5702a) | backlog | 5 |
 | 0012 | Keyboard navigation | [ACG-15](mention://issue/e1382f18-91a4-4a06-a6ed-6abe2274af22) | backlog | 5 |
 | 0013 | Accessibility | [ACG-16](mention://issue/59fd0c81-5b57-4c6d-89fb-b04876d18f59) | backlog | 5 |
@@ -45,9 +45,9 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 1. Foundation (done): 0001, 0016
 2. v0.1.0: 0002–0004
 3. v0.2.0: 0005–0007
-4. v0.3.0: 0008–0009
+4. v0.3.0: 0008–0009, 0010
 5. v0.4.0: 0019, 0011–0013
 6. v0.5.0: 0014–0015, 0017–0018
-7. v1.1.0 Enterprise: 0010, 0020–0023, 0026
+7. v1.1.0 Enterprise: 0020–0023, 0026
 8. v1.2.0 Enterprise: 0024–0025, 0027–0029
 9. v2.0+ Stretch: 0030–0032
