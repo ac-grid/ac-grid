@@ -2,7 +2,7 @@
 
 > **Purpose**: Single source of truth for current sprint and site/docs work.  
 > **Sync with**: [ROADMAP.md](./ROADMAP.md), [PARITY_MATRIX.md](./rfc/PARITY_MATRIX.md).  
-> **Updated**: 2026-06-28
+> **Updated**: 2026-08-16
 
 ## How to use (including AI / subagent)
 
@@ -20,6 +20,11 @@
 - [x] Site redesign: violet theme, Docs (API + guide), Samples by feature
 - [ ] Fix site build (tsconfig base / 404)
 - [x] RFC-0005 virtual scrolling — row virtualization shipped (`Virtualizer` + Grid + tests)
+- [x] RFC-0019 custom components — PR #16 merged (ACG-13 done)
+- [x] Horizontal scroll sync (header/body) — PR #17 merged (ACG-118 done)
+- [x] RFC-0019 custom components — PR #16 merged (ACG-13 done)
+- [ ] v0.3.0: Grouping/aggregation (0010) — 收尾缺口 (10-14天)
+- [ ] v0.4.0: Theme advanced (0011) / Keyboard (0012) / a11y (0013)
 
 ---
 
@@ -54,14 +59,13 @@
 
 - v0.1.0: Column resizing (RFC-0004), 100% test coverage, Storybook
 - v0.2.0: Virtual scroll (0005), Pagination (0006), Row selection (0007)
-- v0.3.0: Pinning (0008), Cell editing (0009)
+- v0.3.0: Pinning (0008) ✅, Cell editing (0009) ✅, Grouping/aggregation (0010) — remaining
 - v0.4.0: Custom components (0019), Keyboard (0012), a11y (0013), Theme advanced (0011)
 - v0.5.0: CSV export (0014), i18n (0015), Framework bindings (0017), State API (0018)
 
 ### Phase 2 — Enterprise (v1.1.0–v1.2.0)
 
 - v1.1.0: Tree (0020), Master/Detail (0021), Range selection (0022), Clipboard (0023), Menus (0026)
-- v1.1.0: Grouping/aggregation (0010) — moved from v0.3.0 per parity
 - v1.2.0: Pivot (0024), Excel advanced (0025), Tool panels (0027), Advanced filter (0028), Charts (0029)
 
 ### Phase 3 — Stretch (v2.0.0+)
