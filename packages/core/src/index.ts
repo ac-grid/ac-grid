@@ -26,8 +26,24 @@ export type {
 } from "./types/pagination";
 export type { GridSelectionConfig } from "./types/selection";
 export type { GridPinningConfig } from "./types/pinning";
-export type { GridEditingConfig, EditorProps, EditorType, EditTrigger } from "./types/editing";
-export type { GridGroupingConfig } from "./types/grouping";
+export type {
+    GridEditingConfig,
+    EditorProps,
+    EditorType,
+    EditTrigger,
+} from "./types/editing";
+export {
+    AGGREGATION_FN_SUM,
+    AGGREGATION_FN_AVG,
+    AGGREGATION_FN_COUNT,
+    AGGREGATION_FN_MIN,
+    AGGREGATION_FN_MAX,
+} from "./types/grouping";
+export type {
+    GridAggregationFn,
+    GridAggregationName,
+    GridGroupingConfig,
+} from "./types/grouping";
 export type {
     ComponentType,
     ComponentRenderFn,

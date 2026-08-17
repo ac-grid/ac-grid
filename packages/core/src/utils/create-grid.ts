@@ -5,7 +5,8 @@
  * 并通过 property（而非 attribute）设置复杂数据
  */
 
-import type { ColumnDef } from "@tanstack/table-core";
+import type { ColumnDef as TanStackColumnDef } from "@tanstack/table-core";
+import type { ColumnDef } from "../types/column";
 // @ts-ignore - .wsx 文件在构建时会被处理
 import type { GridSortingConfig } from "../components/Grid.wsx";
 import type { GridFilteringConfig } from "../types/filtering";
@@ -15,6 +16,7 @@ import type { GridSelectionConfig } from "../types/selection";
 import type { GridPaginationConfig } from "../types/pagination";
 import type { GridPinningConfig } from "../types/pinning";
 import type { GridComponentsConfig } from "../types/components";
+import type { GridGroupingConfig } from "../types/grouping";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
     /**
@@ -24,7 +26,7 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
     /**
      * 列定义
      */
-    columns: ColumnDef<TData, any>[];
+    columns: Array<ColumnDef<TData> | TanStackColumnDef<TData>>;
     /**
      * 自定义类名
      */
@@ -61,6 +63,10 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
      * 自定义组件配置（RFC-0019）
      */
     components?: GridComponentsConfig;
+    /**
+     * 行分组与展开配置（RFC-0010）
+     */
+    grouping?: GridGroupingConfig;
     /**
      * 容器元素（可选，如果不提供则返回元素本身）
      */
@@ -108,6 +114,7 @@ export function createGrid<TData extends { userId?: string }>(
         pagination,
         pinning,
         components,
+        grouping,
         container,
     } = options;
 
@@ -150,6 +157,10 @@ export function createGrid<TData extends { userId?: string }>(
 
     if (components) {
         gridElement.componentsConfig = components;
+    }
+
+    if (grouping) {
+        gridElement.groupingConfig = grouping;
     }
 
     gridElement.columns = columns;

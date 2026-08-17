@@ -2,13 +2,23 @@ import type { ColumnDef as TanStackColumnDef, Row } from "@tanstack/table-core";
 import type { FilterFn, FilterType } from "./filtering";
 import type { EditorProps, EditorType } from "./editing";
 import type { ComponentType } from "./components";
+import type { GridAggregationFn, GridAggregationName } from "./grouping";
+
+type Override<T, TOverride> = T extends unknown
+    ? Omit<T, keyof TOverride> & TOverride
+    : never;
 
 /**
  * 扩展 TanStack ColumnDef 以支持 AC Grid 的功能
  */
-export type ColumnDef<TData, TValue = unknown> = TanStackColumnDef<
-    TData,
-    TValue
+export type ColumnDef<TData, TValue = unknown> = Override<
+    TanStackColumnDef<TData, TValue>,
+    {
+        /**
+         * Built-in aggregation name or custom leaf-value aggregator.
+         */
+        aggregationFn?: GridAggregationName | GridAggregationFn<TValue>;
+    }
 > & {
     /**
      * 过滤类型
