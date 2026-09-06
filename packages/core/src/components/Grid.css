@@ -349,6 +349,14 @@
   background-color: var(--ac-grid-bg-header-pinned, #f3f4f6);
 }
 
+.ac-grid .grid-header-cell[data-pinned="left"],
+.ac-grid .grid-header-cell[data-pinned="right"],
+.ac-grid .grid-cell[data-pinned="left"],
+.ac-grid .grid-cell[data-pinned="right"] {
+  position: sticky !important;
+  z-index: 2;
+}
+
 .ac-grid .grid-cell[data-pinned] {
   background-color: var(--ac-grid-bg-cell-pinned, #fafbfc);
 }

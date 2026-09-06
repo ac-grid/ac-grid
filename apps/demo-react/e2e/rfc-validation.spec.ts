@@ -120,4 +120,63 @@ test.describe("RFC validation demos (browser)", () => {
             expect(after.header).toBe(after.body);
         });
     });
+
+    test("RFC-0003 filters rows through global search", async ({ page }) => {
+        await page.goto("/?rfc=0003");
+        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        const before = await page.locator(".grid-row").count();
+        await page.locator(".demo-search").fill("zzzz-no-match");
+        await expect.poll(() => page.locator(".grid-row").count()).toBeLessThan(before);
+        expect(await page.locator(".grid-row").count()).toBe(0);
+    });
+
+    test("RFC-0006 changes page from pagination controls", async ({ page }) => {
+        await page.goto("/?rfc=0006");
+        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await page.locator(".pagination-controls button").nth(2).click();
+        await expect(page.locator(".pagination-controls")).toContainText("Page 2 of 10");
+    });
+
+    test("RFC-0007 selects a row through its checkbox", async ({ page }) => {
+        await page.goto("/?rfc=0007");
+        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await page.locator("wsx-ac-selection-checkbox input").nth(1).click();
+        await expect
+            .poll(() =>
+                page.evaluate(() => {
+                    const grid = document.querySelector("wsx-ac-grid") as HTMLElement & {
+                        getSelectedRowIds?: () => string[];
+                    };
+                    return grid.getSelectedRowIds?.().length ?? 0;
+                }),
+            )
+            .toBe(1);
+    });
+
+    test("RFC-0009 starts editing on cell double click", async ({ page }) => {
+        await page.goto("/?rfc=0009");
+        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await page.locator(".grid-row .grid-cell").first().dblclick();
+        await expect(page.locator("wsx-ac-cell-editor")).toHaveCount(1);
+    });
+
+    test("RFC-0008 pins configured columns", async ({ page }) => {
+        await page.setViewportSize({ width: 500, height: 600 });
+        await page.goto("/?rfc=0008");
+        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await expect(page.locator('.grid-header-cell[data-column-id="firstName"]')).toHaveCSS(
+            "position",
+            "sticky",
+        );
+        await expect(page.locator('.grid-header-cell[data-column-id="progress"]')).toHaveCSS(
+            "position",
+            "sticky",
+        );
+    });
+
+    test("RFC-0019 renders custom header component", async ({ page }) => {
+        await page.goto("/?rfc=0019");
+        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await expect(page.getByText("Custom Name", { exact: true })).toHaveCount(1);
+    });
 });

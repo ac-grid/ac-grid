@@ -966,6 +966,9 @@ export class Grid extends LightComponent {
                         checked={table.getIsAllRowsSelected()}
                         indeterminate={table.getIsSomeRowsSelected()}
                         onChange={table.getToggleAllRowsSelectedHandler()}
+                        ref={(el: HTMLElement | null) => {
+                            if (el) (el as any).onChange = table.getToggleAllRowsSelectedHandler();
+                        }}
                     />
                 ),
                 cell: ({ row }) => (
@@ -975,6 +978,14 @@ export class Grid extends LightComponent {
                         onChange={(checked) => {
                             row.toggleSelected(checked);
                             this.lastSelectedRowId = row.id;
+                        }}
+                        ref={(el: HTMLElement | null) => {
+                            if (el) {
+                                (el as any).onChange = (checked: boolean) => {
+                                    row.toggleSelected(checked);
+                                    this.lastSelectedRowId = row.id;
+                                };
+                            }
                         }}
                     />
                 ),
@@ -1551,7 +1562,7 @@ export class Grid extends LightComponent {
                                                     onMouseDown={header.getResizeHandler()}
                                                     onTouchStart={header.getResizeHandler()}
                                                     onClick={(e) => e.stopPropagation()}
-                                                    onDoubleClick={(e) => {
+                                                    onDblClick={(e) => {
                                                         e.stopPropagation();
                                                         this.autoSizeColumn(column.id);
                                                     }}
@@ -1599,6 +1610,11 @@ export class Grid extends LightComponent {
                                                     value={filterValue}
                                                     onChange={(val: string) => this.setColumnFilter(column.id, val)}
                                                     variant="floating"
+                                                    ref={(el: HTMLElement | null) => {
+                                                        if (el) {
+                                                            (el as any).onChange = (val: string) => this.setColumnFilter(column.id, val);
+                                                        }
+                                                    }}
                                                 />
                                             ) : null}
                                         </div>
@@ -1802,7 +1818,7 @@ export class Grid extends LightComponent {
                                             data-pinned={column.getIsPinned() || undefined}
                                             style={{ ...pinnedStyle }}
                                             tabIndex={cellEditable ? 0 : undefined}
-                                            onDoubleClick={
+                                            onDblClick={
                                                 supportsDoubleClickTrigger(editTrigger)
                                                     ? handleStartEdit
                                                     : undefined
@@ -1860,6 +1876,12 @@ export class Grid extends LightComponent {
                             pageSizeOptions={this._paginationConfig?.pageSizeOptions}
                             onPageChange={(page: number) => this.setPageIndex(page)}
                             onPageSizeChange={(size: number) => this.setPageSize(size)}
+                            ref={(el: HTMLElement | null) => {
+                                if (el) {
+                                    (el as any).onPageChange = (page: number) => this.setPageIndex(page);
+                                    (el as any).onPageSizeChange = (size: number) => this.setPageSize(size);
+                                }
+                            }}
                         />
                     )}
                     {this.paginationLoading && (
@@ -2105,9 +2127,15 @@ export class Grid extends LightComponent {
                 value={this.editingState.value}
                 type={editorType}
                 error={this.editingState.error}
-                onSave={(value: unknown) => this.saveEdit(value)}
-                onCancel={() => this.cancelEdit()}
-            />
+            onSave={(value: unknown) => this.saveEdit(value)}
+            onCancel={() => this.cancelEdit()}
+            ref={(el: HTMLElement | null) => {
+                if (el) {
+                    (el as any).onSave = (value: unknown) => this.saveEdit(value);
+                    (el as any).onCancel = () => this.cancelEdit();
+                }
+            }}
+        />
         );
     }
 
