@@ -34,17 +34,17 @@ Sorting is enabled by default. To disable sorting on specific columns, set `enab
 
 ```typescript
 const columns = [
-  { 
-    id: 'name', 
-    accessorKey: 'name', 
-    header: 'Name',
+  {
+    id: "name",
+    accessorKey: "name",
+    header: "Name",
     // enableSorting: true  // Default value, can be omitted
   },
-  { 
-    id: 'actions', 
-    header: 'Actions',
-    enableSorting: false  // Disable sorting for this column
-  }
+  {
+    id: "actions",
+    header: "Actions",
+    enableSorting: false, // Disable sorting for this column
+  },
 ];
 ```
 
@@ -53,6 +53,7 @@ const columns = [
 ### User Interaction
 
 When users click a column header, the sort state cycles through:
+
 1. **Unsorted** → Click → **Ascending** (↑)
 2. **Ascending** → Click → **Descending** (↓)
 3. **Descending** → Click → **Unsorted**
@@ -60,6 +61,7 @@ When users click a column header, the sort state cycles through:
 ### Sort Indicator
 
 Sort indicators automatically appear in sortable column headers:
+
 - **↑** indicates ascending sort
 - **↓** indicates descending sort
 - **No icon** indicates unsorted
@@ -84,11 +86,12 @@ AC Grid supports custom comparators via the `sortingFn` property.
 type SortingFn<TData> = (
   rowA: Row<TData>,
   rowB: Row<TData>,
-  columnId: string
+  columnId: string,
 ) => number;
 ```
 
 **Return Value**:
+
 - **Negative**: `rowA` should come before `rowB`
 - **Positive**: `rowA` should come after `rowB`
 - **Zero**: Equal, maintain original order
@@ -98,16 +101,16 @@ type SortingFn<TData> = (
 ```typescript
 const columns = [
   {
-    id: 'name',
-    accessorKey: 'name',
-    header: 'Name',
+    id: "name",
+    accessorKey: "name",
+    header: "Name",
     sortingFn: (rowA, rowB, columnId) => {
       // Case-insensitive string sorting
       const a = String(rowA.getValue(columnId)).toLowerCase();
       const b = String(rowB.getValue(columnId)).toLowerCase();
       return a.localeCompare(b);
-    }
-  }
+    },
+  },
 ];
 ```
 
@@ -116,17 +119,16 @@ const columns = [
 ```typescript
 const columns = [
   {
-    id: 'name',
-    accessorKey: 'name',
-    header: 'Name',
+    id: "name",
+    accessorKey: "name",
+    header: "Name",
     sortingFn: (rowA, rowB, columnId) => {
       // Chinese pinyin sorting
-      return rowA.getValue(columnId).localeCompare(
-        rowB.getValue(columnId), 
-        'zh-CN'
-      );
-    }
-  }
+      return rowA
+        .getValue(columnId)
+        .localeCompare(rowB.getValue(columnId), "zh-CN");
+    },
+  },
 ];
 ```
 
@@ -135,9 +137,9 @@ const columns = [
 ```typescript
 const columns = [
   {
-    id: 'age',
-    accessorKey: 'age',
-    header: 'Age',
+    id: "age",
+    accessorKey: "age",
+    header: "Age",
     sortingFn: (rowA, rowB, columnId) => {
       const a = rowA.getValue(columnId) as number | null | undefined;
       const b = rowB.getValue(columnId) as number | null | undefined;
@@ -146,8 +148,8 @@ const columns = [
       if (a == null) return 1;
       if (b == null) return -1;
       return a - b;
-    }
-  }
+    },
+  },
 ];
 ```
 
@@ -156,15 +158,15 @@ const columns = [
 ```typescript
 const columns = [
   {
-    id: 'createdAt',
-    accessorKey: 'createdAt',
-    header: 'Created At',
+    id: "createdAt",
+    accessorKey: "createdAt",
+    header: "Created At",
     sortingFn: (rowA, rowB, columnId) => {
       const dateA = new Date(rowA.getValue(columnId) as string);
       const dateB = new Date(rowB.getValue(columnId) as string);
       return dateA.getTime() - dateB.getTime();
-    }
-  }
+    },
+  },
 ];
 ```
 
@@ -173,20 +175,20 @@ const columns = [
 ```typescript
 const columns = [
   {
-    id: 'status',
-    accessorKey: 'status',
-    header: 'Status',
+    id: "status",
+    accessorKey: "status",
+    header: "Status",
     sortingFn: (rowA, rowB, columnId) => {
-      const statusOrder = { 
-        'active': 1, 
-        'pending': 2, 
-        'inactive': 3 
+      const statusOrder = {
+        active: 1,
+        pending: 2,
+        inactive: 3,
       };
       const a = rowA.getValue(columnId) as keyof typeof statusOrder;
       const b = rowB.getValue(columnId) as keyof typeof statusOrder;
       return (statusOrder[a] || 999) - (statusOrder[b] || 999);
-    }
-  }
+    },
+  },
 ];
 ```
 
@@ -195,9 +197,9 @@ const columns = [
 ```typescript
 const columns = [
   {
-    id: 'fullName',
-    accessorKey: 'fullName',
-    header: 'Full Name',
+    id: "fullName",
+    accessorKey: "fullName",
+    header: "Full Name",
     sortingFn: (rowA, rowB, columnId) => {
       // Sort by last name first, then first name
       const a = rowA.original as Person;
@@ -205,35 +207,35 @@ const columns = [
       const lastNameCompare = a.lastName.localeCompare(b.lastName);
       if (lastNameCompare !== 0) return lastNameCompare;
       return a.firstName.localeCompare(b.firstName);
-    }
-  }
+    },
+  },
 ];
 ```
 
 ### Using Built-in Sorting Functions
 
 ```typescript
-import { sortingFns } from '@tanstack/table-core';
+import { sortingFns } from "@tanstack/table-core";
 
 const columns = [
   {
-    id: 'name',
-    accessorKey: 'name',
-    header: 'Name',
-    sortingFn: sortingFns.alphanumeric,  // Alphanumeric sorting
+    id: "name",
+    accessorKey: "name",
+    header: "Name",
+    sortingFn: sortingFns.alphanumeric, // Alphanumeric sorting
   },
   {
-    id: 'date',
-    accessorKey: 'date',
-    header: 'Date',
-    sortingFn: sortingFns.datetime,     // DateTime sorting
+    id: "date",
+    accessorKey: "date",
+    header: "Date",
+    sortingFn: sortingFns.datetime, // DateTime sorting
   },
   {
-    id: 'number',
-    accessorKey: 'number',
-    header: 'Number',
-    sortingFn: sortingFns.basic,        // Basic sorting
-  }
+    id: "number",
+    accessorKey: "number",
+    header: "Number",
+    sortingFn: sortingFns.basic, // Basic sorting
+  },
 ];
 ```
 
@@ -242,25 +244,25 @@ const columns = [
 ### Setting Sort State
 
 ```typescript
-import { createGrid } from '@ac-grid/core';
-import type { SortingState } from '@ac-grid/core';
+import { createGrid } from "@ac-grid/core";
+import type { SortingState } from "@ac-grid/core";
 
 const gridElement = createGrid({
   data,
   columns,
   sorting: {
     initialState: [
-      { id: 'name', desc: false },  // Sort by name ascending first
-      { id: 'age', desc: true }     // Then by age descending
+      { id: "name", desc: false }, // Sort by name ascending first
+      { id: "age", desc: true }, // Then by age descending
     ],
     onSortingChange: (sorting: SortingState) => {
-      console.log('Sorting changed:', sorting);
-    }
-  }
+      console.log("Sorting changed:", sorting);
+    },
+  },
 });
 
 // Programmatically set sorting
-(gridElement as any).setSorting([{ id: 'age', desc: false }]);
+(gridElement as any).setSorting([{ id: "age", desc: false }]);
 ```
 
 ### Getting Current Sort State
@@ -297,8 +299,8 @@ export class App extends LightComponent {
 
   render() {
     return (
-      <wsx-ac-grid 
-        data={this.data} 
+      <wsx-ac-grid
+        data={this.data}
         columns={this.columns}
         sorting={{
           initialState: this.sorting,
@@ -315,7 +317,7 @@ export class App extends LightComponent {
 ### Saving to localStorage
 
 ```typescript
-import { createGrid } from '@ac-grid/core';
+import { createGrid } from "@ac-grid/core";
 
 const gridElement = createGrid({
   data,
@@ -323,13 +325,13 @@ const gridElement = createGrid({
   sorting: {
     onSortingChange: (sorting) => {
       // Save to localStorage
-      localStorage.setItem('gridSorting', JSON.stringify(sorting));
-    }
-  }
+      localStorage.setItem("gridSorting", JSON.stringify(sorting));
+    },
+  },
 });
 
 // Restore sort state on page load
-const savedSorting = localStorage.getItem('gridSorting');
+const savedSorting = localStorage.getItem("gridSorting");
 if (savedSorting) {
   const sorting = JSON.parse(savedSorting);
   (gridElement as any).setSorting(sorting);
@@ -392,6 +394,6 @@ A: Sort indicators use the CSS class `.sort-indicator`. You can customize the ap
 
 ## Related Resources
 
-- [RFC-0002: Sorting Feature](../../../../docs/rfc/completed/0002-sorting-feature.md)
+- [RFC-0002: Sorting Feature](https://github.com/ac-grid/ac-grid/blob/main/.spec/rfc/completed/0002-sorting-feature.md)
 - [@tanstack/table-core Sorting Docs](https://tanstack.com/table/latest/docs/guide/sorting)
 - [ag-Grid Sorting Docs](https://www.ag-grid.com/javascript-data-grid/row-sorting/)

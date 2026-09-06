@@ -27,6 +27,7 @@ import "./components/ExamplesSection.wsx";
 import "./components/DocsSection.wsx";
 import "./components/DocsWsxPressSection.wsx";
 import "./components/NotFoundSection.wsx";
+import "./components/RfcShowcase.wsx";
 
 export interface AppConfig {
     title?: string;
@@ -58,6 +59,14 @@ export default class App extends LightComponent {
                         <wsx-view
                             route="/examples"
                             component="examples-section"
+                        ></wsx-view>
+                        <wsx-view
+                            route="/rfc"
+                            component="rfc-showcase"
+                        ></wsx-view>
+                        <wsx-view
+                            route="/rfc/*"
+                            component="rfc-showcase"
                         ></wsx-view>
                         <wsx-view
                             route="/docs"
@@ -93,9 +102,12 @@ export default class App extends LightComponent {
                         <wsx-link to="/docs" class="site-nav-link" active-class="site-nav-link-active">
                             Docs
                         </wsx-link>
-                        <wsx-link to="/examples" class="site-nav-link" active-class="site-nav-link-active">
-                            Samples
-                        </wsx-link>
+                    <wsx-link to="/examples" class="site-nav-link" active-class="site-nav-link-active">
+                        Samples
+                    </wsx-link>
+                    <wsx-link to="/rfc" class="site-nav-link" active-class="site-nav-link-active">
+                        RFCs
+                    </wsx-link>
                     </nav>
                 </div>
             </header>

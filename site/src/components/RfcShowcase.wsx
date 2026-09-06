@@ -1,0 +1,61 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import styles from "./RfcShowcase.css?inline";
+
+interface RfcEntry {
+    id: string;
+    title: string;
+    issue: string;
+    scope: string;
+    demo: string;
+}
+
+const COMPLETED_RFCS: RfcEntry[] = [
+    { id: "0001", title: "AC Grid architecture", issue: "ACG-3", scope: "Web Component、TypeScript 数据契约与 createGrid 入口。", demo: "架构入口" },
+    { id: "0002", title: "Sorting", issue: "ACG-5", scope: "单列、Shift 多列排序与排序状态循环。", demo: "排序验收" },
+    { id: "0003", title: "Filtering", issue: "ACG-6", scope: "列过滤、全局搜索与过滤状态。", demo: "过滤验收" },
+    { id: "0004", title: "Column resizing", issue: "ACG-7", scope: "拖动调整、最小宽度与双击自动调整。", demo: "列宽验收" },
+    { id: "0005", title: "Virtual scrolling", issue: "ACG-8", scope: "10,000 行数据、可见区间与 overscan。", demo: "虚拟滚动验收" },
+    { id: "0006", title: "Pagination", issue: "ACG-9", scope: "页码、每页条数与总行数。", demo: "分页验收" },
+    { id: "0007", title: "Row selection", issue: "ACG-10", scope: "单选、多选与当前页全选。", demo: "选择验收" },
+    { id: "0008", title: "Column pinning", issue: "ACG-11", scope: "左右固定列与横向滚动。", demo: "固定列验收" },
+    { id: "0009", title: "Cell editing", issue: "ACG-12", scope: "双击编辑、Enter 保存与 Esc 取消。", demo: "编辑验收" },
+    { id: "0016", title: "Theme system", issue: "ACG-4", scope: "CSS 变量主题基础与独立主题包。", demo: "主题展示" },
+    { id: "0019", title: "Custom components", issue: "ACG-13", scope: "自定义表头、过滤器、遮罩与全宽行。", demo: "组件展示" },
+    { id: "0030", title: "Formulas", issue: "ACG-32", scope: "A1 引用、聚合函数、依赖图与增量重算。", demo: "公式展示" },
+];
+
+@autoRegister({ tagName: "rfc-showcase" })
+export default class RfcShowcase extends LightComponent {
+    constructor() {
+        super({ styles });
+    }
+
+    render() {
+        return (
+            <main class="rfc-showcase">
+                <div class="rfc-showcase__hero">
+                    <p class="rfc-showcase__eyebrow">COMPLETED RFCs · 12</p>
+                    <h1>每个完成 RFC，都有验收入口。</h1>
+                    <p>选择 RFC 查看能力边界、Multica issue 和 demo-react 测试页面。</p>
+                </div>
+                <div class="rfc-showcase__grid">
+                    {COMPLETED_RFCS.map((rfc) => (
+                        <article id={`rfc-${rfc.id}`} class="rfc-card">
+                            <div class="rfc-card__topline">
+                                <span class="rfc-card__id">RFC-{rfc.id}</span>
+                                <span class="rfc-card__issue">{rfc.issue}</span>
+                            </div>
+                            <h2>{rfc.title}</h2>
+                            <p>{rfc.scope}</p>
+                            <a class="rfc-card__link" href={`http://localhost:5174/?rfc=${rfc.id}`} target="_blank" rel="noopener noreferrer">
+                                {rfc.demo} →
+                            </a>
+                        </article>
+                    ))}
+                </div>
+            </main>
+        );
+    }
+}

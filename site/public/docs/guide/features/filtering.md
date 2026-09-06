@@ -23,8 +23,8 @@ const columns = [
 ];
 
 // Enable filtering
-<wsx-ac-grid 
-  data={data} 
+<wsx-ac-grid
+  data={data}
   columns={columns}
   enableFiltering={true}
 />
@@ -38,7 +38,7 @@ const columns = [
 const gridElement = createGrid({
   data,
   columns,
-  enableFiltering: true,  // Enable filtering
+  enableFiltering: true, // Enable filtering
 });
 ```
 
@@ -46,11 +46,11 @@ const gridElement = createGrid({
 
 ```typescript
 const columns = [
-  { 
-    id: 'actions', 
-    header: 'Actions',
-    enableColumnFilter: false  // Disable filtering for this column
-  }
+  {
+    id: "actions",
+    header: "Actions",
+    enableColumnFilter: false, // Disable filtering for this column
+  },
 ];
 ```
 
@@ -74,23 +74,23 @@ AC Grid supports multiple filter types:
 ```typescript
 const columns = [
   {
-    id: 'name',
-    header: 'Name',
-    accessorKey: 'name',
-    filterType: 'text',  // Use built-in text filtering
+    id: "name",
+    header: "Name",
+    accessorKey: "name",
+    filterType: "text", // Use built-in text filtering
   },
   {
-    id: 'age',
-    header: 'Age',
-    accessorKey: 'age',
-    filterType: 'number',  // Use built-in number filtering
+    id: "age",
+    header: "Age",
+    accessorKey: "age",
+    filterType: "number", // Use built-in number filtering
   },
   {
-    id: 'createdAt',
-    header: 'Created At',
-    accessorKey: 'createdAt',
-    filterType: 'date',  // Use built-in date filtering
-  }
+    id: "createdAt",
+    header: "Created At",
+    accessorKey: "createdAt",
+    filterType: "date", // Use built-in date filtering
+  },
 ];
 ```
 
@@ -101,7 +101,7 @@ const columns = [
 Global search searches across all columns for matching data.
 
 ```typescript
-import { createGrid } from '@ac-grid/core';
+import { createGrid } from "@ac-grid/core";
 
 const gridElement = createGrid({
   data,
@@ -110,7 +110,7 @@ const gridElement = createGrid({
 });
 
 // Set global search
-(gridElement as any).setGlobalFilter('search term');
+(gridElement as any).setGlobalFilter("search term");
 ```
 
 ### Code Example
@@ -130,8 +130,8 @@ export class App extends LightComponent {
   render() {
     return (
       <div>
-        <input 
-          type="text" 
+        <input
+          type="text"
           placeholder="Global search..."
           onInput={(e) => this.handleSearch((e.target as HTMLInputElement).value)}
         />
@@ -153,7 +153,7 @@ The most flexible approach is to provide a custom filter function with complete 
 #### Basic Custom Filtering
 
 ```typescript
-import type { ColumnDef, Row } from '@ac-grid/core';
+import type { ColumnDef, Row } from "@ac-grid/core";
 
 interface Person {
   id: string;
@@ -165,146 +165,161 @@ interface Person {
 
 const columns: ColumnDef<Person>[] = [
   {
-    id: 'name',
-    header: 'Name',
-    accessorKey: 'name',
+    id: "name",
+    header: "Name",
+    accessorKey: "name",
     // Custom filter function: case-insensitive contains match
     filterFn: (row: Row<Person>, columnId: string, filterValue: string) => {
       const value = row.getValue(columnId) as string;
       return value.toLowerCase().includes(filterValue.toLowerCase());
-    }
-  }
+    },
+  },
 ];
 ```
 
 #### Advanced Custom Filtering Examples
 
 **Example 1: Chinese Pinyin Search**
+
 ```typescript
 // Requires pinyin library: npm install pinyin
-import pinyin from 'pinyin';
+import pinyin from "pinyin";
 
 const columns: ColumnDef<Person>[] = [
   {
-    id: 'name',
-    header: 'Name',
-    accessorKey: 'name',
+    id: "name",
+    header: "Name",
+    accessorKey: "name",
     filterFn: (row, columnId, filterValue) => {
       const name = row.getValue(columnId) as string;
       // Convert to pinyin for search
-      const namePinyin = pinyin(name, { style: pinyin.STYLE_NORMAL }).join('');
-      const filterPinyin = pinyin(filterValue, { style: pinyin.STYLE_NORMAL }).join('');
+      const namePinyin = pinyin(name, { style: pinyin.STYLE_NORMAL }).join("");
+      const filterPinyin = pinyin(filterValue, {
+        style: pinyin.STYLE_NORMAL,
+      }).join("");
       return namePinyin.includes(filterPinyin) || name.includes(filterValue);
-    }
-  }
+    },
+  },
 ];
 ```
 
 **Example 2: Number Range Filtering**
+
 ```typescript
 const columns: ColumnDef<Person>[] = [
   {
-    id: 'age',
-    header: 'Age',
-    accessorKey: 'age',
-    filterType: 'number',
+    id: "age",
+    header: "Age",
+    accessorKey: "age",
+    filterType: "number",
     filterFn: (row, columnId, filterValue) => {
       const age = row.getValue(columnId) as number;
       // Support range filtering, e.g., "18-30" or ">50" or "<25"
-      if (filterValue.includes('-')) {
-        const [min, max] = filterValue.split('-').map(Number);
+      if (filterValue.includes("-")) {
+        const [min, max] = filterValue.split("-").map(Number);
         return age >= min && age <= max;
-      } else if (filterValue.startsWith('>')) {
+      } else if (filterValue.startsWith(">")) {
         return age > Number(filterValue.slice(1));
-      } else if (filterValue.startsWith('<')) {
+      } else if (filterValue.startsWith("<")) {
         return age < Number(filterValue.slice(1));
       } else {
         return age === Number(filterValue);
       }
-    }
-  }
+    },
+  },
 ];
 ```
 
 **Example 3: Date Range Filtering**
+
 ```typescript
 const columns: ColumnDef<Person>[] = [
   {
-    id: 'createdAt',
-    header: 'Created At',
-    accessorKey: 'createdAt',
-    filterType: 'date',
+    id: "createdAt",
+    header: "Created At",
+    accessorKey: "createdAt",
+    filterType: "date",
     filterFn: (row, columnId, filterValue) => {
       const date = new Date(row.getValue(columnId) as string);
       // Support date range, e.g., "2024-01-01,2024-12-31"
-      if (filterValue.includes(',')) {
-        const [start, end] = filterValue.split(',').map(d => new Date(d));
+      if (filterValue.includes(",")) {
+        const [start, end] = filterValue.split(",").map((d) => new Date(d));
         return date >= start && date <= end;
       } else {
         const filterDate = new Date(filterValue);
         return date.toDateString() === filterDate.toDateString();
       }
-    }
-  }
+    },
+  },
 ];
 ```
 
 **Example 4: Multi-Value Filtering (Comma-Separated)**
+
 ```typescript
 const columns: ColumnDef<Person>[] = [
   {
-    id: 'department',
-    header: 'Department',
-    accessorKey: 'department',
+    id: "department",
+    header: "Department",
+    accessorKey: "department",
     filterFn: (row, columnId, filterValue) => {
       const dept = row.getValue(columnId) as string;
       // Support multiple values, comma-separated, e.g., "Engineering,Marketing"
-      const filterValues = filterValue.split(',').map(v => v.trim());
-      return filterValues.some(value => dept.toLowerCase().includes(value.toLowerCase()));
-    }
-  }
+      const filterValues = filterValue.split(",").map((v) => v.trim());
+      return filterValues.some((value) =>
+        dept.toLowerCase().includes(value.toLowerCase()),
+      );
+    },
+  },
 ];
 ```
 
 **Example 5: Regular Expression Filtering**
+
 ```typescript
 const columns: ColumnDef<Person>[] = [
   {
-    id: 'email',
-    header: 'Email',
-    accessorKey: 'email',
+    id: "email",
+    header: "Email",
+    accessorKey: "email",
     filterFn: (row, columnId, filterValue) => {
       const email = row.getValue(columnId) as string;
       try {
         // If input is a regex, use regex matching
-        const regex = new RegExp(filterValue, 'i');
+        const regex = new RegExp(filterValue, "i");
         return regex.test(email);
       } catch {
         // If not a valid regex, use normal string matching
         return email.toLowerCase().includes(filterValue.toLowerCase());
       }
-    }
-  }
+    },
+  },
 ];
 ```
 
 **Example 6: Fuzzy Matching (Levenshtein Distance)**
+
 ```typescript
 // Requires fast-levenshtein: npm install fast-levenshtein
-import levenshtein from 'fast-levenshtein';
+import levenshtein from "fast-levenshtein";
 
 const columns: ColumnDef<Person>[] = [
   {
-    id: 'name',
-    header: 'Name',
-    accessorKey: 'name',
+    id: "name",
+    header: "Name",
+    accessorKey: "name",
     filterFn: (row, columnId, filterValue) => {
       const name = row.getValue(columnId) as string;
       // Allow up to 2 character differences (typo tolerance)
-      const distance = levenshtein.get(name.toLowerCase(), filterValue.toLowerCase());
-      return distance <= 2 || name.toLowerCase().includes(filterValue.toLowerCase());
-    }
-  }
+      const distance = levenshtein.get(
+        name.toLowerCase(),
+        filterValue.toLowerCase(),
+      );
+      return (
+        distance <= 2 || name.toLowerCase().includes(filterValue.toLowerCase())
+      );
+    },
+  },
 ];
 ```
 
@@ -315,23 +330,23 @@ AC Grid provides built-in filter types to simplify common scenarios.
 ```typescript
 const columns: ColumnDef<Person>[] = [
   {
-    id: 'name',
-    header: 'Name',
-    accessorKey: 'name',
-    filterType: 'text',  // Use built-in text filtering
+    id: "name",
+    header: "Name",
+    accessorKey: "name",
+    filterType: "text", // Use built-in text filtering
   },
   {
-    id: 'age',
-    header: 'Age',
-    accessorKey: 'age',
-    filterType: 'number',  // Use built-in number filtering
+    id: "age",
+    header: "Age",
+    accessorKey: "age",
+    filterType: "number", // Use built-in number filtering
   },
   {
-    id: 'createdAt',
-    header: 'Created At',
-    accessorKey: 'createdAt',
-    filterType: 'date',  // Use built-in date filtering
-  }
+    id: "createdAt",
+    header: "Created At",
+    accessorKey: "createdAt",
+    filterType: "date", // Use built-in date filtering
+  },
 ];
 ```
 
@@ -340,18 +355,23 @@ const columns: ColumnDef<Person>[] = [
 ```typescript
 const columns: ColumnDef<Person>[] = [
   {
-    id: 'name',
-    header: 'Name',
-    accessorKey: 'name',
-    filterType: 'text',  // Specify type, but can override default behavior
+    id: "name",
+    header: "Name",
+    accessorKey: "name",
+    filterType: "text", // Specify type, but can override default behavior
     filterFn: (row, columnId, filterValue) => {
       // Custom logic: support initial letter search
       const name = row.getValue(columnId) as string;
-      const initials = name.split(' ').map(n => n[0]).join('');
-      return name.toLowerCase().includes(filterValue.toLowerCase()) ||
-             initials.toLowerCase().includes(filterValue.toLowerCase());
-    }
-  }
+      const initials = name
+        .split(" ")
+        .map((n) => n[0])
+        .join("");
+      return (
+        name.toLowerCase().includes(filterValue.toLowerCase()) ||
+        initials.toLowerCase().includes(filterValue.toLowerCase())
+      );
+    },
+  },
 ];
 ```
 
@@ -360,7 +380,7 @@ const columns: ColumnDef<Person>[] = [
 ### Setting Column Filters
 
 ```typescript
-import { createGrid } from '@ac-grid/core';
+import { createGrid } from "@ac-grid/core";
 
 const gridElement = createGrid({
   data,
@@ -369,14 +389,14 @@ const gridElement = createGrid({
 });
 
 // Set column filters
-(gridElement as any).setColumnFilter('name', 'John');
-(gridElement as any).setColumnFilter('age', '>25');
+(gridElement as any).setColumnFilter("name", "John");
+(gridElement as any).setColumnFilter("age", ">25");
 ```
 
 ### Setting Global Filter
 
 ```typescript
-(gridElement as any).setGlobalFilter('search term');
+(gridElement as any).setGlobalFilter("search term");
 ```
 
 ### Getting Current Filter State
@@ -416,8 +436,8 @@ export class App extends LightComponent {
 
   render() {
     return (
-      <wsx-ac-grid 
-        data={this.data} 
+      <wsx-ac-grid
+        data={this.data}
         columns={this.columns}
         enableFiltering={true}
         filtering={{
@@ -434,7 +454,7 @@ export class App extends LightComponent {
 ### Saving to localStorage
 
 ```typescript
-import { createGrid } from '@ac-grid/core';
+import { createGrid } from "@ac-grid/core";
 
 const gridElement = createGrid({
   data,
@@ -443,13 +463,13 @@ const gridElement = createGrid({
   filtering: {
     onFilterChange: (filterState) => {
       // Save to localStorage
-      localStorage.setItem('gridFilters', JSON.stringify(filterState));
-    }
-  }
+      localStorage.setItem("gridFilters", JSON.stringify(filterState));
+    },
+  },
 });
 
 // Restore filter state on page load
-const savedFilters = localStorage.getItem('gridFilters');
+const savedFilters = localStorage.getItem("gridFilters");
 if (savedFilters) {
   const filterState = JSON.parse(savedFilters);
   if (filterState.globalFilter) {
@@ -485,7 +505,7 @@ interface ColumnDef<TData> {
   // Custom filter function
   filterFn?: (row: Row<TData>, columnId: string, filterValue: any) => boolean;
   // Filter type
-  filterType?: 'text' | 'number' | 'date' | 'custom';
+  filterType?: "text" | "number" | "date" | "custom";
 }
 ```
 
@@ -495,10 +515,10 @@ For large datasets, use early returns in custom filter functions:
 
 ```typescript
 filterFn: (row, columnId, filterValue) => {
-  if (!filterValue) return true;  // No filter value, show all
+  if (!filterValue) return true; // No filter value, show all
   const value = row.getValue(columnId);
   // ... filter logic
-}
+};
 ```
 
 ### Reusable Filter Functions
@@ -508,7 +528,7 @@ filterFn: (row, columnId, filterValue) => {
 export const caseInsensitiveFilter = <TData>(
   row: Row<TData>,
   columnId: string,
-  filterValue: string
+  filterValue: string,
 ): boolean => {
   const value = String(row.getValue(columnId)).toLowerCase();
   return value.includes(filterValue.toLowerCase());
@@ -517,9 +537,9 @@ export const caseInsensitiveFilter = <TData>(
 // Usage
 const columns: ColumnDef<Person>[] = [
   {
-    id: 'name',
-    filterFn: caseInsensitiveFilter
-  }
+    id: "name",
+    filterFn: caseInsensitiveFilter,
+  },
 ];
 ```
 
@@ -547,6 +567,6 @@ A: Yes. Filtering and sorting are independent and can be used together. Filter f
 
 ## Related Resources
 
-- [RFC-0003: Filtering Feature](../../../../docs/rfc/completed/0003-filtering-feature.md)
+- [RFC-0003: Filtering Feature](https://github.com/ac-grid/ac-grid/blob/main/.spec/rfc/completed/0003-filtering-feature.md)
 - [@tanstack/table-core Filtering Docs](https://tanstack.com/table/latest/docs/guide/filters)
 - [ag-Grid Filtering Docs](https://www.ag-grid.com/javascript-data-grid/filtering/)

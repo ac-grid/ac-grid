@@ -55,7 +55,7 @@ export default class DocsSection extends LightComponent {
                                 API (source) →
                             </a>
                             <span class="doc-link-sep"> · </span>
-                            <a href={`${SITE_GITHUB_REPO}/tree/main/docs/rfc`} class="doc-link" target="_blank" rel="noopener noreferrer">
+                            <a href={`${SITE_GITHUB_REPO}/tree/main/.spec/rfc`} class="doc-link" target="_blank" rel="noopener noreferrer">
                                 RFCs →
                             </a>
                         </div>
@@ -64,7 +64,7 @@ export default class DocsSection extends LightComponent {
                             <h3>Examples</h3>
                             <p>Interactive examples and code snippets.</p>
                             <wsx-link to="/examples" class="doc-link">
-                                View Examples →
+                                View RFC Samples →
                             </wsx-link>
                         </div>
                     </div>
