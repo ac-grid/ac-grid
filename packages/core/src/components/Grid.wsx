@@ -14,6 +14,7 @@ import {
     type PaginationState,
     type RowSelectionState,
     type ColumnPinningState,
+    type ExpandedState,
 } from "@tanstack/table-core";
 import { type ColumnDef } from "../types/column";
 import {
@@ -67,6 +68,11 @@ import {
     pinColumnInState,
     reorderPinnedOnColumnDrag,
 } from "../utils/pinning-utils";
+import {
+    getGroupLeafRowCount,
+    materializeExpandedState,
+    resolveGroupingColumn,
+} from "../utils/grouping";
 import {
     coerceEditorValue,
     isColumnEditable,
@@ -443,8 +449,8 @@ export class Grid extends LightComponent {
                 if (value.initialGrouping) {
                     this.grouping = value.initialGrouping;
                 }
-                if (value.initialExpanded) {
-                    this.expanded = value.initialExpanded === true ? true : (value.initialExpanded || {});
+                if (value.initialExpanded !== undefined) {
+                    this.expanded = value.initialExpanded;
                 }
                 this.updateTable();
             }
@@ -453,7 +459,7 @@ export class Grid extends LightComponent {
     @state private _groupingConfigIsSet: boolean = false;
     @state private _groupingConfig: GridGroupingConfig = {} as GridGroupingConfig;
     @state private grouping: string[] = [];
-    @state private expanded: Record<string, boolean> | boolean = {};
+    @state private expanded: ExpandedState = {};
 
     private virtualizer: Virtualizer = new Virtualizer({});
 
@@ -996,10 +1002,13 @@ export class Grid extends LightComponent {
                       : defaultTextFilter;
             return { ...col, filterFn: defaultFilterFn };
         });
+        const columnsWithGrouping = columnsWithFilters.map((column) =>
+            resolveGroupingColumn(column),
+        );
 
         this.table = createTable({
             data: this.gridData,
-            columns: columnsWithFilters,
+            columns: columnsWithGrouping,
             getCoreRowModel: getCoreRowModel(),
             getSortedRowModel: getSortedRowModel(),
             ...(isGroupingEnabled && {
@@ -1082,11 +1091,9 @@ export class Grid extends LightComponent {
                 },
             }),
             ...(isGroupingEnabled && {
-                onExpandedChange: (updater: any) => {
+                onExpandedChange: (updater) => {
                     const newExpanded = typeof updater === "function" ? updater(this.expanded) : updater;
-                    this.expanded = newExpanded;
-                    this._groupingConfig?.onExpandedChange?.(newExpanded);
-                    this.updateTable();
+                    this.applyExpandedChange(newExpanded);
                 }
             }),
             ...(isPaginationEnabled && {
@@ -1735,10 +1742,10 @@ export class Grid extends LightComponent {
                                     if (cell.getIsGrouped()) {
                                         rendered = (
                                             <div className="grid-cell-group" style={{ paddingLeft: `${row.depth * 20}px` }}>
-                                                <span className="grid-group-toggle" style={{ cursor: "pointer", marginRight: "8px" }}>
+                                                <span className="grid-group-toggle">
                                                     {row.getIsExpanded() ? '▼' : '▶'}
                                                 </span>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())} ({row.subRows.length})
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())} ({getGroupLeafRowCount(row)})
                                             </div>
                                         );
                                     } else if (cell.getIsAggregated()) {
@@ -2167,29 +2174,27 @@ export class Grid extends LightComponent {
     }
 
     public toggleGroup(rowId: string, isExpanded?: boolean) {
-        // With tanstack table, we toggle expanded state via table handler or state update
-        // Here we update state directly for control
-        if (typeof this.expanded === 'boolean') {
-            this.expanded = { [rowId]: isExpanded !== undefined ? isExpanded : !this.expanded };
-        } else {
-            const next = { ...this.expanded };
-            if (isExpanded !== undefined) {
-                next[rowId] = isExpanded;
-            } else {
-                next[rowId] = !next[rowId];
-            }
-            this.expanded = next;
-        }
-        this.updateTable();
+        const currentExpanded =
+            this.expanded === true || Boolean(this.expanded[rowId]);
+        const nextExpanded = materializeExpandedState(
+            this.table.getGroupedRowModel().flatRows,
+            this.expanded,
+        );
+        nextExpanded[rowId] = isExpanded ?? !currentExpanded;
+        this.applyExpandedChange(nextExpanded);
     }
 
     public expandAll() {
-        this.expanded = true;
-        this.updateTable();
+        this.applyExpandedChange(true);
     }
 
     public collapseAll() {
-        this.expanded = {};
+        this.applyExpandedChange({});
+    }
+
+    private applyExpandedChange(expanded: ExpandedState): void {
+        this.expanded = expanded;
+        this._groupingConfig.onExpandedChange?.(expanded);
         this.updateTable();
     }
 

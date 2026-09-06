@@ -127,6 +127,28 @@
   background-color: var(--ac-grid-bg-selected, #e6f7ff);
 }
 
+/* Group rows */
+.ac-grid .grid-row-grouped {
+  background-color: var(--ac-grid-bg-header, #f8f8f8);
+  font-weight: 600;
+}
+
+.ac-grid .grid-row-grouped:hover {
+  background-color: var(--ac-grid-bg-hover, #f0f4f7);
+}
+
+.ac-grid .grid-cell-group {
+  display: flex;
+  align-items: center;
+}
+
+.ac-grid .grid-group-toggle {
+  color: var(--ac-grid-text-secondary, #585d61);
+  cursor: pointer;
+  margin-right: 8px;
+  user-select: none;
+}
+
 /* Cells */
 .ac-grid .grid-cell {
   padding: 0 12px;

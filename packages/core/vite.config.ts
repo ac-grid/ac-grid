@@ -33,7 +33,7 @@ export default defineConfig({
     resolve: {
         alias: {
             "@": resolve(__dirname, "./src"),
-            "loglevel": resolve(__dirname, "./test/loglevel-wrapper.js"),
+            loglevel: resolve(__dirname, "./test/loglevel-wrapper.js"),
         },
     },
     test: {
@@ -47,6 +47,7 @@ export default defineConfig({
                 "src/utils/virtual-scroll.ts",
                 "src/utils/create-grid.ts",
                 "src/utils/scroll-sync.ts",
+                "src/utils/grouping.ts",
             ],
             reporter: ["text", "text-summary"],
             thresholds: {

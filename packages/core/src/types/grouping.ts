@@ -1,4 +1,24 @@
-import type { GroupingState } from "@tanstack/table-core";
+import type { ExpandedState, GroupingState } from "@tanstack/table-core";
+
+export const AGGREGATION_FN_SUM = "sum";
+export const AGGREGATION_FN_AVG = "avg";
+export const AGGREGATION_FN_COUNT = "count";
+export const AGGREGATION_FN_MIN = "min";
+export const AGGREGATION_FN_MAX = "max";
+
+export type GridAggregationName =
+    | typeof AGGREGATION_FN_SUM
+    | typeof AGGREGATION_FN_AVG
+    | typeof AGGREGATION_FN_COUNT
+    | typeof AGGREGATION_FN_MIN
+    | typeof AGGREGATION_FN_MAX;
+
+/**
+ * Aggregates the leaf values for one column and group.
+ */
+export type GridAggregationFn<TValue = unknown, TResult = unknown> = (
+    values: TValue[],
+) => TResult;
 
 export interface GridGroupingConfig {
     /**
@@ -12,7 +32,7 @@ export interface GridGroupingConfig {
     /**
      * 初始展开状态
      */
-    initialExpanded?: boolean | Record<string, boolean>;
+    initialExpanded?: ExpandedState;
     /**
      * 分组状态变化回调
      */
@@ -20,5 +40,5 @@ export interface GridGroupingConfig {
     /**
      * 展开状态变化回调
      */
-    onExpandedChange?: (expanded: Record<string, boolean>) => void;
+    onExpandedChange?: (expanded: ExpandedState) => void;
 }
