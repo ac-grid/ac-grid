@@ -69,7 +69,15 @@ export default defineConfig({
             // pino 的浏览器版本 (pino/browser) 使用命名导出，不是默认导出
             pino: "pino/browser",
         },
-        conditions: ["source", "import", "module", "browser", "default"],
+        // Vite 6 不再隐式补充环境条件，保留原有开发与生产解析行为。
+        conditions: [
+            "source",
+            "import",
+            "module",
+            "browser",
+            "development|production",
+            "default",
+        ],
         extensions: [
             ".mjs",
             ".js",
