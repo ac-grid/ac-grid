@@ -9,7 +9,7 @@
 本项目采用 monorepo 结构，使用 pnpm 和 Turbo 进行管理：
 
 - `packages/ac-grid-react` - React 版本的 Grid 组件库（基于 @tanstack/react-table）
-- `apps/demo-react` - React 版本的演示应用（包含 Storybook）
+- `demos/react` - React 版本的演示应用（包含 Storybook）
 
 ## 功能特性
 
@@ -79,7 +79,7 @@ pnpm dev
 pnpm build
 
 # 运行 React demo
-cd apps/demo-react && pnpm dev
+cd demos/react && pnpm dev
 
 # 运行 Storybook
 pnpm storybook
@@ -95,8 +95,8 @@ ac-grid/
 │       │   └── components/     # Grid 组件及其相关组件
 │       ├── package.json
 │       └── vite.config.ts
-├── apps/
-│   └── demo-react/             # React demo 应用
+├── demos/
+│   └── react/                  # React demo 应用
 │       ├── src/
 │       │   ├── App.tsx          # 主应用
 │       │   └── stories/         # Storybook 故事
@@ -109,6 +109,15 @@ ac-grid/
 ├── turbo.json                   # Turbo 配置
 └── package.json                 # 根 package.json
 ```
+
+## 文档
+
+- [项目路线图](./.spec/ROADMAP.md) - 开发计划和版本规划
+- [RFC 文档](./.spec/rfc/README.md) - 详细设计文档
+- [用户指南](./apps/site/public/docs/guide/) - 排序、过滤、主题等功能指南
+  - [排序功能指南](./apps/site/public/docs/guide/features/sorting.md)（[RFC-0002](./.spec/rfc/completed/0002-sorting-feature.md)）
+  - [过滤功能指南](./apps/site/public/docs/guide/features/filtering.md)（[RFC-0003](./.spec/rfc/completed/0003-filtering-feature.md)）
+  - [主题系统指南](./apps/site/public/docs/guide/features/theming.md)（[RFC-0016](./.spec/rfc/0016-theme-system.md)）
 
 ## AG-Grid 工作原理总结
 
@@ -129,4 +138,3 @@ AC Grid 实现了类似的核心功能：
 ## License
 
 MIT
-

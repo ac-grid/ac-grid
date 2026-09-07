@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
-import { createGrid } from "@ac-grid/core";
+import { createFormulaEngineFromMatrix, createGrid } from "@ac-grid/core";
 
 import { makeData } from "./stories/makeData";
 import {
@@ -35,6 +35,20 @@ function App() {
     const [rfcId, setRfcId] = useState<RfcValidationId>(() =>
         parseRfcIdFromUrl(window.location.search),
     );
+    const [formulaInput, setFormulaInput] = useState(10);
+    const formulaValues = useMemo(() => {
+        if (rfcId !== "0030") return null;
+        const engine = createFormulaEngineFromMatrix([
+            [formulaInput, 5, "=SUM(A1:B1)"],
+            [10, 4, "=AVG(A2:B2)"],
+            ["=B3", "=A3", "cycle"],
+        ]);
+        return {
+            sum: engine.getValue(0, 2),
+            average: engine.getValue(1, 2),
+            cycle: engine.getValue(2, 0),
+        };
+    }, [formulaInput, rfcId]);
 
     const spec = RFC_VALIDATION_SPECS[rfcId];
     const data = useMemo(
@@ -139,6 +153,18 @@ function App() {
                     </nav>
 
                     <p className="demo-hint">{spec.hint}</p>
+
+                    {rfcId === "0030" ? (
+                        <div className="demo-formula-panel" data-testid="formula-panel">
+                            <span>A1: {formulaInput}</span>
+                            <span data-testid="formula-sum">C1 = SUM(A1:B1) = {String(formulaValues?.sum)}</span>
+                            <span data-testid="formula-average">C2 = AVG(A2:B2) = {String(formulaValues?.average)}</span>
+                            <span data-testid="formula-cycle">C3 = {String(formulaValues?.cycle && typeof formulaValues.cycle === "object" ? formulaValues.cycle.code : formulaValues?.cycle)}</span>
+                            <button type="button" className="demo-btn" onClick={() => setFormulaInput((value) => value + 1)}>
+                                增加 A1
+                            </button>
+                        </div>
+                    ) : null}
 
                     <div className="demo-toolbar">
                         {spec.showGlobalSearch ? (

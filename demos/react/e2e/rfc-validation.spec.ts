@@ -1,6 +1,12 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("RFC validation demos (browser)", () => {
+    test("RFC-0001 mounts typed grid through the Web Component entrypoint", async ({ page }) => {
+        await page.goto("/?rfc=0001");
+        await expect(page.locator("wsx-ac-grid")).toHaveCount(1);
+        await expect(page.locator("wsx-ac-grid .grid-row")).toHaveCount(10);
+    });
+
     test.describe("RFC-0002 sorting", () => {
         test.beforeEach(async ({ page }) => {
             await page.setViewportSize({ width: 800, height: 600 });
@@ -40,6 +46,7 @@ test.describe("RFC validation demos (browser)", () => {
             expect(sortedCheck.sorting[0]?.id).toBe("firstName");
             expect(sortedCheck.dom).toEqual(sortedCheck.model);
         });
+
     });
 
     test.describe("RFC-0002 horizontal scroll", () => {
@@ -121,6 +128,28 @@ test.describe("RFC validation demos (browser)", () => {
         });
     });
 
+    test("RFC-0002 reorders columns after a real header drag", async ({ page }) => {
+        await page.goto("/?rfc=0002");
+        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        const source = page.locator('.grid-header-cell[data-column-id="firstName"] .drag-handle-button');
+        const target = page.locator('.grid-header-cell[data-column-id="lastName"]');
+        const sourceBox = await source.boundingBox();
+        const targetBox = await target.boundingBox();
+        expect(sourceBox).toBeTruthy();
+        expect(targetBox).toBeTruthy();
+        await page.mouse.move(sourceBox!.x + sourceBox!.width / 2, sourceBox!.y + sourceBox!.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(targetBox!.x + targetBox!.width / 2, targetBox!.y + targetBox!.height / 2, { steps: 12 });
+        await page.mouse.up();
+        await expect
+            .poll(() =>
+                page.locator(".grid-header-cell[data-column-id]").evaluateAll((nodes) =>
+                    nodes.map((node) => node.getAttribute("data-column-id")),
+                ),
+            )
+            .toEqual(["lastName", "firstName", "age", "status"]);
+    });
+
     test("RFC-0003 filters rows through global search", async ({ page }) => {
         await page.goto("/?rfc=0003");
         await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
@@ -128,6 +157,23 @@ test.describe("RFC validation demos (browser)", () => {
         await page.locator(".demo-search").fill("zzzz-no-match");
         await expect.poll(() => page.locator(".grid-row").count()).toBeLessThan(before);
         expect(await page.locator(".grid-row").count()).toBe(0);
+    });
+
+    test("RFC-0004 changes column width with its resize handle", async ({ page }) => {
+        await page.goto("/?rfc=0004");
+        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        const header = page.locator('.grid-header-cell[data-column-id="firstName"]');
+        const resizer = header.locator(".resizer");
+        const before = await header.evaluate((element) => element.getBoundingClientRect().width);
+        const box = await resizer.boundingBox();
+        expect(box).toBeTruthy();
+        await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(box!.x + 60, box!.y + box!.height / 2, { steps: 5 });
+        await page.mouse.up();
+        await expect
+            .poll(() => header.evaluate((element) => element.getBoundingClientRect().width))
+            .toBeGreaterThan(before);
     });
 
     test("RFC-0006 changes page from pagination controls", async ({ page }) => {
@@ -178,5 +224,22 @@ test.describe("RFC validation demos (browser)", () => {
         await page.goto("/?rfc=0019");
         await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
         await expect(page.getByText("Custom Name", { exact: true })).toHaveCount(1);
+    });
+
+    test("RFC-0016 applies theme variables to the validation grid", async ({ page }) => {
+        await page.goto("/?rfc=0016");
+        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await expect
+            .poll(() => page.locator("wsx-ac-grid").evaluate((element) => getComputedStyle(element).getPropertyValue("--ac-grid-bg-cell")))
+            .not.toBe("");
+    });
+
+    test("RFC-0030 recalculates formula result after input change", async ({ page }) => {
+        await page.goto("/?rfc=0030");
+        await expect(page.locator('[data-testid="formula-sum"]')).toHaveText("C1 = SUM(A1:B1) = 15");
+        await expect(page.locator('[data-testid="formula-average"]')).toHaveText("C2 = AVG(A2:B2) = 7");
+        await expect(page.locator('[data-testid="formula-cycle"]')).toHaveText("C3 = #CYCLE!");
+        await page.getByRole("button", { name: "增加 A1" }).click();
+        await expect(page.locator('[data-testid="formula-sum"]')).toHaveText("C1 = SUM(A1:B1) = 16");
     });
 });
