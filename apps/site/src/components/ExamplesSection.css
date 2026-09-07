@@ -1,0 +1,72 @@
+.examples-section {
+    width: 100%;
+    min-height: 100vh;
+    padding: 1rem;
+    background: var(--color-bg, #faf5ff);
+}
+
+@media (min-width: 768px) {
+    .examples-section {
+        padding: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .examples-section {
+        padding: 2rem;
+    }
+}
+
+.examples-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.examples-section .page-title {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--color-text, #1e1b4b);
+}
+
+.examples-section .page-description {
+    font-size: 1.25rem;
+    color: var(--color-text-muted, #5b21b6);
+    margin-bottom: 3rem;
+}
+
+.example-section {
+    margin-bottom: 3rem;
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border, #c4b5fd);
+    box-shadow: 0 1px 3px rgba(124, 58, 237, 0.06);
+}
+
+.examples-section .section-title {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-text, #1e1b4b);
+}
+
+.examples-section .section-description {
+    font-size: 1rem;
+    color: var(--color-text-muted, #5b21b6);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.example-container {
+    border: 1px solid var(--color-border, #c4b5fd);
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+.custom-grid {
+    border: 2px solid var(--color-primary, #7c3aed);
+}

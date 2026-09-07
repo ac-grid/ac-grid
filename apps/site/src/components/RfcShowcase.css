@@ -1,0 +1,64 @@
+.rfc-showcase {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 72px 24px 96px;
+}
+.rfc-showcase__hero {
+  max-width: 680px;
+  margin-bottom: 40px;
+}
+.rfc-showcase__eyebrow {
+  color: var(--color-primary, #2563eb);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.rfc-showcase__hero h1 {
+  margin: 12px 0;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+.rfc-showcase__hero p:last-child {
+  color: var(--color-text-muted, #64748b);
+  font-size: 1.1rem;
+}
+.rfc-showcase__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+.rfc-card {
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  padding: 22px;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 16px;
+  background: var(--color-surface, #fff);
+}
+.rfc-card__topline {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-muted, #64748b);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.rfc-card__id {
+  color: var(--color-primary, #2563eb);
+}
+.rfc-card h2 {
+  margin: 28px 0 10px;
+  font-size: 1.25rem;
+}
+.rfc-card p {
+  margin: 0;
+  color: var(--color-text-muted, #64748b);
+  line-height: 1.6;
+}
+.rfc-card__link {
+  margin-top: auto;
+  padding-top: 24px;
+  color: var(--color-primary, #2563eb);
+  font-weight: 700;
+  text-decoration: none;
+}

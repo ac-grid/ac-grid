@@ -1,0 +1,47 @@
+{
+  "documents": [
+    {
+      "id": "guide/essentials/getting-started",
+      "title": "Getting Started",
+      "category": "guide/essentials",
+      "route": "/docs/guide/essentials/getting-started",
+      "content": "Getting Started with AC Grid\n\nAC Grid is a fully open source data grid to replace AG Grid. It's framework-agnostic, built with Web Components and @tanstack/table-corehttps://tanstack.com/table/latest.\n\n Installation\n\n\n\n Quick Start\n\n With a bundler Vite, Webpack, etc.\n\n\n\n With a framework React, Vue, etc.\n\nUse the custom element <wsx-ac-grid> or the tag your wrapper exposes. Pass data and columns as properties. See Samples/examples for examples.\n\n Next steps\n\n- Sorting/docs/guide/features/sortin"
+    },
+    {
+      "id": "guide/features/theming",
+      "title": "Theming",
+      "category": "guide/features",
+      "route": "/docs/guide/features/theming",
+      "content": "Theming\n\nAC Grid provides a flexible theme system that allows you to customize the appearance of your grid.\n\n Quick Start\n\n Installation\n\n\n\n Basic Usage\n\n\n\n Theme System Architecture\n\nAC Grid's theme system uses an independent package architecture:\n\n\n\n Why Independent Packages?\n\n1. On-demand Loading: Only install the theme packages you need\n2. Separation of Concerns: Core functionality and styling are completely separated\n3. Community Friendly: Easy to create and share custom theme packages\n4. I"
+    },
+    {
+      "id": "guide/features/sorting",
+      "title": "Sorting",
+      "category": "guide/features",
+      "route": "/docs/guide/features/sorting",
+      "content": "Sorting\n\nAC Grid provides powerful sorting capabilities that allow users to organize data by clicking column headers.\n\n Quick Start\n\nSorting is enabled by default in AC Grid. Users can simply click column headers to sort data.\n\n\n\n Basic Usage\n\n Enabling Sorting\n\nSorting is enabled by default. To disable sorting on specific columns, set enableSorting: false.\n\n\n\n Single Column Sorting\n\n User Interaction\n\nWhen users click a column header, the sort state cycles through:\n\n1. Unsorted → Click → Ascend"
+    },
+    {
+      "id": "guide/features/filtering",
+      "title": "Filtering",
+      "category": "guide/features",
+      "route": "/docs/guide/features/filtering",
+      "content": "Filtering\n\nAC Grid provides powerful filtering capabilities that allow users to quickly find and filter table data.\n\n Quick Start\n\nFiltering allows users to quickly find and filter table data.\n\n\n\n Basic Usage\n\n Enabling Filtering\n\n\n\n Disabling Column Filtering\n\n\n\n Column Filtering\n\n User Interaction\n\nUsers can click the filter icon in column headers to input filter conditions. The table automatically filters to show matching rows.\n\n Filter Types\n\nAC Grid supports multiple filter types:\n\n- text: "
+    }
+  ],
+  "options": {
+    "keys": [
+      {
+        "name": "title",
+        "weight": 0.7
+      },
+      {
+        "name": "content",
+        "weight": 0.3
+      }
+    ],
+    "threshold": 0.3,
+    "includeScore": true,
+    "includeMatches": true
+  }
+}

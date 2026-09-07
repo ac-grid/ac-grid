@@ -1,0 +1,38 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * NotFoundSection - 404 页面组件
+ */
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import styles from "./NotFoundSection.css?inline";
+import "@wsxjs/wsx-router";
+
+@autoRegister({ tagName: "not-found-section" })
+export class NotFoundSection extends LightComponent {
+    constructor() {
+        super({ styles, styleName: "not-found-section" });
+    }
+
+    render() {
+        return (
+            <section class="not-found-section">
+                <div class="container">
+                    <div class="not-found-content">
+                        <h1 class="not-found-title">404</h1>
+                        <h2 class="not-found-subtitle">Page Not Found</h2>
+                        <p class="not-found-description">
+                            The page you're looking for doesn't exist or has been moved.
+                        </p>
+                        <div class="not-found-actions">
+                            <wsx-link to="/" class="btn btn-primary">
+                                Go Home
+                            </wsx-link>
+                            <wsx-link to="/docs" class="btn btn-secondary">
+                                View Documentation
+                            </wsx-link>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+}

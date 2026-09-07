@@ -1,0 +1,147 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * AC Grid Documentation Site
+ *
+ * Features:
+ * - AC Grid documentation and examples
+ * - Router-based navigation
+ * - Interactive grid demos
+ */
+
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import styles from "./App.css?inline";
+// Import base components and router
+import "@wsxjs/wsx-base-components";
+import "@wsxjs/wsx-router";
+import { RouterUtils } from "@wsxjs/wsx-router";
+// Import AC Grid core
+import "@ac-grid/core";
+// Import SEO utilities
+import { MetaManager, type RouteMeta } from "./utils/meta-manager";
+import { getRouteMeta, routeMeta } from "./config/route-meta";
+
+// Import route-based section components
+import "./components/BrandLogo.wsx";
+import "./components/HomeSection.wsx";
+import "./components/ExamplesSection.wsx";
+import "./components/DocsSection.wsx";
+import "./components/DocsWsxPressSection.wsx";
+import "./components/NotFoundSection.wsx";
+import "./components/RfcShowcase.wsx";
+
+export interface AppConfig {
+    title?: string;
+    theme?: "light" | "dark";
+}
+
+@autoRegister({ tagName: "ac-grid-app" })
+export default class App extends LightComponent {
+    /** 路由变化监听的清理函数，在 onDisconnected 时调用 */
+    private unsubscribeRouteChange: (() => void) | null = null;
+
+    constructor(config: AppConfig = {}) {
+        super({
+            styles,
+            styleName: "ac-grid-app",
+            ...config,
+        });
+    }
+
+    render() {
+        return (
+            <div class="app-container">
+                {/* Navigation */}
+                {this.renderNavigation()}
+                <div class="app-content">
+                    {/* Router Container */}
+                    <wsx-router>
+                        <wsx-view route="/" component="home-section"></wsx-view>
+                        <wsx-view
+                            route="/examples"
+                            component="examples-section"
+                        ></wsx-view>
+                        <wsx-view
+                            route="/rfc"
+                            component="rfc-showcase"
+                        ></wsx-view>
+                        <wsx-view
+                            route="/rfc/*"
+                            component="rfc-showcase"
+                        ></wsx-view>
+                        <wsx-view
+                            route="/docs"
+                            component="docs-wsx-press-section"
+                        ></wsx-view>
+                        <wsx-view
+                            route="/docs/*"
+                            component="docs-wsx-press-section"
+                        ></wsx-view>
+                        <wsx-view
+                            route="*"
+                            component="not-found-section"
+                        ></wsx-view>
+                    </wsx-router>
+                </div>
+            </div>
+        );
+    }
+
+    /** 顶栏导航：直接在本组件内渲染，保证始终可见（不依赖 wsx-responsive-nav 的 config 时机） */
+    private renderNavigation() {
+        return (
+            <header class="site-nav" role="banner">
+                <div class="site-nav-inner">
+                    <wsx-link to="/" class="site-nav-brand" exact>
+                        <brand-logo class="site-nav-logo"></brand-logo>
+                        <span class="site-nav-brand-text">AC Grid</span>
+                    </wsx-link>
+                    <nav class="site-nav-menu" aria-label="主导航">
+                        <wsx-link to="/" class="site-nav-link" active-class="site-nav-link-active" exact>
+                            Home
+                        </wsx-link>
+                        <wsx-link to="/docs" class="site-nav-link" active-class="site-nav-link-active">
+                            Docs
+                        </wsx-link>
+                    <wsx-link to="/examples" class="site-nav-link" active-class="site-nav-link-active">
+                        Samples
+                    </wsx-link>
+                    <wsx-link to="/rfc" class="site-nav-link" active-class="site-nav-link-active">
+                        RFCs
+                    </wsx-link>
+                    </nav>
+                </div>
+            </header>
+        );
+    }
+
+    protected onConnected(): void {
+        super.onConnected?.();
+        this.setupRouter();
+        this.setupMeta();
+    }
+
+    private setupRouter() {
+        // RouterUtils 提供静态 onRouteChange，无 getRouter()；监听 route-changed 以更新 meta
+        this.unsubscribeRouteChange = RouterUtils.onRouteChange((route) => {
+            this.updateMeta(route.path);
+        });
+    }
+
+    protected onDisconnected(): void {
+        this.unsubscribeRouteChange?.();
+        this.unsubscribeRouteChange = null;
+        super.onDisconnected?.();
+    }
+
+    private setupMeta() {
+        const currentRoute = RouterUtils.getCurrentRoute()?.path ?? "/";
+        this.updateMeta(currentRoute);
+    }
+
+    private updateMeta(route: string) {
+        const meta = getRouteMeta(route);
+        if (meta) {
+            MetaManager.updateMeta(meta);
+        }
+    }
+}

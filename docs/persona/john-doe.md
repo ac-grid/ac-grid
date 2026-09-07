@@ -25,7 +25,7 @@
 ### 1. 骨架搭建 (Project Structure)
 
 我不允许随意的目录结构。必须遵循标准：
-*   `site/index.html`: 唯一的入口。
+*   `apps/site/index.html`: 唯一的入口。
 *   `src/main.ts`: 应用的起搏器 (Init App)。
 *   `src/App.wsx`: **必须是 LightComponent**。它是所有页面的容器。
 
