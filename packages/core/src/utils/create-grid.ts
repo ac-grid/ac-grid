@@ -19,58 +19,70 @@ import type { GridComponentsConfig } from "../types/components";
 import type { GridGroupingConfig } from "../types/grouping";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
-    /**
-     * 数据源
-     */
-    data: TData[];
-    /**
-     * 列定义
-     */
-    columns: Array<ColumnDef<TData> | TanStackColumnDef<TData>>;
-    /**
-     * 自定义类名
-     */
-    className?: string;
-    /**
-     * 排序配置
-     */
-    sorting?: GridSortingConfig;
-    /**
-     * 过滤配置
-     */
-    filtering?: GridFilteringConfig;
-    /**
-     * 列宽调整配置（RFC-0004）
-     */
-    resizing?: GridResizingConfig;
-    /**
-     * 虚拟滚动配置（RFC-0005）
-     */
-    virtualization?: GridVirtualizationConfig;
-    /**
-     * 行选择配置（RFC-0007）
-     */
-    selection?: GridSelectionConfig;
-    /**
-     * 分页配置（RFC-0006）
-     */
-    pagination?: GridPaginationConfig;
-    /**
-     * 列固定配置（RFC-0008）
-     */
-    pinning?: GridPinningConfig;
-    /**
-     * 自定义组件配置（RFC-0019）
-     */
-    components?: GridComponentsConfig;
-    /**
-     * 行分组与展开配置（RFC-0010）
-     */
-    grouping?: GridGroupingConfig;
-    /**
-     * 容器元素（可选，如果不提供则返回元素本身）
-     */
-    container?: HTMLElement;
+  /**
+   * 数据源
+   */
+  data: TData[];
+  /**
+   * 列定义
+   */
+  columns: Array<ColumnDef<TData> | TanStackColumnDef<TData>>;
+  /**
+   * 自定义类名
+   */
+  className?: string;
+  /**
+   * 排序配置
+   */
+  sorting?: GridSortingConfig;
+  /**
+   * 过滤配置
+   */
+  filtering?: GridFilteringConfig;
+  /**
+   * 列宽调整配置（RFC-0004）
+   */
+  resizing?: GridResizingConfig;
+  /**
+   * 虚拟滚动配置（RFC-0005）
+   */
+  virtualization?: GridVirtualizationConfig;
+  /**
+   * 行选择配置（RFC-0007）
+   */
+  selection?: GridSelectionConfig;
+  /**
+   * 分页配置（RFC-0006）
+   */
+  pagination?: GridPaginationConfig;
+  /**
+   * 列固定配置（RFC-0008）
+   */
+  pinning?: GridPinningConfig;
+  /**
+   * 自定义组件配置（RFC-0019）
+   */
+  components?: GridComponentsConfig;
+  /**
+   * 行分组与展开配置（RFC-0010）
+   */
+  grouping?: GridGroupingConfig;
+  /**
+   * 主题切换过渡动画配置（RFC-0011）
+   */
+  themeTransition?: boolean;
+  /**
+   * 主题切换过渡动画时长（毫秒，RFC-0011）
+   */
+  themeTransitionDuration?: number;
+  /**
+   * 初始主题名称（RFC-0011）
+   */
+  theme?: string;
+  /**
+   * 容器元素（可选，如果不提供则返回元素本身）
+   */
+  container?: HTMLElement;
 }
 
 /**
@@ -100,76 +112,88 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
  * ```
  */
 export function createGrid<TData extends { userId?: string }>(
-    options: CreateGridOptions<TData>,
+  options: CreateGridOptions<TData>,
 ): HTMLElement {
-    const {
-        data,
-        columns,
-        className,
-        sorting,
-        filtering,
-        resizing,
-        virtualization,
-        selection,
-        pagination,
-        pinning,
-        components,
-        grouping,
-        container,
-    } = options;
+  const {
+    data,
+    columns,
+    className,
+    sorting,
+    filtering,
+    resizing,
+    virtualization,
+    selection,
+    pagination,
+    pinning,
+    components,
+    grouping,
+    container,
+  } = options;
 
-    // 确保组件已注册（导入时会自动注册）
-    // 创建自定义元素
-    const gridElement = document.createElement("wsx-ac-grid") as any;
+  // 确保组件已注册（导入时会自动注册）
+  // 创建自定义元素
+  const gridElement = document.createElement("wsx-ac-grid") as any;
 
-    // Apply virtualization before data so the first render never mounts the full dataset
-    if (virtualization) {
-        gridElement.virtualizationConfig = virtualization;
-    }
+  // Apply virtualization before data so the first render never mounts the full dataset
+  if (virtualization) {
+    gridElement.virtualizationConfig = virtualization;
+  }
 
-    if (className) {
-        gridElement.className = className;
-    }
+  if (className) {
+    gridElement.className = className;
+  }
 
-    if (sorting) {
-        gridElement.sortingConfig = sorting;
-    }
+  if (sorting) {
+    gridElement.sortingConfig = sorting;
+  }
 
-    if (filtering) {
-        gridElement.filteringConfig = filtering;
-    }
+  if (filtering) {
+    gridElement.filteringConfig = filtering;
+  }
 
-    if (resizing) {
-        gridElement.resizingConfig = resizing;
-    }
+  if (resizing) {
+    gridElement.resizingConfig = resizing;
+  }
 
-    if (selection) {
-        gridElement.selectionConfig = selection;
-    }
+  if (selection) {
+    gridElement.selectionConfig = selection;
+  }
 
-    if (pagination) {
-        gridElement.paginationConfig = pagination;
-    }
+  if (pagination) {
+    gridElement.paginationConfig = pagination;
+  }
 
-    if (pinning) {
-        gridElement.pinningConfig = pinning;
-    }
+  if (pinning) {
+    gridElement.pinningConfig = pinning;
+  }
 
-    if (components) {
-        gridElement.componentsConfig = components;
-    }
+  if (components) {
+    gridElement.componentsConfig = components;
+  }
 
-    if (grouping) {
-        gridElement.groupingConfig = grouping;
-    }
+  if (grouping) {
+    gridElement.groupingConfig = grouping;
+  }
 
-    gridElement.columns = columns;
-    gridElement.data = data;
+  if (options.themeTransition !== undefined) {
+    gridElement.themeTransition = options.themeTransition;
+  }
 
-    // 如果提供了容器，直接挂载
-    if (container) {
-        container.appendChild(gridElement);
-    }
+  if (options.themeTransitionDuration !== undefined) {
+    gridElement.themeTransitionDuration = options.themeTransitionDuration;
+  }
 
-    return gridElement;
+  if (options.theme) {
+    gridElement.applyTheme(options.theme);
+  }
+
+  gridElement.columns = columns;
+  gridElement.data = data;
+
+  // 如果提供了容器，直接挂载
+  if (container) {
+    container.appendChild(gridElement);
+  }
+
+  return gridElement;
 }

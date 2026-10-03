@@ -93,8 +93,8 @@ import "./DraggableTableRow.wsx";
 import "./SortingIndicator.wsx";
 import "./FilterIcon.wsx";
 import "./FilterMenu.wsx";
-// GlobalSearch is needed for tests, but maybe not automatically imported here?
 import "./GlobalSearch.wsx";
+import { themeManager } from "@ac-grid/theme-base";
 
 /** 默认列宽信息，保证 table.getState().columnSizingInfo 永不为 undefined，避免 "reading 'isResizingColumn'" 报错 */
 const DEFAULT_COLUMN_SIZING_INFO = {
@@ -503,6 +503,36 @@ export class Grid extends LightComponent {
     }
     @state private _componentsConfigIsSet: boolean = false;
     @state private _componentsConfig: GridComponentsConfig = {} as GridComponentsConfig;
+
+    get themeTransition(): boolean {
+        return this._themeTransition;
+    }
+    set themeTransition(val: boolean) {
+        this._themeTransition = Boolean(val);
+        this.updateThemeTransitionDOM();
+    }
+    @state private _themeTransition: boolean = false;
+
+    get themeTransitionDuration(): number {
+        return this._themeTransitionDuration;
+    }
+    set themeTransitionDuration(val: number) {
+        this._themeTransitionDuration = typeof val === "number" ? val : 200;
+        this.updateThemeTransitionDOM();
+    }
+    @state private _themeTransitionDuration: number = 200;
+
+    get theme(): string | null {
+        return this._currentTheme;
+    }
+    set theme(val: string | null) {
+        if (val) {
+            this.applyTheme(val);
+        }
+    }
+    @state private _currentTheme: string | null = null;
+    @state private _previewTheme: string | null = null;
+
 
     private get isLoadingOverlay(): boolean {
         return Boolean(
@@ -1313,10 +1343,16 @@ export class Grid extends LightComponent {
 
         return (
             <div
-                className={`ac-grid ${this.className || ""}`}
+                className={`ac-grid ${this.className || ""} ${this._themeTransition ? "theme-transition" : ""}`}
+                data-theme-transition={this._themeTransition ? "true" : undefined}
                 style={
                     {
                         "--grid-columns": gridTemplateColumns,
+                        ...(this._themeTransition
+                            ? {
+                                  "--ac-grid-theme-transition-duration": `${this._themeTransitionDuration}ms`,
+                              }
+                            : {}),
                     } as any
                 }
             >
@@ -2267,7 +2303,124 @@ export class Grid extends LightComponent {
             this.scrollSyncSession,
         );
     }
+
+    /**
+     * 设置主题切换动画配置（RFC-0011）
+     */
+    public setThemeTransition(enabled: boolean, duration?: number): void {
+        this._themeTransition = Boolean(enabled);
+        if (typeof duration === "number") {
+            this._themeTransitionDuration = duration;
+        }
+        this.updateThemeTransitionDOM();
+        this.updateTable();
+    }
+
+    /**
+     * 获取是否开启了主题切换动画
+     */
+    public isThemeTransitionEnabled(): boolean {
+        return this._themeTransition;
+    }
+
+    /**
+     * 获取主题切换动画时长（毫秒）
+     */
+    public getThemeTransitionDuration(): number {
+        return this._themeTransitionDuration;
+    }
+
+    /**
+     * 预览主题（不持久化为应用主题，支持 cancelPreview 恢复，RFC-0011）
+     * @param themeName - 主题名称
+     */
+    public previewTheme(themeName: string): void {
+        if (!themeName) return;
+        this._previewTheme = themeName;
+        themeManager.previewTheme(themeName, this as any);
+        this.dispatchEvent(
+            new CustomEvent("theme-preview", {
+                detail: { theme: themeName },
+                bubbles: true,
+                composed: true,
+            })
+        );
+    }
+
+    /**
+     * 取消预览，恢复当前主题（RFC-0011）
+     */
+    public cancelPreview(): void {
+        const prevTheme = this._currentTheme;
+        this._previewTheme = null;
+        themeManager.cancelPreview(this as any);
+        this.dispatchEvent(
+            new CustomEvent("theme-preview-cancel", {
+                detail: { restoredTheme: prevTheme },
+                bubbles: true,
+                composed: true,
+            })
+        );
+    }
+
+    /**
+     * 获取当前预览的主题名称（若正在预览）
+     */
+    public getPreviewTheme(): string | null {
+        return this._previewTheme;
+    }
+
+    /**
+     * 应用主题到当前 Grid 实例（RFC-0011）
+     * @param themeName - 主题名称
+     */
+    public applyTheme(themeName: string): void {
+        if (!themeName) return;
+        this._previewTheme = null;
+        this._currentTheme = themeName;
+        themeManager.applyTheme(themeName, this as any);
+        this.dispatchEvent(
+            new CustomEvent("theme-change", {
+                detail: { theme: themeName },
+                bubbles: true,
+                composed: true,
+            })
+        );
+    }
+
+    /**
+     * 获取当前应用的主题名称
+     */
+    public getTheme(): string | null {
+        return this._currentTheme;
+    }
+
+    private updateThemeTransitionDOM(): void {
+        const element = this as any;
+        if (this._themeTransition) {
+            if (typeof element.setAttribute === "function") {
+                element.setAttribute("data-theme-transition", "true");
+            }
+            if (element.classList && typeof element.classList.add === "function") {
+                element.classList.add("theme-transition");
+            }
+            if (element.style && typeof element.style.setProperty === "function") {
+                element.style.setProperty(
+                    "--ac-grid-theme-transition-duration",
+                    `${this._themeTransitionDuration}ms`
+                );
+            }
+        } else {
+            if (typeof element.removeAttribute === "function") {
+                element.removeAttribute("data-theme-transition");
+            }
+            if (element.classList && typeof element.classList.remove === "function") {
+                element.classList.remove("theme-transition");
+            }
+        }
+    }
 }
+
 
 /**
  * 排序配置接口

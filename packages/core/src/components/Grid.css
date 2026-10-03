@@ -19,6 +19,18 @@
   box-sizing: border-box;
 }
 
+/* RFC-0011: 主题切换平滑动画 */
+.ac-grid.theme-transition,
+.ac-grid.theme-transition *,
+.ac-grid[data-theme-transition="true"],
+.ac-grid[data-theme-transition="true"] * {
+  transition: background-color var(--ac-grid-theme-transition-duration, 200ms) ease,
+              color var(--ac-grid-theme-transition-duration, 200ms) ease,
+              border-color var(--ac-grid-theme-transition-duration, 200ms) ease,
+              box-shadow var(--ac-grid-theme-transition-duration, 200ms) ease;
+}
+
+
 /* Grid container */
 .ac-grid .grid-container {
   display: flex;
