@@ -100,18 +100,18 @@
 
 ## Phase 2 — Enterprise 对标（0020–0029）
 
-| 功能                     | AG Grid    | AC Grid | RFC                                        | 版本   |
-| ------------------------ | ---------- | ------- | ------------------------------------------ | ------ |
-| 树形数据                 | Enterprise | 📝      | [0020](./0020-tree-data.md)                | v1.1.0 |
-| 主从表格 (Master/Detail) | Enterprise | 📝      | [0021](./0021-master-detail.md)            | v1.1.0 |
-| 范围选择                 | Enterprise | 📝      | [0022](./0022-range-selection.md)          | v1.1.0 |
-| 剪贴板操作               | Enterprise | 📝      | [0023](./0023-clipboard-operations.md)     | v1.1.0 |
-| 透视模式 (Pivot)         | Enterprise | 📝      | [0024](./0024-pivot-mode.md)               | v1.2.0 |
-| Excel 导出（样式/公式）  | Enterprise | 📝      | [0025](./0025-excel-export-advanced.md)    | v1.2.0 |
-| 右键/列菜单              | Enterprise | 📝      | [0026](./0026-context-menu-column-menu.md) | v1.1.0 |
-| 工具面板 / 状态栏        | Enterprise | 📝      | [0027](./0027-tool-panels-status-bar.md)   | v1.2.0 |
-| 高级过滤 (Set/Multi)     | Enterprise | 📝      | [0028](./0028-advanced-filtering.md)       | v1.2.0 |
-| 集成图表                 | Enterprise | 📝      | [0029](./0029-integrated-charts.md)        | v1.2.0 |
+| 功能                     | AG Grid    | AC Grid | RFC                                               | 版本   |
+| ------------------------ | ---------- | ------- | ------------------------------------------------- | ------ |
+| 树形数据                 | Enterprise | 📝      | [0020](./0020-tree-data.md)                       | v1.1.0 |
+| 主从表格 (Master/Detail) | Enterprise | 📝      | [0021](./0021-master-detail.md)                   | v1.1.0 |
+| 范围选择                 | Enterprise | 📝      | [0022](./0022-range-selection.md)                 | v1.1.0 |
+| 剪贴板操作               | Enterprise | ✅      | [0023](./completed/0023-clipboard-operations.md) | v1.1.0 |
+| 透视模式 (Pivot)         | Enterprise | 📝      | [0024](./0024-pivot-mode.md)                      | v1.2.0 |
+| Excel 导出（样式/公式）  | Enterprise | 📝      | [0025](./0025-excel-export-advanced.md)           | v1.2.0 |
+| 右键/列菜单              | Enterprise | 📝      | [0026](./0026-context-menu-column-menu.md)        | v1.1.0 |
+| 工具面板 / 状态栏        | Enterprise | 📝      | [0027](./0027-tool-panels-status-bar.md)          | v1.2.0 |
+| 高级过滤 (Set/Multi)     | Enterprise | 📝      | [0028](./0028-advanced-filtering.md)              | v1.2.0 |
+| 集成图表                 | Enterprise | 📝      | [0029](./0029-integrated-charts.md)               | v1.2.0 |
 
 ---
 

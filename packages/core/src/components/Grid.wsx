@@ -41,6 +41,7 @@ import {
     DEFAULT_PAGE_SIZE,
 } from "../utils/pagination";
 import type { GridSelectionConfig } from "../types/selection";
+import type { GridClipboardConfig } from "../types/clipboard";
 import type { GridPinningConfig } from "../types/pinning";
 import type { GridEditingConfig } from "../types/editing";
 import type { GridGroupingConfig } from "../types/grouping";
@@ -83,6 +84,7 @@ import {
     validateEditValue,
 } from "../utils/editing-utils";
 import type { EditorProps } from "../types/editing";
+import { parseTsv, serializeTsv } from "../utils/clipboard";
 import {
     draggable,
     dropTargetForElements,
@@ -379,6 +381,137 @@ export class Grid extends LightComponent {
     @state private rowSelection: RowSelectionState = {};
     /** 范围选择锚点行 ID（Shift + 点击） */
     @state private lastSelectedRowId: string | null = null;
+
+    get clipboardConfig(): GridClipboardConfig | undefined {
+        return this._clipboardConfigIsSet ? this._clipboardConfig : undefined;
+    }
+    set clipboardConfig(value: GridClipboardConfig | undefined) {
+        this._clipboardConfigIsSet = value !== undefined;
+        this._clipboardConfig = value ?? ({} as GridClipboardConfig);
+    }
+    @state private _clipboardConfigIsSet = false;
+    @state private _clipboardConfig: GridClipboardConfig = {};
+    @state private activeClipboardCell: { rowId: string; columnId: string } | null = null;
+
+    private isClipboardEnabled(): boolean {
+        return this._clipboardConfigIsSet && this._clipboardConfig.enabled !== false;
+    }
+
+    private getClipboardRows() {
+        const rows = this.table?.getRowModel().rows ?? [];
+        const selectedIds = new Set(this.getSelectedRowIds());
+        const selectedRows = rows.filter((row) => selectedIds.has(row.id));
+        if (selectedRows.length > 0) return selectedRows;
+        const active = this.activeClipboardCell;
+        const row = active ? this.table?.getRow(active.rowId) : undefined;
+        return row ? [row] : [];
+    }
+
+    private createClipboardText(): string {
+        const rows = this.getClipboardRows();
+        const active = this.activeClipboardCell;
+        const selected = rows.length > 0 && rows.some((row) => this.rowSelection[row.id]);
+        const columns = this.table?.getVisibleLeafColumns() ?? [];
+        const includedColumns = selected || !active
+            ? columns
+            : columns.filter((column) => column.id === active.columnId);
+        return serializeTsv(rows.map((row) => includedColumns.map((column) => {
+            const value = row.getValue(column.id);
+            return this._clipboardConfig.processCellForClipboard?.({
+                value,
+                row: row.original,
+                rowIndex: row.index,
+                columnId: column.id,
+            }) ?? value;
+        })));
+    }
+
+    private handleClipboardCopy = (event: ClipboardEvent) => {
+        if (!this.isClipboardEnabled()) return;
+        const text = this.createClipboardText();
+        event.preventDefault();
+        if (this._clipboardConfig.suppressClipboardApi) {
+            this._clipboardConfig.copyToClipboard?.(text);
+        } else if (event.clipboardData) {
+            event.clipboardData.setData("text/plain", text);
+        } else if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+            void navigator.clipboard.writeText(text);
+        } else {
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand?.("copy");
+            textarea.remove();
+        }
+    };
+
+    private handleClipboardPaste = async (event: ClipboardEvent) => {
+        if (!this.isClipboardEnabled()) return;
+        event.preventDefault();
+        let text = event.clipboardData?.getData("text/plain") ?? "";
+        if (this._clipboardConfig.suppressClipboardApi) {
+            text = await this._clipboardConfig.readFromClipboard?.() ?? "";
+        }
+        if (!text) return;
+        this.pasteTsv(text);
+    };
+
+    private pasteTsv(text: string) {
+        const active = this.activeClipboardCell;
+        const startRow = active && this.table ? this.table.getRow(active.rowId) : undefined;
+        if (!active || !startRow || !this.table || !this.isEditingEnabled()) return;
+
+        const visibleRows = this.table.getRowModel().rows;
+        const columns = this.table.getVisibleLeafColumns();
+        const startColumn = columns.findIndex((column) => column.id === active.columnId);
+        if (startColumn < 0) return;
+        const startRowIndex = visibleRows.findIndex((row) => row.id === startRow.id);
+        const matrix = parseTsv(text);
+        const nextData = [...this.gridData];
+        let changed = false;
+
+        matrix.forEach((line, rowOffset) => {
+            const row = visibleRows[startRowIndex + rowOffset];
+            if (!row) return;
+            line.forEach((textValue, columnOffset) => {
+                const column = columns[startColumn + columnOffset];
+                if (!column) return;
+                const columnDef = findColumnDefById(this._columns, column.id);
+                if (!isColumnEditable(columnDef, true)) return;
+                const original = nextData[row.index];
+                if (!original || typeof original !== "object") return;
+                const processValue = this._clipboardConfig.processCellFromClipboard;
+                const processed = processValue ? processValue({
+                    value: textValue,
+                    row: original,
+                    rowIndex: row.index,
+                    columnId: column.id,
+                }) : textValue;
+                const accessorKey = (columnDef as any)?.accessorKey as string | undefined;
+                if (!accessorKey) return;
+                const updated = { ...original };
+                const path = accessorKey.split(".");
+                let target = updated;
+                for (const key of path.slice(0, -1)) {
+                    target[key] = { ...(target[key] ?? {}) };
+                    target = target[key];
+                }
+                target[path[path.length - 1]] = processed;
+                nextData[row.index] = updated;
+                this._editingConfig.onEditSave?.(row.id, column.id, processed);
+                changed = true;
+            });
+        });
+
+        if (changed) {
+            this._data = nextData;
+            this.gridData = nextData;
+            this.updateTable();
+        }
+    }
 
     // Pinning config
     get pinningConfig(): GridPinningConfig | undefined {

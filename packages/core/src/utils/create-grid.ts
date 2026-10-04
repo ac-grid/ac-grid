@@ -17,6 +17,7 @@ import type { GridPaginationConfig } from "../types/pagination";
 import type { GridPinningConfig } from "../types/pinning";
 import type { GridComponentsConfig } from "../types/components";
 import type { GridGroupingConfig } from "../types/grouping";
+import type { GridClipboardConfig } from "../types/clipboard";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
   /**
@@ -67,6 +68,8 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
    * 行分组与展开配置（RFC-0010）
    */
   grouping?: GridGroupingConfig;
+  /** Clipboard copy and paste (RFC-0023). */
+  clipboard?: GridClipboardConfig<TData>;
   /**
    * 主题切换过渡动画配置（RFC-0011）
    */
@@ -127,6 +130,7 @@ export function createGrid<TData extends { userId?: string }>(
     pinning,
     components,
     grouping,
+    clipboard,
     container,
   } = options;
 
@@ -173,6 +177,10 @@ export function createGrid<TData extends { userId?: string }>(
 
   if (grouping) {
     gridElement.groupingConfig = grouping;
+  }
+
+  if (clipboard) {
+    gridElement.clipboardConfig = clipboard;
   }
 
   if (options.themeTransition !== undefined) {
