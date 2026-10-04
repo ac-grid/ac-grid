@@ -1,6 +1,6 @@
 # RFC → Multica Issue Registry
 
-> **Generated**: 2026-06-29 · **Synced**: 2026-08-16 (Multica pipeline — ACG-13 done via PR #16, ACG-118 done via PR #17)
+> **Generated**: 2026-06-29 · **Synced**: 2026-10-04 (Multica pipeline — ACG-25 done via PR #21)
 > **Parent**: [ACG-2](mention://issue/b7f108c7-583f-4986-9f38-a30cec79d5a0)
 
 Each RFC maps to one implementation issue. Promote `backlog` → `todo` when starting work.
@@ -29,7 +29,7 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 | 0020 | Tree data | [ACG-22](mention://issue/8db725be-cd41-4e81-8590-6cd3655c5ead) | backlog | 7 |
 | 0021 | Master detail | [ACG-23](mention://issue/d3fe4f73-8023-438e-ae43-f592a74b211b) | backlog | 7 |
 | 0022 | Range selection | [ACG-24](mention://issue/f65fa1b3-3001-442e-96f8-974f6b278059) | backlog | 7 |
-| 0023 | Clipboard operations | [ACG-25](mention://issue/819dce3a-8a3b-45a5-9fc5-e8c98520aa7f) | backlog | 7 |
+| 0023 | Clipboard operations | [ACG-25](mention://issue/819dce3a-8a3b-45a5-9fc5-e8c98520aa7f) | done | 7 |
 | 0024 | Pivot mode | [ACG-27](mention://issue/1694e769-2e69-4bd4-83b3-ae8163d43188) | backlog | 8 |
 | 0025 | Excel export advanced | [ACG-28](mention://issue/81224094-76f4-4f78-8e1d-127b83760013) | backlog | 8 |
 | 0026 | Context and column menus | [ACG-26](mention://issue/9ffb6021-2820-4e1c-b99f-0e81753e6da5) | backlog | 7 |
