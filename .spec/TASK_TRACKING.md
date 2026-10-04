@@ -72,10 +72,13 @@
 
 - Formulas (0030) ✔️ 引擎已完成；SSRM (0031), AI Toolkit (0032)
 
----
-
 ## ROADMAP ↔ Task sync
 
 - **PARITY_MATRIX** = what AG Grid has vs what we plan.
 - **ROADMAP** = version scope, RFC links, release dates.
 - **TASK_TRACKING** = concrete next steps and site/docs chores.
+
+## Done
+- [x] Implement RFC 0023: Clipboard operations (ACG-25) (RFC 0023)
+
+---

@@ -242,7 +242,7 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | 树形数据 | [0020](./rfc/0020-tree-data.md) | 📝 草稿 | P1 |
 | 主从表格 | [0021](./rfc/0021-master-detail.md) | 📝 草稿 | P1 |
 | 范围选择 | [0022](./rfc/0022-range-selection.md) | 📝 草稿 | P1 |
-| 剪贴板 | [0023](./rfc/completed/0023-clipboard-operations.md) | ✅ 已完成 | P1 |
+| 剪贴板 | [0023](./rfc/completed/0023-clipboard-operations.md) | Implemented | P1 |
 | 右键/列菜单 | [0026](./rfc/0026-context-menu-column-menu.md) | 📝 草稿 | P2 |
 | 分组聚合 | [0010](./rfc/0010-grouping-aggregation.md) | 📝 草稿 | P1 |
 
