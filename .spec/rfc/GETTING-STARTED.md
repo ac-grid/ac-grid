@@ -46,7 +46,7 @@ docs/rfc/
 #### 如果 RFC 不存在
 1. 复制 `RFC-TEMPLATE.md`
 2. 重命名为 `XXXX-feature-name.md`
-3. 填写 RFC 内容（参考 [0002-sorting-feature.md](./0002-sorting-feature.md) 作为示例）
+3. 填写 RFC 内容（参考 [0002-sorting-feature.md](./completed/0002-sorting-feature.md) 作为示例）
 4. 提交 PR 进行审查
 
 ### 4. 实施功能
@@ -95,7 +95,7 @@ git push origin feature/sorting
 
 ## 示例：实施排序功能
 
-以下是实施 [RFC-0002: 排序功能](./0002-sorting-feature.md) 的完整流程：
+以下是实施 [RFC-0002: 排序功能](./completed/0002-sorting-feature.md) 的完整流程：
 
 ### 第 1 步：阅读 RFC
 ```bash
@@ -242,7 +242,7 @@ git push origin feature/sorting
 - [RFC 索引](./README.md)
 - [RFC 模板](./RFC-TEMPLATE.md)
 - [总体架构](./0001-ac-grid-architecture.md)
-- [排序功能示例](./0002-sorting-feature.md)
+- [排序功能示例](./completed/0002-sorting-feature.md)
 - [项目主 README](../../README.md)
 - [CLAUDE.md 开发规范](../../CLAUDE.md)
 

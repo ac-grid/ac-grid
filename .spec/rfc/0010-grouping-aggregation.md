@@ -4,7 +4,7 @@
 **版本**: 0.3.0  
 **作者**: Albert Li  
 **日期**: 2026-01-24  
-**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md), [0002-sorting-feature](./0002-sorting-feature.md)
+**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md), [0002-sorting-feature](./completed/0002-sorting-feature.md)
 
 ## 目录
 

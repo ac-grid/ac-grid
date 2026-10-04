@@ -1,6 +1,6 @@
 # RFC → Multica Issue Registry
 
-> **Generated**: 2026-06-29 · **Synced**: 2026-10-03 (Multica pipeline — ACG-21 done via PR #18)
+> **Generated**: 2026-06-29 · **Synced**: 2026-10-04 (Multica pipeline — ACG-25 done via PR #21)
 > **Parent**: [ACG-2](mention://issue/b7f108c7-583f-4986-9f38-a30cec79d5a0)
 
 Each RFC maps to one implementation issue. Promote `backlog` → `todo` when starting work.
