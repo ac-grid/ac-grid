@@ -1,41 +1,42 @@
 {
-    "name": "@ac-grid/core",
-    "version": "0.0.1",
-    "type": "module",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "default": "./dist/index.js"
-        },
-        "./styles": "./dist/styles.css"
+  "name": "@ac-grid/core",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
-    "files": [
-        "dist"
-    ],
-    "scripts": {
-        "dev": "vite build --watch",
-        "build": "tsc && vite build",
-        "test": "vitest",
-        "test:coverage": "vitest run --coverage",
-        "clean": "rm -rf dist"
-    },
-    "dependencies": {
-        "@atlaskit/pragmatic-drag-and-drop": "^1.7.7",
-        "@tanstack/table-core": "^8.20.6",
-        "@wsxjs/wsx-core": "^0.0.20"
-    },
-    "devDependencies": {
-        "@testing-library/dom": "^10.4.0",
-        "@types/node": "^22.10.7",
-        "@vitest/coverage-v8": "4.1.11",
-        "@wsxjs/wsx-vite-plugin": "^0.0.20",
-        "jsdom": "^27.4.0",
-        "loglevel": "^1.9.2",
-        "typescript": "^5.6.2",
-        "vite": "^6.4.3",
-        "vite-plugin-dts": "^4.2.1",
-        "vitest": "^4.1.11"
-    }
+    "./styles": "./dist/styles.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "tsc && vite build",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@ac-grid/theme-base": "workspace:^",
+    "@atlaskit/pragmatic-drag-and-drop": "^1.7.7",
+    "@tanstack/table-core": "^8.20.6",
+    "@wsxjs/wsx-core": "^0.0.20"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@types/node": "^22.10.7",
+    "@vitest/coverage-v8": "4.1.11",
+    "@wsxjs/wsx-vite-plugin": "^0.0.20",
+    "jsdom": "^27.4.0",
+    "loglevel": "^1.9.2",
+    "typescript": "^5.6.2",
+    "vite": "^6.4.3",
+    "vite-plugin-dts": "^4.2.1",
+    "vitest": "^4.1.11"
+  }
 }

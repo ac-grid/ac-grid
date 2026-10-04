@@ -42,7 +42,7 @@ AC Grid 是一个高性能的数据表格组件库，旨在作为 AG Grid 的替
 - ✅ **分页**: 前端分页和服务端分页 ([RFC-0006](./completed/0006-pagination.md))
 - ✅ **行选择**: 单选/多选模式 ([RFC-0007](./completed/0007-row-selection.md))
 - ✅ **单元格编辑**: 内联编辑 ([RFC-0009](./completed/0009-cell-editing.md))
-- 📝 **主题系统**: 可定制主题 ([RFC-0011](./0011-theme-system.md))
+- 📝 **主题系统**: 可定制主题 ([RFC-0011](./completed/0011-theme-system.md))
 
 > 📖 **完整功能列表和实现状态**，请查看 [RFC 索引](./README.md)
 
@@ -105,7 +105,7 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
 | 树形数据                 | ✅             | 📝 规划中    | TBD                                         | v0.6.0+  |
 | 主从表格                 | ✅             | 📝 规划中    | TBD                                         | v0.6.0+  |
 | **用户体验**             |
-| 主题定制                 | ✅             | 📝 规划中    | [0011](./0011-theme-system.md)              | v0.4.0   |
+| 主题定制                 | ✅             | 📝 规划中    | [0011](./completed/0011-theme-system.md)              | v0.4.0   |
 | 国际化 (i18n)            | ✅             | 📝 规划中    | [0015](./0015-internationalization.md)      | v0.5.0   |
 | 可访问性 (a11y)          | ✅             | 📝 规划中    | [0013](./0013-accessibility.md)             | v0.4.0   |
 | **数据导出**             |
@@ -732,7 +732,7 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 | 功能     | RFC                                       | 状态      | 优先级 |
 | -------- | ----------------------------------------- | --------- | ------ |
-| 主题系统 | [RFC-0011](./0011-theme-system.md)        | 📝 待编写 | P0     |
+| 主题系统 | [RFC-0011](./completed/0011-theme-system.md)        | 📝 待编写 | P0     |
 | 键盘导航 | [RFC-0012](./0012-keyboard-navigation.md) | 📝 待编写 | P1     |
 | 可访问性 | [RFC-0013](./0013-accessibility.md)       | 📝 待编写 | P0     |
 

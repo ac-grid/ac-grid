@@ -1,70 +1,70 @@
 // 导出类型
 export type {
-    Table,
-    Header,
-    Row,
-    Cell,
-    SortingState,
-    SortingFn,
+  Table,
+  Header,
+  Row,
+  Cell,
+  SortingState,
+  SortingFn,
 } from "@tanstack/table-core";
 export type { ColumnDef } from "./types/column";
 // @ts-ignore - .wsx 文件在构建时会被处理
 export type { GridSortingConfig } from "./components/Grid.wsx";
 export type {
-    FilterState,
-    FilterFn,
-    FilterType,
-    GridFilteringConfig,
+  FilterState,
+  FilterFn,
+  FilterType,
+  GridFilteringConfig,
 } from "./types/filtering";
 export type { GridResizingConfig } from "./types/resizing";
 export type { GridVirtualizationConfig } from "./types/virtualization";
 export type {
-    GridPaginationConfig,
-    PaginationState,
-    PaginationInfo,
-    PaginatedData,
+  GridPaginationConfig,
+  PaginationState,
+  PaginationInfo,
+  PaginatedData,
 } from "./types/pagination";
 export type { GridSelectionConfig } from "./types/selection";
 export type { ClipboardCellParams, ClipboardPasteParams, GridClipboardConfig } from "./types/clipboard";
 export type { GridPinningConfig } from "./types/pinning";
 export type {
-    GridEditingConfig,
-    EditorProps,
-    EditorType,
-    EditTrigger,
+  GridEditingConfig,
+  EditorProps,
+  EditorType,
+  EditTrigger,
 } from "./types/editing";
 export {
-    AGGREGATION_FN_SUM,
-    AGGREGATION_FN_AVG,
-    AGGREGATION_FN_COUNT,
-    AGGREGATION_FN_MIN,
-    AGGREGATION_FN_MAX,
+  AGGREGATION_FN_SUM,
+  AGGREGATION_FN_AVG,
+  AGGREGATION_FN_COUNT,
+  AGGREGATION_FN_MIN,
+  AGGREGATION_FN_MAX,
 } from "./types/grouping";
 export type {
-    GridAggregationFn,
-    GridAggregationName,
-    GridGroupingConfig,
+  GridAggregationFn,
+  GridAggregationName,
+  GridGroupingConfig,
 } from "./types/grouping";
 export type {
-    ComponentType,
-    ComponentRenderFn,
-    GridComponentsConfig,
-    HeaderComponentParams,
-    FilterComponentParams,
-    OverlayComponentParams,
-    FullWidthRowComponentParams,
+  ComponentType,
+  ComponentRenderFn,
+  GridComponentsConfig,
+  HeaderComponentParams,
+  FilterComponentParams,
+  OverlayComponentParams,
+  FullWidthRowComponentParams,
 } from "./types/components";
 export type {
-    A1Range,
-    CellAddress,
-    CellRawValue,
-    CellRefToken,
-    FormulaDataSource,
-    FormulaError,
-    FormulaErrorCode,
-    FormulaParseResult,
-    FormulaValue,
-    GridFormulasConfig,
+  A1Range,
+  CellAddress,
+  CellRawValue,
+  CellRefToken,
+  FormulaDataSource,
+  FormulaError,
+  FormulaErrorCode,
+  FormulaParseResult,
+  FormulaValue,
+  GridFormulasConfig,
 } from "./types/formulas";
 
 // 导出组件
@@ -103,104 +103,132 @@ export { parseTsv, serializeTsv } from "./utils/clipboard";
 export { createGrid } from "./utils/create-grid";
 export type { CreateGridOptions } from "./utils/create-grid";
 export {
-    defaultTextFilter,
-    numberFilter,
-    dateFilter,
+  defaultTextFilter,
+  numberFilter,
+  dateFilter,
 } from "./utils/filter-functions";
 export {
-    calculateVisibleRange,
-    scrollToRow,
-    getVisibleRowRange,
-    createScrollHandler,
+  calculateVisibleRange,
+  scrollToRow,
+  getVisibleRowRange,
+  createScrollHandler,
 } from "./utils/virtual-scroll";
 export {
-    clampColumnWidth,
-    calculateColumnContentWidth,
-    findColumnDefById,
-    getColumnSizeBounds,
-    measureTextWidth,
-    resolveColumnId,
+  clampColumnWidth,
+  calculateColumnContentWidth,
+  findColumnDefById,
+  getColumnSizeBounds,
+  measureTextWidth,
+  resolveColumnId,
 } from "./utils/column-sizing";
 export {
-    computeTotalPages,
-    clampPageIndex,
-    computePageRange,
-    DEFAULT_PAGE_SIZE,
-    DEFAULT_PAGE_SIZE_OPTIONS,
+  computeTotalPages,
+  clampPageIndex,
+  computePageRange,
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_PAGE_SIZE_OPTIONS,
 } from "./utils/pagination";
 export { Virtualizer } from "./utils/virtualizer";
 export {
-    appendRowSelection,
-    buildRangeSelection,
-    buildSelectAllSelection,
-    buildSingleSelection,
-    getSelectedRowIdsFromState,
-    removeRowSelection,
+  appendRowSelection,
+  buildRangeSelection,
+  buildSelectAllSelection,
+  buildSingleSelection,
+  getSelectedRowIdsFromState,
+  removeRowSelection,
 } from "./utils/selection-utils";
 export type { RowIdentifier } from "./utils/selection-utils";
 export {
-    cellAddressToA1,
-    cellKey,
-    cellRefTokenToA1,
-    columnIndexToLetters,
-    expandRange,
-    lettersToColumnIndex,
-    parseA1Cell,
-    parseA1Range,
-    parseCellKey,
-    rangeToA1,
+  cellAddressToA1,
+  cellKey,
+  cellRefTokenToA1,
+  columnIndexToLetters,
+  expandRange,
+  lettersToColumnIndex,
+  parseA1Cell,
+  parseA1Range,
+  parseCellKey,
+  rangeToA1,
 } from "./utils/a1-notation";
 export {
-    evaluateFormula,
-    evaluateParsedFormula,
-    isFormula,
-    isFormulaError,
-    normalizeFormula,
-    parseFormula,
-    FORMULA_FN_AVG,
-    FORMULA_FN_AVERAGE,
-    FORMULA_FN_COUNT,
-    FORMULA_FN_MAX,
-    FORMULA_FN_MIN,
-    FORMULA_FN_SUM,
+  evaluateFormula,
+  evaluateParsedFormula,
+  isFormula,
+  isFormulaError,
+  normalizeFormula,
+  parseFormula,
+  FORMULA_FN_AVG,
+  FORMULA_FN_AVERAGE,
+  FORMULA_FN_COUNT,
+  FORMULA_FN_MAX,
+  FORMULA_FN_MIN,
+  FORMULA_FN_SUM,
 } from "./utils/formula-parser";
 export {
-    buildDependentsIndex,
-    clearDependencies,
-    collectAffectedCells,
-    setDependencies,
-    topologicalSortAffected,
+  buildDependentsIndex,
+  clearDependencies,
+  collectAffectedCells,
+  setDependencies,
+  topologicalSortAffected,
 } from "./utils/formula-graph";
 export type { DependencyMap, TopoResult } from "./utils/formula-graph";
 export {
-    FormulaEngine,
-    InMemoryFormulaStore,
-    createFormulaEngineFromMatrix,
+  FormulaEngine,
+  InMemoryFormulaStore,
+  createFormulaEngineFromMatrix,
 } from "./utils/formula-engine";
 export {
-    applyColumnDefPins,
-    buildColumnPinningFromDefs,
-    pinColumnInState,
-    reorderPinnedOnColumnDrag,
+  applyColumnDefPins,
+  buildColumnPinningFromDefs,
+  pinColumnInState,
+  reorderPinnedOnColumnDrag,
 } from "./utils/pinning-utils";
 export {
-    coerceEditorValue,
-    isColumnEditable,
-    isCustomEditor,
-    resolveEditorType,
-    supportsDoubleClickTrigger,
-    supportsEnterTrigger,
-    validateEditValue,
+  coerceEditorValue,
+  isColumnEditable,
+  isCustomEditor,
+  resolveEditorType,
+  supportsDoubleClickTrigger,
+  supportsEnterTrigger,
+  validateEditValue,
 } from "./utils/editing-utils";
 export type { EditValidationResult } from "./utils/editing-utils";
 export {
-    registerComponent,
-    registerComponents,
-    getRegisteredComponent,
-    unregisterComponent,
-    clearComponentRegistry,
-    resolveComponentRef,
+  registerComponent,
+  registerComponents,
+  getRegisteredComponent,
+  unregisterComponent,
+  clearComponentRegistry,
+  resolveComponentRef,
 } from "./utils/component-registry";
 export { ComponentPortal } from "./utils/component-portal";
 export { renderComponent } from "./utils/render-component";
 export { resolveHeaderContent } from "./utils/resolve-header-content";
+
+// 主题系统（RFC-0011 & RFC-0016）
+export {
+  themeManager,
+  ThemeManager,
+  createThemeEditor,
+  cloneTheme,
+  ThemeEditor,
+  themeToCSS,
+  themeToCSSVariables,
+  applySystemTheme,
+  watchSystemTheme,
+} from "@ac-grid/theme-base";
+export type {
+  ACGridTheme,
+  ACGridThemeColors,
+  ACGridThemeSpacing,
+  ACGridThemeTypography,
+  ACGridThemeBorders,
+  ACGridThemeShadows,
+  ThemeChangeListener,
+  ThemePreviewListener,
+  ThemeValidationResult,
+  ThemePackageMetadata,
+  ThemeTransitionOptions,
+  ThemeExportOptions,
+  ThemeImportOptions,
+} from "@ac-grid/theme-base";

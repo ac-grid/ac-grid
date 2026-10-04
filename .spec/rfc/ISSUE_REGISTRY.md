@@ -16,8 +16,8 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 | 0007 | Row selection | [ACG-10](mention://issue/7eb0775c-99ad-49c6-92c6-8b38dbe3cd0a) | done | 3 |
 | 0008 | Column pinning | [ACG-11](mention://issue/22a51744-a4f7-4b4c-b941-b31176bbc816) | done | 4 |
 | 0009 | Cell editing | [ACG-12](mention://issue/14e4823f-7cda-4988-882f-ae6f9cdab6a2) | done | 4 |
-| 0010 | Grouping and aggregation | [ACG-21](mention://issue/6d6679b3-e34d-41fa-a479-788382658423) | backlog | 4 |
-| 0011 | Theme system advanced | [ACG-14](mention://issue/2d130de1-2c23-44f5-a391-d827eea5702a) | backlog | 5 |
+| 0010 | Grouping and aggregation | [ACG-21](mention://issue/6d6679b3-e34d-41fa-a479-788382658423) | done | 4 |
+| 0011 | Theme system advanced | [ACG-14](mention://issue/2d130de1-2c23-44f5-a391-d827eea5702a) | done | 5 |
 | 0012 | Keyboard navigation | [ACG-15](mention://issue/e1382f18-91a4-4a06-a6ed-6abe2274af22) | backlog | 5 |
 | 0013 | Accessibility | [ACG-16](mention://issue/59fd0c81-5b57-4c6d-89fb-b04876d18f59) | backlog | 5 |
 | 0014 | Data export | [ACG-17](mention://issue/0f7f310a-941e-48b3-978d-b53829c10ae1) | backlog | 6 |
