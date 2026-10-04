@@ -24,32 +24,33 @@
 - [x] Horizontal scroll sync (header/body) — PR #17 merged (ACG-118 done)
 - [x] RFC-0019 custom components — PR #16 merged (ACG-13 done)
 - [ ] v0.3.0: Grouping/aggregation (0010) — 收尾缺口 (10-14天)
-- [ ] v0.4.0: Theme advanced (0011) / Keyboard (0012) / a11y (0013)
+- [x] v0.4.0: Theme advanced (0011) — 已完成 (ACG-14)
+- [ ] v0.4.0: Keyboard (0012) / a11y (0013)
 
 ---
 
 ## Parity planning (ACG-2) — Done 2026-06-28
 
-| Deliverable | Path | Status |
-|-------------|------|--------|
-| AG Grid ↔ AC Grid 对标矩阵 | `.spec/rfc/PARITY_MATRIX.md` | Done |
-| Community 缺口 RFC 0017–0019 | `.spec/rfc/0017`–`0019` | Done (draft) |
-| Enterprise 对标 RFC 0020–0029 | `.spec/rfc/0020`–`0029` | Done (draft) |
-| Stretch RFC 0030–0032 | `.spec/rfc/0030`–`0032` | Done (draft) |
-| RFC 索引更新 | `.spec/rfc/README.md` | Done |
-| 路线图 Phase 2/3 | `.spec/ROADMAP.md` | Done |
+| Deliverable                           | Path                          | Status          |
+| ------------------------------------- | ----------------------------- | --------------- |
+| AG Grid ↔ AC Grid 对标矩阵            | `.spec/rfc/PARITY_MATRIX.md`  | Done            |
+| Community 缺口 RFC 0017–0019          | `.spec/rfc/0017`–`0019`       | Done (draft)    |
+| Enterprise 对标 RFC 0020–0029         | `.spec/rfc/0020`–`0029`       | Done (draft)    |
+| Stretch RFC 0030–0032                 | `.spec/rfc/0030`–`0032`       | Done (draft)    |
+| RFC 索引更新                          | `.spec/rfc/README.md`         | Done            |
+| 路线图 Phase 2/3                      | `.spec/ROADMAP.md`            | Done            |
 | **RFC → Issue 映射（32 个子 issue）** | `.spec/rfc/ISSUE_REGISTRY.md` | Done 2026-06-29 |
 
 ---
 
 ## Site & docs (this sprint)
 
-| Task | Status | Notes |
-|------|--------|-------|
-| TASK_TRACKING.md + ROADMAP sync rule | Done | This file + parity matrix |
-| Violet design system | Done | site/design-system/ac-grid/MASTER.md |
-| Docs structure | Done | Getting Started, API, Features |
-| Site build (tsconfig) | Pending | Resolve extends / 404 |
+| Task                                 | Status  | Notes                                |
+| ------------------------------------ | ------- | ------------------------------------ |
+| TASK_TRACKING.md + ROADMAP sync rule | Done    | This file + parity matrix            |
+| Violet design system                 | Done    | site/design-system/ac-grid/MASTER.md |
+| Docs structure                       | Done    | Getting Started, API, Features       |
+| Site build (tsconfig)                | Pending | Resolve extends / 404                |
 
 ---
 
@@ -60,7 +61,7 @@
 - v0.1.0: Column resizing (RFC-0004), 100% test coverage, Storybook
 - v0.2.0: Virtual scroll (0005), Pagination (0006), Row selection (0007)
 - v0.3.0: Pinning (0008) ✅, Cell editing (0009) ✅, Grouping/aggregation (0010) — remaining
-- v0.4.0: Custom components (0019), Keyboard (0012), a11y (0013), Theme advanced (0011)
+- v0.4.0: Custom components (0019) ✅, Theme advanced (0011) ✅, Keyboard (0012), a11y (0013)
 - v0.5.0: CSV export (0014), i18n (0015), Framework bindings (0017), State API (0018)
 
 ### Phase 2 — Enterprise (v1.1.0–v1.2.0)

@@ -17,7 +17,7 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 | 0008 | Column pinning | [ACG-11](mention://issue/22a51744-a4f7-4b4c-b941-b31176bbc816) | done | 4 |
 | 0009 | Cell editing | [ACG-12](mention://issue/14e4823f-7cda-4988-882f-ae6f9cdab6a2) | done | 4 |
 | 0010 | Grouping and aggregation | [ACG-21](mention://issue/6d6679b3-e34d-41fa-a479-788382658423) | done | 4 |
-| 0011 | Theme system advanced | [ACG-14](mention://issue/2d130de1-2c23-44f5-a391-d827eea5702a) | backlog | 5 |
+| 0011 | Theme system advanced | [ACG-14](mention://issue/2d130de1-2c23-44f5-a391-d827eea5702a) | done | 5 |
 | 0012 | Keyboard navigation | [ACG-15](mention://issue/e1382f18-91a4-4a06-a6ed-6abe2274af22) | backlog | 5 |
 | 0013 | Accessibility | [ACG-16](mention://issue/59fd0c81-5b57-4c6d-89fb-b04876d18f59) | backlog | 5 |
 | 0014 | Data export | [ACG-17](mention://issue/0f7f310a-941e-48b3-978d-b53829c10ae1) | backlog | 6 |
@@ -29,7 +29,7 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 | 0020 | Tree data | [ACG-22](mention://issue/8db725be-cd41-4e81-8590-6cd3655c5ead) | backlog | 7 |
 | 0021 | Master detail | [ACG-23](mention://issue/d3fe4f73-8023-438e-ae43-f592a74b211b) | backlog | 7 |
 | 0022 | Range selection | [ACG-24](mention://issue/f65fa1b3-3001-442e-96f8-974f6b278059) | backlog | 7 |
-| 0023 | Clipboard operations | [ACG-25](mention://issue/819dce3a-8a3b-45a5-9fc5-e8c98520aa7f) | backlog | 7 |
+| 0023 | Clipboard operations | [ACG-25](mention://issue/819dce3a-8a3b-45a5-9fc5-e8c98520aa7f) | done | 7 |
 | 0024 | Pivot mode | [ACG-27](mention://issue/1694e769-2e69-4bd4-83b3-ae8163d43188) | backlog | 8 |
 | 0025 | Excel export advanced | [ACG-28](mention://issue/81224094-76f4-4f78-8e1d-127b83760013) | backlog | 8 |
 | 0026 | Context and column menus | [ACG-26](mention://issue/9ffb6021-2820-4e1c-b99f-0e81753e6da5) | backlog | 7 |
