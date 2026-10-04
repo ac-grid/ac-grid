@@ -25,6 +25,7 @@ export type {
     PaginatedData,
 } from "./types/pagination";
 export type { GridSelectionConfig } from "./types/selection";
+export type { ClipboardCellParams, ClipboardPasteParams, GridClipboardConfig } from "./types/clipboard";
 export type { GridPinningConfig } from "./types/pinning";
 export type {
     GridEditingConfig,
@@ -98,6 +99,7 @@ export type { DropdownOption, DropdownProps } from "./components/Dropdown.wsx";
 
 // 导出工具函数
 export { arrayMove } from "./utils/array-move";
+export { parseTsv, serializeTsv } from "./utils/clipboard";
 export { createGrid } from "./utils/create-grid";
 export type { CreateGridOptions } from "./utils/create-grid";
 export {
