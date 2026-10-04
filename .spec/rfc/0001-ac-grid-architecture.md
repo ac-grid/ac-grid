@@ -36,7 +36,7 @@ AC Grid 是一个高性能的数据表格组件库，旨在作为 AG Grid 的替
 
 ### 计划特性（详见各功能 RFC）
 
-- 🚧 **排序功能**: 单列/多列排序，自定义排序函数 ([RFC-0002](./0002-sorting-feature.md))
+- 🚧 **排序功能**: 单列/多列排序，自定义排序函数 ([RFC-0002](./completed/0002-sorting-feature.md))
 - ✔️ **过滤功能**: 列过滤、全局搜索 ([RFC-0003](./completed/0003-filtering-feature.md))
 - ✅ **虚拟滚动**: 行虚拟化已落地 ([RFC-0005](./completed/0005-virtual-scrolling.md))
 - ✅ **分页**: 前端分页和服务端分页 ([RFC-0006](./completed/0006-pagination.md))
@@ -672,7 +672,7 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 | 功能       | RFC                                     | 状态      | 优先级 |
 | ---------- | --------------------------------------- | --------- | ------ |
-| 排序功能   | [RFC-0002](./0002-sorting-feature.md)   | 🚧 实施中 | P0     |
+| 排序功能   | [RFC-0002](./completed/0002-sorting-feature.md)   | 🚧 实施中 | P0     |
 | 过滤功能   | [RFC-0003](./completed/0003-filtering-feature.md) | ✔️ 已完成 | P0     |
 | 列调整大小 | [RFC-0004](./completed/0004-column-resizing.md)   | ✔️ 已完成 | P1     |
 
@@ -694,7 +694,7 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 | -------- | --------------------------------------- | --------- | ------ |
 | 虚拟滚动 | [RFC-0005](./completed/0005-virtual-scrolling.md) | ✔️ 已完成 | P0     |
 | 分页功能 | [RFC-0006](./completed/0006-pagination.md)        | ✅ 已完成 | P0     |
-| 行选择   | [RFC-0007](./0007-row-selection.md)     | 📝 待编写 | P1     |
+| 行选择   | [RFC-0007](./completed/0007-row-selection.md)     | 📝 待编写 | P1     |
 
 **交付物**：
 
