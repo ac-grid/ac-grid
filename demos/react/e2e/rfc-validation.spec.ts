@@ -234,6 +234,36 @@ test.describe("RFC validation demos (browser)", () => {
             .not.toBe("");
     });
 
+    test("RFC-0010 groups rows, calculates aggregations, and expands/collapses groups", async ({ page }) => {
+        await page.goto("/?rfc=0010");
+        await expect(page.locator("wsx-ac-grid .grid-row").first()).toBeVisible({ timeout: 15_000 });
+
+        // Group rows should be rendered
+        const groupRows = page.locator("wsx-ac-grid .grid-row.grid-row-grouped");
+        await expect(groupRows).toHaveCount(3); // single, complicated, relationship
+
+        // Verify aggregation renders members count, avg age, or sum visits in cells
+        await expect(page.locator("wsx-ac-grid .grid-cell-group").first()).toBeVisible();
+        await expect(page.locator("text=/\\d+ members/").first()).toBeVisible();
+
+        const initialRowCount = await page.locator("wsx-ac-grid .grid-row").count();
+        expect(initialRowCount).toBeGreaterThan(3);
+
+        // Click collapse all button
+        await page.locator('[data-testid="collapse-all-btn"]').click();
+        await expect(page.locator("wsx-ac-grid .grid-row")).toHaveCount(3);
+
+        // Click first grouped row to expand it
+        await page.locator("wsx-ac-grid .grid-row.grid-row-grouped").first().click();
+        await expect
+            .poll(async () => page.locator("wsx-ac-grid .grid-row").count())
+            .toBeGreaterThan(3);
+
+        // Click expand all button -> all rows restored
+        await page.locator('[data-testid="expand-all-btn"]').click();
+        await expect(page.locator("wsx-ac-grid .grid-row")).toHaveCount(initialRowCount);
+    });
+
     test("RFC-0030 recalculates formula result after input change", async ({ page }) => {
         await page.goto("/?rfc=0030");
         await expect(page.locator('[data-testid="formula-sum"]')).toHaveText("C1 = SUM(A1:B1) = 15");

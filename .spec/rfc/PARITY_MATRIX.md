@@ -75,10 +75,10 @@
 
 | 功能     | AG Grid    | AC Grid | RFC                                    | 版本   |
 | -------- | ---------- | ------- | -------------------------------------- | ------ |
-| 行分组   | Enterprise | 📝      | [0010](./0010-grouping-aggregation.md) | v1.1.0 |
-| 数据聚合 | Enterprise | 📝      | [0010](./0010-grouping-aggregation.md) | v1.1.0 |
+| 行分组   | Enterprise | ✅      | [0010](./completed/0010-grouping-aggregation.md) | v0.3.0 |
+| 数据聚合 | Enterprise | ✅      | [0010](./completed/0010-grouping-aggregation.md) | v0.3.0 |
 
-> 0010 保留在 v0.3.0 草稿；对标上属 Enterprise，实施顺延至 Phase 2。
+> 0010 行分组与数据聚合已在 v0.3.0 完成实施并通过单元测试与 E2E 验证（PR #18、ACG-121）。
 
 ### 体验与导出
 

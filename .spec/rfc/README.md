@@ -57,7 +57,7 @@
 | ------------------------------------------ | ---------------- | --------- | ----- | --------- | ---------- |
 | [0008](./completed/0008-column-pinning.md) | 列固定 (Pinning) | ✔️ 已完成 | 0.3.0 | Albert Li | 2026-01-24 |
 | [0009](./completed/0009-cell-editing.md)   | 单元格编辑       | ✔️ 已完成 | 0.3.0 | Albert Li | 2026-01-24 |
-| [0010](./0010-grouping-aggregation.md)     | 分组和聚合       | 📝 草稿   | 0.3.0 | Albert Li | 2026-01-24 |
+| [0010](./completed/0010-grouping-aggregation.md) | 分组和聚合 | ✔️ 已完成 | 0.3.0 | Albert Li | 2026-01-24 |
 
 ### 第四阶段：用户体验 (v0.4.0)
 
@@ -121,6 +121,7 @@
 | [0030](./completed/0030-formulas.md)    | 单元格公式   | ✔️ 已完成  | 2.0.0 | Albert Li | 2026-06-28 |
 | [0031](./0031-server-side-row-model.md) | 服务端行模型 | 🔮 Stretch | 2.0.0 | Albert Li | 2026-06-28 |
 | [0032](./0032-ai-toolkit.md)            | AI Toolkit   | 🔮 Stretch | TBD   | Albert Li | 2026-06-28 |
+| [0035](./0035-rfc-0010-e2e-coverage.md) | RFC-0010 E2E 覆盖 | ✔️ 已完成 | 0.3.0 | Albert Li | 2026-10-08 |
 
 ## 相关资源
 

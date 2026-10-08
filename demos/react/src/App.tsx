@@ -154,6 +154,27 @@ function App() {
 
                     <p className="demo-hint">{spec.hint}</p>
 
+                    {rfcId === "0010" ? (
+                        <div className="demo-grouping-panel" data-testid="grouping-panel">
+                            <button
+                                type="button"
+                                className="demo-btn"
+                                data-testid="expand-all-btn"
+                                onClick={() => gridRef.current?.expandAll?.()}
+                            >
+                                全部展开
+                            </button>
+                            <button
+                                type="button"
+                                className="demo-btn"
+                                data-testid="collapse-all-btn"
+                                onClick={() => gridRef.current?.collapseAll?.()}
+                            >
+                                全部折叠
+                            </button>
+                        </div>
+                    ) : null}
+
                     {rfcId === "0030" ? (
                         <div className="demo-formula-panel" data-testid="formula-panel">
                             <span>A1: {formulaInput}</span>

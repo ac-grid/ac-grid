@@ -39,6 +39,7 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 | 0030 | Formulas | [ACG-32](mention://issue/5c692c0e-607e-4606-8e9c-03166118322c) | done | 9 |
 | 0031 | Server-side row model | [ACG-33](mention://issue/85eb0427-8791-478b-9830-0fad442b5d9e) | backlog | 9 |
 | 0032 | AI toolkit | [ACG-34](mention://issue/34de54e5-5c6f-40b8-8056-f503a415975c) | backlog | 9 |
+| 0035 | RFC-0010 E2E coverage | [ACG-121](mention://issue/01a1040d-83d9-7d30-98fd-bcd4ff2375ab) | in_review | 10 |
 
 ## Stage promotion order
 
@@ -51,3 +52,4 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 7. v1.1.0 Enterprise: 0020–0023, 0026
 8. v1.2.0 Enterprise: 0024–0025, 0027–0029
 9. v2.0+ Stretch: 0030–0032
+10. Stage 10 Gap Closing: 0035
