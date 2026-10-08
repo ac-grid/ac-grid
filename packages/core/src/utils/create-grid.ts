@@ -18,6 +18,7 @@ import type { GridPinningConfig } from "../types/pinning";
 import type { GridComponentsConfig } from "../types/components";
 import type { GridGroupingConfig } from "../types/grouping";
 import type { GridClipboardConfig } from "../types/clipboard";
+import type { GridI18nConfig } from "../types/i18n";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
   /**
@@ -78,6 +79,18 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
    * 主题切换过渡动画时长（毫秒，RFC-0011）
    */
   themeTransitionDuration?: number;
+  /**
+   * 国际化配置（RFC-0015）
+   */
+  i18n?: GridI18nConfig;
+  /**
+   * 语言代码（RFC-0015）
+   */
+  locale?: string;
+  /**
+   * 自定义文本消息（RFC-0015）
+   */
+  messages?: Record<string, string>;
   /**
    * 初始主题名称（RFC-0011）
    */
@@ -181,6 +194,18 @@ export function createGrid<TData extends { userId?: string }>(
 
   if (clipboard) {
     gridElement.clipboardConfig = clipboard;
+  }
+
+  if (options.i18n) {
+    gridElement.i18nConfig = options.i18n;
+  }
+
+  if (options.locale) {
+    gridElement.setLocale(options.locale);
+  }
+
+  if (options.messages) {
+    gridElement.i18nManager.setMessages(options.messages);
   }
 
   if (options.themeTransition !== undefined) {

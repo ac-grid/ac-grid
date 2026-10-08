@@ -2,10 +2,14 @@
 import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
 import "./GlobalSearch.css";
 
+import type { I18nManager } from "../i18n/manager";
+import { defaultI18nManager } from "../i18n/manager";
+
 export interface GlobalSearchProps {
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;
+    i18n?: I18nManager;
 }
 
 @autoRegister({ tagName: "wsx-ac-global-search" })
@@ -25,7 +29,15 @@ export class GlobalSearch extends LightComponent {
 
     get placeholder(): string { return this._placeholder; }
     set placeholder(val: string) { this._placeholder = val; }
-    private _placeholder: string = "Search all columns...";
+    private _placeholder: string = "";
+
+    get i18n(): I18nManager { return this._i18n; }
+    set i18n(val: I18nManager) {
+        if (val && val !== this._i18n) {
+            this._i18n = val;
+        }
+    }
+    @state private _i18n: I18nManager = defaultI18nManager;
 
     @state private inputValue: string = "";
 
@@ -35,6 +47,7 @@ export class GlobalSearch extends LightComponent {
         if (el.value !== undefined) this.value = el.value;
         if (el.onChange) this.onChange = el.onChange;
         if (el.placeholder) this.placeholder = el.placeholder;
+        if (el.i18n !== undefined) this.i18n = el.i18n;
     }
 
     private handleInput = (e: Event) => {
@@ -53,6 +66,14 @@ export class GlobalSearch extends LightComponent {
     };
 
     render() {
+        const i18n = this._i18n || defaultI18nManager;
+        const defaultPlaceholder = i18n.t(
+            "grid.filter.searchPlaceholder",
+            undefined,
+            "Search all columns..."
+        );
+        const placeholder = this._placeholder || defaultPlaceholder;
+
         return (
             <div className="global-search">
                 <input
@@ -60,7 +81,7 @@ export class GlobalSearch extends LightComponent {
                     className="global-search-input"
                     value={this.inputValue}
                     onInput={this.handleInput}
-                    placeholder={this._placeholder}
+                    placeholder={placeholder}
                 />
             </div>
         );

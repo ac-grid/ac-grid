@@ -66,6 +66,13 @@ export type {
   FormulaValue,
   GridFormulasConfig,
 } from "./types/formulas";
+export type {
+  SupportedLocale,
+  I18nMessages,
+  LanguagePack,
+  I18nManagerOptions,
+  GridI18nConfig,
+} from "./types/i18n";
 
 // 导出组件
 // @ts-ignore - .wsx 文件在构建时会被处理
@@ -204,6 +211,15 @@ export {
 export { ComponentPortal } from "./utils/component-portal";
 export { renderComponent } from "./utils/render-component";
 export { resolveHeaderContent } from "./utils/resolve-header-content";
+
+// 国际化 (RFC-0015)
+export {
+  I18nManager,
+  defaultI18nManager,
+  isRtlLocale,
+  enUS,
+  zhCN,
+} from "./i18n";
 
 // 主题系统（RFC-0011 & RFC-0016）
 export {
