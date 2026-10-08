@@ -5,6 +5,9 @@ import "./FilterInput.wsx";
 import type { Column } from "@tanstack/table-core";
 import { type FilterCondition } from "../types/filtering";
 
+import type { I18nManager } from "../i18n/manager";
+import { defaultI18nManager } from "../i18n/manager";
+
 @autoRegister({ tagName: "wsx-ac-filter-menu" })
 export class FilterMenu extends LightComponent {
     get column(): Column<any, unknown> { return this._column; }
@@ -32,10 +35,19 @@ export class FilterMenu extends LightComponent {
     set onClose(val: (() => void) | undefined) { this._onClose = val; }
     private _onClose: (() => void) | undefined;
 
+    get i18n(): I18nManager { return this._i18n; }
+    set i18n(val: I18nManager) {
+        if (val && val !== this._i18n) {
+            this._i18n = val;
+        }
+    }
+    @state private _i18n: I18nManager = defaultI18nManager;
+
     onConnected() {
         super.onConnected?.();
         const el = this as any;
         if (el.column) this.column = el.column;
+        if (el.i18n !== undefined) this.i18n = el.i18n;
         
         // 优先使用直接设置的 _value（这是在 appendChild 之后设置的）
         // 因为 WSX 属性代理在元素连接前不会调用 setter
@@ -87,6 +99,7 @@ export class FilterMenu extends LightComponent {
                 <wsx-ac-filter-input
                     column={this._column}
                     value={this._value}
+                    i18n={this._i18n}
                     onChange={this._handleFilterChange}
                 />
             </div>
