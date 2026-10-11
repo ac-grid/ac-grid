@@ -2533,6 +2533,7 @@ export class Grid extends LightComponent {
         this.expanded = expanded;
         this._groupingConfig.onExpandedChange?.(expanded);
         this.updateTable();
+        this.rerender();
     }
 
     /** RFC-0019: 切换加载遮罩 */

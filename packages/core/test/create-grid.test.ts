@@ -35,6 +35,11 @@ describe("createGrid", () => {
                 enabled: true,
                 initialGrouping: [NAME_COLUMN_ID],
             },
+            clipboard: { enabled: true },
+            rangeSelection: { enabled: true },
+            i18n: { locale: "zh-CN" },
+            locale: "en-US",
+            messages: { "grid.loading": "Loading rows" },
             container,
         }) as HTMLElement & {
             className: string;
@@ -47,6 +52,10 @@ describe("createGrid", () => {
             pinningConfig: { enabled?: boolean };
             componentsConfig: { isLoading?: boolean };
             groupingConfig: { enabled?: boolean; initialGrouping?: string[] };
+            clipboardConfig: { enabled?: boolean };
+            rangeSelectionConfig: { enabled?: boolean };
+            i18nConfig: { locale?: string };
+            i18nManager: { getLocale: () => string; t: (key: string) => string };
         };
 
         expect(container.contains(grid)).toBe(true);
@@ -61,5 +70,9 @@ describe("createGrid", () => {
         expect(grid.pinningConfig.enabled).toBe(true);
         expect(grid.componentsConfig.isLoading).toBe(true);
         expect(grid.groupingConfig.initialGrouping).toEqual([NAME_COLUMN_ID]);
+        expect(grid.clipboardConfig.enabled).toBe(true);
+        expect(grid.rangeSelectionConfig.enabled).toBe(true);
+        expect(grid.i18nConfig.locale).toBe("zh-CN");
+        expect(grid.i18nManager.getLocale()).toBe("zh-CN");
     });
 });
