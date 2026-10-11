@@ -21,7 +21,7 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 | 0012 | Keyboard navigation | [ACG-15](mention://issue/e1382f18-91a4-4a06-a6ed-6abe2274af22) | backlog | 5 |
 | 0013 | Accessibility | [ACG-16](mention://issue/59fd0c81-5b57-4c6d-89fb-b04876d18f59) | backlog | 5 |
 | 0014 | Data export | [ACG-17](mention://issue/0f7f310a-941e-48b3-978d-b53829c10ae1) | backlog | 6 |
-| 0015 | Internationalization | [ACG-18](mention://issue/d5a2e0ae-8402-400d-98f4-c19b7b0f34bc) | backlog | 6 |
+| 0015 | Internationalization | [ACG-18](mention://issue/d5a2e0ae-8402-400d-98f4-c19b7b0f34bc) | in_review | 6 |
 | 0016 | Theme system foundation | [ACG-4](mention://issue/3447d9fa-35f0-4b9f-b361-2356699a91d5) | done | 1 |
 | 0017 | Framework bindings | [ACG-19](mention://issue/0138d8f1-bf8c-4450-9f15-791603551e8f) | backlog | 6 |
 | 0018 | Grid state API | [ACG-20](mention://issue/593562e1-fb98-47b8-9f6b-38bbba4505e6) | backlog | 6 |

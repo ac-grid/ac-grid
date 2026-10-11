@@ -86,7 +86,7 @@
 | ---------------- | --------- | ------- | ---------------------------------------- | ------ |
 | 主题定制（高级） | Community | ✅      | [0011](./completed/0011-theme-system.md) | v0.4.0 |
 | CSV 导出         | Community | 📝      | [0014](./0014-data-export.md)            | v0.5.0 |
-| 国际化 (i18n)    | Community | 📝      | [0015](./0015-internationalization.md)   | v0.5.0 |
+| 国际化 (i18n)    | Community | ✅      | [0015](./completed/0015-internationalization.md) | v0.5.0 |
 
 ### Community 缺口（本轮新增 RFC）
 

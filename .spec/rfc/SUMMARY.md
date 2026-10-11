@@ -174,7 +174,7 @@ docs/rfc/
 ├── 0012-keyboard-navigation.md        # 键盘导航
 ├── 0013-accessibility.md              # 可访问性
 ├── 0014-data-export.md                # 数据导出
-└── 0015-internationalization.md       # 国际化
+└── completed/0015-internationalization.md # 国际化（已完成）
 ```
 
 ## RFC-0002 排序功能亮点

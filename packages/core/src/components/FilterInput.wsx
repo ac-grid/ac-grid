@@ -3,12 +3,15 @@ import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
 import type { Column } from "@tanstack/table-core";
 import { type ColumnDef } from "../types/column";
 import { type FilterCondition, type FilterOperator } from "../types/filtering";
+import type { I18nManager } from "../i18n/manager";
+import { defaultI18nManager } from "../i18n/manager";
 import "./Dropdown.wsx";
 
 export interface FilterInputProps {
     column: Column<any, unknown>;
     value: FilterCondition | string;
     onChange: (condition: FilterCondition) => void;
+    i18n?: I18nManager;
 }
 
 @autoRegister({ tagName: "wsx-ac-filter-input" })
@@ -38,6 +41,14 @@ export class FilterInput extends LightComponent {
     set variant(val: "default" | "floating") { this._variant = val; }
     private _variant: "default" | "floating" = "default";
 
+    get i18n(): I18nManager { return this._i18n; }
+    set i18n(val: I18nManager) {
+        if (val && val !== this._i18n) {
+            this._i18n = val;
+        }
+    }
+    @state private _i18n: I18nManager = defaultI18nManager;
+
     @state private inputValue: string = "";
     @state private operator: FilterOperator = "contains";
 
@@ -51,6 +62,7 @@ export class FilterInput extends LightComponent {
         }
         if (el.onChange) this.onChange = el.onChange;
         if (el.variant) this.variant = el.variant;
+        if (el.i18n !== undefined) this.i18n = el.i18n;
     }
 
     private parseValue(val: FilterCondition | string) {
@@ -101,28 +113,33 @@ export class FilterInput extends LightComponent {
     };
 
     render() {
+        const i18n = this._i18n || defaultI18nManager;
         // 获取列定义，判断过滤类型
         const colDef = this._column?.columnDef as ColumnDef<any>;
         const type = colDef?.filterType === "number" ? "number" : "text";
 
         // 数字过滤选项
         const numberOptions = [
-            { value: "equals", label: "Equals" },
-            { value: "greaterThan", label: "Greater than" },
-            { value: "lessThan", label: "Less than" },
+            { value: "equals", label: i18n.t("grid.filter.equals", undefined, "Equals") },
+            { value: "greaterThan", label: i18n.t("grid.filter.greaterThan", undefined, "Greater than") },
+            { value: "lessThan", label: i18n.t("grid.filter.lessThan", undefined, "Less than") },
         ];
 
         // 文本过滤选项
         const textOptions = [
-            { value: "contains", label: "Contains" },
-            { value: "notContains", label: "Not contains" },
-            { value: "equals", label: "Equals" },
-            { value: "notEqual", label: "Not equal" },
-            { value: "startsWith", label: "Starts with" },
-            { value: "endsWith", label: "Ends with" },
-            { value: "blank", label: "Blank" },
-            { value: "notBlank", label: "Not blank" },
+            { value: "contains", label: i18n.t("grid.filter.contains", undefined, "Contains") },
+            { value: "notContains", label: i18n.t("grid.filter.notContains", undefined, "Not contains") },
+            { value: "equals", label: i18n.t("grid.filter.equals", undefined, "Equals") },
+            { value: "notEqual", label: i18n.t("grid.filter.notEqual", undefined, "Not equal") },
+            { value: "startsWith", label: i18n.t("grid.filter.startsWith", undefined, "Starts with") },
+            { value: "endsWith", label: i18n.t("grid.filter.endsWith", undefined, "Ends with") },
+            { value: "blank", label: i18n.t("grid.filter.blank", undefined, "Blank") },
+            { value: "notBlank", label: i18n.t("grid.filter.notBlank", undefined, "Not blank") },
         ];
+
+        const selectOperatorPlaceholder = i18n.t("grid.filter.selectOperator", undefined, "Select operator");
+        const filterNumberPlaceholder = i18n.t("grid.filter.filterNumberPlaceholder", undefined, "Filter number...");
+        const filterPlaceholder = i18n.t("grid.filter.filterPlaceholder", undefined, "Filter...");
 
         // 数字类型过滤 UI
         if (type === "number") {
@@ -132,14 +149,14 @@ export class FilterInput extends LightComponent {
                         options={numberOptions}
                         value={this.operator}
                         onChange={this.handleDropdownChange}
-                        placeholder="Select operator"
+                        placeholder={selectOperatorPlaceholder}
                     />
                     <input
                         type="number"
                         className="filter-input"
                         value={this.inputValue}
                         onInput={this.handleInput}
-                        placeholder="Filter number..."
+                        placeholder={filterNumberPlaceholder}
                     />
                 </div>
             );
@@ -154,7 +171,7 @@ export class FilterInput extends LightComponent {
                         className="filter-input floating"
                         value={this.inputValue}
                         onInput={this.handleInput}
-                        placeholder="Filter..."
+                        placeholder={filterPlaceholder}
                         disabled={this.operator === 'blank' || this.operator === 'notBlank'}
                     />
                 </div>
@@ -168,14 +185,14 @@ export class FilterInput extends LightComponent {
                     options={textOptions}
                     value={this.operator}
                     onChange={this.handleDropdownChange}
-                    placeholder="Select operator"
+                    placeholder={selectOperatorPlaceholder}
                 />
                 <input
                     type="text"
                     className="filter-input"
                     value={this.inputValue}
                     onInput={this.handleInput}
-                    placeholder="Filter..."
+                    placeholder={filterPlaceholder}
                     disabled={this.operator === 'blank' || this.operator === 'notBlank'}
                 />
             </div>

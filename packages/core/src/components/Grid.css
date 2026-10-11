@@ -409,3 +409,56 @@
   color: var(--ac-grid-text-secondary, #585d61);
   font-size: 14px;
 }
+
+/* RFC-0015: RTL (从右到左) 布局支持 */
+.ac-grid[dir="rtl"],
+.ac-grid.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.ac-grid[dir="rtl"] .grid-header-cell,
+.ac-grid.rtl .grid-header-cell {
+  text-align: right;
+  border-right: none;
+  border-left: 1px solid var(--ac-grid-border, #dde2eb);
+}
+
+.ac-grid[dir="rtl"] .grid-cell,
+.ac-grid.rtl .grid-cell {
+  text-align: right;
+  border-right: none;
+  border-left: 1px solid var(--ac-grid-border, #dde2eb);
+}
+
+.ac-grid[dir="rtl"] .grid-header-cell .header-actions,
+.ac-grid.rtl .grid-header-cell .header-actions {
+  flex-direction: row-reverse;
+}
+
+.ac-grid[dir="rtl"] .resizer,
+.ac-grid.rtl .resizer {
+  right: auto;
+  left: 0;
+}
+
+.ac-grid[dir="rtl"] [data-pinned="left"],
+.ac-grid.rtl [data-pinned="left"] {
+  box-shadow: -2px 0 4px rgba(24, 29, 31, 0.08);
+}
+
+.ac-grid[dir="rtl"] [data-pinned="right"],
+.ac-grid.rtl [data-pinned="right"] {
+  box-shadow: 2px 0 4px rgba(24, 29, 31, 0.08);
+}
+
+.ac-grid[dir="rtl"] .pagination-controls,
+.ac-grid.rtl .pagination-controls {
+  direction: rtl;
+}
+
+.ac-grid[dir="rtl"] .pagination-actions,
+.ac-grid.rtl .pagination-actions {
+  flex-direction: row-reverse;
+}
+
