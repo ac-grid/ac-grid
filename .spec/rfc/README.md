@@ -121,6 +121,13 @@
 | [0030](./completed/0030-formulas.md)    | 单元格公式   | ✔️ 已完成  | 2.0.0 | Albert Li | 2026-06-28 |
 | [0031](./0031-server-side-row-model.md) | 服务端行模型 | 🔮 Stretch | 2.0.0 | Albert Li | 2026-06-28 |
 | [0032](./0032-ai-toolkit.md)            | AI Toolkit   | 🔮 Stretch | TBD   | Albert Li | 2026-06-28 |
+
+### 第十阶段：质量闭环与验收基础设施 (Stage 10)
+
+| RFC | 标题 | 状态 | 版本 | 作者 | 日期 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| [0033](./0033-e2e-test-infrastructure.md) | E2E 测试基础设施 | 📝 草稿 | 0.1.0 | Albert Li | 2026-10-11 |
+| [0034](./0034-rfc-demo-acceptance-matrix.md) | 已完成 RFC 演示验收矩阵 | ✔️ 已完成 | 0.4.0 | Albert Li | 2026-10-11 |
 | [0035](./0035-rfc-0010-e2e-coverage.md) | RFC-0010 E2E 覆盖 | ✔️ 已完成 | 0.3.0 | Albert Li | 2026-10-08 |
 
 ## 相关资源
