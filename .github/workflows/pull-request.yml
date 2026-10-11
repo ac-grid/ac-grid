@@ -1,4 +1,4 @@
-# PR 门禁：先跑单元测试，再构建 core 并跑 demo-react 的 Playwright e2e。
+# PR 门禁：先跑单元测试，再构建 demo-react 的 workspace 依赖并跑 Playwright e2e。
 # 仓库已开启 Actions；本文件进入默认分支后，所有指向 main 的 PR 都会触发。
 name: Pull Request
 
@@ -58,9 +58,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # demo 通过 package exports 引用 dist，e2e 前必须先构建 core 及其依赖。
-      - name: Build core
-        run: pnpm turbo run build --filter=@ac-grid/core
+      # demo 通过 package exports 引用 dist。^... 只构建 demo 的依赖，不含 demo 自身。
+      - name: Build demo dependencies
+        run: pnpm turbo run build --filter=@ac-grid/demo-react^...
 
       - name: Install Chromium
         run: pnpm --filter @ac-grid/demo-react exec playwright install --with-deps chromium
