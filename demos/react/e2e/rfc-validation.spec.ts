@@ -226,6 +226,13 @@ test.describe("RFC validation demos (browser)", () => {
         await expect(page.getByText("Custom Name", { exact: true })).toHaveCount(1);
     });
 
+    test("RFC-0015 renders pagination text from the zh-CN language pack", async ({ page }) => {
+        await page.goto("/?rfc=0015");
+        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await expect(page.locator(".pagination-info")).toContainText("显示第 1 至 10 条");
+        await expect(page.locator(".pagination-controls")).not.toContainText("Showing");
+    });
+
     test("RFC-0016 applies theme variables to the validation grid", async ({ page }) => {
         await page.goto("/?rfc=0016");
         await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
@@ -250,8 +257,11 @@ test.describe("RFC validation demos (browser)", () => {
         expect(initialRowCount).toBeGreaterThan(3);
 
         // Click collapse all button
-        await page.locator('[data-testid="collapse-all-btn"]').click();
-        await expect(page.locator("wsx-ac-grid .grid-row")).toHaveCount(3);
+        // Retry the click: the first one can land before the grid is wired to the toolbar.
+        await expect(async () => {
+            await page.locator('[data-testid="collapse-all-btn"]').click();
+            await expect(page.locator("wsx-ac-grid .grid-row")).toHaveCount(3, { timeout: 1000 });
+        }).toPass();
 
         // Click first grouped row to expand it
         await page.locator("wsx-ac-grid .grid-row.grid-row-grouped").first().click();

@@ -35,7 +35,11 @@ const newPerson = (): Person => {
     };
 };
 
+/** Fixed seed so storybook, demo and Playwright all see identical rows (RFC-0033). */
+export const FIXTURE_SEED = 33;
+
 export function makeData(...lens: number[]) {
+    faker.seed(FIXTURE_SEED);
     const makeDataLevel = (depth = 0): Person[] => {
         const len = lens[depth]!;
         return range(len).map((): Person => {

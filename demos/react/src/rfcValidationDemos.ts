@@ -4,6 +4,7 @@ import {
   AGGREGATION_FN_SUM,
   type ColumnDef,
   type CreateGridOptions,
+  zhCN,
 } from "@ac-grid/core";
 
 import type { Person } from "./stories/makeData";
@@ -20,6 +21,7 @@ export const RFC_VALIDATION_ORDER = [
   "0008",
   "0009",
   "0010",
+  "0015",
   "0016",
   "0019",
   "0030",
@@ -336,6 +338,22 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
           initialGrouping: ["status"],
           initialExpanded: true,
         },
+      }),
+    },
+    "0015": {
+      id: "0015",
+      title: "Internationalization",
+      multicaIssue: "ACG-18",
+      hint: "国际化验收页：分页控件文案由 zh-CN 语言包提供。",
+      rowCount: 40,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 3),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+        pagination: { enabled: true, pageSize: 10, pageSizeOptions: [10, 20] },
+        i18n: { locale: "zh-CN", messages: zhCN.messages },
       }),
     },
     "0016": {
