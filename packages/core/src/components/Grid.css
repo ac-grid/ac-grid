@@ -172,6 +172,12 @@
   white-space: nowrap;
 }
 
+.ac-grid .grid-cell[data-range-selected="true"] {
+  background-color: var(--ac-grid-range-selection-background, color-mix(in srgb, var(--ac-grid-primary, #2196f3) 16%, transparent));
+  box-shadow: inset 0 0 0 1px var(--ac-grid-range-selection-border, var(--ac-grid-primary, #2196f3));
+  user-select: none;
+}
+
 /* Floating Filters */
 .ac-grid .floating-filter-row {
   background-color: var(--ac-grid-bg-header, #f8f8f8);

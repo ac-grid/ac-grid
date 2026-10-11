@@ -43,6 +43,7 @@ import {
 } from "../utils/pagination";
 import type { GridSelectionConfig } from "../types/selection";
 import type { GridClipboardConfig } from "../types/clipboard";
+import type { CellRange, GridRangeSelectionConfig } from "../types/range-selection";
 import type { GridPinningConfig } from "../types/pinning";
 import type { GridEditingConfig } from "../types/editing";
 import type { GridGroupingConfig } from "../types/grouping";
@@ -398,6 +399,62 @@ export class Grid extends LightComponent {
     @state private _clipboardConfigIsSet = false;
     @state private _clipboardConfig: GridClipboardConfig = {};
     @state private activeClipboardCell: { rowId: string; columnId: string } | null = null;
+
+    get rangeSelectionConfig(): GridRangeSelectionConfig | undefined {
+        return this._rangeSelectionConfigIsSet ? this._rangeSelectionConfig : undefined;
+    }
+    set rangeSelectionConfig(value: GridRangeSelectionConfig | undefined) {
+        this._rangeSelectionConfigIsSet = value !== undefined;
+        this._rangeSelectionConfig = value ?? {};
+        if (value === undefined || value.enabled === false) this.setCellRanges([]);
+    }
+    @state private _rangeSelectionConfigIsSet = false;
+    @state private _rangeSelectionConfig: GridRangeSelectionConfig = {};
+    @state private cellRanges: CellRange[] = [];
+    private rangeAnchor: { row: number; column: number } | null = null;
+    private rangeSelecting = false;
+
+    private setCellRanges(ranges: CellRange[]) {
+        this.cellRanges = ranges;
+        this._rangeSelectionConfig.onRangeSelectionChanged?.(ranges.map((range) => ({ ...range, columns: [...range.columns] })));
+    }
+    public getCellRanges(): CellRange[] {
+        return this.cellRanges.map((range) => ({ ...range, columns: [...range.columns] }));
+    }
+    public clearCellRanges() {
+        this.rangeAnchor = null;
+        this.setCellRanges([]);
+    }
+    private isCellInRange(rowIndex: number, columnId: string): boolean {
+        return this.cellRanges.some((range) => rowIndex >= range.startRow && rowIndex <= range.endRow && range.columns.includes(columnId));
+    }
+    private updateCellRange(anchorRow: number, anchorColumn: number, targetRow: number, targetColumn: number) {
+        const rows = this.table?.getRowModel().rows ?? [];
+        const columns = this.table?.getVisibleLeafColumns() ?? [];
+        if (!rows.length || !columns.length) return;
+        const startRow = Math.max(0, Math.min(anchorRow, targetRow));
+        const endRow = Math.min(rows.length - 1, Math.max(anchorRow, targetRow));
+        const startColumn = Math.max(0, Math.min(anchorColumn, targetColumn));
+        const endColumn = Math.min(columns.length - 1, Math.max(anchorColumn, targetColumn));
+        this.setCellRanges([{ startRow, endRow, columns: columns.slice(startColumn, endColumn + 1).map((column) => column.id) }]);
+    }
+    private startCellRange(rowIndex: number, columnId: string, event: MouseEvent) {
+        if (!this._rangeSelectionConfigIsSet || this._rangeSelectionConfig.enabled === false) return;
+        const columnIndex = (this.table?.getVisibleLeafColumns() ?? []).findIndex((column) => column.id === columnId);
+        if (columnIndex < 0) return;
+        if (event.shiftKey && this.rangeAnchor) {
+            this.updateCellRange(this.rangeAnchor.row, this.rangeAnchor.column, rowIndex, columnIndex);
+            return;
+        }
+        this.rangeAnchor = { row: rowIndex, column: columnIndex };
+        this.rangeSelecting = true;
+        this.updateCellRange(rowIndex, columnIndex, rowIndex, columnIndex);
+    }
+    private extendCellRange(rowIndex: number, columnId: string) {
+        if (!this.rangeSelecting || !this.rangeAnchor) return;
+        const columnIndex = (this.table?.getVisibleLeafColumns() ?? []).findIndex((column) => column.id === columnId);
+        if (columnIndex >= 0) this.updateCellRange(this.rangeAnchor.row, this.rangeAnchor.column, rowIndex, columnIndex);
+    }
 
     private isClipboardEnabled(): boolean {
         return this._clipboardConfigIsSet && this._clipboardConfig.enabled !== false;
@@ -1493,6 +1550,7 @@ export class Grid extends LightComponent {
 
         const headerGroups = this.table.getHeaderGroups();
         const allRows = this.getDisplayRows();
+        const rowIndexes = new Map(allRows.map((row, index) => [row.id, index]));
         let visibleRows = allRows;
         let paddingTop = 0;
         let paddingBottom = 0;
@@ -1860,6 +1918,8 @@ export class Grid extends LightComponent {
                     <div
                         key={`grid-body-${this.virtualRevision}`}
                         className="grid-body"
+                        onMouseUp={() => { this.rangeSelecting = false; }}
+                        onMouseLeave={() => { this.rangeSelecting = false; }}
                         data-virtual-rev={this.virtualRevision}
                         ref={(el: HTMLElement | null) => {
                             if (!el) {
@@ -1883,6 +1943,7 @@ export class Grid extends LightComponent {
                     >
                         <div style={{ height: `${paddingTop}px` }}></div>
                         {visibleRows.map((row, rowIndex) => {
+                            const rangeRowIndex = rowIndexes.get(row.id) ?? -1;
                             const isDraggingRow = this.draggingRowId === row.id;
                             const isDragOverRow = this.dragOverRowId === row.id;
 
@@ -1912,6 +1973,11 @@ export class Grid extends LightComponent {
                                 data-row-id={row.id}
                                 data-selected={row.getIsSelected() ? "true" : "false"}
                                 onClick={(e: MouseEvent) => {
+                                    if (
+                                        this._rangeSelectionConfigIsSet &&
+                                        this._rangeSelectionConfig.enabled !== false &&
+                                        this._rangeSelectionConfig.combineWithRowSelection === false
+                                    ) return;
                                     if (row.getIsGrouped()) {
                                         this.toggleGroup(row.id, !row.getIsExpanded());
                                         return;
@@ -2048,7 +2114,16 @@ export class Grid extends LightComponent {
                                             key={cell.id}
                                             className={`grid-cell ${isColumnDragging ? "column-dragging" : ""} ${isColumnDragOver ? "column-drag-over" : ""}`}
                                             data-pinned={column.getIsPinned() || undefined}
+                                            data-range-selected={this.isCellInRange(rangeRowIndex, column.id) ? "true" : undefined}
                                             style={{ ...pinnedStyle }}
+                                            onMouseDown={(e: MouseEvent) => {
+                                                if (e.button !== 0 || e.target instanceof Element && (e.target.closest("input,textarea,button,[contenteditable=true]") && (e.target !== e.currentTarget))) return;
+                                                if (rangeRowIndex >= 0) this.startCellRange(rangeRowIndex, column.id, e);
+                                                if (this._rangeSelectionConfigIsSet && this._rangeSelectionConfig.enabled !== false) e.preventDefault();
+                                            }}
+                                            onMouseEnter={() => {
+                                                if (rangeRowIndex >= 0) this.extendCellRange(rangeRowIndex, column.id);
+                                            }}
                                             tabIndex={cellEditable ? 0 : undefined}
                                             onDblClick={
                                                 supportsDoubleClickTrigger(editTrigger)
