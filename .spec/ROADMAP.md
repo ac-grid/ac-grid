@@ -156,17 +156,17 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | ---------- | ---------------------------------------------- | --------- | ------ | ---------- | ---------- |
 | 列固定     | [0008](./rfc/completed/0008-column-pinning.md) | ✅ 已完成 | P1     | 7-9天      | TBD        |
 | 单元格编辑 | [0009](./rfc/completed/0009-cell-editing.md)   | ✅ 已完成 | P0     | —          | 2026-07-26 |
-| 分组和聚合 | [0010](./rfc/0010-grouping-aggregation.md)     | ⏳ 待规划 | P1     | 10-14天    | TBD        |
+| 分组和聚合 | [0010](./rfc/completed/0010-grouping-aggregation.md) | ✅ 已完成 | P1 | — | 2026-10-08 |
 
 **里程碑**:
 
 - [x] 完成所有 RFC 编写
 - [x] 实施列固定
 - [x] 实施单元格编辑
-- [ ] 实施行分组和聚合
-- [ ] 集成测试
-- [ ] 高级功能文档
-- [ ] 发布 v0.3.0
+- [x] 实施行分组和聚合
+- [x] 集成测试
+- [x] 高级功能文档
+- [x] 发布 v0.3.0
 
 **预计发布**: 2026年5月底
 
@@ -253,7 +253,7 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | 范围选择    | [0022](./rfc/0022-range-selection.md)                 | 📝 草稿   | P1     |
 | 剪贴板      | [0023](./rfc/completed/0023-clipboard-operations.md) | ✅ 已完成 | P1     |
 | 右键/列菜单 | [0026](./rfc/0026-context-menu-column-menu.md)        | 📝 草稿   | P2     |
-| 分组聚合    | [0010](./rfc/0010-grouping-aggregation.md)            | 📝 草稿   | P1     |
+| 分组聚合    | [0010](./rfc/completed/0010-grouping-aggregation.md)  | ✅ 已完成 | P1     |
 
 ---
 
@@ -405,6 +405,11 @@ v1.0.0 ░░░░░░░░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 变更日志
+
+### 2026-10-08
+
+- ✅ 行分组与数据聚合 RFC-0010 完成：核心功能与单元测试就绪，补充 demo-react `?rfc=0010` 验收与 Playwright E2E 验证（RFC-0035 / ACG-121）
+- ✅ RFC-0010 移动至 `completed/` 并更新状态为已完成
 
 ### 2026-08-16
 
