@@ -46,3 +46,5 @@ tmp
 # Playwright
 apps/demo-react/test-results/
 apps/demo-react/playwright-report/
+demos/react/test-results/
+demos/react/playwright-report/
