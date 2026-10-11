@@ -22,6 +22,7 @@ import {
     bindHeaderToBodyScrollSync,
     type ScrollSyncSession,
 } from "../utils/scroll-sync";
+import { arrayMove } from "../utils/array-move";
 import { flexRender } from "../utils/flex-render";
 import { resolveHeaderContent } from "../utils/resolve-header-content";
 import { renderComponent } from "../utils/render-component";
@@ -165,6 +166,8 @@ export class Grid extends LightComponent {
 
     // Drag-drop cleanup functions
     private headerDragCleanup: Map<string, () => void> = new Map();
+    // 同一表头节点只注册一次拖拽，避免 dragstart 引起的重渲染拆掉进行中的拖拽。
+    private headerDragElements: Map<string, HTMLElement> = new Map();
     private rowDragCleanup: Map<string, () => void> = new Map();
 
     // Drag-drop state tracking for visual feedback
@@ -804,6 +807,7 @@ export class Grid extends LightComponent {
         // Cleanup header drag-drop listeners
         this.headerDragCleanup.forEach((cleanup) => cleanup());
         this.headerDragCleanup.clear();
+        this.headerDragElements.clear();
 
         // Cleanup row drag-drop listeners
         this.rowDragCleanup.forEach((cleanup) => cleanup());
@@ -1521,6 +1525,16 @@ export class Grid extends LightComponent {
             columnSizes.length > 0 ? columnSizes.join(" ") : "repeat(7, 150px)";
 
         const currentDir = this.i18nManager.getDirection();
+        // WSX 的 h() 只把字符串 style 写进 DOM，对象形式的 CSS 变量会被丢掉。
+        const rootStyle = [
+            `--grid-columns: ${gridTemplateColumns}`,
+            `direction: ${currentDir}`,
+            this._themeTransition
+                ? `--ac-grid-theme-transition-duration: ${this._themeTransitionDuration}ms`
+                : "",
+        ]
+            .filter(Boolean)
+            .join("; ");
 
         return (
             <div
@@ -1528,17 +1542,7 @@ export class Grid extends LightComponent {
                 data-theme-transition={this._themeTransition ? "true" : undefined}
                 dir={currentDir}
                 data-dir={currentDir}
-                style={
-                    {
-                        "--grid-columns": gridTemplateColumns,
-                        direction: currentDir,
-                        ...(this._themeTransition
-                            ? {
-                                  "--ac-grid-theme-transition-duration": `${this._themeTransitionDuration}ms`,
-                              }
-                            : {}),
-                    } as any
-                }
+                style={rootStyle}
             >
                 <div className="grid-container">
                     {/* Header */}
@@ -1622,6 +1626,10 @@ export class Grid extends LightComponent {
                                                 if (el) {
                                                     const columnId = column.id;
 
+                                                    if (this.headerDragElements.get(columnId) === el) {
+                                                        return;
+                                                    }
+
                                                     // Cleanup existing drag-drop if any
                                                     const existingCleanup = this.headerDragCleanup.get(columnId);
                                                     if (existingCleanup) {
@@ -1670,6 +1678,7 @@ export class Grid extends LightComponent {
                                                         dragCleanup();
                                                         dropCleanup();
                                                     });
+                                                    this.headerDragElements.set(columnId, el);
 
                                                     if (canSort) {
                                                         // 移除旧的事件监听器（如果存在）
