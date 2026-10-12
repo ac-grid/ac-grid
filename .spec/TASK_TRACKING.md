@@ -25,6 +25,7 @@
 - [x] RFC-0019 custom components — PR #16 merged (ACG-13 done)
 - [x] v0.3.0: Grouping/aggregation (0010) — 已完成 (ACG-21 / ACG-121)
 - [x] v0.4.0: Theme advanced (0011) — 已完成 (ACG-14)
+- [x] Stage 10: RFC-0034 completed RFC demo acceptance matrix (ACG-120)
 - [ ] v0.4.0: Keyboard (0012) / a11y (0013)
 
 ---

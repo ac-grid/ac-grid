@@ -277,6 +277,16 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | 服务端行模型 | [0031](./rfc/0031-server-side-row-model.md) | 🔮 Stretch |
 | AI Toolkit   | [0032](./rfc/0032-ai-toolkit.md)            | 🔮 Stretch |
 
+---
+
+## 🎯 Stage 10 - 验收基础设施与质量闭环 (Gap Closing & Acceptance)
+
+| 功能 | RFC | 状态 |
+| :--- | :--- | :--- |
+| E2E 测试基础设施 | [0033](./rfc/0033-e2e-test-infrastructure.md) | 📝 草稿 |
+| 已完成 RFC 演示验收矩阵 | [0034](./rfc/0034-rfc-demo-acceptance-matrix.md) | ✔️ 已完成 |
+| RFC-0010 E2E 覆盖闭环 | [0035](./rfc/0035-rfc-0010-e2e-coverage.md) | ✔️ 已完成 |
+
 ### Community 补齐（v0.4.0–v0.5.0，原「未来版本」）
 
 | 功能                         | RFC                                               | 状态      |
