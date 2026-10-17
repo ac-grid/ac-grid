@@ -97,7 +97,7 @@ export class CellEditor extends LightComponent {
         } else if (e.key === "Escape") {
             this._onCancel?.();
         }
-        e.stopPropagation();
+        if (e.key === "Enter" || e.key === "Escape") e.preventDefault();
     };
 
     private handleBlur = () => {
