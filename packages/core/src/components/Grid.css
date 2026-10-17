@@ -468,3 +468,16 @@
   flex-direction: row-reverse;
 }
 
+/* Keep keyboard focus visible in both the default and high-contrast themes. */
+.ac-grid :focus-visible {
+  outline: 2px solid var(--ac-grid-focus, #005fcc);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+@media (forced-colors: active) {
+  .ac-grid :focus-visible {
+    outline-color: Highlight;
+  }
+}
+

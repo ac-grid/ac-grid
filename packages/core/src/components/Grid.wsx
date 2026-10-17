@@ -126,6 +126,10 @@ export interface GridProps<TData extends { userId?: string }> {
      * 自定义类名
      */
     className?: string;
+    /** Accessible name announced by assistive technology. */
+    ariaLabel?: string;
+    /** Optional additional description for the grid. */
+    ariaDescription?: string;
 }
 
 /**
@@ -133,6 +137,14 @@ export interface GridProps<TData extends { userId?: string }> {
  */
 @autoRegister({ tagName: "wsx-ac-grid" })
 export class Grid extends LightComponent {
+    /** Accessible name and description (RFC-0013). */
+    @state private _ariaLabel = "Data grid";
+    @state private _ariaDescription = "";
+
+    get ariaLabel(): string { return this._ariaLabel; }
+    set ariaLabel(value: string) { this._ariaLabel = value?.trim() || "Data grid"; }
+    get ariaDescription(): string | undefined { return this._ariaDescription || undefined; }
+    set ariaDescription(value: string | undefined) { this._ariaDescription = value?.trim() || ""; }
     @state private columnOrder: string[] = [];
     @state private gridData: any[] = [];
     @state private sorting: SortingState = [];
@@ -1597,6 +1609,11 @@ export class Grid extends LightComponent {
         return (
             <div
                 className={`ac-grid ${this.className || ""} ${this._themeTransition ? "theme-transition" : ""} ${currentDir === "rtl" ? "rtl" : ""}`}
+                role="grid"
+                aria-label={this.ariaLabel}
+                aria-description={this.ariaDescription}
+                aria-rowcount={headerGroups.length + allRows.length}
+                aria-colcount={this.table.getVisibleLeafColumns().length}
                 data-theme-transition={this._themeTransition ? "true" : undefined}
                 dir={currentDir}
                 data-dir={currentDir}
@@ -1617,6 +1634,8 @@ export class Grid extends LightComponent {
                             <div
                                 key={headerGroup.id}
                                 className="grid-header-row"
+                                role="row"
+                                aria-rowindex={headerGroups.indexOf(headerGroup) + 1}
                             >
                                 {headerGroup.headers.map((header) => {
                                     if (header.isPlaceholder) {
@@ -1664,6 +1683,11 @@ export class Grid extends LightComponent {
                                         <div
                                             key={header.id}
                                             className={`grid-header-cell ${canSort ? "sortable" : ""} ${sortDirection ? "sorting-active" : ""} ${isDraggingColumn ? "dragging" : ""} ${isDragOverColumn ? "drag-over" : ""}`}
+                                            role="columnheader"
+                                            aria-colindex={column.getIndex() + 1}
+                                            aria-label={(column.columnDef as any).ariaLabel || (typeof headerContent === "string" ? headerContent : column.id)}
+                                            aria-description={(column.columnDef as any).ariaDescription}
+                                            aria-sort={sortDirection === "asc" ? "ascending" : sortDirection === "desc" ? "descending" : "none"}
                                             data-column-id={column.id}
                                             data-pinned={column.getIsPinned() || undefined}
                                             data-can-sort={
@@ -1956,6 +1980,8 @@ export class Grid extends LightComponent {
                                     <div
                                         key={row.id}
                                         className={`grid-row grid-row-full-width ${isDraggingRow ? 'dragging' : ''} ${isDragOverRow ? 'drag-over' : ''}`}
+                                        role="row"
+                                        aria-rowindex={(rowIndexes.get(row.id) ?? rowIndex) + headerGroups.length + 1}
                                         data-row-id={row.id}
                                         data-full-width="true"
                                     >
@@ -1970,6 +1996,10 @@ export class Grid extends LightComponent {
                             <div
                                 key={`${rowIndex}-${row.id}`}
                                 className={`grid-row ${row.getIsGrouped() ? 'grid-row-grouped' : ''} ${isDraggingRow ? 'dragging' : ''} ${isDragOverRow ? 'drag-over' : ''}`}
+                                role="row"
+                                aria-rowindex={(rowIndexes.get(row.id) ?? rowIndex) + headerGroups.length + 1}
+                                aria-selected={row.getIsSelected() ? "true" : "false"}
+                                aria-expanded={row.getIsGrouped() ? (row.getIsExpanded() ? "true" : "false") : undefined}
                                 data-row-id={row.id}
                                 data-selected={row.getIsSelected() ? "true" : "false"}
                                 onClick={(e: MouseEvent) => {
@@ -2113,6 +2143,10 @@ export class Grid extends LightComponent {
                                         <div
                                             key={cell.id}
                                             className={`grid-cell ${isColumnDragging ? "column-dragging" : ""} ${isColumnDragOver ? "column-drag-over" : ""}`}
+                                            role="gridcell"
+                                            aria-rowindex={(rowIndexes.get(row.id) ?? rowIndex) + headerGroups.length + 1}
+                                            aria-colindex={column.getIndex() + 1}
+                                            aria-selected={row.getIsSelected() ? "true" : undefined}
                                             data-pinned={column.getIsPinned() || undefined}
                                             data-range-selected={this.isCellInRange(rangeRowIndex, column.id) ? "true" : undefined}
                                             style={{ ...pinnedStyle }}

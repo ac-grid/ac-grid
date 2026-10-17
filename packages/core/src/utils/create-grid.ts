@@ -34,6 +34,10 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
    * 自定义类名
    */
   className?: string;
+  /** Accessible name announced for the grid (RFC-0013). */
+  ariaLabel?: string;
+  /** Additional screen-reader description for the grid (RFC-0013). */
+  ariaDescription?: string;
   /**
    * 排序配置
    */
@@ -137,6 +141,8 @@ export function createGrid<TData extends { userId?: string }>(
     data,
     columns,
     className,
+    ariaLabel,
+    ariaDescription,
     sorting,
     filtering,
     resizing,
@@ -162,6 +168,9 @@ export function createGrid<TData extends { userId?: string }>(
   if (className) {
     gridElement.className = className;
   }
+
+  if (ariaLabel) gridElement.ariaLabel = ariaLabel;
+  if (ariaDescription) gridElement.ariaDescription = ariaDescription;
 
   if (sorting) {
     gridElement.sortingConfig = sorting;
