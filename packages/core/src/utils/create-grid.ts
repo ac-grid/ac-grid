@@ -19,6 +19,7 @@ import type { GridComponentsConfig } from "../types/components";
 import type { GridGroupingConfig } from "../types/grouping";
 import type { GridClipboardConfig } from "../types/clipboard";
 import type { GridI18nConfig } from "../types/i18n";
+import type { GridRangeSelectionConfig } from "../types/range-selection";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
   /**
@@ -71,6 +72,8 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
   grouping?: GridGroupingConfig;
   /** Clipboard copy and paste (RFC-0023). */
   clipboard?: GridClipboardConfig<TData>;
+  /** Cell range selection (RFC-0022). */
+  rangeSelection?: GridRangeSelectionConfig;
   /**
    * 主题切换过渡动画配置（RFC-0011）
    */
@@ -194,6 +197,10 @@ export function createGrid<TData extends { userId?: string }>(
 
   if (clipboard) {
     gridElement.clipboardConfig = clipboard;
+  }
+
+  if (options.rangeSelection) {
+    gridElement.rangeSelectionConfig = options.rangeSelection;
   }
 
   if (options.i18n) {

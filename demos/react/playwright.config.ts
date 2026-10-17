@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 5173;
+const PORT = Number(process.env.PLAYWRIGHT_TEST_PORT ?? 5173);
 const E2E_QUERY = "e2e=virtual-scroll";
 
 export default defineConfig({
@@ -22,9 +22,9 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: "pnpm dev:e2e",
+        command: `pnpm exec vite --host 127.0.0.1 --port ${PORT} --strictPort`,
         url: `http://127.0.0.1:${PORT}/?${E2E_QUERY}`,
-        reuseExistingServer: !process.env.CI,
+        reuseExistingServer: false,
         timeout: 120_000,
     },
 });

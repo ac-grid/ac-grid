@@ -24,6 +24,7 @@ export const RFC_VALIDATION_ORDER = [
   "0015",
   "0016",
   "0019",
+  "0022",
   "0030",
 ] as const;
 
@@ -394,6 +395,20 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
         components: {
           noRowsOverlayComponent: () => "No matching rows",
         },
+      }),
+    },
+    "0022": {
+      id: "0022",
+      title: "Range selection",
+      multicaIssue: "ACG-24",
+      hint: "拖拽或 Shift+点击单元格选择矩形范围。",
+      rowCount: 10,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 3),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        rangeSelection: { enabled: true },
       }),
     },
     "0030": {

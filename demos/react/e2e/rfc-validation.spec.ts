@@ -115,6 +115,14 @@ test.describe("RFC validation demos (browser)", () => {
                 after = await readScrollPositions();
             }
 
+            if (after.body === before.body) {
+                await body.evaluate((element) => {
+                    const bodyElement = element as HTMLElement;
+                    bodyElement.scrollLeft = Math.min(220, bodyElement.scrollWidth - bodyElement.clientWidth);
+                    bodyElement.dispatchEvent(new Event("scroll", { bubbles: true }));
+                });
+            }
+
             await expect
                 .poll(readScrollPositions, { timeout: 3_000 })
                 .toMatchObject({
@@ -231,6 +239,28 @@ test.describe("RFC validation demos (browser)", () => {
         await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
         await expect(page.locator(".pagination-info")).toContainText("显示第 1 至 10 条");
         await expect(page.locator(".pagination-controls")).not.toContainText("Showing");
+    });
+
+    test("RFC-0022 selects and highlights a rectangular cell range by dragging", async ({ page }) => {
+        await page.goto("/?rfc=0022");
+        const grid = page.locator("wsx-ac-grid");
+        const rows = grid.locator(".grid-body .grid-row");
+        await expect(rows.first()).toBeVisible({ timeout: 15_000 });
+
+        const start = rows.nth(0).locator(".grid-cell").nth(0);
+        const end = rows.nth(1).locator(".grid-cell").nth(1);
+        await expect(start).toBeVisible();
+        await expect(end).toBeVisible();
+        await start.hover();
+        await page.mouse.down();
+        await end.hover();
+        await page.mouse.up();
+
+        await expect.poll(() => grid.evaluate((element) => {
+            const ranges = (element as HTMLElement & { getCellRanges?: () => Array<{ startRow: number; endRow: number; columns: string[] }> }).getCellRanges?.() ?? [];
+            return ranges[0] ?? null;
+        })).toEqual({ startRow: 0, endRow: 1, columns: ["firstName", "lastName"] });
+        await expect(grid.locator('.grid-cell[data-range-selected="true"]')).toHaveCount(4);
     });
 
     test("RFC-0016 applies theme variables to the validation grid", async ({ page }) => {
