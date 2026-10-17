@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { waitFor } from "@testing-library/dom";
 import "../src/components/Grid.wsx";
 import "../src/components/CellEditor.wsx";
@@ -72,45 +72,98 @@ describe("Grid accessibility semantics", () => {
     });
 
     it("announces clearing sort after the complete sort cycle", async () => {
-        const grid = document.createElement("wsx-ac-grid") as any;
-        grid.data = [{ userId: "1", name: "Ada" }];
-        grid.columns = [{ accessorKey: "name", header: "Name" }];
-        grid.sortingConfig = { enabled: true };
-        container.appendChild(grid);
-        const root = grid.shadowRoot || grid;
-        await waitFor(() => {
-            const element = root.querySelector('[role="columnheader"]') as HTMLElement | null;
-            expect(element).toBeTruthy();
-        });
-
-        for (const [announcement, direction] of [
-            ["Name sorting ascending", false],
-            ["Name sorting descending", true],
-            ["Name sorting cleared", null],
-        ] as const) {
-            grid.toggleColumnSort("name", false);
-            expect(grid.getSorting()[0]?.desc ?? null).toBe(direction);
-            expect(grid.accessibilityAnnouncement).toBe(announcement);
+        for (const { initialSort, expectedSort, announcement } of [
+            { initialSort: undefined, expectedSort: "ascending", announcement: "Name sorting ascending" },
+            { initialSort: [{ id: "name", desc: false }], expectedSort: "descending", announcement: "Name sorting descending" },
+            { initialSort: [{ id: "name", desc: true }], expectedSort: "none", announcement: "Name sorting cleared" },
+        ]) {
+            const grid = document.createElement("wsx-ac-grid") as any;
+            grid.data = [{ userId: "1", name: "Ada" }];
+            grid.columns = [{ accessorKey: "name", header: "Name" }];
+            grid.sortingConfig = { enabled: true, initialState: initialSort };
+            container.appendChild(grid);
+            const root = grid.shadowRoot || grid;
+            const header = await waitFor(() => {
+                const element = root.querySelector('[role="columnheader"]') as HTMLElement | null;
+                expect(element).toBeTruthy();
+                return element!;
+            });
+            expect(header.getAttribute("aria-sort")).toBe(initialSort ? (initialSort[0].desc ? "descending" : "ascending") : "none");
+            header.click();
+            await waitFor(() => {
+                expect(root.querySelector('[role="columnheader"]')?.getAttribute("aria-sort")).toBe(expectedSort);
+                expect(root.querySelector('[role="status"]')?.textContent).toBe(announcement);
+            });
         }
-        expect(root.querySelector('[role="status"]')?.getAttribute("aria-live")).toBe("polite");
     });
 
     it("announces shift-range selection and select-all/select-none", async () => {
+        const createGrid = () => {
+            const grid = document.createElement("wsx-ac-grid") as any;
+            grid.data = ["1", "2", "3"].map((userId) => ({ userId, name: `Person ${userId}` }));
+            grid.columns = [{ accessorKey: "name", header: "Name" }];
+            grid.selectionConfig = { enabled: true, mode: "multiple" };
+            container.appendChild(grid);
+            return { grid, root: grid.shadowRoot || grid };
+        };
+
+        const range = createGrid();
+        await waitFor(() => expect(range.root.querySelector('[role="row"][data-row-id="1"]')).toBeTruthy());
+        range.grid.selectRowRange("1", "2");
+        await waitFor(() => {
+            expect(range.root.querySelector('[role="status"]')?.textContent).toBe("Rows selected");
+            expect(range.root.querySelector('[role="row"][data-row-id="1"]')?.getAttribute("aria-selected")).toBe("true");
+            expect(range.root.querySelector('[role="row"][data-row-id="2"]')?.getAttribute("aria-selected")).toBe("true");
+        });
+
+        const all = createGrid();
+        await waitFor(() => expect(all.root.querySelector('[role="row"][data-row-id="1"]')).toBeTruthy());
+        all.grid.selectAll();
+        await waitFor(() => {
+            expect(all.root.querySelector('[role="status"]')?.textContent).toBe("All rows selected");
+            for (const rowId of ["1", "2", "3"]) {
+                expect(all.root.querySelector(`[role="row"][data-row-id="${rowId}"]`)?.getAttribute("aria-selected")).toBe("true");
+            }
+        });
+
+        const none = createGrid();
+        await waitFor(() => expect(none.root.querySelector('[role="row"][data-row-id="1"]')).toBeTruthy());
+        none.grid.deselectAll();
+        await waitFor(() => {
+            expect(none.root.querySelector('[role="status"]')?.textContent).toBe("Selection cleared");
+            for (const rowId of ["1", "2", "3"]) {
+                expect(none.root.querySelector(`[role="row"][data-row-id="${rowId}"]`)?.getAttribute("aria-selected")).toBe("false");
+            }
+        });
+    });
+
+    it("notifies sorting config when a header is clicked", async () => {
+        const onSortingChange = vi.fn();
         const grid = document.createElement("wsx-ac-grid") as any;
-        grid.data = ["1", "2", "3"].map((userId) => ({ userId, name: `Person ${userId}` }));
-        grid.columns = [{ accessorKey: "name", header: "Name" }];
-        grid.selectionConfig = { enabled: true, mode: "multiple" };
+        grid.data = [{ userId: "1", name: "Ada" }];
+        grid.columns = [
+            { accessorKey: "name", header: "Name" },
+            { accessorKey: "city", header: "City" },
+        ];
+        grid.sortingConfig = {
+            enabled: true,
+            initialState: [
+                { id: "name", desc: false },
+                { id: "city", desc: false },
+            ],
+            onSortingChange,
+        };
         container.appendChild(grid);
         const root = grid.shadowRoot || grid;
-        await waitFor(() => expect(grid.table).toBeTruthy());
-        const [first, second] = grid.table.getRowModel().rows;
+        const header = await waitFor(() => {
+            const element = root.querySelector('[role="columnheader"]') as HTMLElement | null;
+            expect(element).toBeTruthy();
+            return element!;
+        });
 
-        grid.selectRowRange(first.id, second.id);
-        await waitFor(() => expect(root.querySelector('[role="status"]')?.textContent).toBe("Rows selected"));
-        grid.selectAll();
-        expect(grid.accessibilityAnnouncement).toBe("All rows selected");
-        grid.deselectAll();
-        expect(grid.accessibilityAnnouncement).toBe("Selection cleared");
+        header.click();
+
+        await waitFor(() => expect(onSortingChange).toHaveBeenCalledWith([{ id: "name", desc: true }]));
     });
 
     it("provides absolute row and column indexes in a virtualized window", async () => {
@@ -181,6 +234,9 @@ describe("Grid accessibility semantics", () => {
             expect(cell).toBeTruthy();
             return cell!;
         });
+        firstCell.focus();
+        firstCell.firstElementChild?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+        await waitFor(() => expect(getFocusedCell()).toBe("1:name"));
         firstCell.focus();
         firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
         await waitFor(() => expect(getFocusedCell()).toBe("1:city"));

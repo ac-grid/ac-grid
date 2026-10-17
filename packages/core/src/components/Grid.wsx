@@ -1082,7 +1082,9 @@ export class Grid extends LightComponent {
         event: KeyboardEvent,
         rowId: string,
         columnId: string,
+        isEditing: boolean,
     ) {
+        if (isEditing || event.target !== event.currentTarget) return;
         if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
         const rows = this.getDisplayRows();
         const columns = this.table?.getVisibleLeafColumns() ?? [];
@@ -2177,7 +2179,7 @@ export class Grid extends LightComponent {
                                                     : undefined
                                             }
                                             onKeyDown={(e: KeyboardEvent) => {
-                                                this.handleGridCellKeyDown(e, row.id, column.id);
+                                                this.handleGridCellKeyDown(e, row.id, column.id, isEditing);
                                                 if (supportsEnterTrigger(editTrigger) && e.key === "Enter" && !isEditing) {
                                                     e.preventDefault();
                                                     this.focusedCell = { rowId: row.id, columnId: column.id };
@@ -2273,17 +2275,10 @@ export class Grid extends LightComponent {
     private toggleColumnSort(columnId: string, shiftKey: boolean) {
         const column = this.table?.getColumn(columnId);
         if (!column) return;
-        const existingSort = this.sorting.find((sort) => sort.id === columnId);
-        const previousSort = existingSort?.desc ? "desc" : existingSort ? "asc" : false;
-        const remainingSorts = this.sorting.filter((sort) => sort.id !== columnId);
-        const nextSorting = previousSort === "asc"
-            ? [...remainingSorts, { id: columnId, desc: true }]
-            : previousSort === "desc"
-                ? remainingSorts
-                : [...(shiftKey ? this.sorting : []), { id: columnId, desc: false }];
-        this.setSorting(nextSorting);
         const label = (column.columnDef as any).ariaLabel || (typeof column.columnDef.header === "string" ? column.columnDef.header : columnId);
-        const nextSort = previousSort === "asc" ? "descending" : previousSort === "desc" ? "cleared" : "ascending";
+        column.toggleSorting(undefined, shiftKey);
+        const sortState = this.table?.getColumn(columnId)?.getIsSorted();
+        const nextSort = sortState === "asc" ? "ascending" : sortState === "desc" ? "descending" : "cleared";
         this.accessibilityAnnouncement = `${label} sorting ${nextSort}`;
     }
 
