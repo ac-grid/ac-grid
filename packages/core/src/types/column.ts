@@ -14,6 +14,9 @@ type Override<T, TOverride> = T extends unknown
 export type ColumnDef<TData, TValue = unknown> = Override<
     TanStackColumnDef<TData, TValue>,
     {
+        /** Accessible name and description for this column. */
+        ariaLabel?: string;
+        ariaDescription?: string;
         /**
          * Built-in aggregation name or custom leaf-value aggregator.
          */
