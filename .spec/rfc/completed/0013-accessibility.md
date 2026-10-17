@@ -144,6 +144,7 @@ interface ColumnDef<TData> {
 
 - The grid has an accessible name and optional description.
 - Headers, rows, and cells expose grid semantics, indexes, sort direction, selection, and grouping expansion where applicable.
+- Sorting and row-selection changes are announced through a polite live region.
 - Keyboard-operable controls retain visible focus, including in forced-colors mode.
 - Automated tests cover the rendered ARIA contract. Full WCAG 2.1 AA and assistive-technology certification remains an application-level manual validation requirement; keyboard movement is owned by RFC-0012.
 

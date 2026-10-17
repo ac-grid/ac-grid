@@ -48,6 +48,25 @@ describe("Grid accessibility semantics", () => {
             const root = grid.shadowRoot || grid;
             expect(root.querySelector('[role="grid"]')?.getAttribute("aria-label")).toBe("Data grid");
             expect(root.querySelector('.grid-row[role="row"]')?.getAttribute("aria-selected")).toBe("true");
+            expect(root.querySelector('[role="status"]')?.textContent).toContain("Row selected");
         });
+    });
+
+    it("announces a sort change to assistive technology", async () => {
+        const grid = document.createElement("wsx-ac-grid") as any;
+        grid.data = [{ userId: "1", name: "Ada" }];
+        grid.columns = [{ accessorKey: "name", header: "Name" }];
+        grid.sortingConfig = { enabled: true };
+        container.appendChild(grid);
+
+        const root = grid.shadowRoot || grid;
+        const header = await waitFor(() => {
+            const element = root.querySelector('[role="columnheader"]') as HTMLElement | null;
+            expect(element).toBeTruthy();
+            return element!;
+        });
+        header.click();
+
+        await waitFor(() => expect(root.querySelector('[role="status"]')?.textContent).toContain("Name sorting ascending"));
     });
 });

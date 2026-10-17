@@ -140,6 +140,7 @@ export class Grid extends LightComponent {
     /** Accessible name and description (RFC-0013). */
     @state private _ariaLabel = "Data grid";
     @state private _ariaDescription = "";
+    @state private accessibilityAnnouncement = "";
 
     get ariaLabel(): string { return this._ariaLabel; }
     set ariaLabel(value: string) { this._ariaLabel = value?.trim() || "Data grid"; }
@@ -1000,6 +1001,7 @@ export class Grid extends LightComponent {
         this.rowSelection = isSingle
             ? buildSingleSelection(rowId)
             : appendRowSelection(this.rowSelection, rowId);
+        this.accessibilityAnnouncement = "Row selected";
         this.lastSelectedRowId = rowId;
         this.notifySelectionChange();
         this.updateTable();
@@ -1008,6 +1010,7 @@ export class Grid extends LightComponent {
     public deselectRow(rowId: string) {
         const next = { ...this.rowSelection };
         delete next[rowId];
+        this.accessibilityAnnouncement = "Row deselected";
         this.rowSelection = next;
         if (this.lastSelectedRowId === rowId) {
             this.lastSelectedRowId = null;
@@ -1028,6 +1031,7 @@ export class Grid extends LightComponent {
         if (!this.table) return;
         const rows = this.table.getRowModel().rows ?? [];
         this.rowSelection = buildRangeSelection(rows, anchorId, targetId, this.rowSelection);
+        this.accessibilityAnnouncement = "Rows selected";
         this.lastSelectedRowId = targetId;
         this.notifySelectionChange();
         this.updateTable();
@@ -1037,12 +1041,14 @@ export class Grid extends LightComponent {
         if (!this.table) return;
         const rows = this.table.getRowModel().rows ?? [];
         this.rowSelection = buildSelectAllSelection(rows);
+        this.accessibilityAnnouncement = "All rows selected";
         this.notifySelectionChange();
         this.updateTable();
     }
 
     public deselectAll() {
         this.rowSelection = {};
+        this.accessibilityAnnouncement = "Selection cleared";
         this.notifySelectionChange();
         this.updateTable();
     }
@@ -1795,6 +1801,10 @@ export class Grid extends LightComponent {
                                                                 undefined, // 循环：asc -> desc -> none
                                                                 e.shiftKey, // 是否多列排序
                                                             );
+                                                            const currentSort = column.getIsSorted();
+                                                            const nextSort = currentSort === "asc" ? "descending" : currentSort === "desc" ? "cleared" : "ascending";
+                                                            const label = (column.columnDef as any).ariaLabel || (typeof headerContent === "string" ? headerContent : column.id);
+                                                            this.accessibilityAnnouncement = `${label} sorting ${nextSort}`;
                                                         };
 
                                                         el.addEventListener(
@@ -2232,6 +2242,9 @@ export class Grid extends LightComponent {
                             {this.i18nManager.t("grid.pagination.loading", undefined, "Loading…")}
                         </div>
                     )}
+                    <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+                        {this.accessibilityAnnouncement}
+                    </div>
                 </div>
             </div>
         );
