@@ -214,6 +214,17 @@ test.describe("RFC validation demos (browser)", () => {
         await expect(page.locator("wsx-ac-cell-editor")).toHaveCount(1);
     });
 
+    test("RFC-0012 supports keyboard focus and navigation", async ({ page }) => {
+        await page.goto("/?rfc=0012");
+        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        const firstCell = page.locator(".grid-row .grid-cell").first();
+        await firstCell.focus();
+        await page.keyboard.press("ArrowRight");
+        await expect.poll(() => page.evaluate(() =>
+            (document.querySelector("wsx-ac-grid") as any).getFocusedCell()?.columnId,
+        )).toBe("lastName");
+    });
+
     test("RFC-0008 pins configured columns", async ({ page }) => {
         await page.setViewportSize({ width: 500, height: 600 });
         await page.goto("/?rfc=0008");

@@ -20,6 +20,7 @@ import type { GridGroupingConfig } from "../types/grouping";
 import type { GridClipboardConfig } from "../types/clipboard";
 import type { GridI18nConfig } from "../types/i18n";
 import type { GridRangeSelectionConfig } from "../types/range-selection";
+import type { KeyboardNavigationMode } from "./keyboard-navigation";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
   /**
@@ -74,6 +75,10 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
   clipboard?: GridClipboardConfig<TData>;
   /** Cell range selection (RFC-0022). */
   rangeSelection?: GridRangeSelectionConfig;
+  /** Enable opt-in keyboard navigation (RFC-0012). */
+  enableKeyboardNavigation?: boolean;
+  /** Cell-wise or row-wise arrow navigation (RFC-0012). */
+  keyboardNavigationMode?: KeyboardNavigationMode;
   /**
    * 主题切换过渡动画配置（RFC-0011）
    */
@@ -153,6 +158,9 @@ export function createGrid<TData extends { userId?: string }>(
   // 确保组件已注册（导入时会自动注册）
   // 创建自定义元素
   const gridElement = document.createElement("wsx-ac-grid") as any;
+
+  if (options.keyboardNavigationMode) gridElement.keyboardNavigationMode = options.keyboardNavigationMode;
+  if (options.enableKeyboardNavigation !== undefined) gridElement.enableKeyboardNavigation = options.enableKeyboardNavigation;
 
   // Apply virtualization before data so the first render never mounts the full dataset
   if (virtualization) {
