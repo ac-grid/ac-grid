@@ -26,7 +26,7 @@
 - [x] v0.3.0: Grouping/aggregation (0010) — 已完成 (ACG-21 / ACG-121)
 - [x] v0.4.0: Theme advanced (0011) — 已完成 (ACG-14)
 - [x] Stage 10: RFC-0034 completed RFC demo acceptance matrix (ACG-120)
-- [ ] v0.4.0: Keyboard (0012) / a11y (0013)
+- [x] v0.4.0: Keyboard (0012); a11y (0013) remains
 
 ---
 
@@ -62,7 +62,7 @@
 - v0.1.0: Column resizing (RFC-0004), 100% test coverage, Storybook
 - v0.2.0: Virtual scroll (0005), Pagination (0006), Row selection (0007)
 - v0.3.0: Pinning (0008) ✅, Cell editing (0009) ✅, Grouping/aggregation (0010) ✅
-- v0.4.0: Custom components (0019) ✅, Theme advanced (0011) ✅, Keyboard (0012), a11y (0013)
+- v0.4.0: Custom components (0019) ✅, Theme advanced (0011) ✅, Keyboard (0012) ✅, a11y (0013)
 - v0.5.0: CSV export (0014), i18n (0015) ✅, Framework bindings (0017), State API (0018)
 
 ### Phase 2 — Enterprise (v1.1.0–v1.2.0)

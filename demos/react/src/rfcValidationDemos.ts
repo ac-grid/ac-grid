@@ -21,6 +21,7 @@ export const RFC_VALIDATION_ORDER = [
   "0008",
   "0009",
   "0010",
+  "0012",
   "0015",
   "0016",
   "0019",
@@ -279,6 +280,26 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
           enabled: true,
           mode: "doubleClick",
         };
+      },
+    },
+    "0012": {
+      id: "0012",
+      title: "Keyboard navigation",
+      multicaIssue: "DEV-179",
+      hint: "Use arrow keys and Tab to move between cells; Enter edits and Escape cancels.",
+      rowCount: 50,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 4),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+        enableKeyboardNavigation: true,
+        keyboardNavigationMode: "cell",
+        selection: { enabled: true, mode: "multiple" },
+      }),
+      afterMount: (grid) => {
+        grid.editingConfig = { enabled: true, mode: "doubleClick", editTrigger: "enter" };
       },
     },
     "0010": {
