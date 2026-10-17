@@ -100,13 +100,13 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
 | 单元格编辑               | ✅             | ✅ 已实现    | [0009](./completed/0009-cell-editing.md)    | v0.3.0   |
 | 键盘导航                 | ✅             | 📝 规划中    | [0012](./0012-keyboard-navigation.md)       | v0.4.0   |
 | **高级功能**             |
-| 行分组                   | ✅             | 📝 规划中    | [0010](./0010-grouping-aggregation.md)      | v0.3.0   |
-| 数据聚合                 | ✅             | 📝 规划中    | [0010](./0010-grouping-aggregation.md)      | v0.3.0   |
+| 行分组                   | ✅             | ✅ 已实现    | [0010](./completed/0010-grouping-aggregation.md)      | v0.3.0   |
+| 数据聚合                 | ✅             | ✅ 已实现    | [0010](./completed/0010-grouping-aggregation.md)      | v0.3.0   |
 | 树形数据                 | ✅             | 📝 规划中    | TBD                                         | v0.6.0+  |
 | 主从表格                 | ✅             | 📝 规划中    | TBD                                         | v0.6.0+  |
 | **用户体验**             |
 | 主题定制                 | ✅             | 📝 规划中    | [0011](./completed/0011-theme-system.md)              | v0.4.0   |
-| 国际化 (i18n)            | ✅             | 📝 规划中    | [0015](./0015-internationalization.md)      | v0.5.0   |
+| 国际化 (i18n)            | ✅             | ✅ 已实现    | [0015](./completed/0015-internationalization.md) | v0.5.0   |
 | 可访问性 (a11y)          | ✅             | 📝 规划中    | [0013](./0013-accessibility.md)             | v0.4.0   |
 | **数据导出**             |
 | CSV 导出                 | ✅             | 📝 规划中    | [0014](./0014-data-export.md)               | v0.5.0   |
@@ -714,7 +714,7 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 | ---------- | ------------------------------------------ | --------- | ------ |
 | 列固定     | [RFC-0008](./completed/0008-column-pinning.md) | ✔️ 已完成 | P1     |
 | 单元格编辑 | [RFC-0009](./completed/0009-cell-editing.md) | ✔️ 已完成 | P0     |
-| 分组和聚合 | [RFC-0010](./0010-grouping-aggregation.md) | 📝 待编写 | P1     |
+| 分组和聚合 | [RFC-0010](./completed/0010-grouping-aggregation.md) | ✔️ 已完成 | P1     |
 
 **交付物**：
 
@@ -753,7 +753,7 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 | 功能     | RFC                                        | 状态      | 优先级 |
 | -------- | ------------------------------------------ | --------- | ------ |
 | 数据导出 | [RFC-0014](./0014-data-export.md)          | 📝 待编写 | P1     |
-| 国际化   | [RFC-0015](./0015-internationalization.md) | 📝 待编写 | P1     |
+| 国际化   | [RFC-0015](./completed/0015-internationalization.md) | ✔️ 已完成 | P1     |
 
 **交付物**：
 

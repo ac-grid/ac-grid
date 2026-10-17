@@ -164,6 +164,19 @@
     color: var(--ac-grid-text-primary, #181d1f);
 }
 
+.demo-grouping-panel,
+.demo-formula-panel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    background: var(--ac-grid-bg-header, #f8f8f8);
+    border: 1px solid var(--ac-grid-border, #e4e7ec);
+    font-size: 0.8125rem;
+}
+
 .demo-toolbar {
     display: flex;
     flex-wrap: wrap;

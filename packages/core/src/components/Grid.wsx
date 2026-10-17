@@ -22,6 +22,7 @@ import {
     bindHeaderToBodyScrollSync,
     type ScrollSyncSession,
 } from "../utils/scroll-sync";
+import { arrayMove } from "../utils/array-move";
 import { flexRender } from "../utils/flex-render";
 import { resolveHeaderContent } from "../utils/resolve-header-content";
 import { renderComponent } from "../utils/render-component";
@@ -42,9 +43,12 @@ import {
 } from "../utils/pagination";
 import type { GridSelectionConfig } from "../types/selection";
 import type { GridClipboardConfig } from "../types/clipboard";
+import type { CellRange, GridRangeSelectionConfig } from "../types/range-selection";
 import type { GridPinningConfig } from "../types/pinning";
 import type { GridEditingConfig } from "../types/editing";
 import type { GridGroupingConfig } from "../types/grouping";
+import type { GridI18nConfig } from "../types/i18n";
+import { I18nManager, defaultI18nManager } from "../i18n/manager";
 import { Virtualizer } from "../utils/virtualizer";
 import { scrollToRow as scrollOffsetForRow } from "../utils/virtual-scroll";
 import {
@@ -96,6 +100,7 @@ import "./SortingIndicator.wsx";
 import "./FilterIcon.wsx";
 import "./FilterMenu.wsx";
 import "./GlobalSearch.wsx";
+import "./PaginationControls.wsx";
 import { themeManager } from "@ac-grid/theme-base";
 
 /** 默认列宽信息，保证 table.getState().columnSizingInfo 永不为 undefined，避免 "reading 'isResizingColumn'" 报错 */
@@ -162,6 +167,8 @@ export class Grid extends LightComponent {
 
     // Drag-drop cleanup functions
     private headerDragCleanup: Map<string, () => void> = new Map();
+    // 同一表头节点只注册一次拖拽，避免 dragstart 引起的重渲染拆掉进行中的拖拽。
+    private headerDragElements: Map<string, HTMLElement> = new Map();
     private rowDragCleanup: Map<string, () => void> = new Map();
 
     // Drag-drop state tracking for visual feedback
@@ -392,6 +399,62 @@ export class Grid extends LightComponent {
     @state private _clipboardConfigIsSet = false;
     @state private _clipboardConfig: GridClipboardConfig = {};
     @state private activeClipboardCell: { rowId: string; columnId: string } | null = null;
+
+    get rangeSelectionConfig(): GridRangeSelectionConfig | undefined {
+        return this._rangeSelectionConfigIsSet ? this._rangeSelectionConfig : undefined;
+    }
+    set rangeSelectionConfig(value: GridRangeSelectionConfig | undefined) {
+        this._rangeSelectionConfigIsSet = value !== undefined;
+        this._rangeSelectionConfig = value ?? {};
+        if (value === undefined || value.enabled === false) this.setCellRanges([]);
+    }
+    @state private _rangeSelectionConfigIsSet = false;
+    @state private _rangeSelectionConfig: GridRangeSelectionConfig = {};
+    @state private cellRanges: CellRange[] = [];
+    private rangeAnchor: { row: number; column: number } | null = null;
+    private rangeSelecting = false;
+
+    private setCellRanges(ranges: CellRange[]) {
+        this.cellRanges = ranges;
+        this._rangeSelectionConfig.onRangeSelectionChanged?.(ranges.map((range) => ({ ...range, columns: [...range.columns] })));
+    }
+    public getCellRanges(): CellRange[] {
+        return this.cellRanges.map((range) => ({ ...range, columns: [...range.columns] }));
+    }
+    public clearCellRanges() {
+        this.rangeAnchor = null;
+        this.setCellRanges([]);
+    }
+    private isCellInRange(rowIndex: number, columnId: string): boolean {
+        return this.cellRanges.some((range) => rowIndex >= range.startRow && rowIndex <= range.endRow && range.columns.includes(columnId));
+    }
+    private updateCellRange(anchorRow: number, anchorColumn: number, targetRow: number, targetColumn: number) {
+        const rows = this.table?.getRowModel().rows ?? [];
+        const columns = this.table?.getVisibleLeafColumns() ?? [];
+        if (!rows.length || !columns.length) return;
+        const startRow = Math.max(0, Math.min(anchorRow, targetRow));
+        const endRow = Math.min(rows.length - 1, Math.max(anchorRow, targetRow));
+        const startColumn = Math.max(0, Math.min(anchorColumn, targetColumn));
+        const endColumn = Math.min(columns.length - 1, Math.max(anchorColumn, targetColumn));
+        this.setCellRanges([{ startRow, endRow, columns: columns.slice(startColumn, endColumn + 1).map((column) => column.id) }]);
+    }
+    private startCellRange(rowIndex: number, columnId: string, event: MouseEvent) {
+        if (!this._rangeSelectionConfigIsSet || this._rangeSelectionConfig.enabled === false) return;
+        const columnIndex = (this.table?.getVisibleLeafColumns() ?? []).findIndex((column) => column.id === columnId);
+        if (columnIndex < 0) return;
+        if (event.shiftKey && this.rangeAnchor) {
+            this.updateCellRange(this.rangeAnchor.row, this.rangeAnchor.column, rowIndex, columnIndex);
+            return;
+        }
+        this.rangeAnchor = { row: rowIndex, column: columnIndex };
+        this.rangeSelecting = true;
+        this.updateCellRange(rowIndex, columnIndex, rowIndex, columnIndex);
+    }
+    private extendCellRange(rowIndex: number, columnId: string) {
+        if (!this.rangeSelecting || !this.rangeAnchor) return;
+        const columnIndex = (this.table?.getVisibleLeafColumns() ?? []).findIndex((column) => column.id === columnId);
+        if (columnIndex >= 0) this.updateCellRange(this.rangeAnchor.row, this.rangeAnchor.column, rowIndex, columnIndex);
+    }
 
     private isClipboardEnabled(): boolean {
         return this._clipboardConfigIsSet && this._clipboardConfig.enabled !== false;
@@ -666,6 +729,35 @@ export class Grid extends LightComponent {
     @state private _currentTheme: string | null = null;
     @state private _previewTheme: string | null = null;
 
+    // RFC-0015: i18n 配置与管理器
+    get i18nConfig(): GridI18nConfig | undefined {
+        return this._i18nConfigIsSet ? this._i18nConfig : undefined;
+    }
+    set i18nConfig(value: GridI18nConfig | undefined) {
+        if (value === undefined) {
+            this._i18nConfigIsSet = false;
+            this._i18nConfig = {};
+        } else {
+            this._i18nConfigIsSet = true;
+            this._i18nConfig = value;
+            if (value.locale) {
+                this.i18nManager.setLocale(value.locale);
+            }
+            if (value.messages) {
+                this.i18nManager.setMessages(value.messages, value.locale);
+            }
+            if (value.dir) {
+                this.i18nManager.setDirection(value.dir);
+            }
+            this.updateI18nDOM();
+            this.updateTable();
+        }
+    }
+    @state private _i18nConfigIsSet: boolean = false;
+    @state private _i18nConfig: GridI18nConfig = {};
+
+    public i18nManager: I18nManager = new I18nManager();
+
 
     private get isLoadingOverlay(): boolean {
         return Boolean(
@@ -752,6 +844,18 @@ export class Grid extends LightComponent {
         if (this.hasAttribute("enablefloatingfilter")) {
             this.enableFloatingFilter = true;
         }
+
+        if (element.i18nConfig) {
+            this.i18nConfig = element.i18nConfig;
+        }
+        if (element.locale) {
+            this.setLocale(element.locale);
+        }
+        if (element.messages) {
+            this.i18nManager.setMessages(element.messages);
+            this.updateTable();
+        }
+        this.updateI18nDOM();
     }
 
     onDisconnected() {
@@ -760,6 +864,7 @@ export class Grid extends LightComponent {
         // Cleanup header drag-drop listeners
         this.headerDragCleanup.forEach((cleanup) => cleanup());
         this.headerDragCleanup.clear();
+        this.headerDragElements.clear();
 
         // Cleanup row drag-drop listeners
         this.rowDragCleanup.forEach((cleanup) => cleanup());
@@ -1008,6 +1113,7 @@ export class Grid extends LightComponent {
                 const menu = document.createElement('wsx-ac-filter-menu') as any;
                 menu.column = this.activeFilterColumn;
                 menu.value = this.columnFilters[this.activeFilterColumn.id] ?? "";
+                menu.i18n = this.i18nManager;
                 this.filterMenuContainer.appendChild(menu);
                 menu._filterChangeCallback = filterParams.onFilterChange;
                 menu._onClose = filterParams.onClose;
@@ -1429,8 +1535,9 @@ export class Grid extends LightComponent {
             this.columns = element.columns;
         }
 
+        const loadingText = this.i18nManager.t("grid.loading", undefined, "Loading...");
         if (!this._columns || !this._data || this._columns.length === 0) {
-            return <div>Loading...</div>;
+            return <div>{loadingText}</div>;
         }
 
         if (!this.table) {
@@ -1438,11 +1545,12 @@ export class Grid extends LightComponent {
         }
 
         if (!this.table) {
-            return <div>Loading...</div>;
+            return <div>{loadingText}</div>;
         }
 
         const headerGroups = this.table.getHeaderGroups();
         const allRows = this.getDisplayRows();
+        const rowIndexes = new Map(allRows.map((row, index) => [row.id, index]));
         let visibleRows = allRows;
         let paddingTop = 0;
         let paddingBottom = 0;
@@ -1474,20 +1582,25 @@ export class Grid extends LightComponent {
         const gridTemplateColumns =
             columnSizes.length > 0 ? columnSizes.join(" ") : "repeat(7, 150px)";
 
+        const currentDir = this.i18nManager.getDirection();
+        // WSX 的 h() 只把字符串 style 写进 DOM，对象形式的 CSS 变量会被丢掉。
+        const rootStyle = [
+            `--grid-columns: ${gridTemplateColumns}`,
+            `direction: ${currentDir}`,
+            this._themeTransition
+                ? `--ac-grid-theme-transition-duration: ${this._themeTransitionDuration}ms`
+                : "",
+        ]
+            .filter(Boolean)
+            .join("; ");
+
         return (
             <div
-                className={`ac-grid ${this.className || ""} ${this._themeTransition ? "theme-transition" : ""}`}
+                className={`ac-grid ${this.className || ""} ${this._themeTransition ? "theme-transition" : ""} ${currentDir === "rtl" ? "rtl" : ""}`}
                 data-theme-transition={this._themeTransition ? "true" : undefined}
-                style={
-                    {
-                        "--grid-columns": gridTemplateColumns,
-                        ...(this._themeTransition
-                            ? {
-                                  "--ac-grid-theme-transition-duration": `${this._themeTransitionDuration}ms`,
-                              }
-                            : {}),
-                    } as any
-                }
+                dir={currentDir}
+                data-dir={currentDir}
+                style={rootStyle}
             >
                 <div className="grid-container">
                     {/* Header */}
@@ -1571,6 +1684,10 @@ export class Grid extends LightComponent {
                                                 if (el) {
                                                     const columnId = column.id;
 
+                                                    if (this.headerDragElements.get(columnId) === el) {
+                                                        return;
+                                                    }
+
                                                     // Cleanup existing drag-drop if any
                                                     const existingCleanup = this.headerDragCleanup.get(columnId);
                                                     if (existingCleanup) {
@@ -1619,6 +1736,7 @@ export class Grid extends LightComponent {
                                                         dragCleanup();
                                                         dropCleanup();
                                                     });
+                                                    this.headerDragElements.set(columnId, el);
 
                                                     if (canSort) {
                                                         // 移除旧的事件监听器（如果存在）
@@ -1699,13 +1817,14 @@ export class Grid extends LightComponent {
                                                                 sortDirection
                                                             }
                                                             index={sortIndex}
+                                                            i18n={this.i18nManager}
                                                         />
                                                     )}
                                                     <button
                                                         className="drag-handle-button"
                                                         type="button"
-                                                        aria-label="Drag column to reorder"
-                                                        title="Drag to reorder column"
+                                                        aria-label={this.i18nManager.t("grid.column.dragToReorder", undefined, "Drag column to reorder")}
+                                                        title={this.i18nManager.t("grid.column.dragToReorder", undefined, "Drag to reorder column")}
                                                     >
                                                         <svg
                                                             width="12"
@@ -1777,10 +1896,12 @@ export class Grid extends LightComponent {
                                                 <wsx-ac-filter-input
                                                     column={column}
                                                     value={filterValue}
+                                                    i18n={this.i18nManager}
                                                     onChange={(val: string) => this.setColumnFilter(column.id, val)}
                                                     variant="floating"
                                                     ref={(el: HTMLElement | null) => {
                                                         if (el) {
+                                                            (el as any).i18n = this.i18nManager;
                                                             (el as any).onChange = (val: string) => this.setColumnFilter(column.id, val);
                                                         }
                                                     }}
@@ -1797,6 +1918,8 @@ export class Grid extends LightComponent {
                     <div
                         key={`grid-body-${this.virtualRevision}`}
                         className="grid-body"
+                        onMouseUp={() => { this.rangeSelecting = false; }}
+                        onMouseLeave={() => { this.rangeSelecting = false; }}
                         data-virtual-rev={this.virtualRevision}
                         ref={(el: HTMLElement | null) => {
                             if (!el) {
@@ -1820,6 +1943,7 @@ export class Grid extends LightComponent {
                     >
                         <div style={{ height: `${paddingTop}px` }}></div>
                         {visibleRows.map((row, rowIndex) => {
+                            const rangeRowIndex = rowIndexes.get(row.id) ?? -1;
                             const isDraggingRow = this.draggingRowId === row.id;
                             const isDragOverRow = this.dragOverRowId === row.id;
 
@@ -1849,6 +1973,11 @@ export class Grid extends LightComponent {
                                 data-row-id={row.id}
                                 data-selected={row.getIsSelected() ? "true" : "false"}
                                 onClick={(e: MouseEvent) => {
+                                    if (
+                                        this._rangeSelectionConfigIsSet &&
+                                        this._rangeSelectionConfig.enabled !== false &&
+                                        this._rangeSelectionConfig.combineWithRowSelection === false
+                                    ) return;
                                     if (row.getIsGrouped()) {
                                         this.toggleGroup(row.id, !row.getIsExpanded());
                                         return;
@@ -1985,7 +2114,16 @@ export class Grid extends LightComponent {
                                             key={cell.id}
                                             className={`grid-cell ${isColumnDragging ? "column-dragging" : ""} ${isColumnDragOver ? "column-drag-over" : ""}`}
                                             data-pinned={column.getIsPinned() || undefined}
+                                            data-range-selected={this.isCellInRange(rangeRowIndex, column.id) ? "true" : undefined}
                                             style={{ ...pinnedStyle }}
+                                            onMouseDown={(e: MouseEvent) => {
+                                                if (e.button !== 0 || e.target instanceof Element && (e.target.closest("input,textarea,button,[contenteditable=true]") && (e.target !== e.currentTarget))) return;
+                                                if (rangeRowIndex >= 0) this.startCellRange(rangeRowIndex, column.id, e);
+                                                if (this._rangeSelectionConfigIsSet && this._rangeSelectionConfig.enabled !== false) e.preventDefault();
+                                            }}
+                                            onMouseEnter={() => {
+                                                if (rangeRowIndex >= 0) this.extendCellRange(rangeRowIndex, column.id);
+                                            }}
                                             tabIndex={cellEditable ? 0 : undefined}
                                             onDblClick={
                                                 supportsDoubleClickTrigger(editTrigger)
@@ -2043,10 +2181,12 @@ export class Grid extends LightComponent {
                                   )
                                 : this.table.getPageCount()}
                             pageSizeOptions={this._paginationConfig?.pageSizeOptions}
+                            i18n={this.i18nManager}
                             onPageChange={(page: number) => this.setPageIndex(page)}
                             onPageSizeChange={(size: number) => this.setPageSize(size)}
                             ref={(el: HTMLElement | null) => {
                                 if (el) {
+                                    (el as any).i18n = this.i18nManager;
                                     (el as any).onPageChange = (page: number) => this.setPageIndex(page);
                                     (el as any).onPageSizeChange = (size: number) => this.setPageSize(size);
                                 }
@@ -2055,7 +2195,7 @@ export class Grid extends LightComponent {
                     )}
                     {this.paginationLoading && (
                         <div className="pagination-loading" aria-live="polite">
-                            Loading…
+                            {this.i18nManager.t("grid.pagination.loading", undefined, "Loading…")}
                         </div>
                     )}
                 </div>
@@ -2393,6 +2533,7 @@ export class Grid extends LightComponent {
         this.expanded = expanded;
         this._groupingConfig.onExpandedChange?.(expanded);
         this.updateTable();
+        this.rerender();
     }
 
     /** RFC-0019: 切换加载遮罩 */
@@ -2550,6 +2691,90 @@ export class Grid extends LightComponent {
             if (element.classList && typeof element.classList.remove === "function") {
                 element.classList.remove("theme-transition");
             }
+        }
+    }
+
+    /**
+     * 公共 API: 设置语言 (RFC-0015)
+     * @param locale - 语言代码（如 'zh-CN', 'en-US'）
+     */
+    public setLocale(locale: string): void {
+        if (!locale) return;
+        this.i18nManager.setLocale(locale);
+        this.updateI18nDOM();
+        this.updateTable();
+        this._i18nConfig?.onLocaleChange?.(locale);
+        this.dispatchEvent(
+            new CustomEvent("locale-change", {
+                detail: { locale },
+                bubbles: true,
+                composed: true,
+            })
+        );
+    }
+
+    /**
+     * 公共 API: 获取当前语言 (RFC-0015)
+     */
+    public getLocale(): string {
+        return this.i18nManager.getLocale();
+    }
+
+    /**
+     * 公共 API: 获取翻译文本 (RFC-0015)
+     */
+    public t(key: string, params?: Record<string, any>, defaultValue?: string): string {
+        return this.i18nManager.t(key, params, defaultValue);
+    }
+
+    /**
+     * 公共 API: 格式化日期 (RFC-0015)
+     */
+    public formatDate(
+        date: Date | number | string,
+        options?: string | Intl.DateTimeFormatOptions
+    ): string {
+        return this.i18nManager.formatDate(date, options);
+    }
+
+    /**
+     * 公共 API: 格式化数字 (RFC-0015)
+     */
+    public formatNumber(
+        number: number,
+        options?: Intl.NumberFormatOptions
+    ): string {
+        return this.i18nManager.formatNumber(number, options);
+    }
+
+    /**
+     * 公共 API: 获取文本书写方向 (RFC-0015)
+     */
+    public getDirection(): "ltr" | "rtl" {
+        return this.i18nManager.getDirection();
+    }
+
+    /**
+     * 公共 API: 设置文本书写方向 (RFC-0015)
+     */
+    public setDirection(dir?: "ltr" | "rtl"): void {
+        this.i18nManager.setDirection(dir);
+        this.updateI18nDOM();
+        this.updateTable();
+    }
+
+    private updateI18nDOM(): void {
+        const dir = this.i18nManager.getDirection();
+        const element = this as any;
+        if (typeof element.setAttribute === "function") {
+            element.setAttribute("dir", dir);
+            element.setAttribute("data-dir", dir);
+        }
+        if (element.classList && typeof element.classList.toggle === "function") {
+            element.classList.toggle("rtl", dir === "rtl");
+        }
+        if (element.style && typeof element.style.setProperty === "function") {
+            element.style.setProperty("direction", dir);
         }
     }
 }

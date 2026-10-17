@@ -156,17 +156,17 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | ---------- | ---------------------------------------------- | --------- | ------ | ---------- | ---------- |
 | 列固定     | [0008](./rfc/completed/0008-column-pinning.md) | ✅ 已完成 | P1     | 7-9天      | TBD        |
 | 单元格编辑 | [0009](./rfc/completed/0009-cell-editing.md)   | ✅ 已完成 | P0     | —          | 2026-07-26 |
-| 分组和聚合 | [0010](./rfc/0010-grouping-aggregation.md)     | ⏳ 待规划 | P1     | 10-14天    | TBD        |
+| 分组和聚合 | [0010](./rfc/completed/0010-grouping-aggregation.md) | ✅ 已完成 | P1 | — | 2026-10-08 |
 
 **里程碑**:
 
 - [x] 完成所有 RFC 编写
 - [x] 实施列固定
 - [x] 实施单元格编辑
-- [ ] 实施行分组和聚合
-- [ ] 集成测试
-- [ ] 高级功能文档
-- [ ] 发布 v0.3.0
+- [x] 实施行分组和聚合
+- [x] 集成测试
+- [x] 高级功能文档
+- [x] 发布 v0.3.0
 
 **预计发布**: 2026年5月底
 
@@ -205,14 +205,14 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | 功能     | RFC                                        | 状态      | 优先级 | 预计工作量 | 负责人 |
 | -------- | ------------------------------------------ | --------- | ------ | ---------- | ------ |
 | 数据导出 | [0014](./rfc/0014-data-export.md)          | ⏳ 待规划 | P1     | 5-7天      | TBD    |
-| 国际化   | [0015](./rfc/0015-internationalization.md) | ⏳ 待规划 | P1     | 5-7天      | TBD    |
+| 国际化   | [0015](./rfc/completed/0015-internationalization.md) | ✔️ 已完成 | P1     | 5-7天      | Albert Li |
 
 **里程碑**:
 
 - [ ] 完成所有 RFC 编写
 - [ ] 实施 CSV 和 Excel 导出
-- [ ] 实施多语言支持
-- [ ] 添加语言包（中文/英文/其他）
+- [x] 实施多语言支持
+- [x] 添加语言包（中文/英文/其他）
 - [ ] 国际化文档
 - [ ] 发布 v0.5.0
 
@@ -250,10 +250,10 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | ----------- | ----------------------------------------------------- | --------- | ------ |
 | 树形数据    | [0020](./rfc/0020-tree-data.md)                       | 📝 草稿   | P1     |
 | 主从表格    | [0021](./rfc/0021-master-detail.md)                   | 📝 草稿   | P1     |
-| 范围选择    | [0022](./rfc/0022-range-selection.md)                 | 📝 草稿   | P1     |
+| 范围选择    | [0022](./rfc/completed/0022-range-selection.md)       | ✅ 已完成 | P1     |
 | 剪贴板      | [0023](./rfc/completed/0023-clipboard-operations.md) | ✅ 已完成 | P1     |
 | 右键/列菜单 | [0026](./rfc/0026-context-menu-column-menu.md)        | 📝 草稿   | P2     |
-| 分组聚合    | [0010](./rfc/0010-grouping-aggregation.md)            | 📝 草稿   | P1     |
+| 分组聚合    | [0010](./rfc/completed/0010-grouping-aggregation.md)  | ✅ 已完成 | P1     |
 
 ---
 
@@ -276,6 +276,16 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | 单元格公式   | [0030](./rfc/completed/0030-formulas.md)    | ✔️ 已完成  |
 | 服务端行模型 | [0031](./rfc/0031-server-side-row-model.md) | 🔮 Stretch |
 | AI Toolkit   | [0032](./rfc/0032-ai-toolkit.md)            | 🔮 Stretch |
+
+---
+
+## 🎯 Stage 10 - 验收基础设施与质量闭环 (Gap Closing & Acceptance)
+
+| 功能 | RFC | 状态 |
+| :--- | :--- | :--- |
+| E2E 测试基础设施 | [0033](./rfc/0033-e2e-test-infrastructure.md) | 📝 草稿 |
+| 已完成 RFC 演示验收矩阵 | [0034](./rfc/0034-rfc-demo-acceptance-matrix.md) | ✔️ 已完成 |
+| RFC-0010 E2E 覆盖闭环 | [0035](./rfc/0035-rfc-0010-e2e-coverage.md) | ✔️ 已完成 |
 
 ### Community 补齐（v0.4.0–v0.5.0，原「未来版本」）
 
@@ -405,6 +415,11 @@ v1.0.0 ░░░░░░░░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 变更日志
+
+### 2026-10-08
+
+- ✅ 行分组与数据聚合 RFC-0010 完成：核心功能与单元测试就绪，补充 demo-react `?rfc=0010` 验收与 Playwright E2E 验证（RFC-0035 / ACG-121）
+- ✅ RFC-0010 移动至 `completed/` 并更新状态为已完成
 
 ### 2026-08-16
 

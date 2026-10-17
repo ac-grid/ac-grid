@@ -1,6 +1,8 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 
 import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import type { I18nManager } from "../i18n/manager";
+import { defaultI18nManager } from "../i18n/manager";
 
 /**
  * 排序指示器组件 - 显示列的排序状态（升序/降序/无序）
@@ -30,6 +32,16 @@ export class SortingIndicator extends LightComponent {
     }
     @state private _index: number = -1;
 
+    get i18n(): I18nManager {
+        return this._i18n;
+    }
+    set i18n(val: I18nManager) {
+        if (val && val !== this._i18n) {
+            this._i18n = val;
+        }
+    }
+    @state private _i18n: I18nManager = defaultI18nManager;
+
     connectedCallback() {
         super.connectedCallback();
         const element = this as any;
@@ -39,16 +51,22 @@ export class SortingIndicator extends LightComponent {
         if (element.index !== undefined) {
             this.index = element.index;
         }
+        if (element.i18n !== undefined) {
+            this.i18n = element.i18n;
+        }
     }
 
     render() {
+        const i18n = this._i18n || defaultI18nManager;
+
         if (!this._direction) {
             // Unsorted state - show clickable hint
+            const hintTitle = i18n.t("grid.sort.clickToSort", undefined, "Click to sort");
             return (
                 <span 
                     className="sort-indicator" 
                     aria-hidden="true"
-                    title="Click to sort"
+                    title={hintTitle}
                 >
                     <svg
                         width="14"
@@ -78,14 +96,19 @@ export class SortingIndicator extends LightComponent {
 
         const isAsc = this._direction === "asc";
         const indexNum = this._index !== -1 ? this._index + 1 : null;
-        const tooltip = isAsc 
-            ? `Sorted ascending${indexNum ? ` (#${indexNum})` : ''}. Click to sort descending.`
-            : `Sorted descending${indexNum ? ` (#${indexNum})` : ''}. Click to clear sort.`;
+        const dirName = isAsc 
+            ? i18n.t("grid.sort.asc", undefined, "ascending")
+            : i18n.t("grid.sort.desc", undefined, "descending");
+        const nextAction = isAsc
+            ? i18n.t("grid.sort.clickToSortDesc", undefined, "Click to sort descending.")
+            : i18n.t("grid.sort.clickToClear", undefined, "Click to clear sort.");
+
+        const tooltip = `Sorted ${dirName}${indexNum ? ` (#${indexNum})` : ""}. ${nextAction}`;
 
         return (
             <span
                 className="sort-indicator active"
-                aria-label={`Sorted ${isAsc ? "ascending" : "descending"}${indexNum ? ` (priority ${indexNum})` : ''}`}
+                aria-label={`Sorted ${dirName}${indexNum ? ` (priority ${indexNum})` : ""}`}
                 title={tooltip}
             >
                 {isAsc ? (

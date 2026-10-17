@@ -1,4 +1,11 @@
-import type { ColumnDef, CreateGridOptions } from "@ac-grid/core";
+import {
+  AGGREGATION_FN_AVG,
+  AGGREGATION_FN_COUNT,
+  AGGREGATION_FN_SUM,
+  type ColumnDef,
+  type CreateGridOptions,
+  zhCN,
+} from "@ac-grid/core";
 
 import type { Person } from "./stories/makeData";
 
@@ -13,8 +20,11 @@ export const RFC_VALIDATION_ORDER = [
   "0007",
   "0008",
   "0009",
+  "0010",
+  "0015",
   "0016",
   "0019",
+  "0022",
   "0030",
 ] as const;
 
@@ -26,6 +36,10 @@ export type GridHostElement = HTMLElement & {
   setGlobalFilter?: (value: string) => void;
   clearFilters?: () => void;
   editingConfig?: unknown;
+  expandAll?: () => void;
+  collapseAll?: () => void;
+  toggleGroup?: (rowId: string, isExpanded?: boolean) => void;
+  setGrouping?: (columnIds: string[]) => void;
 };
 
 export interface RfcValidationSpec {
@@ -267,6 +281,82 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
         };
       },
     },
+    "0010": {
+      id: "0010",
+      title: "Grouping & Aggregation",
+      multicaIssue: "ACG-21",
+      hint: "行分组与数据聚合：支持单列/多列分组、展开/折叠以及 count/sum/avg 聚合计算。",
+      rowCount: 50,
+      showGlobalSearch: false,
+      columns: [
+        {
+          id: "status",
+          accessorKey: "status",
+          header: "Status",
+          size: 160,
+          enableGrouping: true,
+        },
+        {
+          id: "firstName",
+          accessorKey: "firstName",
+          header: "First Name",
+          size: 150,
+          enableGrouping: true,
+          aggregationFn: AGGREGATION_FN_COUNT,
+          aggregatedCell: ({ getValue }) => `${getValue<number>()} members`,
+        },
+        {
+          id: "age",
+          accessorKey: "age",
+          header: "Age (Average)",
+          size: 130,
+          aggregationFn: AGGREGATION_FN_AVG,
+          aggregatedCell: ({ getValue }) =>
+            `avg ${Math.round(getValue<number>() || 0)}`,
+        },
+        {
+          id: "visits",
+          accessorKey: "visits",
+          header: "Visits (Total)",
+          size: 140,
+          aggregationFn: AGGREGATION_FN_SUM,
+          aggregatedCell: ({ getValue }) =>
+            `sum ${(getValue<number>() || 0).toLocaleString()}`,
+        },
+        {
+          id: "progress",
+          accessorKey: "progress",
+          header: "Progress",
+          size: 120,
+        },
+      ],
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+        grouping: {
+          enabled: true,
+          initialGrouping: ["status"],
+          initialExpanded: true,
+        },
+      }),
+    },
+    "0015": {
+      id: "0015",
+      title: "Internationalization",
+      multicaIssue: "ACG-18",
+      hint: "国际化验收页：分页控件文案由 zh-CN 语言包提供。",
+      rowCount: 40,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 3),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+        pagination: { enabled: true, pageSize: 10, pageSizeOptions: [10, 20] },
+        i18n: { locale: "zh-CN", messages: zhCN.messages },
+      }),
+    },
     "0016": {
       id: "0016",
       title: "Theme system",
@@ -305,6 +395,20 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
         components: {
           noRowsOverlayComponent: () => "No matching rows",
         },
+      }),
+    },
+    "0022": {
+      id: "0022",
+      title: "Range selection",
+      multicaIssue: "ACG-24",
+      hint: "拖拽或 Shift+点击单元格选择矩形范围。",
+      rowCount: 10,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 3),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        rangeSelection: { enabled: true },
       }),
     },
     "0030": {

@@ -57,7 +57,7 @@
 | ------------------------------------------ | ---------------- | --------- | ----- | --------- | ---------- |
 | [0008](./completed/0008-column-pinning.md) | 列固定 (Pinning) | ✔️ 已完成 | 0.3.0 | Albert Li | 2026-01-24 |
 | [0009](./completed/0009-cell-editing.md)   | 单元格编辑       | ✔️ 已完成 | 0.3.0 | Albert Li | 2026-01-24 |
-| [0010](./0010-grouping-aggregation.md)     | 分组和聚合       | 📝 草稿   | 0.3.0 | Albert Li | 2026-01-24 |
+| [0010](./completed/0010-grouping-aggregation.md) | 分组和聚合 | ✔️ 已完成 | 0.3.0 | Albert Li | 2026-01-24 |
 
 ### 第四阶段：用户体验 (v0.4.0)
 
@@ -72,7 +72,7 @@
 | RFC                                    | 标题          | 状态    | 版本  | 作者      | 日期       |
 | -------------------------------------- | ------------- | ------- | ----- | --------- | ---------- |
 | [0014](./0014-data-export.md)          | 数据导出      | 📝 草稿 | 0.5.0 | Albert Li | 2026-01-24 |
-| [0015](./0015-internationalization.md) | 国际化 (i18n) | 📝 草稿 | 0.5.0 | Albert Li | 2026-01-24 |
+| [0015](./completed/0015-internationalization.md) | 国际化 (i18n) | ✔️ 已完成 | 0.5.0 | Albert Li | 2026-01-24 |
 
 ## 如何创建新 RFC
 
@@ -105,7 +105,7 @@
 | ------------------------------------------------- | ---------------- | --------- | ----- | --------- | ---------- |
 | [0020](./0020-tree-data.md)                       | 树形数据         | 📝 草稿   | 1.1.0 | Albert Li | 2026-06-28 |
 | [0021](./0021-master-detail.md)                   | 主从表格         | 📝 草稿   | 1.1.0 | Albert Li | 2026-06-28 |
-| [0022](./0022-range-selection.md)                 | 范围选择         | 📝 草稿   | 1.1.0 | Albert Li | 2026-06-28 |
+| [0022](./completed/0022-range-selection.md)       | 范围选择         | ✔️ 已完成 | 1.1.0 | Albert Li | 2026-06-28 |
 | [0023](./completed/0023-clipboard-operations.md) | 剪贴板操作       | ✔️ 已完成 | 1.1.0 | Albert Li | 2026-10-03 |
 | [0024](./0024-pivot-mode.md)                      | 透视模式         | 📝 草稿   | 1.2.0 | Albert Li | 2026-06-28 |
 | [0025](./0025-excel-export-advanced.md)           | Excel 高级导出   | 📝 草稿   | 1.2.0 | Albert Li | 2026-06-28 |
@@ -121,6 +121,14 @@
 | [0030](./completed/0030-formulas.md)    | 单元格公式   | ✔️ 已完成  | 2.0.0 | Albert Li | 2026-06-28 |
 | [0031](./0031-server-side-row-model.md) | 服务端行模型 | 🔮 Stretch | 2.0.0 | Albert Li | 2026-06-28 |
 | [0032](./0032-ai-toolkit.md)            | AI Toolkit   | 🔮 Stretch | TBD   | Albert Li | 2026-06-28 |
+
+### 第十阶段：质量闭环与验收基础设施 (Stage 10)
+
+| RFC | 标题 | 状态 | 版本 | 作者 | 日期 |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| [0033](./0033-e2e-test-infrastructure.md) | E2E 测试基础设施 | 📝 草稿 | 0.1.0 | Albert Li | 2026-10-11 |
+| [0034](./0034-rfc-demo-acceptance-matrix.md) | 已完成 RFC 演示验收矩阵 | ✔️ 已完成 | 0.4.0 | Albert Li | 2026-10-11 |
+| [0035](./0035-rfc-0010-e2e-coverage.md) | RFC-0010 E2E 覆盖 | ✔️ 已完成 | 0.3.0 | Albert Li | 2026-10-08 |
 
 ## 相关资源
 

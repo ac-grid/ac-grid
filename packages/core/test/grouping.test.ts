@@ -162,6 +162,7 @@ describe("Grid grouping and aggregation", () => {
 
     grid.collapseAll();
     expect(grid.table.getState().expanded).toEqual({});
+    expect(grid.table.getRowModel().rows).toHaveLength(2);
     expect(onExpandedChange).toHaveBeenCalled();
   });
 

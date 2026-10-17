@@ -75,10 +75,10 @@
 
 | 功能     | AG Grid    | AC Grid | RFC                                    | 版本   |
 | -------- | ---------- | ------- | -------------------------------------- | ------ |
-| 行分组   | Enterprise | 📝      | [0010](./0010-grouping-aggregation.md) | v1.1.0 |
-| 数据聚合 | Enterprise | 📝      | [0010](./0010-grouping-aggregation.md) | v1.1.0 |
+| 行分组   | Enterprise | ✅      | [0010](./completed/0010-grouping-aggregation.md) | v0.3.0 |
+| 数据聚合 | Enterprise | ✅      | [0010](./completed/0010-grouping-aggregation.md) | v0.3.0 |
 
-> 0010 保留在 v0.3.0 草稿；对标上属 Enterprise，实施顺延至 Phase 2。
+> 0010 行分组与数据聚合已在 v0.3.0 完成实施并通过单元测试与 E2E 验证（PR #18、ACG-121）。
 
 ### 体验与导出
 
@@ -86,7 +86,7 @@
 | ---------------- | --------- | ------- | ---------------------------------------- | ------ |
 | 主题定制（高级） | Community | ✅      | [0011](./completed/0011-theme-system.md) | v0.4.0 |
 | CSV 导出         | Community | 📝      | [0014](./0014-data-export.md)            | v0.5.0 |
-| 国际化 (i18n)    | Community | 📝      | [0015](./0015-internationalization.md)   | v0.5.0 |
+| 国际化 (i18n)    | Community | ✅      | [0015](./completed/0015-internationalization.md) | v0.5.0 |
 
 ### Community 缺口（本轮新增 RFC）
 
@@ -104,7 +104,7 @@
 | ------------------------ | ---------- | ------- | ------------------------------------------------- | ------ |
 | 树形数据                 | Enterprise | 📝      | [0020](./0020-tree-data.md)                       | v1.1.0 |
 | 主从表格 (Master/Detail) | Enterprise | 📝      | [0021](./0021-master-detail.md)                   | v1.1.0 |
-| 范围选择                 | Enterprise | 📝      | [0022](./0022-range-selection.md)                 | v1.1.0 |
+| 范围选择                 | Enterprise | ✅      | [0022](./completed/0022-range-selection.md)       | v1.1.0 |
 | 剪贴板操作               | Enterprise | ✅      | [0023](./completed/0023-clipboard-operations.md) | v1.1.0 |
 | 透视模式 (Pivot)         | Enterprise | 📝      | [0024](./0024-pivot-mode.md)                      | v1.2.0 |
 | Excel 导出（样式/公式）  | Enterprise | 📝      | [0025](./0025-excel-export-advanced.md)           | v1.2.0 |

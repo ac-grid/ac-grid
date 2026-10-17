@@ -39,6 +39,7 @@ export default defineConfig({
     test: {
         environment: "jsdom",
         isolate: false,
+        fileParallelism: false,
         include: ["test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
         coverage: {
             provider: "v8",

@@ -4,7 +4,7 @@
 **版本**: 1.1.0
 **作者**: Albert Li
 **日期**: 2026-06-28
-**相关 RFC**: [0022](../0022-range-selection.md), [0014](../0014-data-export.md)
+**相关 RFC**: [0022](./0022-range-selection.md), [0014](../0014-data-export.md)
 
 ## Summary
 
