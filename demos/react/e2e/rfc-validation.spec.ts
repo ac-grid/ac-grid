@@ -251,9 +251,10 @@ test.describe("RFC validation demos (browser)", () => {
         const end = rows.nth(1).locator(".grid-cell").nth(1);
         await expect(start).toBeVisible();
         await expect(end).toBeVisible();
-        await start.dispatchEvent("mousedown", { button: 0, bubbles: true, cancelable: true });
-        await end.dispatchEvent("mouseenter", { bubbles: false });
-        await grid.locator(".grid-body").dispatchEvent("mouseup", { bubbles: true });
+        await start.hover();
+        await page.mouse.down();
+        await end.hover();
+        await page.mouse.up();
 
         await expect.poll(() => grid.evaluate((element) => {
             const ranges = (element as HTMLElement & { getCellRanges?: () => Array<{ startRow: number; endRow: number; columns: string[] }> }).getCellRanges?.() ?? [];
