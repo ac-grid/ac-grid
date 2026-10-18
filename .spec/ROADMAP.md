@@ -477,3 +477,5 @@ MIT License
 **维护者**: AC Grid Team
 
 > 💡 **提示**: 本路线图会定期更新。建议定期查看以了解最新进展。
+| 0036 | [Demo and E2E quality remediation](rfc/0036-demo-quality-remediation.md) | Draft |
+| 0037 | [Dev port assignment and Spark registration](rfc/0037-dev-port-assignment.md) | Approved |

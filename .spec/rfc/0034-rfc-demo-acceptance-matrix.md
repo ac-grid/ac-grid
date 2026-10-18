@@ -34,7 +34,7 @@ Across the AC Grid repository, multiple RFCs were moved to `completed/` or marke
 
 ## 概述
 
-AC Grid 建立「已完成 RFC 演示验收矩阵」（Demo Acceptance Matrix），将所有已实现/已完成的 RFC 绑定至 `demos/react` 验收台（运行在 `http://127.0.0.1:5173` / `http://127.0.0.1:5174`），定义明确的交互行为与 Playwright 自动化测试证据。
+AC Grid 建立「已完成 RFC 演示验收矩阵」（Demo Acceptance Matrix），将所有已实现/已完成的 RFC 绑定至 `demos/react` 验收台（运行在 开发 `http://127.0.0.1:5198`，E2E `http://127.0.0.1:5201`），定义明确的交互行为与 Playwright 自动化测试证据。
 
 任何在 `ISSUE_REGISTRY.md` 或 `.spec/rfc/completed/` 中标记为完成的功能，必须满足此矩阵的要求，才能视为真正达成产品级完成（Product Complete）。
 
