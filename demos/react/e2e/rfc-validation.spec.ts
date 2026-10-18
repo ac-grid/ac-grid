@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { gridReady } from "./helpers";
+
 test.describe("RFC validation demos (browser)", () => {
     test("RFC-0001 mounts typed grid through the Web Component entrypoint", async ({ page }) => {
         await page.goto("/?rfc=0001");
@@ -11,9 +13,7 @@ test.describe("RFC validation demos (browser)", () => {
         test.beforeEach(async ({ page }) => {
             await page.setViewportSize({ width: 800, height: 600 });
             await page.goto("/?rfc=0002");
-            await expect(page.locator("wsx-ac-grid .grid-body .grid-row").first()).toBeVisible({
-                timeout: 15_000,
-            });
+            await gridReady(page);
         });
 
         test("reorders visible rows after clicking a sortable header", async ({ page }) => {
@@ -21,11 +21,10 @@ test.describe("RFC validation demos (browser)", () => {
             const before = (await firstCell.textContent())?.trim();
 
             await page.locator('.grid-header-cell[data-column-id="firstName"]').click();
-            await page.waitForTimeout(300);
+            await expect(firstCell).not.toHaveText(before ?? "");
 
             const after = (await firstCell.textContent())?.trim();
             expect(after).toBeTruthy();
-            expect(after).not.toBe(before);
 
             const sortedCheck = await page.evaluate(() => {
                 const grid = document.querySelector("wsx-ac-grid") as HTMLElement & {
@@ -53,9 +52,7 @@ test.describe("RFC validation demos (browser)", () => {
         test.beforeEach(async ({ page }) => {
             await page.setViewportSize({ width: 400, height: 600 });
             await page.goto("/?rfc=0002");
-            await expect(page.locator("wsx-ac-grid .grid-body .grid-row").first()).toBeVisible({
-                timeout: 15_000,
-            });
+            await gridReady(page);
         });
 
         test("keeps header aligned with body during real mouse wheel horizontal scroll", async ({
@@ -138,7 +135,7 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0002 reorders columns after a real header drag", async ({ page }) => {
         await page.goto("/?rfc=0002");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         const source = page.locator('.grid-header-cell[data-column-id="firstName"] .drag-handle-button');
         const target = page.locator('.grid-header-cell[data-column-id="lastName"]');
         const sourceBox = await source.boundingBox();
@@ -160,7 +157,7 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0003 filters rows through global search", async ({ page }) => {
         await page.goto("/?rfc=0003");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         const before = await page.locator(".grid-row").count();
         await page.locator(".demo-search").fill("zzzz-no-match");
         await expect.poll(() => page.locator(".grid-row").count()).toBeLessThan(before);
@@ -169,7 +166,7 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0004 changes column width with its resize handle", async ({ page }) => {
         await page.goto("/?rfc=0004");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         const header = page.locator('.grid-header-cell[data-column-id="firstName"]');
         const resizer = header.locator(".resizer");
         const before = await header.evaluate((element) => element.getBoundingClientRect().width);
@@ -186,14 +183,14 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0006 changes page from pagination controls", async ({ page }) => {
         await page.goto("/?rfc=0006");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await page.locator(".pagination-controls button").nth(2).click();
         await expect(page.locator(".pagination-controls")).toContainText("Page 2 of 10");
     });
 
     test("RFC-0007 selects a row through its checkbox", async ({ page }) => {
         await page.goto("/?rfc=0007");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await page.locator("wsx-ac-selection-checkbox input").nth(1).click();
         await expect
             .poll(() =>
@@ -209,14 +206,14 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0009 starts editing on cell double click", async ({ page }) => {
         await page.goto("/?rfc=0009");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await page.locator(".grid-row .grid-cell").first().dblclick();
         await expect(page.locator("wsx-ac-cell-editor")).toHaveCount(1);
     });
 
     test("RFC-0012 supports keyboard focus and navigation", async ({ page }) => {
         await page.goto("/?rfc=0012");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         const firstCell = page.locator(".grid-row .grid-cell").first();
         await firstCell.focus();
         await page.keyboard.press("ArrowRight");
@@ -228,7 +225,7 @@ test.describe("RFC validation demos (browser)", () => {
     test("RFC-0008 pins configured columns", async ({ page }) => {
         await page.setViewportSize({ width: 500, height: 600 });
         await page.goto("/?rfc=0008");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await expect(page.locator('.grid-header-cell[data-column-id="firstName"]')).toHaveCSS(
             "position",
             "sticky",
@@ -241,13 +238,13 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0019 renders custom header component", async ({ page }) => {
         await page.goto("/?rfc=0019");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await expect(page.getByText("Custom Name", { exact: true })).toHaveCount(1);
     });
 
     test("RFC-0015 renders pagination text from the zh-CN language pack", async ({ page }) => {
         await page.goto("/?rfc=0015");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await expect(page.locator(".pagination-info")).toContainText("显示第 1 至 10 条");
         await expect(page.locator(".pagination-controls")).not.toContainText("Showing");
     });
@@ -256,7 +253,7 @@ test.describe("RFC validation demos (browser)", () => {
         await page.goto("/?rfc=0022");
         const grid = page.locator("wsx-ac-grid");
         const rows = grid.locator(".grid-body .grid-row");
-        await expect(rows.first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
 
         const start = rows.nth(0).locator(".grid-cell").nth(0);
         const end = rows.nth(1).locator(".grid-cell").nth(1);
@@ -276,7 +273,7 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0016 applies theme variables to the validation grid", async ({ page }) => {
         await page.goto("/?rfc=0016");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await expect
             .poll(() => page.locator("wsx-ac-grid").evaluate((element) => getComputedStyle(element).getPropertyValue("--ac-grid-bg-cell")))
             .not.toBe("");
@@ -284,7 +281,7 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0010 groups rows, calculates aggregations, and expands/collapses groups", async ({ page }) => {
         await page.goto("/?rfc=0010");
-        await expect(page.locator("wsx-ac-grid .grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
 
         // Group rows should be rendered
         const groupRows = page.locator("wsx-ac-grid .grid-row.grid-row-grouped");
@@ -325,7 +322,7 @@ test.describe("RFC validation demos (browser)", () => {
     });
     test("RFC-0011 previews a theme, restores it on cancel, and keeps an applied theme", async ({ page }) => {
         await page.goto("/?rfc=0011");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         const headerBg = () =>
             page.locator("wsx-ac-grid").evaluate((element) => getComputedStyle(element).getPropertyValue("--ac-grid-bg-header").trim());
         const status = page.locator('[data-testid="theme-status"]');
@@ -356,7 +353,7 @@ test.describe("RFC validation demos (browser)", () => {
 
         test.beforeEach(async ({ page }) => {
             await page.goto("/?rfc=0023");
-            await expect(page.locator(".grid-body .grid-row").first()).toBeVisible({ timeout: 15_000 });
+            await gridReady(page);
         });
 
         test("RFC-0023 copies the clicked cell as text", async ({ page }) => {
