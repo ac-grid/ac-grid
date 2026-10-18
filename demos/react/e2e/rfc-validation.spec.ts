@@ -323,4 +323,58 @@ test.describe("RFC validation demos (browser)", () => {
         await page.getByRole("button", { name: "增加 A1" }).click();
         await expect(page.locator('[data-testid="formula-sum"]')).toHaveText("C1 = SUM(A1:B1) = 16");
     });
+    test("RFC-0011 previews a theme, restores it on cancel, and keeps an applied theme", async ({ page }) => {
+        await page.goto("/?rfc=0011");
+        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        const headerBg = () =>
+            page.locator("wsx-ac-grid").evaluate((element) => getComputedStyle(element).getPropertyValue("--ac-grid-bg-header").trim());
+        const status = page.locator('[data-testid="theme-status"]');
+
+        await expect(status).toHaveText("applied=light preview=none");
+        const light = await headerBg();
+        expect(light).not.toBe("");
+
+        await page.locator('[data-testid="preview-ocean-btn"]').click();
+        await expect(status).toHaveText("applied=light preview=ocean");
+        await expect.poll(headerBg).not.toBe(light);
+        const ocean = await headerBg();
+
+        await page.locator('[data-testid="cancel-preview-btn"]').click();
+        await expect(status).toHaveText("applied=light preview=none");
+        await expect.poll(headerBg).toBe(light);
+
+        await page.locator('[data-testid="preview-dark-btn"]').click();
+        await expect.poll(headerBg).not.toBe(light);
+        await page.locator('[data-testid="apply-ocean-btn"]').click();
+        await expect(status).toHaveText("applied=ocean preview=none");
+        await expect.poll(headerBg).toBe(ocean);
+    });
+
+    test.describe("RFC-0023 clipboard", () => {
+        const cell = (page: import("@playwright/test").Page, row: number, columnId: string) =>
+            page.locator(".grid-body .grid-row").nth(row).locator(`.grid-cell[data-column-id="${columnId}"]`);
+
+        test.beforeEach(async ({ page }) => {
+            await page.goto("/?rfc=0023");
+            await expect(page.locator(".grid-body .grid-row").first()).toBeVisible({ timeout: 15_000 });
+        });
+
+        test("RFC-0023 copies the clicked cell as text", async ({ page }) => {
+            const target = cell(page, 1, "lastName");
+            const text = (await target.textContent())?.trim() ?? "";
+            expect(text).not.toBe("");
+            await target.click();
+            await page.keyboard.press("ControlOrMeta+c");
+            await expect(page.locator('[data-testid="clipboard-copied"]')).toHaveText(text);
+        });
+
+        test("RFC-0023 pastes a TSV matrix starting at the clicked cell", async ({ page }) => {
+            await cell(page, 0, "firstName").click();
+            await page.keyboard.press("ControlOrMeta+v");
+            await expect(cell(page, 0, "firstName")).toHaveText("Alpha");
+            await expect(cell(page, 0, "lastName")).toHaveText("One");
+            await expect(cell(page, 1, "firstName")).toHaveText("Beta");
+            await expect(cell(page, 1, "lastName")).toHaveText("Two");
+        });
+    });
 });

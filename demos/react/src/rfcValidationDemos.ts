@@ -21,11 +21,13 @@ export const RFC_VALIDATION_ORDER = [
   "0008",
   "0009",
   "0010",
+  "0011",
   "0012",
   "0015",
   "0016",
   "0019",
   "0022",
+  "0023",
   "0030",
 ] as const;
 
@@ -41,7 +43,17 @@ export type GridHostElement = HTMLElement & {
   collapseAll?: () => void;
   toggleGroup?: (rowId: string, isExpanded?: boolean) => void;
   setGrouping?: (columnIds: string[]) => void;
+  applyTheme?: (name: string) => void;
+  previewTheme?: (name: string) => void;
+  cancelPreview?: () => void;
+  getTheme?: () => string | null;
+  getPreviewTheme?: () => string | null;
 };
+
+/** Window event carrying the TSV the grid copied (RFC-0023 demo sink). */
+export const DEMO_CLIPBOARD_COPY_EVENT = "demo-clipboard-copy";
+/** Text area the RFC-0023 demo grid pastes from. */
+export const DEMO_CLIPBOARD_SOURCE_ID = "demo-clipboard-source";
 
 export interface RfcValidationSpec {
   id: RfcValidationId;
@@ -282,6 +294,23 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
         };
       },
     },
+    "0011": {
+      id: "0011",
+      title: "Advanced themes",
+      multicaIssue: "ACG-20",
+      hint: "主题预览/取消预览/应用：悬停式预览不持久化，取消后恢复；应用后持久。",
+      rowCount: 10,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 4),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+        theme: "light",
+        themeTransition: true,
+        themeTransitionDuration: 150,
+      }),
+    },
     "0012": {
       id: "0012",
       title: "Keyboard navigation",
@@ -431,6 +460,38 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
         columns,
         rangeSelection: { enabled: true },
       }),
+    },
+    "0023": {
+      id: "0023",
+      title: "Clipboard",
+      multicaIssue: "ACG-25",
+      hint: "点选单元格后 Ctrl/Cmd+C 复制为 TSV；点选起始格后 Ctrl/Cmd+V 从右侧文本框粘贴。",
+      rowCount: 10,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 3),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+        clipboard: {
+          enabled: true,
+          suppressClipboardApi: true,
+          copyToClipboard: (text) => {
+            window.dispatchEvent(
+              new CustomEvent(DEMO_CLIPBOARD_COPY_EVENT, { detail: text }),
+            );
+          },
+          readFromClipboard: () =>
+            (
+              document.getElementById(
+                DEMO_CLIPBOARD_SOURCE_ID,
+              ) as HTMLTextAreaElement | null
+            )?.value ?? "",
+        },
+      }),
+      afterMount: (grid) => {
+        grid.editingConfig = { enabled: true, mode: "doubleClick" };
+      },
     },
     "0030": {
       id: "0030",

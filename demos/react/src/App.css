@@ -165,7 +165,9 @@
 }
 
 .demo-grouping-panel,
-.demo-formula-panel {
+.demo-formula-panel,
+.demo-theme-panel,
+.demo-clipboard-panel {
     display: flex;
     flex-wrap: wrap;
     align-items: center;

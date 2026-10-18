@@ -5,6 +5,8 @@ import { createFormulaEngineFromMatrix, createGrid } from "@ac-grid/core";
 
 import { makeData } from "./stories/makeData";
 import {
+    DEMO_CLIPBOARD_COPY_EVENT,
+    DEMO_CLIPBOARD_SOURCE_ID,
     getAdjacentRfcId,
     parseRfcIdFromUrl,
     RFC_VALIDATION_ORDER,
@@ -36,6 +38,20 @@ function App() {
         parseRfcIdFromUrl(window.location.search),
     );
     const [formulaInput, setFormulaInput] = useState(10);
+    const [themeStatus, setThemeStatus] = useState("applied=light preview=none");
+    const [copiedText, setCopiedText] = useState("");
+    const syncThemeStatus = useCallback(() => {
+        const grid = gridRef.current;
+        setThemeStatus(
+            `applied=${grid?.getTheme?.() ?? "none"} preview=${grid?.getPreviewTheme?.() ?? "none"}`,
+        );
+    }, []);
+
+    useEffect(() => {
+        const onCopy = (event: Event) => setCopiedText((event as CustomEvent<string>).detail);
+        window.addEventListener(DEMO_CLIPBOARD_COPY_EVENT, onCopy);
+        return () => window.removeEventListener(DEMO_CLIPBOARD_COPY_EVENT, onCopy);
+    }, []);
     const formulaValues = useMemo(() => {
         if (rfcId !== "0030") return null;
         const engine = createFormulaEngineFromMatrix([
@@ -172,6 +188,66 @@ function App() {
                             >
                                 全部折叠
                             </button>
+                        </div>
+                    ) : null}
+
+                    {rfcId === "0011" ? (
+                        <div className="demo-theme-panel" data-testid="theme-panel">
+                            {["ocean", "dark"].map((name) => (
+                                <button
+                                    key={name}
+                                    type="button"
+                                    className="demo-btn"
+                                    data-testid={`preview-${name}-btn`}
+                                    onClick={() => {
+                                        gridRef.current?.previewTheme?.(name);
+                                        syncThemeStatus();
+                                    }}
+                                >
+                                    预览 {name}
+                                </button>
+                            ))}
+                            <button
+                                type="button"
+                                className="demo-btn"
+                                data-testid="cancel-preview-btn"
+                                onClick={() => {
+                                    gridRef.current?.cancelPreview?.();
+                                    syncThemeStatus();
+                                }}
+                            >
+                                取消预览
+                            </button>
+                            <button
+                                type="button"
+                                className="demo-btn"
+                                data-testid="apply-ocean-btn"
+                                onClick={() => {
+                                    gridRef.current?.applyTheme?.("ocean");
+                                    syncThemeStatus();
+                                }}
+                            >
+                                应用 ocean
+                            </button>
+                            <span data-testid="theme-status">{themeStatus}</span>
+                        </div>
+                    ) : null}
+
+                    {rfcId === "0023" ? (
+                        <div className="demo-clipboard-panel" data-testid="clipboard-panel">
+                            <label>
+                                粘贴源（TSV）
+                                <textarea
+                                    id={DEMO_CLIPBOARD_SOURCE_ID}
+                                    data-testid="clipboard-source"
+                                    defaultValue={"Alpha\tOne\nBeta\tTwo"}
+                                    rows={2}
+                                />
+                            </label>
+                            <div>
+                                最近复制：
+                                <pre data-testid="clipboard-copied">{copiedText}</pre>
+                            </div>
                         </div>
                     ) : null}
 

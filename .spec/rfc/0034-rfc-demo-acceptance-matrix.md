@@ -58,8 +58,8 @@ AC Grid 建立「已完成 RFC 演示验收矩阵」（Demo Acceptance Matrix）
 | **0016** | 主题系统基础 | `/?rfc=0016` | Web Component 读取 CSS 自定义属性 `--ac-grid-bg-cell` 并在 DOM 中生效 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0016 applies theme variables...`) | ✅ 达标 |
 | **0019** | 自定义组件 | `/?rfc=0019` | 挂载用户自定义 header 渲染组件并显示 "Custom Name" | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0019 renders custom header component`) | ✅ 达标 |
 | **0030** | 单元格公式引擎 | `/?rfc=0030` | 公式求值：SUM 计算、AVG 计算、#CYCLE! 循环依赖检测，以及依赖项更新即时重算 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0030 recalculates formula result...`) | ✅ 达标 |
-| **0011** | 高级主题功能 | *待补齐独立验收页* | 主题动态预览与恢复、CSS 过渡切换动画、主题编辑器及导出 | 单元测试已覆盖 (`packages/core/test/theme-integration.test.ts`)，demo 验收页待后续扩展 | ⚠️ 缺口跟踪 |
-| **0023** | 剪贴板操作 | *待补齐浏览器事件* | TSV 复制与粘贴、单元格选区更新 | 纯函数与核心方法就绪，浏览器事件接线待后续补齐 | ⚠️ 缺口跟踪 |
+| **0011** | 高级主题功能 | `/?rfc=0011` | 预览主题改变 `--ac-grid-bg-header` 且不改变已应用主题；取消预览恢复原值；应用后持久 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0011 previews a theme...`) | ✅ 达标 |
+| **0023** | 剪贴板操作 | `/?rfc=0023` | 点选单元格后 Ctrl/Cmd+C 复制其文本；点选起始格后 Ctrl/Cmd+V 按 TSV 矩阵写入相邻单元格 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0023 copies...`, `RFC-0023 pastes...`) | ✅ 达标 |
 
 ---
 
