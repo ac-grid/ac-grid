@@ -68,6 +68,8 @@ export interface RfcValidationSpec {
     columns: ColumnDef<Person>[],
   ) => CreateGridOptions<Person>;
   afterMount?: (grid: GridHostElement) => void;
+  /** Page has no grid (RFC-0030 is a standalone engine). */
+  hideGrid?: boolean;
 }
 
 const PERSON_COLUMNS: ColumnDef<Person>[] = [
@@ -497,14 +499,11 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
       id: "0030",
       title: "Formulas",
       multicaIssue: "ACG-32",
-      hint: "公式引擎验收页：A1 引用、SUM/AVG 与增量依赖计算由 core FormulaEngine 测试覆盖。",
-      rowCount: 3,
+      hint: "公式引擎验收页（独立引擎，未接入 Grid）：在 raw 框输入数字或 =公式，右侧显示引擎增量重算的结果。",
+      rowCount: 0,
+      hideGrid: true,
       showGlobalSearch: false,
-      columns: [
-        { id: "firstName", accessorKey: "firstName", header: "Input A" },
-        { id: "lastName", accessorKey: "lastName", header: "Input B" },
-        { id: "age", accessorKey: "age", header: "Computed" },
-      ],
+      columns: [],
       buildOptions: (data, columns) => ({
         data,
         columns,

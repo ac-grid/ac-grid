@@ -5,11 +5,10 @@ const E2E_QUERY = "e2e=virtual-scroll";
 
 export default defineConfig({
     testDir: "./e2e",
-    fullyParallel: false,
+    fullyParallel: true,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
-    // Serial: parallel workers flake RFC-0002/0004/0023 on the shared dev server.
-    workers: 1,
+    workers: process.env.CI ? 1 : undefined,
     // CI 保留 list 日志，并写出 html 报告供失败时上传。
     reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
     use: {

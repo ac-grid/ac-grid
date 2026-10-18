@@ -1,12 +1,37 @@
 import { expect, test } from "@playwright/test";
 
-import { gridReady } from "./helpers";
+import { domQuiet, gridReady } from "./helpers";
 
 test.describe("RFC validation demos (browser)", () => {
-    test("RFC-0001 mounts typed grid through the Web Component entrypoint", async ({ page }) => {
+    test("RFC-0001 renders the declared columns and row values and sorts on a real header click", async ({ page }) => {
         await page.goto("/?rfc=0001");
+        await gridReady(page);
         await expect(page.locator("wsx-ac-grid")).toHaveCount(1);
-        await expect(page.locator("wsx-ac-grid .grid-row")).toHaveCount(10);
+
+        const headers = page.locator(".grid-header-cell");
+        await expect(headers).toHaveCount(3);
+        for (const [index, title] of ["First Name", "Last Name", "Age"].entries()) {
+            await expect(headers.nth(index)).toContainText(title);
+        }
+
+        const rows = page.locator(".grid-body .grid-row");
+        await expect(rows).toHaveCount(10);
+        await expect(rows.first().locator(".grid-cell")).toHaveCount(3);
+
+        const column = async (id: string) =>
+            (await page.locator(`.grid-body .grid-cell[data-column-id="${id}"]`).allTextContents()).map((text) => text.trim());
+        expect((await column("firstName")).every((name) => name.length > 0)).toBe(true);
+        expect((await column("age")).every((age) => /^\d+$/.test(age))).toBe(true);
+
+        const before = await column("firstName");
+        const ascending = [...before].sort((a, b) => a.localeCompare(b));
+        expect(before, "fixture must start unsorted or the sort check proves nothing").not.toEqual(ascending);
+
+        const header = page.locator('.grid-header-cell[data-column-id="firstName"]');
+        await header.click();
+        await expect.poll(() => column("firstName")).toEqual(ascending);
+        await header.click();
+        await expect.poll(() => column("firstName")).toEqual([...ascending].reverse());
     });
 
     test.describe("RFC-0002 sorting", () => {
@@ -145,7 +170,11 @@ test.describe("RFC validation demos (browser)", () => {
         await page.mouse.move(sourceBox!.x + sourceBox!.width / 2, sourceBox!.y + sourceBox!.height / 2);
         await page.mouse.down();
         await page.mouse.move(targetBox!.x + targetBox!.width / 2, targetBox!.y + targetBox!.height / 2, { steps: 12 });
+        // Mid-drag feedback: the dragged header and the hovered drop target are marked.
+        await expect(page.locator('.grid-header-cell[data-column-id="firstName"]')).toHaveClass(/\bdragging\b/);
+        await expect(target).toHaveClass(/\bdrag-over\b/);
         await page.mouse.up();
+        await expect(page.locator(".grid-header-cell.dragging, .grid-header-cell.drag-over")).toHaveCount(0);
         await expect
             .poll(() =>
                 page.locator(".grid-header-cell[data-column-id]").evaluateAll((nodes) =>
@@ -211,15 +240,30 @@ test.describe("RFC validation demos (browser)", () => {
         await expect(page.locator("wsx-ac-cell-editor")).toHaveCount(1);
     });
 
-    test("RFC-0012 supports keyboard focus and navigation", async ({ page }) => {
+    test("RFC-0012 keeps keyboard focus after the grid re-renders and moves it with the arrow keys", async ({ page }) => {
         await page.goto("/?rfc=0012");
         await gridReady(page);
-        const firstCell = page.locator(".grid-row .grid-cell").first();
-        await firstCell.focus();
+        const focusedColumn = () =>
+            page.evaluate(() => (document.querySelector("wsx-ac-grid") as any).getFocusedCell()?.columnId);
+        const activeCell = () =>
+            page.evaluate(() => {
+                const active = document.activeElement as HTMLElement | null;
+                return active?.matches(".grid-cell") ? `${active.dataset.rowId}:${active.dataset.columnId}` : null;
+            });
+
+        await page.locator(".grid-row .grid-cell").first().focus();
+        // A person pauses before pressing a key; the focus change re-renders the grid in that window.
+        await domQuiet(page);
+        expect(await activeCell(), "focus must survive the re-render").toMatch(/:firstName$/);
+
         await page.keyboard.press("ArrowRight");
-        await expect.poll(() => page.evaluate(() =>
-            (document.querySelector("wsx-ac-grid") as any).getFocusedCell()?.columnId,
-        )).toBe("lastName");
+        await expect.poll(focusedColumn).toBe("lastName");
+        await expect.poll(activeCell).toMatch(/:lastName$/);
+
+        await domQuiet(page);
+        await page.keyboard.press("ArrowDown");
+        await expect.poll(activeCell).toMatch(/^(?!.*row-0).*:lastName$/);
+        await expect.poll(focusedColumn).toBe("lastName");
     });
 
     test("RFC-0008 pins configured columns", async ({ page }) => {
@@ -312,13 +356,58 @@ test.describe("RFC validation demos (browser)", () => {
         await expect(page.locator("wsx-ac-grid .grid-row")).toHaveCount(initialRowCount);
     });
 
-    test("RFC-0030 recalculates formula result after input change", async ({ page }) => {
-        await page.goto("/?rfc=0030");
-        await expect(page.locator('[data-testid="formula-sum"]')).toHaveText("C1 = SUM(A1:B1) = 15");
-        await expect(page.locator('[data-testid="formula-average"]')).toHaveText("C2 = AVG(A2:B2) = 7");
-        await expect(page.locator('[data-testid="formula-cycle"]')).toHaveText("C3 = #CYCLE!");
-        await page.getByRole("button", { name: "增加 A1" }).click();
-        await expect(page.locator('[data-testid="formula-sum"]')).toHaveText("C1 = SUM(A1:B1) = 16");
+    test.describe("RFC-0030 formula engine", () => {
+        const value = (page: import("@playwright/test").Page, label: string) =>
+            page.locator(`[data-testid="val-${label}"]`);
+        const type = (page: import("@playwright/test").Page, label: string, text: string) =>
+            page.locator(`[data-testid="raw-${label}"]`).fill(text);
+
+        test.beforeEach(async ({ page }) => {
+            await page.goto("/?rfc=0030");
+            await expect(page.locator('[data-testid="formula-sheet"]')).toBeVisible({ timeout: 15_000 });
+        });
+
+        test("RFC-0030 evaluates SUM, AVG, MAX-MIN, COUNT and reports errors", async ({ page }) => {
+            await expect(value(page, "C1")).toHaveText("15");
+            await expect(value(page, "C2")).toHaveText("7");
+            await expect(value(page, "C3")).toHaveText("6");
+            await expect(value(page, "C4")).toHaveText("2");
+            await expect(value(page, "A5")).toHaveText("#CYCLE!");
+            await expect(value(page, "B5")).toHaveText("#CYCLE!");
+            await expect(value(page, "C5")).toHaveText("#DIV/0!");
+        });
+
+        test("RFC-0030 recalculates dependents when an input is typed", async ({ page }) => {
+            await type(page, "A1", "20");
+            await expect(value(page, "C1")).toHaveText("25");
+            await type(page, "B2", "10");
+            await expect(value(page, "C2")).toHaveText("10");
+            await type(page, "A3", "1");
+            await type(page, "B3", "1");
+            await expect(value(page, "C3")).toHaveText("0");
+        });
+
+        test("RFC-0030 follows chained references through a new formula", async ({ page }) => {
+            await type(page, "B1", "=A1*2");
+            await expect(value(page, "B1")).toHaveText("20");
+            await expect(value(page, "C1")).toHaveText("30");
+            await type(page, "A1", "1");
+            await expect(value(page, "B1")).toHaveText("2");
+            await expect(value(page, "C1")).toHaveText("3");
+        });
+
+        test("RFC-0030 shows #NAME? for an unknown function and recovers when it is fixed", async ({ page }) => {
+            await type(page, "C1", "=FOO(A1)");
+            await expect(value(page, "C1")).toHaveText("#NAME?");
+            await type(page, "C1", "=SUM(A1:B1)");
+            await expect(value(page, "C1")).toHaveText("15");
+        });
+
+        test("RFC-0030 clears #CYCLE! once the loop is broken", async ({ page }) => {
+            await type(page, "A5", "5");
+            await expect(value(page, "A5")).toHaveText("5");
+            await expect(value(page, "B5")).toHaveText("5");
+        });
     });
     test("RFC-0011 previews a theme, restores it on cancel, and keeps an applied theme", async ({ page }) => {
         await page.goto("/?rfc=0011");

@@ -1,12 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 
-/**
- * Resolve once a grid row exists and the DOM has been quiet for `quietMs`.
- * React StrictMode mounts, destroys and re-mounts the grid in one tick, so the first visible row
- * belongs to a grid that is about to be replaced; acting on it splits a click across two nodes.
- */
-export async function gridReady(page: Page, quietMs = 200): Promise<void> {
-    await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+/** Resolve once the DOM has had no mutations for `quietMs`. */
+export async function domQuiet(page: Page, quietMs = 200): Promise<void> {
     await page.evaluate(
         (quiet) =>
             new Promise<void>((resolve) => {
@@ -23,4 +18,14 @@ export async function gridReady(page: Page, quietMs = 200): Promise<void> {
             }),
         quietMs,
     );
+}
+
+/**
+ * Resolve once a grid row exists and the DOM has been quiet.
+ * React StrictMode mounts, destroys and re-mounts the grid in one tick, so the first visible row
+ * belongs to a grid that is about to be replaced; acting on it splits a click across two nodes.
+ */
+export async function gridReady(page: Page, quietMs = 200): Promise<void> {
+    await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+    await domQuiet(page, quietMs);
 }

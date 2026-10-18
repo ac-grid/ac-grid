@@ -31,13 +31,84 @@ function SearchIcon() {
     );
 }
 
+const FORMULA_SHEET_DEFAULT = [
+    ["10", "5", "=SUM(A1:B1)"],
+    ["10", "4", "=AVG(A2:B2)"],
+    ["3", "9", "=MAX(A3:B3)-MIN(A3:B3)"],
+    ["7", "8", "=COUNT(A4:B4)"],
+    ["=B5", "=A5", "=A1/0"],
+];
+const FORMULA_COLUMNS = ["A", "B", "C"];
+
+function toRawValue(text: string): string | number {
+    const trimmed = text.trim();
+    if (trimmed.startsWith("=")) return trimmed;
+    const number = Number(trimmed);
+    return trimmed !== "" && Number.isFinite(number) ? number : text;
+}
+
+function formatFormulaValue(value: unknown): string {
+    if (value && typeof value === "object" && "code" in value) return String((value as { code: string }).code);
+    return value === null || value === undefined ? "" : String(value);
+}
+
+/** RFC-0030: edit raw values or `=` formulas; the core FormulaEngine recalculates incrementally. */
+function FormulaSheet() {
+    const [raw, setRaw] = useState(FORMULA_SHEET_DEFAULT);
+    const [engine] = useState(() =>
+        createFormulaEngineFromMatrix(FORMULA_SHEET_DEFAULT.map((row) => row.map(toRawValue))),
+    );
+
+    const edit = (row: number, col: number, text: string) => {
+        engine.setCell(row, col, toRawValue(text));
+        setRaw((previous) =>
+            previous.map((cells, r) => (r === row ? cells.map((cell, c) => (c === col ? text : cell)) : cells)),
+        );
+    };
+
+    return (
+        <table className="demo-formula-sheet" data-testid="formula-sheet">
+            <thead>
+                <tr>
+                    <th />
+                    {FORMULA_COLUMNS.map((name) => (
+                        <th key={name}>{name}</th>
+                    ))}
+                </tr>
+            </thead>
+            <tbody>
+                {raw.map((cells, row) => (
+                    <tr key={row}>
+                        <th>{row + 1}</th>
+                        {cells.map((text, col) => {
+                            const label = `${FORMULA_COLUMNS[col]}${row + 1}`;
+                            return (
+                                <td key={label}>
+                                    <input
+                                        aria-label={`raw ${label}`}
+                                        data-testid={`raw-${label}`}
+                                        value={text}
+                                        onChange={(event) => edit(row, col, event.target.value)}
+                                    />
+                                    <output data-testid={`val-${label}`}>
+                                        {formatFormulaValue(engine.getValue(row, col))}
+                                    </output>
+                                </td>
+                            );
+                        })}
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+}
+
 function App() {
     const gridHostRef = useRef<HTMLDivElement>(null);
     const gridRef = useRef<GridHostElement | null>(null);
     const [rfcId, setRfcId] = useState<RfcValidationId>(() =>
         parseRfcIdFromUrl(window.location.search),
     );
-    const [formulaInput, setFormulaInput] = useState(10);
     const [themeStatus, setThemeStatus] = useState("applied=light preview=none");
     const [copiedText, setCopiedText] = useState("");
     const syncThemeStatus = useCallback(() => {
@@ -52,20 +123,6 @@ function App() {
         window.addEventListener(DEMO_CLIPBOARD_COPY_EVENT, onCopy);
         return () => window.removeEventListener(DEMO_CLIPBOARD_COPY_EVENT, onCopy);
     }, []);
-    const formulaValues = useMemo(() => {
-        if (rfcId !== "0030") return null;
-        const engine = createFormulaEngineFromMatrix([
-            [formulaInput, 5, "=SUM(A1:B1)"],
-            [10, 4, "=AVG(A2:B2)"],
-            ["=B3", "=A3", "cycle"],
-        ]);
-        return {
-            sum: engine.getValue(0, 2),
-            average: engine.getValue(1, 2),
-            cycle: engine.getValue(2, 0),
-        };
-    }, [formulaInput, rfcId]);
-
     const spec = RFC_VALIDATION_SPECS[rfcId];
     const data = useMemo(
         () => makeData(RFC_VALIDATION_SPECS[rfcId].rowCount),
@@ -251,17 +308,7 @@ function App() {
                         </div>
                     ) : null}
 
-                    {rfcId === "0030" ? (
-                        <div className="demo-formula-panel" data-testid="formula-panel">
-                            <span>A1: {formulaInput}</span>
-                            <span data-testid="formula-sum">C1 = SUM(A1:B1) = {String(formulaValues?.sum)}</span>
-                            <span data-testid="formula-average">C2 = AVG(A2:B2) = {String(formulaValues?.average)}</span>
-                            <span data-testid="formula-cycle">C3 = {String(formulaValues?.cycle && typeof formulaValues.cycle === "object" ? formulaValues.cycle.code : formulaValues?.cycle)}</span>
-                            <button type="button" className="demo-btn" onClick={() => setFormulaInput((value) => value + 1)}>
-                                增加 A1
-                            </button>
-                        </div>
-                    ) : null}
+                    {rfcId === "0030" ? <FormulaSheet /> : null}
 
                     <div className="demo-toolbar">
                         {spec.showGlobalSearch ? (
@@ -299,7 +346,7 @@ function App() {
                         </div>
                     </div>
 
-                    <div ref={gridHostRef} className="demo-grid-host" />
+                    {spec.hideGrid ? null : <div ref={gridHostRef} className="demo-grid-host" />}
                 </div>
 
                 <footer className="demo-footer">
