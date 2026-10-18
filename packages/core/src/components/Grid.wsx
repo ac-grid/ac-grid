@@ -499,7 +499,8 @@ export class Grid extends LightComponent {
     }
     @state private _clipboardConfigIsSet = false;
     @state private _clipboardConfig: GridClipboardConfig = {};
-    @state private activeClipboardCell: { rowId: string; columnId: string } | null = null;
+    // Plain field: a rerender on mousedown would drop the focus the copy/paste events depend on.
+    private activeClipboardCell: { rowId: string; columnId: string } | null = null;
 
     get rangeSelectionConfig(): GridRangeSelectionConfig | undefined {
         return this._rangeSelectionConfigIsSet ? this._rangeSelectionConfig : undefined;
@@ -590,13 +591,10 @@ export class Grid extends LightComponent {
         })));
     }
 
-    private handleClipboardCopy = (event: ClipboardEvent) => {
-        if (!this.isClipboardEnabled()) return;
-        const text = this.createClipboardText();
-        event.preventDefault();
+    private writeClipboard(text: string, event?: ClipboardEvent) {
         if (this._clipboardConfig.suppressClipboardApi) {
             this._clipboardConfig.copyToClipboard?.(text);
-        } else if (event.clipboardData) {
+        } else if (event?.clipboardData) {
             event.clipboardData.setData("text/plain", text);
         } else if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
             void navigator.clipboard.writeText(text);
@@ -610,6 +608,22 @@ export class Grid extends LightComponent {
             document.execCommand?.("copy");
             textarea.remove();
         }
+    }
+
+    private handleClipboardCopy = (event: ClipboardEvent) => {
+        if (!this.isClipboardEnabled()) return;
+        event.preventDefault();
+        this.writeClipboard(this.createClipboardText(), event);
+    };
+
+    // Browsers fire no copy event on a focused cell while nothing is text-selected, so handle the shortcut here.
+    private handleClipboardKeyDown = (event: KeyboardEvent) => {
+        if (!this.isClipboardEnabled() || !this.activeClipboardCell) return;
+        if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== "c") return;
+        if (window.getSelection()?.toString()) return;
+        if (event.target instanceof Element && event.target.closest("input,textarea,[contenteditable=true]")) return;
+        event.preventDefault();
+        this.writeClipboard(this.createClipboardText());
     };
 
     private handleClipboardPaste = async (event: ClipboardEvent) => {
@@ -957,10 +971,18 @@ export class Grid extends LightComponent {
             this.updateTable();
         }
         this.updateI18nDOM();
+
+        this.addEventListener("copy", this.handleClipboardCopy);
+        this.addEventListener("paste", this.handleClipboardPaste);
+        this.addEventListener("keydown", this.handleClipboardKeyDown);
     }
 
     onDisconnected() {
         super.onDisconnected?.();
+
+        this.removeEventListener("copy", this.handleClipboardCopy);
+        this.removeEventListener("paste", this.handleClipboardPaste);
+        this.removeEventListener("keydown", this.handleClipboardKeyDown);
 
         // Cleanup header drag-drop listeners
         this.headerDragCleanup.forEach((cleanup) => cleanup());
@@ -2231,6 +2253,10 @@ export class Grid extends LightComponent {
                                             style={{ ...pinnedStyle }}
                                             onMouseDown={(e: MouseEvent) => {
                                                 if (e.button !== 0 || e.target instanceof Element && (e.target.closest("input,textarea,button,[contenteditable=true]") && (e.target !== e.currentTarget))) return;
+                                                if (this.isClipboardEnabled()) {
+                                                    this.activeClipboardCell = { rowId: row.id, columnId: column.id };
+                                                    (e.currentTarget as HTMLElement).focus({ preventScroll: true });
+                                                }
                                                 if (rangeRowIndex >= 0) this.startCellRange(rangeRowIndex, column.id, e);
                                                 if (this._rangeSelectionConfigIsSet && this._rangeSelectionConfig.enabled !== false) e.preventDefault();
                                             }}
@@ -2239,7 +2265,7 @@ export class Grid extends LightComponent {
                                             }}
                                             tabIndex={this._enableKeyboardNavigation
                                                 ? (this.focusedCell?.rowId === row.id && this.focusedCell?.columnId === column.id || !this.focusedCell && rowIndex === 0 && column.id === (this.table?.getVisibleLeafColumns()[0]?.id) ? 0 : -1)
-                                                : (cellEditable ? 0 : undefined)}
+                                                : (cellEditable ? 0 : this.isClipboardEnabled() ? -1 : undefined)}
                                             onFocus={() => {
                                                 if (this._enableKeyboardNavigation) this.focusedCell = { rowId: row.id, columnId: column.id };
                                             }}

@@ -27,6 +27,8 @@ export default defineConfig({
                 "@wsxjs/wsx-core",
                 "@tanstack/table-core",
                 "@atlaskit/pragmatic-drag-and-drop",
+                // Singleton: bundling a copy gives core its own empty theme registry.
+                "@ac-grid/theme-base",
             ],
         },
     },
