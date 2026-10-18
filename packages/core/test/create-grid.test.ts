@@ -37,6 +37,8 @@ describe("createGrid", () => {
             },
             clipboard: { enabled: true },
             rangeSelection: { enabled: true },
+            enableKeyboardNavigation: true,
+            keyboardNavigationMode: "row",
             i18n: { locale: "zh-CN" },
             locale: "en-US",
             messages: { "grid.loading": "Loading rows" },
@@ -54,6 +56,8 @@ describe("createGrid", () => {
             groupingConfig: { enabled?: boolean; initialGrouping?: string[] };
             clipboardConfig: { enabled?: boolean };
             rangeSelectionConfig: { enabled?: boolean };
+            enableKeyboardNavigation: boolean;
+            keyboardNavigationMode: string;
             i18nConfig: { locale?: string };
             i18nManager: { getLocale: () => string; t: (key: string) => string };
         };
@@ -72,6 +76,8 @@ describe("createGrid", () => {
         expect(grid.groupingConfig.initialGrouping).toEqual([NAME_COLUMN_ID]);
         expect(grid.clipboardConfig.enabled).toBe(true);
         expect(grid.rangeSelectionConfig.enabled).toBe(true);
+        expect(grid.enableKeyboardNavigation).toBe(true);
+        expect(grid.keyboardNavigationMode).toBe("row");
         expect(grid.i18nConfig.locale).toBe("zh-CN");
         expect(grid.i18nManager.getLocale()).toBe("zh-CN");
     });

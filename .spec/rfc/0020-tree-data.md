@@ -4,7 +4,7 @@
 **版本**: 1.1.0  
 **作者**: Albert Li  
 **日期**: 2026-06-28  
-**相关 RFC**: [0005-virtual-scrolling](./completed/0005-virtual-scrolling.md), [0010](./0010-grouping-aggregation.md)
+**相关 RFC**: [0005-virtual-scrolling](./completed/0005-virtual-scrolling.md), [0010](./completed/0010-grouping-aggregation.md)
 
 ## 概述
 

@@ -102,6 +102,7 @@ import "./FilterMenu.wsx";
 import "./GlobalSearch.wsx";
 import "./PaginationControls.wsx";
 import { themeManager } from "@ac-grid/theme-base";
+import { getNextCellPosition, type KeyboardNavigationMode } from "../utils/keyboard-navigation";
 
 /** 默认列宽信息，保证 table.getState().columnSizingInfo 永不为 undefined，避免 "reading 'isResizingColumn'" 报错 */
 const DEFAULT_COLUMN_SIZING_INFO = {
@@ -331,6 +332,104 @@ export class Grid extends LightComponent {
     };
     /** Bumps on each virtualization recompute to force WSX re-render after layout measure */
     @state private virtualRevision: number = 0;
+
+    /** RFC-0012: keyboard navigation is opt-in to preserve the legacy tab order. */
+    @state private _enableKeyboardNavigation = false;
+    public get enableKeyboardNavigation(): boolean { return this._enableKeyboardNavigation; }
+    public set enableKeyboardNavigation(value: boolean) { this._enableKeyboardNavigation = Boolean(value); }
+    @state private _keyboardNavigationMode: KeyboardNavigationMode = "cell";
+    public get keyboardNavigationMode(): KeyboardNavigationMode { return this._keyboardNavigationMode; }
+    public set keyboardNavigationMode(value: KeyboardNavigationMode) {
+        this._keyboardNavigationMode = value === "row" ? "row" : "cell";
+    }
+    public focusCell(rowId: string, columnId: string): void {
+        const rows = this.table?.getRowModel().rows ?? [];
+        const columns = this.table?.getVisibleLeafColumns() ?? [];
+        const targetRowIndex = rows.findIndex((row) => row.id === rowId);
+        if (targetRowIndex < 0 || !columns.some((column) => column.id === columnId)) return;
+        this.focusedCell = { rowId, columnId };
+        this.scrollToRow(targetRowIndex);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            const cell = this.findCellElement(rowId, columnId);
+            if (cell && !cell.hasAttribute("tabindex")) cell.tabIndex = -1;
+            cell?.focus();
+        }));
+    }
+
+    public getFocusedCell(): { rowId: string; columnId: string } | null {
+        return this.focusedCell ? { ...this.focusedCell } : null;
+    }
+
+    private findCellElement(rowId: string, columnId: string): HTMLElement | null {
+        const root = this.shadowRoot ?? this;
+        return Array.from(root.querySelectorAll<HTMLElement>(".grid-cell[data-row-id][data-column-id]"))
+            .find((element) => element.dataset.rowId === rowId && element.dataset.columnId === columnId) ?? null;
+    }
+
+    private handleGridKeyDown = (event: KeyboardEvent): void => {
+        if (!this._enableKeyboardNavigation) return;
+        const target = event.target as HTMLElement | null;
+        if (!target) return;
+        const editing = Boolean(this.editingState.rowId && this.editingState.columnId);
+        const isEditor = Boolean(target.closest("wsx-ac-cell-editor,[data-grid-editor]"));
+        const isInput = Boolean(target.closest("input,textarea,select,button,[contenteditable=true]"));
+        if (isInput && !(isEditor && ["Escape", "Enter", "Tab"].includes(event.key))) return;
+
+        const cellElement = target.closest<HTMLElement>("[data-grid-cell]");
+        const currentCell = cellElement
+            ? { rowId: cellElement.dataset.rowId!, columnId: cellElement.dataset.columnId! }
+            : this.focusedCell;
+        const rows = this.table?.getRowModel().rows ?? [];
+        const columns = this.table?.getVisibleLeafColumns() ?? [];
+        if (!currentCell || !rows.length || !columns.length) return;
+        const rowIndex = rows.findIndex((row) => row.id === currentCell.rowId);
+        const columnIndex = columns.findIndex((column) => column.id === currentCell.columnId);
+        if (rowIndex < 0 || columnIndex < 0) return;
+
+        if (event.key === "Escape") {
+            if (isEditor && !editing) return;
+            if (editing) this.cancelEdit();
+            else { this.clearCellRanges(); this.deselectAll(); }
+            event.preventDefault();
+            return;
+        }
+        if (event.key === "Enter") {
+            if (isEditor) {
+                if (!editing) this.moveKeyboardFocus(rowIndex, columnIndex, "ArrowDown");
+                return;
+            }
+            event.preventDefault();
+            if (editing) {
+                this.saveEdit(this.editingState.value);
+                if (!this.editingState.rowId) this.moveKeyboardFocus(rowIndex, columnIndex, "ArrowDown");
+            } else {
+                this.startEdit(currentCell.rowId, currentCell.columnId);
+            }
+            return;
+        }
+        if (event.key === "Tab" || event.key.startsWith("Arrow")) {
+            event.preventDefault();
+            if (editing) {
+                this.saveEdit(this.editingState.value);
+                if (this.editingState.rowId) return;
+            }
+            this.moveKeyboardFocus(rowIndex, columnIndex, event.key, event.shiftKey);
+            return;
+        }
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "a" && this._selectionConfigIsSet && this._selectionConfig.enabled !== false) {
+            event.preventDefault();
+            this.selectAll();
+        }
+    };
+
+    private moveKeyboardFocus(row: number, column: number, key: string, shiftKey = false): void {
+        const rows = this.table?.getRowModel().rows ?? [];
+        const columns = this.table?.getVisibleLeafColumns() ?? [];
+        const next = getNextCellPosition({ row, column }, key, rows.length, columns.length, this._keyboardNavigationMode, shiftKey);
+        const targetRow = rows[next.row];
+        const targetColumn = columns[next.column];
+        if (targetRow && targetColumn) this.focusCell(targetRow.id, targetColumn.id);
+    }
 
     // Pagination config
     get paginationConfig(): GridPaginationConfig | undefined {
@@ -1656,6 +1755,7 @@ export class Grid extends LightComponent {
                 aria-description={this.ariaDescription}
                 aria-rowcount={headerGroups.length + allRows.length}
                 aria-colcount={this.table.getVisibleLeafColumns().length}
+                onKeyDown={this.handleGridKeyDown}
                 data-theme-transition={this._themeTransition ? "true" : undefined}
                 dir={currentDir}
                 data-dir={currentDir}
@@ -2157,6 +2257,7 @@ export class Grid extends LightComponent {
                                             aria-rowindex={(rowIndexes.get(row.id) ?? rowIndex) + headerGroups.length + 1}
                                             aria-colindex={this.table.getVisibleLeafColumns().findIndex((visibleColumn) => visibleColumn.id === column.id) + 1}
                                             aria-selected={row.getIsSelected() ? "true" : undefined}
+                                            data-grid-cell={this._enableKeyboardNavigation ? "true" : undefined}
                                             data-row-id={row.id}
                                             data-column-id={column.id}
                                             data-pinned={column.getIsPinned() || undefined}
@@ -2173,6 +2274,9 @@ export class Grid extends LightComponent {
                                             tabIndex={this.focusedCell
                                                 ? (this.focusedCell.rowId === row.id && this.focusedCell.columnId === column.id ? 0 : -1)
                                                 : ((rowIndexes.get(row.id) ?? rowIndex) === 0 && this.table.getVisibleLeafColumns()[0]?.id === column.id ? 0 : -1)}
+                                            onFocus={() => {
+                                                if (this._enableKeyboardNavigation) this.focusedCell = { rowId: row.id, columnId: column.id };
+                                            }}
                                             onDblClick={
                                                 supportsDoubleClickTrigger(editTrigger)
                                                     ? handleStartEdit
