@@ -173,8 +173,26 @@ export class Grid extends LightComponent {
     private rowDragCleanup: Map<string, () => void> = new Map();
 
     // Drag-drop state tracking for visual feedback
-    @state private draggingColumnId: string | null = null;
-    @state private dragOverColumnId: string | null = null;
+    // Plain fields, not @state: a rerender at dragstart replaces the header node and aborts the native drag.
+    // The drag classes are toggled on the DOM by markColumnDrag(); render() still reads these fields.
+    private draggingColumnId: string | null = null;
+    private dragOverColumnId: string | null = null;
+
+    private markColumnDrag(): void {
+        const root = this.shadowRoot ?? this;
+        root.querySelectorAll<HTMLElement>("[data-column-id]").forEach((el) => {
+            const id = el.dataset.columnId;
+            const dragging = Boolean(id) && id === this.draggingColumnId;
+            const over = Boolean(id) && id === this.dragOverColumnId;
+            if (el.classList.contains("grid-header-cell")) {
+                el.classList.toggle("dragging", dragging);
+                el.classList.toggle("drag-over", over);
+            } else if (el.classList.contains("grid-cell")) {
+                el.classList.toggle("column-dragging", dragging);
+                el.classList.toggle("column-drag-over", over);
+            }
+        });
+    }
     @state private draggingRowId: string | null = null;
     @state private dragOverRowId: string | null = null;
 
@@ -337,11 +355,16 @@ export class Grid extends LightComponent {
         if (targetRowIndex < 0 || !columns.some((column) => column.id === columnId)) return;
         this.focusedCell = { rowId, columnId };
         this.scrollToRow(targetRowIndex);
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-            const cell = this.findCellElement(rowId, columnId);
-            if (cell && !cell.hasAttribute("tabindex")) cell.tabIndex = -1;
-            cell?.focus();
-        }));
+        // Focus an already-rendered target now: the rerender scheduled by the state change captures the active
+        // element, and WSX would otherwise restore focus to the previous cell and undo the move.
+        this.focusCellElement(rowId, columnId);
+        requestAnimationFrame(() => requestAnimationFrame(() => this.focusCellElement(rowId, columnId)));
+    }
+
+    private focusCellElement(rowId: string, columnId: string): void {
+        const cell = this.findCellElement(rowId, columnId);
+        if (cell && !cell.hasAttribute("tabindex")) cell.tabIndex = -1;
+        cell?.focus();
     }
 
     public getFocusedCell(): { rowId: string; columnId: string } | null {
@@ -1829,9 +1852,11 @@ export class Grid extends LightComponent {
                                                         getInitialData: () => ({ columnId }),
                                                         onDragStart: () => {
                                                             this.draggingColumnId = columnId;
+                                                            this.markColumnDrag();
                                                         },
                                                         onDragEnd: () => {
                                                             this.draggingColumnId = null;
+                                                            this.markColumnDrag();
                                                         },
                                                     });
 
@@ -1842,11 +1867,13 @@ export class Grid extends LightComponent {
                                                         onDragEnter: () => {
                                                             if (this.draggingColumnId && this.draggingColumnId !== columnId) {
                                                                 this.dragOverColumnId = columnId;
+                                                                this.markColumnDrag();
                                                             }
                                                         },
                                                         onDragLeave: () => {
                                                             if (this.dragOverColumnId === columnId) {
                                                                 this.dragOverColumnId = null;
+                                                                this.markColumnDrag();
                                                             }
                                                         },
                                                         onDrop: ({ source }) => {
@@ -1854,6 +1881,7 @@ export class Grid extends LightComponent {
                                                             const overId = columnId;
                                                             this.dragOverColumnId = null;
                                                             this.draggingColumnId = null;
+                                                            this.markColumnDrag();
                                                             if (activeId && activeId !== overId) {
                                                                 this.handleColumnDragEnd(activeId, overId);
                                                             }
@@ -2243,7 +2271,9 @@ export class Grid extends LightComponent {
                                     return (
                                         <div
                                             key={cell.id}
-                                            className={`grid-cell ${isColumnDragging ? "column-dragging" : ""} ${isColumnDragOver ? "column-drag-over" : ""}`}
+                                            // WSX restores focus after a rerender only for elements carrying data-wsx-key.
+                                            data-wsx-key={cell.id}
+                                            className={`grid-cell${isColumnDragging ? "column-dragging" : ""} ${isColumnDragOver ? "column-drag-over" : ""}`}
                                             role={this._enableKeyboardNavigation ? "gridcell" : undefined}
                                             data-grid-cell={this._enableKeyboardNavigation ? "true" : undefined}
                                             data-row-id={row.id}
@@ -2267,7 +2297,10 @@ export class Grid extends LightComponent {
                                                 ? (this.focusedCell?.rowId === row.id && this.focusedCell?.columnId === column.id || !this.focusedCell && rowIndex === 0 && column.id === (this.table?.getVisibleLeafColumns()[0]?.id) ? 0 : -1)
                                                 : (cellEditable ? 0 : this.isClipboardEnabled() ? -1 : undefined)}
                                             onFocus={() => {
-                                                if (this._enableKeyboardNavigation) this.focusedCell = { rowId: row.id, columnId: column.id };
+                                                if (!this._enableKeyboardNavigation) return;
+                                                // Restoring focus after a rerender fires focus again; only a real change may rerender.
+                                                if (this.focusedCell?.rowId === row.id && this.focusedCell?.columnId === column.id) return;
+                                                this.focusedCell = { rowId: row.id, columnId: column.id };
                                             }}
                                             onDblClick={
                                                 supportsDoubleClickTrigger(editTrigger)
