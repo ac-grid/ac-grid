@@ -17,6 +17,7 @@ Option keys for `createGrid`. Shapes come from `packages/core/src/utils/create-g
 | 0010 | Grouping and aggregation | `grouping: { enabled: true, initialGrouping: ["status"], initialExpanded: true }`; column `aggregationFn`; `grid.expandAll()`, `grid.collapseAll()` |
 | 0011 | Advanced themes | `theme: "light"`, `themeTransition: true`, `themeTransitionDuration: 150`; `grid.previewTheme(name)`, `grid.cancelPreview()`, `grid.applyTheme(name)` |
 | 0012 | Keyboard navigation | `enableKeyboardNavigation: true`, `keyboardNavigationMode` |
+| 0013 | Accessibility | `role="grid"`/`columnheader`/`gridcell` with `aria-rowindex`, `aria-colindex`, `aria-sort`, `aria-selected`; live `role="status"` announces sorting; options `ariaLabel`, `ariaDescription` |
 | 0015 | Internationalization | `i18n: { locale: "zh-CN", messages: zhCN.messages }` |
 | 0016 | Theme system | CSS variables such as `--ac-grid-bg-header`; built-in themes `light`, `dark`, `ocean`, `forest`, `sunset`, `bamboo`, `violet` |
 | 0019 | Custom components | `components: { noRowsOverlayComponent, fullWidthRowComponent, isFullWidthRow, isLoading }`; column `headerComponent` |
@@ -26,6 +27,6 @@ Option keys for `createGrid`. Shapes come from `packages/core/src/utils/create-g
 
 ## Not implemented (draft or stretch)
 
-0013 accessibility, 0014 data export, 0017 framework bindings, 0018 state API, 0020 tree data, 0021 master-detail, 0024 pivot, 0025 advanced Excel export, 0026 context menu, 0027 tool panels, 0028 advanced filtering, 0029 charts, 0031 server-side row model, 0032 AI toolkit.
+0014 data export, 0017 framework bindings, 0018 state API, 0020 tree data, 0021 master-detail, 0024 pivot, 0025 advanced Excel export, 0026 context menu, 0027 tool panels, 0028 advanced filtering, 0029 charts, 0031 server-side row model, 0032 AI toolkit.
 
 When one of these is implemented, add its row above and bump `version` in `skill-release.json`.

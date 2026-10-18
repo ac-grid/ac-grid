@@ -23,6 +23,7 @@ export const RFC_VALIDATION_ORDER = [
   "0010",
   "0011",
   "0012",
+  "0013",
   "0015",
   "0016",
   "0019",
@@ -391,6 +392,20 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
           initialGrouping: ["status"],
           initialExpanded: true,
         },
+      }),
+    },
+    "0013": {
+      id: "0013",
+      title: "Accessibility",
+      multicaIssue: "DEV-16",
+      hint: "Grid exposes role=grid, labelled headers, aria-sort and a live status region; click First Name to sort.",
+      rowCount: 10,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 3),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        sorting: { enabled: true },
       }),
     },
     "0015": {

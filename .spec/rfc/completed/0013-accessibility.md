@@ -1,10 +1,12 @@
 # RFC-0013: 可访问性 (a11y)
 
-**状态**: 📝 草稿  
+**Status:** Implemented
+
+**状态**: ✔️ 已完成  
 **版本**: 0.4.0  
 **作者**: Albert Li  
 **日期**: 2026-01-24  
-**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md), [0012-keyboard-navigation](./0012-keyboard-navigation.md)
+**相关 RFC**: [0001-ac-grid-architecture](../0001-ac-grid-architecture.md), [0012-keyboard-navigation](../0012-keyboard-navigation.md)
 
 ## 目录
 
@@ -22,6 +24,10 @@
 - [参考资料](#参考资料)
 
 ## 概述
+
+## Summary
+
+Add accessible naming and descriptions, ARIA grid semantics and row/column state, and visible keyboard focus (including forced-colors mode) to the data grid. Keyboard movement behavior remains defined by RFC-0012; RFC-0013 exposes the semantic structure and focus treatment required by assistive technologies.
 
 为 AC Grid 添加完整的可访问性（a11y）支持，包括 ARIA 属性、屏幕阅读器支持、键盘导航和高对比度模式支持，确保所有用户都能使用表格。
 
@@ -54,12 +60,12 @@ ag-Grid 社区版提供：
 
 ## 设计目标
 
-- [ ] **目标 1**: 完整的 ARIA 属性支持
-- [ ] **目标 2**: 语义化 HTML 结构
-- [ ] **目标 3**: 键盘导航支持
-- [ ] **目标 4**: 屏幕阅读器支持
-- [ ] **目标 5**: 高对比度模式支持
-- [ ] **目标 6**: 符合 WCAG 2.1 AA 标准
+- **目标 1**: 完整的 ARIA 属性支持
+- **目标 2**: 语义化 HTML 结构
+- **目标 3**: 键盘导航支持（由 RFC-0012 定义）
+- **目标 4**: 屏幕阅读器支持
+- **目标 5**: 高对比度模式支持
+- **目标 6**: 符合 WCAG 2.1 AA 标准
 
 ### 非目标
 - ❌ 语音控制
@@ -120,29 +126,27 @@ interface ColumnDef<TData> {
 ### 阶段 1: ARIA 属性
 **预计时间**: 3 天
 
-**任务清单**：
-- [ ] 添加 grid role
-- [ ] 添加 columnheader role
-- [ ] 添加 gridcell role
-- [ ] 添加 aria 属性
+**交付内容**：添加 grid、row、columnheader、gridcell 角色，并提供 accessible name、description、维度、行列索引、排序和选中状态。
 
 ### 阶段 2: 键盘导航
 **预计时间**: 2 天
 
-**任务清单**：
-- [ ] 实现键盘导航（见 RFC-0012）
-- [ ] 实现焦点管理
-- [ ] 实现焦点指示
+**交付内容**：键盘导航行为由 RFC-0012 实现；本 RFC 确保焦点样式可见并支持强制颜色模式。
 
 ### 阶段 3: 屏幕阅读器优化
 **预计时间**: 2 天
 
-**任务清单**：
-- [ ] 优化屏幕阅读器体验
-- [ ] 添加实时区域（live regions）
-- [ ] 测试屏幕阅读器兼容性
+**交付内容**：优化屏幕阅读器语义，并在测试中验证可访问名称、网格维度和行列状态。动态公告和真实屏幕阅读器兼容性仍需手动验收。
 
 ## 测试策略
+
+## Acceptance
+
+- The grid has an accessible name and optional description.
+- Headers, rows, and cells expose grid semantics, indexes, sort direction, selection, and grouping expansion where applicable.
+- Sorting and row-selection changes are announced through a polite live region.
+- Keyboard-operable controls retain visible focus, including in forced-colors mode.
+- Automated tests cover the rendered ARIA contract. Full WCAG 2.1 AA and assistive-technology certification remains an application-level manual validation requirement; keyboard movement is owned by RFC-0012.
 
 ### 单元测试
 - 测试 ARIA 属性

@@ -127,6 +127,10 @@ export interface GridProps<TData extends { userId?: string }> {
      * 自定义类名
      */
     className?: string;
+    /** Accessible name announced by assistive technology. */
+    ariaLabel?: string;
+    /** Optional additional description for the grid. */
+    ariaDescription?: string;
 }
 
 /**
@@ -134,6 +138,16 @@ export interface GridProps<TData extends { userId?: string }> {
  */
 @autoRegister({ tagName: "wsx-ac-grid" })
 export class Grid extends LightComponent {
+    /** Accessible name and description (RFC-0013). */
+    @state private _ariaLabel = "Data grid";
+    @state private _ariaDescription = "";
+    @state private accessibilityAnnouncement = "";
+    @state private focusedCell: { rowId: string; columnId: string } | null = null;
+
+    get ariaLabel(): string { return this._ariaLabel; }
+    set ariaLabel(value: string) { this._ariaLabel = value?.trim() || "Data grid"; }
+    get ariaDescription(): string | undefined { return this._ariaDescription || undefined; }
+    set ariaDescription(value: string | undefined) { this._ariaDescription = value?.trim() || ""; }
     @state private columnOrder: string[] = [];
     @state private gridData: any[] = [];
     @state private sorting: SortingState = [];
@@ -346,8 +360,6 @@ export class Grid extends LightComponent {
     public set keyboardNavigationMode(value: KeyboardNavigationMode) {
         this._keyboardNavigationMode = value === "row" ? "row" : "cell";
     }
-    @state private focusedCell: { rowId: string; columnId: string } | null = null;
-
     public focusCell(rowId: string, columnId: string): void {
         const rows = this.table?.getRowModel().rows ?? [];
         const columns = this.table?.getVisibleLeafColumns() ?? [];
@@ -1134,6 +1146,7 @@ export class Grid extends LightComponent {
         this.rowSelection = isSingle
             ? buildSingleSelection(rowId)
             : appendRowSelection(this.rowSelection, rowId);
+        this.accessibilityAnnouncement = "Row selected";
         this.lastSelectedRowId = rowId;
         this.notifySelectionChange();
         this.updateTable();
@@ -1142,6 +1155,7 @@ export class Grid extends LightComponent {
     public deselectRow(rowId: string) {
         const next = { ...this.rowSelection };
         delete next[rowId];
+        this.accessibilityAnnouncement = "Row deselected";
         this.rowSelection = next;
         if (this.lastSelectedRowId === rowId) {
             this.lastSelectedRowId = null;
@@ -1162,6 +1176,7 @@ export class Grid extends LightComponent {
         if (!this.table) return;
         const rows = this.table.getRowModel().rows ?? [];
         this.rowSelection = buildRangeSelection(rows, anchorId, targetId, this.rowSelection);
+        this.accessibilityAnnouncement = "Rows selected";
         this.lastSelectedRowId = targetId;
         this.notifySelectionChange();
         this.updateTable();
@@ -1171,12 +1186,14 @@ export class Grid extends LightComponent {
         if (!this.table) return;
         const rows = this.table.getRowModel().rows ?? [];
         this.rowSelection = buildSelectAllSelection(rows);
+        this.accessibilityAnnouncement = "All rows selected";
         this.notifySelectionChange();
         this.updateTable();
     }
 
     public deselectAll() {
         this.rowSelection = {};
+        this.accessibilityAnnouncement = "Selection cleared";
         this.notifySelectionChange();
         this.updateTable();
     }
@@ -1192,6 +1209,41 @@ export class Grid extends LightComponent {
 
     private notifySelectionChange() {
         this._selectionConfig?.onRowSelectionChange?.(this.rowSelection);
+    }
+
+    private focusGridCell(rowId: string, columnId: string, rowIndex: number) {
+        this.focusedCell = { rowId, columnId };
+        if (this._virtualizationConfig.enabled) this.scrollToRow(rowIndex);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            const root = this.shadowRoot ?? this;
+            const cell = Array.from(root.querySelectorAll<HTMLElement>('[role="gridcell"]'))
+                .find((element) => element.dataset.rowId === rowId && element.dataset.columnId === columnId);
+            cell?.focus();
+        }));
+    }
+
+    private handleGridCellKeyDown(
+        event: KeyboardEvent,
+        rowId: string,
+        columnId: string,
+        isEditing: boolean,
+    ) {
+        if (isEditing || event.target !== event.currentTarget) return;
+        if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+        const rows = this.getDisplayRows();
+        const columns = this.table?.getVisibleLeafColumns() ?? [];
+        const rowIndex = rows.findIndex((row) => row.id === rowId);
+        const columnIndex = columns.findIndex((column) => column.id === columnId);
+        if (rowIndex < 0 || columnIndex < 0) return;
+
+        const nextRowIndex = Math.max(0, Math.min(rows.length - 1,
+            rowIndex + (event.key === "ArrowDown" ? 1 : event.key === "ArrowUp" ? -1 : 0)));
+        const nextColumnIndex = Math.max(0, Math.min(columns.length - 1,
+            columnIndex + (event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0)));
+        if (nextRowIndex === rowIndex && nextColumnIndex === columnIndex) return;
+
+        event.preventDefault();
+        this.focusGridCell(rows[nextRowIndex].id, columns[nextColumnIndex].id, nextRowIndex);
     }
 
     private onBodyScroll = (target: HTMLElement) => {
@@ -1743,9 +1795,11 @@ export class Grid extends LightComponent {
         return (
             <div
                 className={`ac-grid ${this.className || ""} ${this._themeTransition ? "theme-transition" : ""} ${currentDir === "rtl" ? "rtl" : ""}`}
-                role={this._enableKeyboardNavigation ? "grid" : undefined}
-                aria-rowcount={this._enableKeyboardNavigation ? (this.table?.getRowModel().rows.length ?? 0) + headerGroups.length : undefined}
-                aria-colcount={this._enableKeyboardNavigation ? (this.table?.getVisibleLeafColumns().length ?? 0) : undefined}
+                role="grid"
+                aria-label={this.ariaLabel}
+                aria-description={this.ariaDescription}
+                aria-rowcount={headerGroups.length + allRows.length}
+                aria-colcount={this.table.getVisibleLeafColumns().length}
                 onKeyDown={this.handleGridKeyDown}
                 data-theme-transition={this._themeTransition ? "true" : undefined}
                 dir={currentDir}
@@ -1767,7 +1821,8 @@ export class Grid extends LightComponent {
                             <div
                                 key={headerGroup.id}
                                 className="grid-header-row"
-                                role={this._enableKeyboardNavigation ? "row" : undefined}
+                                role="row"
+                                aria-rowindex={headerGroups.indexOf(headerGroup) + 1}
                             >
                                 {headerGroup.headers.map((header) => {
                                     if (header.isPlaceholder) {
@@ -1815,7 +1870,11 @@ export class Grid extends LightComponent {
                                         <div
                                             key={header.id}
                                             className={`grid-header-cell ${canSort ? "sortable" : ""} ${sortDirection ? "sorting-active" : ""} ${isDraggingColumn ? "dragging" : ""} ${isDragOverColumn ? "drag-over" : ""}`}
-                                            role={this._enableKeyboardNavigation ? "columnheader" : undefined}
+                                            role="columnheader"
+                                            aria-colindex={this.table.getVisibleLeafColumns().findIndex((visibleColumn) => visibleColumn.id === column.id) + 1}
+                                            aria-label={(column.columnDef as any).ariaLabel || (typeof headerContent === "string" ? headerContent : column.id)}
+                                            aria-description={(column.columnDef as any).ariaDescription}
+                                            aria-sort={sortDirection === "asc" ? "ascending" : sortDirection === "desc" ? "descending" : "none"}
                                             data-column-id={column.id}
                                             data-pinned={column.getIsPinned() || undefined}
                                             data-can-sort={
@@ -1896,47 +1955,15 @@ export class Grid extends LightComponent {
                                                     this.headerDragElements.set(columnId, el);
 
                                                     if (canSort) {
-                                                        // 移除旧的事件监听器（如果存在）
-                                                        const oldHandler = (
-                                                            el as any
-                                                        ).__sortHandler;
-                                                        if (oldHandler) {
-                                                            el.removeEventListener(
-                                                                "click",
-                                                                oldHandler,
-                                                            );
-                                                        }
-
-                                                        // 添加新的事件监听器
-                                                        const handler = (
-                                                            e: MouseEvent,
-                                                        ) => {
-                                                            // 如果点击的是拖拽按钮，不触发排序
-                                                            const target =
-                                                                e.target as HTMLElement;
-                                                            if (
-                                                                target.closest(
-                                                                    ".drag-handle-button",
-                                                                ) ||
-                                                                target.closest(
-                                                                    "wsx-ac-filter-icon",
-                                                                )
-                                                            ) {
-                                                                return;
-                                                            }
-                                                            column.toggleSorting(
-                                                                undefined, // 循环：asc -> desc -> none
-                                                                e.shiftKey, // 是否多列排序
-                                                            );
+                                                        const handler = (event: MouseEvent) => {
+                                                            const target = event.target as HTMLElement;
+                                                            if (target.closest(".drag-handle-button") || target.closest("wsx-ac-filter-icon")) return;
+                                                            this.toggleColumnSort(columnId, event.shiftKey);
                                                         };
-
-                                                        el.addEventListener(
-                                                            "click",
-                                                            handler,
-                                                        );
-                                                        (el as any).__sortHandler =
-                                                            handler;
+                                                        el.addEventListener("click", handler);
+                                                        (el as any).__sortHandler = handler;
                                                     }
+
                                                 }
                                             }}
                                         >
@@ -2113,6 +2140,8 @@ export class Grid extends LightComponent {
                                     <div
                                         key={row.id}
                                         className={`grid-row grid-row-full-width ${isDraggingRow ? 'dragging' : ''} ${isDragOverRow ? 'drag-over' : ''}`}
+                                        role="row"
+                                        aria-rowindex={(rowIndexes.get(row.id) ?? rowIndex) + headerGroups.length + 1}
                                         data-row-id={row.id}
                                         data-full-width="true"
                                     >
@@ -2127,10 +2156,12 @@ export class Grid extends LightComponent {
                             <div
                                 key={`${rowIndex}-${row.id}`}
                                 className={`grid-row ${row.getIsGrouped() ? 'grid-row-grouped' : ''} ${isDraggingRow ? 'dragging' : ''} ${isDragOverRow ? 'drag-over' : ''}`}
-                                role={this._enableKeyboardNavigation ? "row" : undefined}
+                                role="row"
+                                aria-rowindex={(rowIndexes.get(row.id) ?? rowIndex) + headerGroups.length + 1}
+                                aria-selected={row.getIsSelected() ? "true" : "false"}
+                                aria-expanded={row.getIsGrouped() ? (row.getIsExpanded() ? "true" : "false") : undefined}
                                 data-row-id={row.id}
                                 data-selected={row.getIsSelected() ? "true" : "false"}
-                                aria-selected={this._enableKeyboardNavigation ? row.getIsSelected() : undefined}
                                 onClick={(e: MouseEvent) => {
                                     if (
                                         this._rangeSelectionConfigIsSet &&
@@ -2273,8 +2304,11 @@ export class Grid extends LightComponent {
                                             key={cell.id}
                                             // WSX restores focus after a rerender only for elements carrying data-wsx-key.
                                             data-wsx-key={cell.id}
-                                            className={`grid-cell${isColumnDragging ? "column-dragging" : ""} ${isColumnDragOver ? "column-drag-over" : ""}`}
-                                            role={this._enableKeyboardNavigation ? "gridcell" : undefined}
+                                            className={`grid-cell ${isColumnDragging ? "column-dragging" : ""} ${isColumnDragOver ? "column-drag-over" : ""}`}
+                                            role="gridcell"
+                                            aria-rowindex={(rowIndexes.get(row.id) ?? rowIndex) + headerGroups.length + 1}
+                                            aria-colindex={this.table.getVisibleLeafColumns().findIndex((visibleColumn) => visibleColumn.id === column.id) + 1}
+                                            aria-selected={row.getIsSelected() ? "true" : undefined}
                                             data-grid-cell={this._enableKeyboardNavigation ? "true" : undefined}
                                             data-row-id={row.id}
                                             data-column-id={column.id}
@@ -2294,7 +2328,9 @@ export class Grid extends LightComponent {
                                                 if (rangeRowIndex >= 0) this.extendCellRange(rangeRowIndex, column.id);
                                             }}
                                             tabIndex={this._enableKeyboardNavigation
-                                                ? (this.focusedCell?.rowId === row.id && this.focusedCell?.columnId === column.id || !this.focusedCell && rowIndex === 0 && column.id === (this.table?.getVisibleLeafColumns()[0]?.id) ? 0 : -1)
+                                                ? (this.focusedCell
+                                                    ? (this.focusedCell.rowId === row.id && this.focusedCell.columnId === column.id ? 0 : -1)
+                                                    : ((rowIndexes.get(row.id) ?? rowIndex) === 0 && this.table.getVisibleLeafColumns()[0]?.id === column.id ? 0 : -1))
                                                 : (cellEditable ? 0 : this.isClipboardEnabled() ? -1 : undefined)}
                                             onFocus={() => {
                                                 if (!this._enableKeyboardNavigation) return;
@@ -2307,19 +2343,14 @@ export class Grid extends LightComponent {
                                                     ? handleStartEdit
                                                     : undefined
                                             }
-                                            onKeyDown={
-                                                supportsEnterTrigger(editTrigger)
-                                                    ? (e: KeyboardEvent) => {
-                                                          if (
-                                                              e.key === "Enter" &&
-                                                              !isEditing
-                                                          ) {
-                                                              e.preventDefault();
-                                                              handleStartEdit();
-                                                          }
-                                                      }
-                                                    : undefined
-                                            }
+                                            onKeyDown={(e: KeyboardEvent) => {
+                                                this.handleGridCellKeyDown(e, row.id, column.id, isEditing);
+                                                if (supportsEnterTrigger(editTrigger) && e.key === "Enter" && !isEditing) {
+                                                    e.preventDefault();
+                                                    this.focusedCell = { rowId: row.id, columnId: column.id };
+                                                    handleStartEdit();
+                                                }
+                                            }}
                                         >
                                             {isEditing ? (
                                                 this.renderCellEditor(
@@ -2375,6 +2406,9 @@ export class Grid extends LightComponent {
                             {this.i18nManager.t("grid.pagination.loading", undefined, "Loading…")}
                         </div>
                     )}
+                    <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+                        {this.accessibilityAnnouncement}
+                    </div>
                 </div>
             </div>
         );
@@ -2401,6 +2435,16 @@ export class Grid extends LightComponent {
     public resetSorting(): void {
         this.sorting = [];
         this.updateTable();
+    }
+
+    private toggleColumnSort(columnId: string, shiftKey: boolean) {
+        const column = this.table?.getColumn(columnId);
+        if (!column) return;
+        const label = (column.columnDef as any).ariaLabel || (typeof column.columnDef.header === "string" ? column.columnDef.header : columnId);
+        column.toggleSorting(undefined, shiftKey);
+        const sortState = this.table?.getColumn(columnId)?.getIsSorted();
+        const nextSort = sortState === "asc" ? "ascending" : sortState === "desc" ? "descending" : "cleared";
+        this.accessibilityAnnouncement = `${label} sorting ${nextSort}`;
     }
 
     private notifyFilterChange(): void {
@@ -2678,7 +2722,10 @@ export class Grid extends LightComponent {
         }
         this.editingState = { rowId: null, columnId: null, value: null };
         this.updateTable();
-        this.rerender();
+        if (rowId && columnId) {
+            const rowIndex = this.getDisplayRows().findIndex((row) => row.id === rowId);
+            if (rowIndex >= 0) this.focusGridCell(rowId, columnId, rowIndex);
+        }
     }
 
     // Grouping Methods

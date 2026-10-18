@@ -107,7 +107,7 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
 | **用户体验**             |
 | 主题定制                 | ✅             | 📝 规划中    | [0011](./completed/0011-theme-system.md)              | v0.4.0   |
 | 国际化 (i18n)            | ✅             | ✅ 已实现    | [0015](./completed/0015-internationalization.md) | v0.5.0   |
-| 可访问性 (a11y)          | ✅             | 📝 规划中    | [0013](./0013-accessibility.md)             | v0.4.0   |
+| 可访问性 (a11y)          | ✅             | ✅ 已实现    | [0013](completed/0013-accessibility.md)             | v0.4.0   |
 | **数据导出**             |
 | CSV 导出                 | ✅             | 📝 规划中    | [0014](./0014-data-export.md)               | v0.5.0   |
 | Excel 导出               | ✅             | 📝 规划中    | [0014](./0014-data-export.md)               | v0.5.0   |
@@ -734,7 +734,7 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 | -------- | ----------------------------------------- | --------- | ------ |
 | 主题系统 | [RFC-0011](./completed/0011-theme-system.md)        | 📝 待编写 | P0     |
 | 键盘导航 | [RFC-0012](./0012-keyboard-navigation.md) | 📝 待编写 | P1     |
-| 可访问性 | [RFC-0013](./0013-accessibility.md)       | 📝 待编写 | P0     |
+| 可访问性 | [RFC-0013](completed/0013-accessibility.md)       | ✔️ 已完成 | P0     |
 
 **交付物**：
 
