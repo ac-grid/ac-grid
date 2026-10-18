@@ -106,12 +106,13 @@ export default defineConfig({
         },
     },
     server: {
-        port: 5174,
+        port: 5199,
+        strictPort: true,
         open: true,
         hmr: {
             protocol: "ws",
             host: "localhost",
-            port: 5174,
+            port: 5199,
         },
         watch: {
             // 监听 workspace 包的源码变化

@@ -9,7 +9,7 @@ import {
 
 import type { Person } from "./stories/makeData";
 
-/** Multica `done` RFCs — manual validation order on demo-react (5174) */
+/** Multica `done` RFCs — manual validation order on demo-react (5198) */
 export const RFC_VALIDATION_ORDER = [
   "0001",
   "0002",
