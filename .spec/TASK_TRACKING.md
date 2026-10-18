@@ -110,6 +110,11 @@
 - [ ] Implement RFC 0036: Demo and E2E quality remediation (RFC 0036)
 - [ ] Implement RFC 0037: Dev port assignment and Spark registration (RFC 0037)
 - [ ] Implement RFC 0038: RFC-0005 虚拟滚动验证计划 (RFC 0038)
+- [ ] Implement RFC 0039: RFC-0036 P1 demo defects (Umbrella) (RFC 0039)
+  - [ ] Implement RFC 0040: Selection column order (child of 0039) (RFC 0040)
+  - [ ] Implement RFC 0041: Pinned column theme and horizontal scroll demo (child of 0039) (RFC 0041)
+  - [ ] Implement RFC 0042: Empty and loading overlay theme (child of 0039) (RFC 0042)
+
 
 
 
