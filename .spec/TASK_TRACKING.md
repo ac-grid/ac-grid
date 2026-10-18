@@ -109,6 +109,8 @@
 - [ ] Track RFC 0035: RFC-0010 E2E coverage (RFC 0035)
 - [ ] Implement RFC 0036: Demo and E2E quality remediation (RFC 0036)
 - [ ] Implement RFC 0037: Dev port assignment and Spark registration (RFC 0037)
+- [ ] Implement RFC 0038: RFC-0005 虚拟滚动验证计划 (RFC 0038)
+
 
 
 
