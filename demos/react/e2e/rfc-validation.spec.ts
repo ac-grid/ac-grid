@@ -1,6 +1,26 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("RFC validation demos (browser)", () => {
+    test("RFC-0013 exposes accessible grid roles and labels in the browser", async ({ page }) => {
+        await page.goto("/?rfc=0001");
+        const grid = page.getByRole("grid", { name: "Data grid" });
+        await expect(grid).toBeVisible({ timeout: 15_000 });
+        await expect(grid.getByRole("columnheader").first()).toHaveAttribute("aria-label", "First Name");
+        await expect(grid.getByRole("row").nth(1).getByRole("gridcell").first()).toHaveAttribute("aria-colindex", "1");
+
+        const firstNameHeader = grid.getByRole("columnheader", { name: "First Name" });
+        const status = grid.getByRole("status");
+        await firstNameHeader.click();
+        await expect(firstNameHeader).toHaveAttribute("aria-sort", "ascending");
+        await expect(status).toHaveText("First Name sorting ascending");
+        await firstNameHeader.click();
+        await expect(firstNameHeader).toHaveAttribute("aria-sort", "descending");
+        await expect(status).toHaveText("First Name sorting descending");
+        await firstNameHeader.click();
+        await expect(firstNameHeader).toHaveAttribute("aria-sort", "none");
+        await expect(status).toHaveText("First Name sorting cleared");
+    });
+
     test("RFC-0001 mounts typed grid through the Web Component entrypoint", async ({ page }) => {
         await page.goto("/?rfc=0001");
         await expect(page.locator("wsx-ac-grid")).toHaveCount(1);

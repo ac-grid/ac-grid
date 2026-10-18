@@ -26,7 +26,8 @@
 - [x] v0.3.0: Grouping/aggregation (0010) — 已完成 (ACG-21 / ACG-121)
 - [x] v0.4.0: Theme advanced (0011) — 已完成 (ACG-14)
 - [x] Stage 10: RFC-0034 completed RFC demo acceptance matrix (ACG-120)
-- [x] v0.4.0: Keyboard (0012); a11y (0013) remains
+- [x] v0.4.0: Keyboard (0012); Accessibility (0013)
+- [x] Implement RFC 0013: Accessibility (RFC 0013)
 
 ---
 
@@ -62,7 +63,7 @@
 - v0.1.0: Column resizing (RFC-0004), 100% test coverage, Storybook
 - v0.2.0: Virtual scroll (0005), Pagination (0006), Row selection (0007)
 - v0.3.0: Pinning (0008) ✅, Cell editing (0009) ✅, Grouping/aggregation (0010) ✅
-- v0.4.0: Custom components (0019) ✅, Theme advanced (0011) ✅, Keyboard (0012) ✅, a11y (0013)
+- v0.4.0: Custom components (0019) ✅, Theme advanced (0011) ✅, Keyboard (0012) ✅, a11y (0013) ✅
 - v0.5.0: CSV export (0014), i18n (0015) ✅, Framework bindings (0017), State API (0018)
 
 ### Phase 2 — Enterprise (v1.1.0–v1.2.0)
@@ -85,8 +86,8 @@
 - [ ] Track RFC 0001: AC Grid architecture (RFC 0001)
 - [x] Track RFC 0010: Grouping and aggregation (RFC 0010)
 - [x] Track RFC 0011: Theme system (RFC 0011)
-- [ ] Track RFC 0012: Keyboard navigation (RFC 0012)
-- [ ] Track RFC 0013: Accessibility (RFC 0013)
+- [x] Track RFC 0012: Keyboard navigation (RFC 0012)
+- [x] Track RFC 0013: Accessibility (RFC 0013)
 - [ ] Track RFC 0014: Data export (RFC 0014)
 - [x] Track RFC 0015: Internationalization (RFC 0015)
 - [ ] Track RFC 0016: Theme system architecture (RFC 0016)

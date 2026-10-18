@@ -35,7 +35,8 @@ describe("Grid keyboard navigation", () => {
     container.appendChild(grid);
     await waitFor(() => expect(root(grid).querySelector(".grid-cell[data-row-id]")).toBeTruthy());
     expect(grid.enableKeyboardNavigation).toBe(false);
-    expect(root(grid).querySelector('[role="grid"]')).toBeNull();
+    expect(root(grid).querySelector('[role="grid"]')).toBeTruthy();
+    expect(root(grid).querySelector('[data-grid-cell]')).toBeNull();
     grid.focusCell("r1", "name");
     await waitFor(() => expect(document.activeElement?.getAttribute("data-column-id")).toBe("name"));
     expect(grid.getFocusedCell()).toEqual({ rowId: "r1", columnId: "name" });

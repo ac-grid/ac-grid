@@ -34,7 +34,7 @@ export default class DocsSection extends LightComponent {
 
                         <div class="doc-card">
                             <h3>Features</h3>
-                            <p>Sorting, filtering, theming.</p>
+                            <p>Sorting, filtering, theming, accessibility.</p>
                             <wsx-link to="/docs/guide/features/sorting" class="doc-link">
                                 Sorting →
                             </wsx-link>
@@ -45,6 +45,10 @@ export default class DocsSection extends LightComponent {
                             <span class="doc-link-sep"> · </span>
                             <wsx-link to="/docs/guide/features/theming" class="doc-link">
                                 Theming →
+                            </wsx-link>
+                            <span class="doc-link-sep"> · </span>
+                            <wsx-link to="/docs/guide/features/accessibility" class="doc-link">
+                                Accessibility →
                             </wsx-link>
                         </div>
 
