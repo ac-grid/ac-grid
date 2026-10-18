@@ -1,6 +1,6 @@
 # RFC 0039: RFC-0036 P1 demo defects (Umbrella)
 
-**Status:** Draft
+**Status:** Approved
 
 **Type:** Umbrella
 

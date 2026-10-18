@@ -1,6 +1,6 @@
 # RFC 0038: RFC-0005 虚拟滚动验证计划
 
-**Status:** Draft
+**Status:** Approved
 
 **Related:** [0005](./completed/0005-virtual-scrolling.md), [0033](./0033-e2e-test-infrastructure.md), [0036](./0036-demo-quality-remediation.md)
 

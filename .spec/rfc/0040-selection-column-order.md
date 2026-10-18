@@ -1,6 +1,6 @@
 # RFC 0040: Selection column order (child of 0039)
 
-**Status:** Draft
+**Status:** Approved
 
 **Parent:** [0039](0039-demo-defects-p1.md)
 

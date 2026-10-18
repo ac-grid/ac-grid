@@ -479,8 +479,8 @@ MIT License
 > 💡 **提示**: 本路线图会定期更新。建议定期查看以了解最新进展。
 | 0036 | [Demo and E2E quality remediation](rfc/0036-demo-quality-remediation.md) | Draft |
 | 0037 | [Dev port assignment and Spark registration](rfc/0037-dev-port-assignment.md) | Approved |
-| 0038 | [RFC-0005 虚拟滚动验证计划](rfc/0038-virtual-scrolling-verification.md) | Draft |
-| 0039 | [RFC-0036 P1 demo defects (Umbrella)](rfc/0039-demo-defects-p1.md) | Draft |
-| 0040 | [Selection column order (child of 0039)](rfc/0040-selection-column-order.md) | Draft |
-| 0041 | [Pinned column theme and horizontal scroll demo (child of 0039)](rfc/0041-pinned-column-theme.md) | Draft |
-| 0042 | [Empty and loading overlay theme (child of 0039)](rfc/0042-overlay-theme.md) | Draft |
+| 0038 | [RFC-0005 虚拟滚动验证计划](rfc/0038-virtual-scrolling-verification.md) | Approved |
+| 0039 | [RFC-0036 P1 demo defects (Umbrella)](rfc/0039-demo-defects-p1.md) | Approved |
+| 0040 | [Selection column order (child of 0039)](rfc/0040-selection-column-order.md) | Approved |
+| 0041 | [Pinned column theme and horizontal scroll demo (child of 0039)](rfc/0041-pinned-column-theme.md) | Approved |
+| 0042 | [Empty and loading overlay theme (child of 0039)](rfc/0042-overlay-theme.md) | Approved |
