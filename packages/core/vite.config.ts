@@ -45,19 +45,17 @@ export default defineConfig({
         include: ["test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
         coverage: {
             provider: "v8",
-            include: [
-                "src/utils/virtualizer.ts",
-                "src/utils/virtual-scroll.ts",
-                "src/utils/create-grid.ts",
-                "src/utils/scroll-sync.ts",
-                "src/utils/grouping.ts",
-            ],
+            // The whole package, not a hand-picked list of files that are already complete.
+            include: ["src/**/*.{ts,wsx}"],
+            exclude: ["src/**/*.d.ts"],
             reporter: ["text", "text-summary"],
+            // Ratchet: the measured floor on 2026-10-18 (lines 58.8, statements 56.5, branches 35.3, functions 55.4).
+            // Raise these as coverage improves; never lower them to make a run pass.
             thresholds: {
-                lines: 100,
-                functions: 100,
-                branches: 100,
-                statements: 100,
+                lines: 58,
+                functions: 55,
+                branches: 35,
+                statements: 56,
             },
         },
         server: {
