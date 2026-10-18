@@ -44,7 +44,7 @@ AC Grid 建立「已完成 RFC 演示验收矩阵」（Demo Acceptance Matrix）
 
 | RFC ID | 功能名称 | 演示路由 (`demos/react`) | 关键验收交互 / 必需行为 | 自动化 E2E 证据 | 矩阵状态 |
 | :--- | :--- | :--- | :--- | :--- | :---: |
-| **0001** | AC Grid 架构 & WC 入口 | `/?rfc=0001` | `<wsx-ac-grid>` Web Component 正确挂载，初始化渲染 10 行基础表格 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0001 mounts typed grid...`) | ✅ 达标 |
+| **0001** | AC Grid 架构 & WC 入口 | `/?rfc=0001` | 挂载一个 `<wsx-ac-grid>`；3 个表头文字正确；10 行各 3 个单元格，姓名非空、年龄为数字；点击表头后 DOM 顺序为升序，再点为降序 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0001 renders the declared columns...`) | ✅ 达标 |
 | **0002** | 排序功能 | `/?rfc=0002` | 1. 点击 firstName 表头触发升降序排序并重排 DOM<br>2. 鼠标横向滚轮保持 header 与 body scrollLeft 像素对齐<br>3. 真实拖拽表头完成列顺序重排 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0002 sorting`, `RFC-0002 horizontal scroll`, `RFC-0002 reorders columns`) | ✅ 达标 |
 | **0003** | 过滤功能 | `/?rfc=0003` | 全局搜索框输入非匹配关键字时，表格行数即时收敛至 0 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0003 filters rows...`) | ✅ 达标 |
 | **0004** | 列调整大小 | `/?rfc=0004` | 拖拽表头右边缘 `.resizer` 句柄改变列宽，释放后宽度大于初始值 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0004 changes column width...`) | ✅ 达标 |
@@ -57,7 +57,7 @@ AC Grid 建立「已完成 RFC 演示验收矩阵」（Demo Acceptance Matrix）
 | **0015** | 国际化 (i18n) | `/?rfc=0015` | 配置 zh-CN 语言包时，分页组件展示「显示第 1 至 10 条」中文本地化文案 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0015 renders pagination text from the zh-CN language pack`) | ✅ 达标 |
 | **0016** | 主题系统基础 | `/?rfc=0016` | Web Component 读取 CSS 自定义属性 `--ac-grid-bg-cell` 并在 DOM 中生效 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0016 applies theme variables...`) | ✅ 达标 |
 | **0019** | 自定义组件 | `/?rfc=0019` | 挂载用户自定义 header 渲染组件并显示 "Custom Name" | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0019 renders custom header component`) | ✅ 达标 |
-| **0030** | 单元格公式引擎 | `/?rfc=0030` | 公式求值：SUM 计算、AVG 计算、#CYCLE! 循环依赖检测，以及依赖项更新即时重算 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0030 recalculates formula result...`) | ✅ 达标 |
+| **0030** | 单元格公式引擎 | `/?rfc=0030` | 独立引擎（未接入 Grid）：可编辑公式表输入数字与 `=` 公式；SUM、AVG、MAX-MIN、COUNT 求值；`#DIV/0!`、`#NAME?`、`#CYCLE!` 及环路消除后恢复；改动输入后依赖格增量重算 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0030 formula engine` 下 5 个用例) | ✅ 达标 |
 | **0011** | 高级主题功能 | `/?rfc=0011` | 预览主题改变 `--ac-grid-bg-header` 且不改变已应用主题；取消预览恢复原值；应用后持久 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0011 previews a theme...`) | ✅ 达标 |
 | **0023** | 剪贴板操作 | `/?rfc=0023` | 点选单元格后 Ctrl/Cmd+C 复制其文本；点选起始格后 Ctrl/Cmd+V 按 TSV 矩阵写入相邻单元格 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0023 copies...`, `RFC-0023 pastes...`) | ✅ 达标 |
 
