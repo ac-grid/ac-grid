@@ -64,8 +64,8 @@
 | RFC                                      | 标题                 | 状态      | 版本  | 作者      | 日期       |
 | ---------------------------------------- | -------------------- | --------- | ----- | --------- | ---------- |
 | [0011](./completed/0011-theme-system.md) | 主题系统（高级功能） | ✔️ 已完成 | 0.4.0 | Albert Li | 2026-01-24 |
-| [0012](./0012-keyboard-navigation.md)    | 键盘导航             | 📝 草稿   | 0.4.0 | Albert Li | 2026-01-24 |
-| [0013](./0013-accessibility.md)          | 可访问性 (a11y)      | 📝 草稿   | 0.4.0 | Albert Li | 2026-01-24 |
+| [0012](./completed/0012-keyboard-navigation.md) | 键盘导航 | ✔️ 已完成 | 0.4.0 | Albert Li | 2026-10-16 |
+| [0013](./completed/0013-accessibility.md) | 可访问性 (a11y) | ✔️ 已完成 | 0.4.0 | Albert Li | 2026-10-16 |
 
 ### 第五阶段：数据导出和国际化 (v0.5.0)
 
@@ -129,6 +129,7 @@
 | [0033](./0033-e2e-test-infrastructure.md) | E2E 测试基础设施 | 📝 草稿 | 0.1.0 | Albert Li | 2026-10-11 |
 | [0034](./0034-rfc-demo-acceptance-matrix.md) | 已完成 RFC 演示验收矩阵 | ✔️ 已完成 | 0.4.0 | Albert Li | 2026-10-11 |
 | [0035](./0035-rfc-0010-e2e-coverage.md) | RFC-0010 E2E 覆盖 | ✔️ 已完成 | 0.3.0 | Albert Li | 2026-10-08 |
+| [0036](./0036-demo-quality-remediation.md) | Demo 与 E2E 质量整改 | 📝 草稿 | 0.1.0 | Albert Li | 2026-10-18 |
 
 ## 相关资源
 

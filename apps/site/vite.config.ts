@@ -29,6 +29,7 @@ export default defineConfig({
             jsxFragment: "Fragment",
         }) as any,
     ],
+    preview: { port: 5202, strictPort: true },
     build: {
         outDir: "dist",
         sourcemap: process.env.NODE_ENV !== "production", // No source maps in production
@@ -64,6 +65,8 @@ export default defineConfig({
     },
     // 开发环境代理配置，解决 CORS 问题
     server: {
+        port: 5200,
+        strictPort: true,
         proxy: {
             "/api/github": {
                 target: "https://api.github.com",

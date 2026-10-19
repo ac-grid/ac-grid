@@ -20,6 +20,7 @@ import type { GridGroupingConfig } from "../types/grouping";
 import type { GridClipboardConfig } from "../types/clipboard";
 import type { GridI18nConfig } from "../types/i18n";
 import type { GridRangeSelectionConfig } from "../types/range-selection";
+import type { KeyboardNavigationMode } from "./keyboard-navigation";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
   /**
@@ -34,6 +35,10 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
    * 自定义类名
    */
   className?: string;
+  /** Accessible name announced for the grid (RFC-0013). */
+  ariaLabel?: string;
+  /** Additional screen-reader description for the grid (RFC-0013). */
+  ariaDescription?: string;
   /**
    * 排序配置
    */
@@ -74,6 +79,10 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
   clipboard?: GridClipboardConfig<TData>;
   /** Cell range selection (RFC-0022). */
   rangeSelection?: GridRangeSelectionConfig;
+  /** Enable opt-in keyboard navigation (RFC-0012). */
+  enableKeyboardNavigation?: boolean;
+  /** Cell-wise or row-wise arrow navigation (RFC-0012). */
+  keyboardNavigationMode?: KeyboardNavigationMode;
   /**
    * 主题切换过渡动画配置（RFC-0011）
    */
@@ -137,6 +146,8 @@ export function createGrid<TData extends { userId?: string }>(
     data,
     columns,
     className,
+    ariaLabel,
+    ariaDescription,
     sorting,
     filtering,
     resizing,
@@ -154,6 +165,9 @@ export function createGrid<TData extends { userId?: string }>(
   // 创建自定义元素
   const gridElement = document.createElement("wsx-ac-grid") as any;
 
+  if (options.keyboardNavigationMode) gridElement.keyboardNavigationMode = options.keyboardNavigationMode;
+  if (options.enableKeyboardNavigation !== undefined) gridElement.enableKeyboardNavigation = options.enableKeyboardNavigation;
+
   // Apply virtualization before data so the first render never mounts the full dataset
   if (virtualization) {
     gridElement.virtualizationConfig = virtualization;
@@ -162,6 +176,9 @@ export function createGrid<TData extends { userId?: string }>(
   if (className) {
     gridElement.className = className;
   }
+
+  if (ariaLabel) gridElement.ariaLabel = ariaLabel;
+  if (ariaDescription) gridElement.ariaDescription = ariaDescription;
 
   if (sorting) {
     gridElement.sortingConfig = sorting;

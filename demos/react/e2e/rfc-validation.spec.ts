@@ -1,19 +1,64 @@
 import { expect, test } from "@playwright/test";
 
+import { domQuiet, gridReady } from "./helpers";
+
 test.describe("RFC validation demos (browser)", () => {
-    test("RFC-0001 mounts typed grid through the Web Component entrypoint", async ({ page }) => {
+    test("RFC-0013 exposes accessible grid roles and labels in the browser", async ({ page }) => {
+        await page.goto("/?rfc=0013");
+        const grid = page.getByRole("grid", { name: "Data grid" });
+        await expect(grid).toBeVisible({ timeout: 15_000 });
+        await expect(grid.getByRole("columnheader").first()).toHaveAttribute("aria-label", "First Name");
+        await expect(grid.getByRole("row").nth(1).getByRole("gridcell").first()).toHaveAttribute("aria-colindex", "1");
+
+        const firstNameHeader = grid.getByRole("columnheader", { name: "First Name" });
+        const status = grid.getByRole("status");
+        await firstNameHeader.click();
+        await expect(firstNameHeader).toHaveAttribute("aria-sort", "ascending");
+        await expect(status).toHaveText("First Name sorting ascending");
+        await firstNameHeader.click();
+        await expect(firstNameHeader).toHaveAttribute("aria-sort", "descending");
+        await expect(status).toHaveText("First Name sorting descending");
+        await firstNameHeader.click();
+        await expect(firstNameHeader).toHaveAttribute("aria-sort", "none");
+        await expect(status).toHaveText("First Name sorting cleared");
+    });
+
+    test("RFC-0001 renders the declared columns and row values and sorts on a real header click", async ({ page }) => {
         await page.goto("/?rfc=0001");
+        await gridReady(page);
         await expect(page.locator("wsx-ac-grid")).toHaveCount(1);
-        await expect(page.locator("wsx-ac-grid .grid-row")).toHaveCount(10);
+
+        const headers = page.locator(".grid-header-cell");
+        await expect(headers).toHaveCount(3);
+        for (const [index, title] of ["First Name", "Last Name", "Age"].entries()) {
+            await expect(headers.nth(index)).toContainText(title);
+        }
+
+        const rows = page.locator(".grid-body .grid-row");
+        await expect(rows).toHaveCount(10);
+        await expect(rows.first().locator(".grid-cell")).toHaveCount(3);
+
+        const column = async (id: string) =>
+            (await page.locator(`.grid-body .grid-cell[data-column-id="${id}"]`).allTextContents()).map((text) => text.trim());
+        expect((await column("firstName")).every((name) => name.length > 0)).toBe(true);
+        expect((await column("age")).every((age) => /^\d+$/.test(age))).toBe(true);
+
+        const before = await column("firstName");
+        const ascending = [...before].sort((a, b) => a.localeCompare(b));
+        expect(before, "fixture must start unsorted or the sort check proves nothing").not.toEqual(ascending);
+
+        const header = page.locator('.grid-header-cell[data-column-id="firstName"]');
+        await header.click();
+        await expect.poll(() => column("firstName")).toEqual(ascending);
+        await header.click();
+        await expect.poll(() => column("firstName")).toEqual([...ascending].reverse());
     });
 
     test.describe("RFC-0002 sorting", () => {
         test.beforeEach(async ({ page }) => {
             await page.setViewportSize({ width: 800, height: 600 });
             await page.goto("/?rfc=0002");
-            await expect(page.locator("wsx-ac-grid .grid-body .grid-row").first()).toBeVisible({
-                timeout: 15_000,
-            });
+            await gridReady(page);
         });
 
         test("reorders visible rows after clicking a sortable header", async ({ page }) => {
@@ -21,11 +66,10 @@ test.describe("RFC validation demos (browser)", () => {
             const before = (await firstCell.textContent())?.trim();
 
             await page.locator('.grid-header-cell[data-column-id="firstName"]').click();
-            await page.waitForTimeout(300);
+            await expect(firstCell).not.toHaveText(before ?? "");
 
             const after = (await firstCell.textContent())?.trim();
             expect(after).toBeTruthy();
-            expect(after).not.toBe(before);
 
             const sortedCheck = await page.evaluate(() => {
                 const grid = document.querySelector("wsx-ac-grid") as HTMLElement & {
@@ -53,9 +97,7 @@ test.describe("RFC validation demos (browser)", () => {
         test.beforeEach(async ({ page }) => {
             await page.setViewportSize({ width: 400, height: 600 });
             await page.goto("/?rfc=0002");
-            await expect(page.locator("wsx-ac-grid .grid-body .grid-row").first()).toBeVisible({
-                timeout: 15_000,
-            });
+            await gridReady(page);
         });
 
         test("keeps header aligned with body during real mouse wheel horizontal scroll", async ({
@@ -138,7 +180,7 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0002 reorders columns after a real header drag", async ({ page }) => {
         await page.goto("/?rfc=0002");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         const source = page.locator('.grid-header-cell[data-column-id="firstName"] .drag-handle-button');
         const target = page.locator('.grid-header-cell[data-column-id="lastName"]');
         const sourceBox = await source.boundingBox();
@@ -148,7 +190,11 @@ test.describe("RFC validation demos (browser)", () => {
         await page.mouse.move(sourceBox!.x + sourceBox!.width / 2, sourceBox!.y + sourceBox!.height / 2);
         await page.mouse.down();
         await page.mouse.move(targetBox!.x + targetBox!.width / 2, targetBox!.y + targetBox!.height / 2, { steps: 12 });
+        // Mid-drag feedback: the dragged header and the hovered drop target are marked.
+        await expect(page.locator('.grid-header-cell[data-column-id="firstName"]')).toHaveClass(/\bdragging\b/);
+        await expect(target).toHaveClass(/\bdrag-over\b/);
         await page.mouse.up();
+        await expect(page.locator(".grid-header-cell.dragging, .grid-header-cell.drag-over")).toHaveCount(0);
         await expect
             .poll(() =>
                 page.locator(".grid-header-cell[data-column-id]").evaluateAll((nodes) =>
@@ -160,7 +206,7 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0003 filters rows through global search", async ({ page }) => {
         await page.goto("/?rfc=0003");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         const before = await page.locator(".grid-row").count();
         await page.locator(".demo-search").fill("zzzz-no-match");
         await expect.poll(() => page.locator(".grid-row").count()).toBeLessThan(before);
@@ -169,7 +215,7 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0004 changes column width with its resize handle", async ({ page }) => {
         await page.goto("/?rfc=0004");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         const header = page.locator('.grid-header-cell[data-column-id="firstName"]');
         const resizer = header.locator(".resizer");
         const before = await header.evaluate((element) => element.getBoundingClientRect().width);
@@ -186,14 +232,14 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0006 changes page from pagination controls", async ({ page }) => {
         await page.goto("/?rfc=0006");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await page.locator(".pagination-controls button").nth(2).click();
         await expect(page.locator(".pagination-controls")).toContainText("Page 2 of 10");
     });
 
     test("RFC-0007 selects a row through its checkbox", async ({ page }) => {
         await page.goto("/?rfc=0007");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await page.locator("wsx-ac-selection-checkbox input").nth(1).click();
         await expect
             .poll(() =>
@@ -209,15 +255,41 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0009 starts editing on cell double click", async ({ page }) => {
         await page.goto("/?rfc=0009");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await page.locator(".grid-row .grid-cell").first().dblclick();
         await expect(page.locator("wsx-ac-cell-editor")).toHaveCount(1);
+    });
+
+    test("RFC-0012 keeps keyboard focus after the grid re-renders and moves it with the arrow keys", async ({ page }) => {
+        await page.goto("/?rfc=0012");
+        await gridReady(page);
+        const focusedColumn = () =>
+            page.evaluate(() => (document.querySelector("wsx-ac-grid") as any).getFocusedCell()?.columnId);
+        const activeCell = () =>
+            page.evaluate(() => {
+                const active = document.activeElement as HTMLElement | null;
+                return active?.matches(".grid-cell") ? `${active.dataset.rowId}:${active.dataset.columnId}` : null;
+            });
+
+        await page.locator(".grid-row .grid-cell").first().focus();
+        // A person pauses before pressing a key; the focus change re-renders the grid in that window.
+        await domQuiet(page);
+        expect(await activeCell(), "focus must survive the re-render").toMatch(/:firstName$/);
+
+        await page.keyboard.press("ArrowRight");
+        await expect.poll(focusedColumn).toBe("lastName");
+        await expect.poll(activeCell).toMatch(/:lastName$/);
+
+        await domQuiet(page);
+        await page.keyboard.press("ArrowDown");
+        await expect.poll(activeCell).toMatch(/^(?!.*row-0).*:lastName$/);
+        await expect.poll(focusedColumn).toBe("lastName");
     });
 
     test("RFC-0008 pins configured columns", async ({ page }) => {
         await page.setViewportSize({ width: 500, height: 600 });
         await page.goto("/?rfc=0008");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await expect(page.locator('.grid-header-cell[data-column-id="firstName"]')).toHaveCSS(
             "position",
             "sticky",
@@ -230,13 +302,13 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0019 renders custom header component", async ({ page }) => {
         await page.goto("/?rfc=0019");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await expect(page.getByText("Custom Name", { exact: true })).toHaveCount(1);
     });
 
     test("RFC-0015 renders pagination text from the zh-CN language pack", async ({ page }) => {
         await page.goto("/?rfc=0015");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await expect(page.locator(".pagination-info")).toContainText("显示第 1 至 10 条");
         await expect(page.locator(".pagination-controls")).not.toContainText("Showing");
     });
@@ -245,7 +317,7 @@ test.describe("RFC validation demos (browser)", () => {
         await page.goto("/?rfc=0022");
         const grid = page.locator("wsx-ac-grid");
         const rows = grid.locator(".grid-body .grid-row");
-        await expect(rows.first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
 
         const start = rows.nth(0).locator(".grid-cell").nth(0);
         const end = rows.nth(1).locator(".grid-cell").nth(1);
@@ -265,7 +337,7 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0016 applies theme variables to the validation grid", async ({ page }) => {
         await page.goto("/?rfc=0016");
-        await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
         await expect
             .poll(() => page.locator("wsx-ac-grid").evaluate((element) => getComputedStyle(element).getPropertyValue("--ac-grid-bg-cell")))
             .not.toBe("");
@@ -273,7 +345,7 @@ test.describe("RFC validation demos (browser)", () => {
 
     test("RFC-0010 groups rows, calculates aggregations, and expands/collapses groups", async ({ page }) => {
         await page.goto("/?rfc=0010");
-        await expect(page.locator("wsx-ac-grid .grid-row").first()).toBeVisible({ timeout: 15_000 });
+        await gridReady(page);
 
         // Group rows should be rendered
         const groupRows = page.locator("wsx-ac-grid .grid-row.grid-row-grouped");
@@ -304,12 +376,111 @@ test.describe("RFC validation demos (browser)", () => {
         await expect(page.locator("wsx-ac-grid .grid-row")).toHaveCount(initialRowCount);
     });
 
-    test("RFC-0030 recalculates formula result after input change", async ({ page }) => {
-        await page.goto("/?rfc=0030");
-        await expect(page.locator('[data-testid="formula-sum"]')).toHaveText("C1 = SUM(A1:B1) = 15");
-        await expect(page.locator('[data-testid="formula-average"]')).toHaveText("C2 = AVG(A2:B2) = 7");
-        await expect(page.locator('[data-testid="formula-cycle"]')).toHaveText("C3 = #CYCLE!");
-        await page.getByRole("button", { name: "增加 A1" }).click();
-        await expect(page.locator('[data-testid="formula-sum"]')).toHaveText("C1 = SUM(A1:B1) = 16");
+    test.describe("RFC-0030 formula engine", () => {
+        const value = (page: import("@playwright/test").Page, label: string) =>
+            page.locator(`[data-testid="val-${label}"]`);
+        const type = (page: import("@playwright/test").Page, label: string, text: string) =>
+            page.locator(`[data-testid="raw-${label}"]`).fill(text);
+
+        test.beforeEach(async ({ page }) => {
+            await page.goto("/?rfc=0030");
+            await expect(page.locator('[data-testid="formula-sheet"]')).toBeVisible({ timeout: 15_000 });
+        });
+
+        test("RFC-0030 evaluates SUM, AVG, MAX-MIN, COUNT and reports errors", async ({ page }) => {
+            await expect(value(page, "C1")).toHaveText("15");
+            await expect(value(page, "C2")).toHaveText("7");
+            await expect(value(page, "C3")).toHaveText("6");
+            await expect(value(page, "C4")).toHaveText("2");
+            await expect(value(page, "A5")).toHaveText("#CYCLE!");
+            await expect(value(page, "B5")).toHaveText("#CYCLE!");
+            await expect(value(page, "C5")).toHaveText("#DIV/0!");
+        });
+
+        test("RFC-0030 recalculates dependents when an input is typed", async ({ page }) => {
+            await type(page, "A1", "20");
+            await expect(value(page, "C1")).toHaveText("25");
+            await type(page, "B2", "10");
+            await expect(value(page, "C2")).toHaveText("10");
+            await type(page, "A3", "1");
+            await type(page, "B3", "1");
+            await expect(value(page, "C3")).toHaveText("0");
+        });
+
+        test("RFC-0030 follows chained references through a new formula", async ({ page }) => {
+            await type(page, "B1", "=A1*2");
+            await expect(value(page, "B1")).toHaveText("20");
+            await expect(value(page, "C1")).toHaveText("30");
+            await type(page, "A1", "1");
+            await expect(value(page, "B1")).toHaveText("2");
+            await expect(value(page, "C1")).toHaveText("3");
+        });
+
+        test("RFC-0030 shows #NAME? for an unknown function and recovers when it is fixed", async ({ page }) => {
+            await type(page, "C1", "=FOO(A1)");
+            await expect(value(page, "C1")).toHaveText("#NAME?");
+            await type(page, "C1", "=SUM(A1:B1)");
+            await expect(value(page, "C1")).toHaveText("15");
+        });
+
+        test("RFC-0030 clears #CYCLE! once the loop is broken", async ({ page }) => {
+            await type(page, "A5", "5");
+            await expect(value(page, "A5")).toHaveText("5");
+            await expect(value(page, "B5")).toHaveText("5");
+        });
+    });
+    test("RFC-0011 previews a theme, restores it on cancel, and keeps an applied theme", async ({ page }) => {
+        await page.goto("/?rfc=0011");
+        await gridReady(page);
+        const headerBg = () =>
+            page.locator("wsx-ac-grid").evaluate((element) => getComputedStyle(element).getPropertyValue("--ac-grid-bg-header").trim());
+        const status = page.locator('[data-testid="theme-status"]');
+
+        await expect(status).toHaveText("applied=light preview=none");
+        const light = await headerBg();
+        expect(light).not.toBe("");
+
+        await page.locator('[data-testid="preview-ocean-btn"]').click();
+        await expect(status).toHaveText("applied=light preview=ocean");
+        await expect.poll(headerBg).not.toBe(light);
+        const ocean = await headerBg();
+
+        await page.locator('[data-testid="cancel-preview-btn"]').click();
+        await expect(status).toHaveText("applied=light preview=none");
+        await expect.poll(headerBg).toBe(light);
+
+        await page.locator('[data-testid="preview-dark-btn"]').click();
+        await expect.poll(headerBg).not.toBe(light);
+        await page.locator('[data-testid="apply-ocean-btn"]').click();
+        await expect(status).toHaveText("applied=ocean preview=none");
+        await expect.poll(headerBg).toBe(ocean);
+    });
+
+    test.describe("RFC-0023 clipboard", () => {
+        const cell = (page: import("@playwright/test").Page, row: number, columnId: string) =>
+            page.locator(".grid-body .grid-row").nth(row).locator(`.grid-cell[data-column-id="${columnId}"]`);
+
+        test.beforeEach(async ({ page }) => {
+            await page.goto("/?rfc=0023");
+            await gridReady(page);
+        });
+
+        test("RFC-0023 copies the clicked cell as text", async ({ page }) => {
+            const target = cell(page, 1, "lastName");
+            const text = (await target.textContent())?.trim() ?? "";
+            expect(text).not.toBe("");
+            await target.click();
+            await page.keyboard.press("ControlOrMeta+c");
+            await expect(page.locator('[data-testid="clipboard-copied"]')).toHaveText(text);
+        });
+
+        test("RFC-0023 pastes a TSV matrix starting at the clicked cell", async ({ page }) => {
+            await cell(page, 0, "firstName").click();
+            await page.keyboard.press("ControlOrMeta+v");
+            await expect(cell(page, 0, "firstName")).toHaveText("Alpha");
+            await expect(cell(page, 0, "lastName")).toHaveText("One");
+            await expect(cell(page, 1, "firstName")).toHaveText("Beta");
+            await expect(cell(page, 1, "lastName")).toHaveText("Two");
+        });
     });
 });

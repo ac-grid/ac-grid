@@ -9,7 +9,7 @@ import {
 
 import type { Person } from "./stories/makeData";
 
-/** Multica `done` RFCs — manual validation order on demo-react (5174) */
+/** Multica `done` RFCs — manual validation order on demo-react (5198) */
 export const RFC_VALIDATION_ORDER = [
   "0001",
   "0002",
@@ -21,10 +21,14 @@ export const RFC_VALIDATION_ORDER = [
   "0008",
   "0009",
   "0010",
+  "0011",
+  "0012",
+  "0013",
   "0015",
   "0016",
   "0019",
   "0022",
+  "0023",
   "0030",
 ] as const;
 
@@ -40,7 +44,17 @@ export type GridHostElement = HTMLElement & {
   collapseAll?: () => void;
   toggleGroup?: (rowId: string, isExpanded?: boolean) => void;
   setGrouping?: (columnIds: string[]) => void;
+  applyTheme?: (name: string) => void;
+  previewTheme?: (name: string) => void;
+  cancelPreview?: () => void;
+  getTheme?: () => string | null;
+  getPreviewTheme?: () => string | null;
 };
+
+/** Window event carrying the TSV the grid copied (RFC-0023 demo sink). */
+export const DEMO_CLIPBOARD_COPY_EVENT = "demo-clipboard-copy";
+/** Text area the RFC-0023 demo grid pastes from. */
+export const DEMO_CLIPBOARD_SOURCE_ID = "demo-clipboard-source";
 
 export interface RfcValidationSpec {
   id: RfcValidationId;
@@ -55,6 +69,8 @@ export interface RfcValidationSpec {
     columns: ColumnDef<Person>[],
   ) => CreateGridOptions<Person>;
   afterMount?: (grid: GridHostElement) => void;
+  /** Page has no grid (RFC-0030 is a standalone engine). */
+  hideGrid?: boolean;
 }
 
 const PERSON_COLUMNS: ColumnDef<Person>[] = [
@@ -281,6 +297,43 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
         };
       },
     },
+    "0011": {
+      id: "0011",
+      title: "Advanced themes",
+      multicaIssue: "ACG-20",
+      hint: "主题预览/取消预览/应用：悬停式预览不持久化，取消后恢复；应用后持久。",
+      rowCount: 10,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 4),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+        theme: "light",
+        themeTransition: true,
+        themeTransitionDuration: 150,
+      }),
+    },
+    "0012": {
+      id: "0012",
+      title: "Keyboard navigation",
+      multicaIssue: "DEV-179",
+      hint: "Use arrow keys and Tab to move between cells; Enter edits and Escape cancels.",
+      rowCount: 50,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 4),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+        enableKeyboardNavigation: true,
+        keyboardNavigationMode: "cell",
+        selection: { enabled: true, mode: "multiple" },
+      }),
+      afterMount: (grid) => {
+        grid.editingConfig = { enabled: true, mode: "doubleClick", editTrigger: "enter" };
+      },
+    },
     "0010": {
       id: "0010",
       title: "Grouping & Aggregation",
@@ -339,6 +392,20 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
           initialGrouping: ["status"],
           initialExpanded: true,
         },
+      }),
+    },
+    "0013": {
+      id: "0013",
+      title: "Accessibility",
+      multicaIssue: "DEV-16",
+      hint: "Grid exposes role=grid, labelled headers, aria-sort and a live status region; click First Name to sort.",
+      rowCount: 10,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 3),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        sorting: { enabled: true },
       }),
     },
     "0015": {
@@ -411,18 +478,47 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
         rangeSelection: { enabled: true },
       }),
     },
+    "0023": {
+      id: "0023",
+      title: "Clipboard",
+      multicaIssue: "ACG-25",
+      hint: "点选单元格后 Ctrl/Cmd+C 复制为 TSV；点选起始格后 Ctrl/Cmd+V 从右侧文本框粘贴。",
+      rowCount: 10,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 3),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+        clipboard: {
+          enabled: true,
+          suppressClipboardApi: true,
+          copyToClipboard: (text) => {
+            window.dispatchEvent(
+              new CustomEvent(DEMO_CLIPBOARD_COPY_EVENT, { detail: text }),
+            );
+          },
+          readFromClipboard: () =>
+            (
+              document.getElementById(
+                DEMO_CLIPBOARD_SOURCE_ID,
+              ) as HTMLTextAreaElement | null
+            )?.value ?? "",
+        },
+      }),
+      afterMount: (grid) => {
+        grid.editingConfig = { enabled: true, mode: "doubleClick" };
+      },
+    },
     "0030": {
       id: "0030",
       title: "Formulas",
       multicaIssue: "ACG-32",
-      hint: "公式引擎验收页：A1 引用、SUM/AVG 与增量依赖计算由 core FormulaEngine 测试覆盖。",
-      rowCount: 3,
+      hint: "公式引擎验收页（独立引擎，未接入 Grid）：在 raw 框输入数字或 =公式，右侧显示引擎增量重算的结果。",
+      rowCount: 0,
+      hideGrid: true,
       showGlobalSearch: false,
-      columns: [
-        { id: "firstName", accessorKey: "firstName", header: "Input A" },
-        { id: "lastName", accessorKey: "lastName", header: "Input B" },
-        { id: "age", accessorKey: "age", header: "Computed" },
-      ],
+      columns: [],
       buildOptions: (data, columns) => ({
         data,
         columns,

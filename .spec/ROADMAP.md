@@ -179,8 +179,8 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | 功能       | RFC                                               | 状态               | 优先级 | 预计工作量 | 负责人     |
 | ---------- | ------------------------------------------------- | ------------------ | ------ | ---------- | ---------- |
 | 主题系统   | [0011](./rfc/completed/0011-theme-system.md)      | ✅ 已完成          | P0     | —          | 2026-10-03 |
-| 键盘导航   | [0012](./rfc/0012-keyboard-navigation.md)         | ⏳ 待规划          | P1     | 5-7天      | TBD        |
-| 可访问性   | [0013](./rfc/0013-accessibility.md)               | ⏳ 待规划          | P0     | 7-9天      | TBD        |
+| 键盘导航   | [0012](./rfc/completed/0012-keyboard-navigation.md) | ✅ 已完成 | P1 | — | 2026-10-16 |
+| 可访问性   | [0013](./rfc/completed/0013-accessibility.md)             | ✅ 已完成          | P0     | —          | 2026-10-16 |
 | 自定义组件 | [0019](./rfc/completed/0019-custom-components.md) | ✅ 已完成 (PR #16) | P0     | —          | 2026-08-16 |
 
 **里程碑**:
@@ -188,9 +188,9 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 - [x] 完成所有 RFC 编写
 - [x] 实施自定义组件 (0019)
 - [x] 实施主题系统（Light/Dark/自定义/动画/预览/包支持）
-- [ ] 实施键盘导航
-- [ ] 实施 ARIA 属性和可访问性
-- [ ] 可访问性审计
+- [x] 实施键盘导航
+- [x] 实施 ARIA 属性和可访问性 (0013)
+- [x] 可访问性审计 (0013)
 - [ ] 主题定制文档
 - [ ] 发布 v0.4.0
 
@@ -250,7 +250,7 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | ----------- | ----------------------------------------------------- | --------- | ------ |
 | 树形数据    | [0020](./rfc/0020-tree-data.md)                       | 📝 草稿   | P1     |
 | 主从表格    | [0021](./rfc/0021-master-detail.md)                   | 📝 草稿   | P1     |
-| 范围选择    | [0022](./rfc/0022-range-selection.md)                 | 📝 草稿   | P1     |
+| 范围选择    | [0022](./rfc/completed/0022-range-selection.md)       | ✅ 已完成 | P1     |
 | 剪贴板      | [0023](./rfc/completed/0023-clipboard-operations.md) | ✅ 已完成 | P1     |
 | 右键/列菜单 | [0026](./rfc/0026-context-menu-column-menu.md)        | 📝 草稿   | P2     |
 | 分组聚合    | [0010](./rfc/completed/0010-grouping-aggregation.md)  | ✅ 已完成 | P1     |
@@ -307,7 +307,7 @@ v0.0.2 ████████████████████████�
 v0.1.0 ████████████████████████████████ 100% ✅ 已完成（排序/过滤/列宽）
 v0.2.0 ████████████████████████████████ 100% ✅ 已完成（虚拟滚动/分页/行选择）
 v0.3.0 ████████████████░░░░░░░░░░░░░░░░  50% 🚧 进行中 (列固定 ✅ 单元格编辑 ✅ 分组聚合 ⏳)
-v0.4.0 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% ⏳ 待开始 (0011/0012/0013 + 0019 已排入)
+v0.4.0 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% ⏳ 待开始 (0011/0019 remaining)
 v0.5.0 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% ⏳ 待开始
 v1.0.0 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% ⏳ 待开始
 ```
@@ -477,3 +477,10 @@ MIT License
 **维护者**: AC Grid Team
 
 > 💡 **提示**: 本路线图会定期更新。建议定期查看以了解最新进展。
+| 0036 | [Demo and E2E quality remediation](rfc/0036-demo-quality-remediation.md) | Draft |
+| 0037 | [Dev port assignment and Spark registration](rfc/0037-dev-port-assignment.md) | Approved |
+| 0038 | [RFC-0005 虚拟滚动验证计划](rfc/0038-virtual-scrolling-verification.md) | Approved |
+| 0039 | [RFC-0036 P1 demo defects (Umbrella)](rfc/0039-demo-defects-p1.md) | Approved |
+| 0040 | [Selection column order (child of 0039)](rfc/0040-selection-column-order.md) | Approved |
+| 0041 | [Pinned column theme and horizontal scroll demo (child of 0039)](rfc/0041-pinned-column-theme.md) | Approved |
+| 0042 | [Empty and loading overlay theme (child of 0039)](rfc/0042-overlay-theme.md) | Approved |

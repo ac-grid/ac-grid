@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = Number(process.env.PLAYWRIGHT_TEST_PORT ?? 5173);
+const PORT = Number(process.env.PLAYWRIGHT_TEST_PORT ?? 5201);
 const E2E_QUERY = "e2e=virtual-scroll";
 
 export default defineConfig({
