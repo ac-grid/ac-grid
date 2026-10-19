@@ -187,8 +187,26 @@ export class Grid extends LightComponent {
     private rowDragCleanup: Map<string, () => void> = new Map();
 
     // Drag-drop state tracking for visual feedback
-    @state private draggingColumnId: string | null = null;
-    @state private dragOverColumnId: string | null = null;
+    // Plain fields, not @state: a rerender at dragstart replaces the header node and aborts the native drag.
+    // The drag classes are toggled on the DOM by markColumnDrag(); render() still reads these fields.
+    private draggingColumnId: string | null = null;
+    private dragOverColumnId: string | null = null;
+
+    private markColumnDrag(): void {
+        const root = this.shadowRoot ?? this;
+        root.querySelectorAll<HTMLElement>("[data-column-id]").forEach((el) => {
+            const id = el.dataset.columnId;
+            const dragging = Boolean(id) && id === this.draggingColumnId;
+            const over = Boolean(id) && id === this.dragOverColumnId;
+            if (el.classList.contains("grid-header-cell")) {
+                el.classList.toggle("dragging", dragging);
+                el.classList.toggle("drag-over", over);
+            } else if (el.classList.contains("grid-cell")) {
+                el.classList.toggle("column-dragging", dragging);
+                el.classList.toggle("column-drag-over", over);
+            }
+        });
+    }
     @state private draggingRowId: string | null = null;
     @state private dragOverRowId: string | null = null;
 
@@ -349,11 +367,16 @@ export class Grid extends LightComponent {
         if (targetRowIndex < 0 || !columns.some((column) => column.id === columnId)) return;
         this.focusedCell = { rowId, columnId };
         this.scrollToRow(targetRowIndex);
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-            const cell = this.findCellElement(rowId, columnId);
-            if (cell && !cell.hasAttribute("tabindex")) cell.tabIndex = -1;
-            cell?.focus();
-        }));
+        // Focus an already-rendered target now: the rerender scheduled by the state change captures the active
+        // element, and WSX would otherwise restore focus to the previous cell and undo the move.
+        this.focusCellElement(rowId, columnId);
+        requestAnimationFrame(() => requestAnimationFrame(() => this.focusCellElement(rowId, columnId)));
+    }
+
+    private focusCellElement(rowId: string, columnId: string): void {
+        const cell = this.findCellElement(rowId, columnId);
+        if (cell && !cell.hasAttribute("tabindex")) cell.tabIndex = -1;
+        cell?.focus();
     }
 
     public getFocusedCell(): { rowId: string; columnId: string } | null {
@@ -511,7 +534,8 @@ export class Grid extends LightComponent {
     }
     @state private _clipboardConfigIsSet = false;
     @state private _clipboardConfig: GridClipboardConfig = {};
-    @state private activeClipboardCell: { rowId: string; columnId: string } | null = null;
+    // Plain field: a rerender on mousedown would drop the focus the copy/paste events depend on.
+    private activeClipboardCell: { rowId: string; columnId: string } | null = null;
 
     get rangeSelectionConfig(): GridRangeSelectionConfig | undefined {
         return this._rangeSelectionConfigIsSet ? this._rangeSelectionConfig : undefined;
@@ -602,13 +626,10 @@ export class Grid extends LightComponent {
         })));
     }
 
-    private handleClipboardCopy = (event: ClipboardEvent) => {
-        if (!this.isClipboardEnabled()) return;
-        const text = this.createClipboardText();
-        event.preventDefault();
+    private writeClipboard(text: string, event?: ClipboardEvent) {
         if (this._clipboardConfig.suppressClipboardApi) {
             this._clipboardConfig.copyToClipboard?.(text);
-        } else if (event.clipboardData) {
+        } else if (event?.clipboardData) {
             event.clipboardData.setData("text/plain", text);
         } else if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
             void navigator.clipboard.writeText(text);
@@ -622,6 +643,22 @@ export class Grid extends LightComponent {
             document.execCommand?.("copy");
             textarea.remove();
         }
+    }
+
+    private handleClipboardCopy = (event: ClipboardEvent) => {
+        if (!this.isClipboardEnabled()) return;
+        event.preventDefault();
+        this.writeClipboard(this.createClipboardText(), event);
+    };
+
+    // Browsers fire no copy event on a focused cell while nothing is text-selected, so handle the shortcut here.
+    private handleClipboardKeyDown = (event: KeyboardEvent) => {
+        if (!this.isClipboardEnabled() || !this.activeClipboardCell) return;
+        if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== "c") return;
+        if (window.getSelection()?.toString()) return;
+        if (event.target instanceof Element && event.target.closest("input,textarea,[contenteditable=true]")) return;
+        event.preventDefault();
+        this.writeClipboard(this.createClipboardText());
     };
 
     private handleClipboardPaste = async (event: ClipboardEvent) => {
@@ -969,10 +1006,18 @@ export class Grid extends LightComponent {
             this.updateTable();
         }
         this.updateI18nDOM();
+
+        this.addEventListener("copy", this.handleClipboardCopy);
+        this.addEventListener("paste", this.handleClipboardPaste);
+        this.addEventListener("keydown", this.handleClipboardKeyDown);
     }
 
     onDisconnected() {
         super.onDisconnected?.();
+
+        this.removeEventListener("copy", this.handleClipboardCopy);
+        this.removeEventListener("paste", this.handleClipboardPaste);
+        this.removeEventListener("keydown", this.handleClipboardKeyDown);
 
         // Cleanup header drag-drop listeners
         this.headerDragCleanup.forEach((cleanup) => cleanup());
@@ -1866,9 +1911,11 @@ export class Grid extends LightComponent {
                                                         getInitialData: () => ({ columnId }),
                                                         onDragStart: () => {
                                                             this.draggingColumnId = columnId;
+                                                            this.markColumnDrag();
                                                         },
                                                         onDragEnd: () => {
                                                             this.draggingColumnId = null;
+                                                            this.markColumnDrag();
                                                         },
                                                     });
 
@@ -1879,11 +1926,13 @@ export class Grid extends LightComponent {
                                                         onDragEnter: () => {
                                                             if (this.draggingColumnId && this.draggingColumnId !== columnId) {
                                                                 this.dragOverColumnId = columnId;
+                                                                this.markColumnDrag();
                                                             }
                                                         },
                                                         onDragLeave: () => {
                                                             if (this.dragOverColumnId === columnId) {
                                                                 this.dragOverColumnId = null;
+                                                                this.markColumnDrag();
                                                             }
                                                         },
                                                         onDrop: ({ source }) => {
@@ -1891,6 +1940,7 @@ export class Grid extends LightComponent {
                                                             const overId = columnId;
                                                             this.dragOverColumnId = null;
                                                             this.draggingColumnId = null;
+                                                            this.markColumnDrag();
                                                             if (activeId && activeId !== overId) {
                                                                 this.handleColumnDragEnd(activeId, overId);
                                                             }
@@ -2252,6 +2302,8 @@ export class Grid extends LightComponent {
                                     return (
                                         <div
                                             key={cell.id}
+                                            // WSX restores focus after a rerender only for elements carrying data-wsx-key.
+                                            data-wsx-key={cell.id}
                                             className={`grid-cell ${isColumnDragging ? "column-dragging" : ""} ${isColumnDragOver ? "column-drag-over" : ""}`}
                                             role="gridcell"
                                             aria-rowindex={(rowIndexes.get(row.id) ?? rowIndex) + headerGroups.length + 1}
@@ -2265,17 +2317,26 @@ export class Grid extends LightComponent {
                                             style={{ ...pinnedStyle }}
                                             onMouseDown={(e: MouseEvent) => {
                                                 if (e.button !== 0 || e.target instanceof Element && (e.target.closest("input,textarea,button,[contenteditable=true]") && (e.target !== e.currentTarget))) return;
+                                                if (this.isClipboardEnabled()) {
+                                                    this.activeClipboardCell = { rowId: row.id, columnId: column.id };
+                                                    (e.currentTarget as HTMLElement).focus({ preventScroll: true });
+                                                }
                                                 if (rangeRowIndex >= 0) this.startCellRange(rangeRowIndex, column.id, e);
                                                 if (this._rangeSelectionConfigIsSet && this._rangeSelectionConfig.enabled !== false) e.preventDefault();
                                             }}
                                             onMouseEnter={() => {
                                                 if (rangeRowIndex >= 0) this.extendCellRange(rangeRowIndex, column.id);
                                             }}
-                                            tabIndex={this.focusedCell
-                                                ? (this.focusedCell.rowId === row.id && this.focusedCell.columnId === column.id ? 0 : -1)
-                                                : ((rowIndexes.get(row.id) ?? rowIndex) === 0 && this.table.getVisibleLeafColumns()[0]?.id === column.id ? 0 : -1)}
+                                            tabIndex={this._enableKeyboardNavigation
+                                                ? (this.focusedCell
+                                                    ? (this.focusedCell.rowId === row.id && this.focusedCell.columnId === column.id ? 0 : -1)
+                                                    : ((rowIndexes.get(row.id) ?? rowIndex) === 0 && this.table.getVisibleLeafColumns()[0]?.id === column.id ? 0 : -1))
+                                                : (cellEditable ? 0 : this.isClipboardEnabled() ? -1 : undefined)}
                                             onFocus={() => {
-                                                if (this._enableKeyboardNavigation) this.focusedCell = { rowId: row.id, columnId: column.id };
+                                                if (!this._enableKeyboardNavigation) return;
+                                                // Restoring focus after a rerender fires focus again; only a real change may rerender.
+                                                if (this.focusedCell?.rowId === row.id && this.focusedCell?.columnId === column.id) return;
+                                                this.focusedCell = { rowId: row.id, columnId: column.id };
                                             }}
                                             onDblClick={
                                                 supportsDoubleClickTrigger(editTrigger)

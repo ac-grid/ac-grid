@@ -129,6 +129,7 @@
 | [0033](./0033-e2e-test-infrastructure.md) | E2E 测试基础设施 | 📝 草稿 | 0.1.0 | Albert Li | 2026-10-11 |
 | [0034](./0034-rfc-demo-acceptance-matrix.md) | 已完成 RFC 演示验收矩阵 | ✔️ 已完成 | 0.4.0 | Albert Li | 2026-10-11 |
 | [0035](./0035-rfc-0010-e2e-coverage.md) | RFC-0010 E2E 覆盖 | ✔️ 已完成 | 0.3.0 | Albert Li | 2026-10-08 |
+| [0036](./0036-demo-quality-remediation.md) | Demo 与 E2E 质量整改 | 📝 草稿 | 0.1.0 | Albert Li | 2026-10-18 |
 
 ## 相关资源
 

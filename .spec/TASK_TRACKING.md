@@ -107,6 +107,17 @@
 - [ ] Track RFC 0033: E2E test infrastructure (RFC 0033)
 - [ ] Track RFC 0034: Completed RFC demo acceptance matrix (RFC 0034)
 - [ ] Track RFC 0035: RFC-0010 E2E coverage (RFC 0035)
+- [ ] Implement RFC 0036: Demo and E2E quality remediation (RFC 0036)
+- [ ] Implement RFC 0037: Dev port assignment and Spark registration (RFC 0037)
+- [ ] Implement RFC 0038: RFC-0005 虚拟滚动验证计划 (RFC 0038)
+- [ ] Implement RFC 0039: RFC-0036 P1 demo defects (Umbrella) (RFC 0039)
+  - [ ] Implement RFC 0040: Selection column order (child of 0039) (RFC 0040)
+  - [ ] Implement RFC 0041: Pinned column theme and horizontal scroll demo (child of 0039) (RFC 0041)
+  - [ ] Implement RFC 0042: Empty and loading overlay theme (child of 0039) (RFC 0042)
+
+
+
+
 
 ## Done
 - [x] Track RFC 0002: Sorting (RFC 0002)

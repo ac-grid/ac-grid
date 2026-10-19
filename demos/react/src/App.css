@@ -165,7 +165,9 @@
 }
 
 .demo-grouping-panel,
-.demo-formula-panel {
+.demo-formula-panel,
+.demo-theme-panel,
+.demo-clipboard-panel {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -287,4 +289,23 @@
     display: flex;
     justify-content: space-between;
     gap: 0.5rem;
+}
+
+.demo-formula-sheet {
+    border-collapse: collapse;
+    margin-bottom: 0.75rem;
+}
+.demo-formula-sheet th,
+.demo-formula-sheet td {
+    border: 1px solid var(--ac-grid-border, #e4e7ec);
+    padding: 0.25rem 0.5rem;
+}
+.demo-formula-sheet input {
+    width: 11rem;
+    margin-right: 0.5rem;
+}
+.demo-formula-sheet output {
+    display: inline-block;
+    min-width: 4rem;
+    font-weight: 600;
 }

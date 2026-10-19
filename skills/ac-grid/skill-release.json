@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "skillId": "ac-grid",
+  "channel": "development",
+  "version": "0.1.0-dev.0",
+  "source": {
+    "repository": "https://github.com/ac-grid/ac-grid"
+  },
+  "updateManifestUrl": "https://ac-grid.github.io/ac-grid/skill-updates/ac-grid/stable.json"
+}
