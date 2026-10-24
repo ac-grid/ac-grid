@@ -18,6 +18,8 @@
         "build:wsx": "pnpm --filter @ac-grid/demo-wsx build",
         "lint": "turbo run lint",
         "test": "turbo run test",
+        "check:public-exports": "node scripts/check-public-exports.mjs",
+        "check:layer-deps": "node scripts/check-layer-deps.mjs",
         "test:e2e": "pnpm --filter @ac-grid/demo-react test:e2e",
         "clean": "turbo run clean && rm -rf node_modules",
         "clean:vite-config-cache": "find . -name 'vite.config.ts.timestamp-*.mjs' -not -path './node_modules/*' -delete",

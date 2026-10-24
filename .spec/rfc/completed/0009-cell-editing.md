@@ -168,7 +168,7 @@ pnpm --filter @ac-grid/core test run
 ## 开放问题
 
 - [x] **问题 1**: 数据更新由宿主通过 `onEditSave` 回调处理（Grid 不直接 mutate data）
-- [ ] **问题 2**: 完整键盘导航与编辑联动 — 留待 [0012](../0012-keyboard-navigation.md)
+- [x] **问题 2**: 完整键盘导航与编辑联动 — 已由 [RFC-0012](./0012-keyboard-navigation.md) 完成
 
 ## 参考资料
 

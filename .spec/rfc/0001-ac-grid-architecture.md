@@ -98,7 +98,7 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
 | 范围选择                 | ✅             | ✅ 已实现    | [0007](./completed/0007-row-selection.md)             | v0.2.0   |
 | 行拖拽重排序             | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
 | 单元格编辑               | ✅             | ✅ 已实现    | [0009](./completed/0009-cell-editing.md)    | v0.3.0   |
-| 键盘导航                 | ✅             | 📝 规划中    | [0012](./0012-keyboard-navigation.md)       | v0.4.0   |
+| 键盘导航                 | ✅             | ✔️ 已完成    | [0012](./completed/0012-keyboard-navigation.md) | v0.4.0   |
 | **高级功能**             |
 | 行分组                   | ✅             | ✅ 已实现    | [0010](./completed/0010-grouping-aggregation.md)      | v0.3.0   |
 | 数据聚合                 | ✅             | ✅ 已实现    | [0010](./completed/0010-grouping-aggregation.md)      | v0.3.0   |
@@ -733,13 +733,13 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 | 功能     | RFC                                       | 状态      | 优先级 |
 | -------- | ----------------------------------------- | --------- | ------ |
 | 主题系统 | [RFC-0011](./completed/0011-theme-system.md)        | 📝 待编写 | P0     |
-| 键盘导航 | [RFC-0012](./0012-keyboard-navigation.md) | 📝 待编写 | P1     |
+| 键盘导航 | [RFC-0012](./completed/0012-keyboard-navigation.md) | ✔️ 已完成 | P1     |
 | 可访问性 | [RFC-0013](completed/0013-accessibility.md)       | ✔️ 已完成 | P0     |
 
 **交付物**：
 
 - [ ] 主题系统（Light/Dark/自定义）
-- [ ] 完整的键盘导航
+- [x] 完整的键盘导航（[RFC-0012 已完成](./completed/0012-keyboard-navigation.md)）
 - [ ] ARIA 属性和可访问性支持
 - [ ] 主题定制文档
 - [ ] 可访问性测试报告

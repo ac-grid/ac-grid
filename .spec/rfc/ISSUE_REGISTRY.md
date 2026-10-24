@@ -1,6 +1,6 @@
 # RFC → Multica Issue Registry
 
-> **Generated**: 2026-06-29 · **Synced**: 2026-10-04 (Multica pipeline — ACG-25 done via PR #21)
+> **Generated**: 2026-06-29 · **Synced**: 2026-10-23 (RFC-0012 completion follow-up)
 > **Parent**: [ACG-2](mention://issue/b7f108c7-583f-4986-9f38-a30cec79d5a0)
 
 Each RFC maps to one implementation issue. Promote `backlog` → `todo` when starting work.
@@ -18,7 +18,7 @@ Each RFC maps to one implementation issue. Promote `backlog` → `todo` when sta
 | 0009 | Cell editing | [ACG-12](mention://issue/14e4823f-7cda-4988-882f-ae6f9cdab6a2) | done | 4 |
 | 0010 | Grouping and aggregation | [ACG-21](mention://issue/6d6679b3-e34d-41fa-a479-788382658423) | done | 4 |
 | 0011 | Theme system advanced | [ACG-14](mention://issue/2d130de1-2c23-44f5-a391-d827eea5702a) | done | 5 |
-| 0012 | Keyboard navigation | [ACG-15](mention://issue/e1382f18-91a4-4a06-a6ed-6abe2274af22) | backlog | 5 |
+| 0012 | Keyboard navigation | [ACG-15](mention://issue/e1382f18-91a4-4a06-a6ed-6abe2274af22) | done | 5 |
 | 0013 | Accessibility | [ACG-16](mention://issue/59fd0c81-5b57-4c6d-89fb-b04876d18f59) | backlog | 5 |
 | 0014 | Data export | [ACG-17](mention://issue/0f7f310a-941e-48b3-978d-b53829c10ae1) | backlog | 6 |
 | 0015 | Internationalization | [ACG-18](mention://issue/d5a2e0ae-8402-400d-98f4-c19b7b0f34bc) | done | 6 |

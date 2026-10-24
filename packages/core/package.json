@@ -9,7 +9,7 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./styles": "./dist/styles.css"
+    "./styles": "./dist/index.css"
   },
   "files": [
     "dist"
