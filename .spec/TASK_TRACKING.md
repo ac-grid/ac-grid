@@ -86,7 +86,7 @@
 - [ ] Track RFC 0001: AC Grid architecture (RFC 0001)
 - [x] Track RFC 0010: Grouping and aggregation (RFC 0010)
 - [x] Track RFC 0011: Theme system (RFC 0011)
-- [x] Track RFC 0012: Keyboard navigation (RFC 0012)
+- [x] Track RFC 0012: Keyboard navigation ([RFC-0012 已完成](./rfc/completed/0012-keyboard-navigation.md))
 - [x] Track RFC 0013: Accessibility (RFC 0013)
 - [ ] Track RFC 0014: Data export (RFC 0014)
 - [x] Track RFC 0015: Internationalization (RFC 0015)
