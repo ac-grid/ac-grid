@@ -4,6 +4,7 @@ import {
   AGGREGATION_FN_SUM,
   type ColumnDef,
   type CreateGridOptions,
+  type ExportOptions,
   zhCN,
 } from "@ac-grid/core";
 
@@ -38,6 +39,7 @@ export type RfcValidationId = (typeof RFC_VALIDATION_ORDER)[number];
 export const DEFAULT_RFC_ID: RfcValidationId = "0003";
 
 export type GridHostElement = HTMLElement & {
+  exportToCSV: (options?: ExportOptions) => void;
   setGlobalFilter?: (value: string) => void;
   clearFilters?: () => void;
   editingConfig?: unknown;

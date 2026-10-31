@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import "@ac-grid/theme-default";
 import { themeManager } from "@ac-grid/theme-base";

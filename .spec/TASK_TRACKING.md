@@ -127,7 +127,7 @@
 
 - [x] Track RFC 0011: Theme system (RFC 0011)
 
-- [x] Track RFC 0012: Keyboard navigation (RFC 0012)
+- [x] Track RFC 0012: Keyboard navigation ([RFC-0012 已完成](./rfc/completed/0012-keyboard-navigation.md))
 
 - [x] Track RFC 0013: Accessibility (RFC 0013)
 
@@ -135,5 +135,3 @@
 
 - [x] Track RFC 0022: Range selection (RFC 0022)
 - [x] Track RFC 0014: Data export (RFC 0014) ✅ Completed
-
-

@@ -17,14 +17,14 @@ export function escapeCsvValue(value: any): string {
   if (value === null || value === undefined) {
     return '';
   }
-  
+
   const str = String(value);
-  
+
   // If contains comma, quote, or newline, wrap in quotes and escape quotes
   if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
     return `"${str.replace(/"/g, '""')}"`;
   }
-  
+
   return str;
 }
 
@@ -37,14 +37,14 @@ export function rowsToCsv(
   options: ExportOptions = {}
 ): string {
   const { includeHeaders = true, formatter } = options;
-  
+
   const lines: string[] = [];
-  
+
   // Header row
   if (includeHeaders) {
     lines.push(columns.map(col => escapeCsvValue(col.header)).join(','));
   }
-  
+
   // Data rows
   for (const row of rows) {
     const values = columns.map(col => {
@@ -54,7 +54,7 @@ export function rowsToCsv(
     });
     lines.push(values.join(','));
   }
-  
+
   return lines.join('\n');
 }
 
@@ -86,7 +86,7 @@ export function exportToCsv(
     includeHeaders = true,
     formatter,
   } = options;
-  
+
   const csv = rowsToCsv(data, columns, { includeHeaders, formatter });
   downloadFile(csv, fileName, 'text/csv;charset=utf-8;');
 }
