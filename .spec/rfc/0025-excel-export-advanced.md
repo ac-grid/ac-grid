@@ -42,4 +42,4 @@ gridApi.exportDataAsExcel(params?: ExcelExportParams): void;
 ## 参考资料
 
 - [AG Grid Excel Export](https://www.ag-grid.com/javascript-data-grid/excel-export/)
-- [PARITY_MATRIX](./PARITY_MATRIX.md)
+- [PARITY_MATRIX](../PARITY_MATRIX.md)

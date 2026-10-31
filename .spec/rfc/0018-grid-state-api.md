@@ -60,4 +60,4 @@ interface GridApi {
 ## 参考资料
 
 - [AG Grid Column State](https://www.ag-grid.com/javascript-data-grid/column-state/)
-- [PARITY_MATRIX](./PARITY_MATRIX.md)
+- [PARITY_MATRIX](../PARITY_MATRIX.md)

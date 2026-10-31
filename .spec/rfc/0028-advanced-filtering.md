@@ -39,4 +39,4 @@ interface ColumnDef {
 ## 参考资料
 
 - [AG Grid Set Filter](https://www.ag-grid.com/javascript-data-grid/filter-set/)
-- [PARITY_MATRIX](./PARITY_MATRIX.md)
+- [PARITY_MATRIX](../PARITY_MATRIX.md)

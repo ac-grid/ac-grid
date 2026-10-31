@@ -1,7 +1,7 @@
 # AC Grid – Task Tracking
 
 > **Purpose**: Single source of truth for current sprint and site/docs work.  
-> **Sync with**: [ROADMAP.md](./ROADMAP.md), [PARITY_MATRIX.md](./rfc/PARITY_MATRIX.md).  
+> **Sync with**: [ROADMAP.md](./ROADMAP.md), [PARITY_MATRIX.md](./PARITY_MATRIX.md).  
 > **Updated**: 2026-08-16
 
 ## How to use (including AI / subagent)
@@ -35,13 +35,13 @@
 
 | Deliverable                           | Path                          | Status          |
 | ------------------------------------- | ----------------------------- | --------------- |
-| AG Grid ↔ AC Grid 对标矩阵            | `.spec/rfc/PARITY_MATRIX.md`  | Done            |
+| AG Grid ↔ AC Grid 对标矩阵            | `.spec/PARITY_MATRIX.md`      | Done            |
 | Community 缺口 RFC 0017–0019          | `.spec/rfc/0017`–`0019`       | Done (draft)    |
 | Enterprise 对标 RFC 0020–0029         | `.spec/rfc/0020`–`0029`       | Done (draft)    |
 | Stretch RFC 0030–0032                 | `.spec/rfc/0030`–`0032`       | Done (draft)    |
-| RFC 索引更新                          | `.spec/rfc/README.md`         | Done            |
+| RFC 索引更新                          | `.spec/ROADMAP.md`            | Done            |
 | 路线图 Phase 2/3                      | `.spec/ROADMAP.md`            | Done            |
-| **RFC → Issue 映射（32 个子 issue）** | `.spec/rfc/ISSUE_REGISTRY.md` | Done 2026-06-29 |
+| **RFC → Issue 映射（32 个子 issue）** | `.spec/ISSUE_REGISTRY.md`     | Done 2026-06-29 |
 
 ---
 

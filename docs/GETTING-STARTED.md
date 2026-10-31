@@ -14,9 +14,7 @@
 
 ```
 docs/rfc/
-├── README.md                          # RFC 索引和管理规则
 ├── GETTING-STARTED.md                 # 本文件：快速开始指南
-├── RFC-TEMPLATE.md                    # RFC 模板
 ├── 0001-ac-grid-architecture.md       # 总体架构 RFC
 └── 0002-sorting-feature.md            # 排序功能 RFC（示例）
 ```
@@ -25,7 +23,7 @@ docs/rfc/
 
 ### 1. 查看 RFC 索引
 
-打开 [`README.md`](../.spec/rfc/README.md) 查看所有已规划的 RFC 和它们的状态。
+打开 [`README.md`](../.spec/ROADMAP.md) 查看所有已规划的 RFC 和它们的状态。
 
 ### 2. 选择要实施的功能
 
@@ -239,7 +237,7 @@ git push origin feature/sorting
 
 ## 资源链接
 
-- [RFC 索引](../.spec/rfc/README.md)
+- [RFC 索引](../.spec/ROADMAP.md)
 - [总体架构](../.spec/rfc/0001-ac-grid-architecture.md)
 - [排序功能示例](../.spec/rfc/0002-sorting-feature.md)
 - [项目主 README](../README.md)

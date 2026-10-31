@@ -245,5 +245,5 @@ function cloneTheme(
 ## 参考资料
 
 - [RFC-0016: 主题系统架构](../0016-theme-system.md)
-- [PARITY_MATRIX](../PARITY_MATRIX.md)
+- [PARITY_MATRIX](../../PARITY_MATRIX.md)
 - [CSS Transitions (MDN)](https://developer.mozilla.org/en-US/docs/Web/CSS/transition)

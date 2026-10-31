@@ -34,4 +34,4 @@ interface GridOptions {
 ## 参考资料
 
 - [AG Grid SSRM](https://www.ag-grid.com/javascript-data-grid/server-side-model/)
-- [PARITY_MATRIX](./PARITY_MATRIX.md)
+- [PARITY_MATRIX](../PARITY_MATRIX.md)

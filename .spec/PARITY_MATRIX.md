@@ -30,11 +30,11 @@
 
 | 功能                 | AG Grid   | AC Grid | RFC                                    | 版本   |
 | -------------------- | --------- | ------- | -------------------------------------- | ------ |
-| 列/行数据模型        | Community | ✅      | [0001](completed/0001-ac-grid-architecture.md) | v0.0.1 |
-| Web Components 核心  | —         | ✅      | [0001](completed/0001-ac-grid-architecture.md) | v0.0.1 |
-| 自定义单元格渲染     | Community | ✅      | [0001](completed/0001-ac-grid-architecture.md) | v0.0.1 |
-| 列/行拖拽重排        | Community | ✅      | [0001](completed/0001-ac-grid-architecture.md) | v0.0.1 |
-| 主题系统（CSS 变量） | Community | ✅      | [0016](./0016-theme-system.md)         | v0.0.2 |
+| 列/行数据模型        | Community | ✅      | [0001](./rfc/completed/0001-ac-grid-architecture.md) | v0.0.1 |
+| Web Components 核心  | —         | ✅      | [0001](./rfc/completed/0001-ac-grid-architecture.md) | v0.0.1 |
+| 自定义单元格渲染     | Community | ✅      | [0001](./rfc/completed/0001-ac-grid-architecture.md) | v0.0.1 |
+| 列/行拖拽重排        | Community | ✅      | [0001](./rfc/completed/0001-ac-grid-architecture.md) | v0.0.1 |
+| 主题系统（CSS 变量） | Community | ✅      | [0016](./rfc/0016-theme-system.md)         | v0.0.2 |
 
 ---
 
@@ -44,21 +44,21 @@
 
 | 功能          | AG Grid   | AC Grid | RFC                                           | 版本   |
 | ------------- | --------- | ------- | --------------------------------------------- | ------ |
-| 单列/多列排序 | Community | ✅      | [0002](./completed/0002-sorting-feature.md)   | v0.1.0 |
-| 列过滤        | Community | ✅      | [0003](./completed/0003-filtering-feature.md) | v0.1.0 |
-| 全局快速过滤  | Community | ✅      | [0003](./completed/0003-filtering-feature.md) | v0.1.0 |
-| 列调整大小    | Community | ✅      | [0004](./completed/0004-column-resizing.md)   | v0.1.0 |
-| 自动列宽      | Community | ✅      | [0004](./completed/0004-column-resizing.md)   | v0.1.0 |
+| 单列/多列排序 | Community | ✅      | [0002](./rfc/completed/0002-sorting-feature.md)   | v0.1.0 |
+| 列过滤        | Community | ✅      | [0003](./rfc/completed/0003-filtering-feature.md) | v0.1.0 |
+| 全局快速过滤  | Community | ✅      | [0003](./rfc/completed/0003-filtering-feature.md) | v0.1.0 |
+| 列调整大小    | Community | ✅      | [0004](./rfc/completed/0004-column-resizing.md)   | v0.1.0 |
+| 自动列宽      | Community | ✅      | [0004](./rfc/completed/0004-column-resizing.md)   | v0.1.0 |
 
 ### 布局与性能
 
 | 功能             | AG Grid     | AC Grid | RFC                                           | 版本   |
 | ---------------- | ----------- | ------- | --------------------------------------------- | ------ |
-| 行虚拟滚动       | Community   | ✅      | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0 |
-| 列虚拟滚动       | Community   | 📝      | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0 |
-| 100K+ 行性能     | Community   | 📝      | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0 |
-| 分页（客户端）   | Community   | ✅      | [0006](./completed/0006-pagination.md)        | v0.2.0 |
-| 列固定 (Pinning) | Enterprise* | ✅      | [0008](./completed/0008-column-pinning.md)    | v0.3.0 |
+| 行虚拟滚动       | Community   | ✅      | [0005](./rfc/completed/0005-virtual-scrolling.md) | v0.2.0 |
+| 列虚拟滚动       | Community   | 📝      | [0005](./rfc/completed/0005-virtual-scrolling.md) | v0.2.0 |
+| 100K+ 行性能     | Community   | 📝      | [0005](./rfc/completed/0005-virtual-scrolling.md) | v0.2.0 |
+| 分页（客户端）   | Community   | ✅      | [0006](./rfc/completed/0006-pagination.md)        | v0.2.0 |
+| 列固定 (Pinning) | Enterprise* | ✅      | [0008](./rfc/completed/0008-column-pinning.md)    | v0.3.0 |
 
 > \* AG Grid 文档将 Pinning 列在 Enterprise；Community 用户常需此能力，AC Grid 纳入 v0.3.0 Community 路线图。
 
@@ -66,17 +66,17 @@
 
 | 功能                | AG Grid   | AC Grid | RFC                                       | 版本   |
 | ------------------- | --------- | ------- | ----------------------------------------- | ------ |
-| 行选择（单选/多选） | Community | ✅      | [0007](./completed/0007-row-selection.md) | v0.2.0 |
-| 单元格编辑          | Community | ✅      | [0009](./completed/0009-cell-editing.md)  | v0.3.0 |
-| 键盘导航            | Community | ✅      | [0012](./completed/0012-keyboard-navigation.md) | v0.4.0 |
-| 可访问性 (ARIA)     | Community | ✅      | [0013](completed/0013-accessibility.md)           | v0.4.0 |
+| 行选择（单选/多选） | Community | ✅      | [0007](./rfc/completed/0007-row-selection.md) | v0.2.0 |
+| 单元格编辑          | Community | ✅      | [0009](./rfc/completed/0009-cell-editing.md)  | v0.3.0 |
+| 键盘导航            | Community | ✅      | [0012](./rfc/completed/0012-keyboard-navigation.md) | v0.4.0 |
+| 可访问性 (ARIA)     | Community | ✅      | [0013](./rfc/completed/0013-accessibility.md)           | v0.4.0 |
 
 ### 高级（Community 边界）
 
 | 功能     | AG Grid    | AC Grid | RFC                                    | 版本   |
 | -------- | ---------- | ------- | -------------------------------------- | ------ |
-| 行分组   | Enterprise | ✅      | [0010](./completed/0010-grouping-aggregation.md) | v0.3.0 |
-| 数据聚合 | Enterprise | ✅      | [0010](./completed/0010-grouping-aggregation.md) | v0.3.0 |
+| 行分组   | Enterprise | ✅      | [0010](./rfc/completed/0010-grouping-aggregation.md) | v0.3.0 |
+| 数据聚合 | Enterprise | ✅      | [0010](./rfc/completed/0010-grouping-aggregation.md) | v0.3.0 |
 
 > 0010 行分组与数据聚合已在 v0.3.0 完成实施并通过单元测试与 E2E 验证（PR #18、ACG-121）。
 
@@ -84,17 +84,17 @@
 
 | 功能             | AG Grid   | AC Grid | RFC                                      | 版本   |
 | ---------------- | --------- | ------- | ---------------------------------------- | ------ |
-| 主题定制（高级） | Community | ✅      | [0011](./completed/0011-theme-system.md) | v0.4.0 |
-| CSV 导出         | Community | ✅      | [0014](completed/0014-data-export.md)            | v0.5.0 |
-| 国际化 (i18n)    | Community | ✅      | [0015](./completed/0015-internationalization.md) | v0.5.0 |
+| 主题定制（高级） | Community | ✅      | [0011](./rfc/completed/0011-theme-system.md) | v0.4.0 |
+| CSV 导出         | Community | ✅      | [0014](./rfc/completed/0014-data-export.md)            | v0.5.0 |
+| 国际化 (i18n)    | Community | ✅      | [0015](./rfc/completed/0015-internationalization.md) | v0.5.0 |
 
 ### Community 缺口（本轮新增 RFC）
 
 | 功能                                | AG Grid   | AC Grid | RFC                                           | 版本   |
 | ----------------------------------- | --------- | ------- | --------------------------------------------- | ------ |
-| 框架绑定 (Vue/Angular/Svelte)       | Community | 📝      | [0017](./0017-framework-bindings.md)          | v0.5.0 |
-| Grid 状态 API / 持久化              | Community | 📝      | [0018](./0018-grid-state-api.md)              | v0.5.0 |
-| 自定义组件（Header/Filter/Overlay） | Community | ✔️      | [0019](./completed/0019-custom-components.md) | v0.4.0 |
+| 框架绑定 (Vue/Angular/Svelte)       | Community | 📝      | [0017](./rfc/0017-framework-bindings.md)          | v0.5.0 |
+| Grid 状态 API / 持久化              | Community | 📝      | [0018](./rfc/0018-grid-state-api.md)              | v0.5.0 |
+| 自定义组件（Header/Filter/Overlay） | Community | ✔️      | [0019](./rfc/completed/0019-custom-components.md) | v0.4.0 |
 
 ---
 
@@ -102,16 +102,16 @@
 
 | 功能                     | AG Grid    | AC Grid | RFC                                               | 版本   |
 | ------------------------ | ---------- | ------- | ------------------------------------------------- | ------ |
-| 树形数据                 | Enterprise | 📝      | [0020](./0020-tree-data.md)                       | v1.1.0 |
-| 主从表格 (Master/Detail) | Enterprise | 📝      | [0021](./0021-master-detail.md)                   | v1.1.0 |
-| 范围选择                 | Enterprise | ✅      | [0022](./completed/0022-range-selection.md)       | v1.1.0 |
-| 剪贴板操作               | Enterprise | ✅      | [0023](./completed/0023-clipboard-operations.md) | v1.1.0 |
-| 透视模式 (Pivot)         | Enterprise | 📝      | [0024](./0024-pivot-mode.md)                      | v1.2.0 |
-| Excel 导出（样式/公式）  | Enterprise | 📝      | [0025](./0025-excel-export-advanced.md)           | v1.2.0 |
-| 右键/列菜单              | Enterprise | 📝      | [0026](./0026-context-menu-column-menu.md)        | v1.1.0 |
-| 工具面板 / 状态栏        | Enterprise | 📝      | [0027](./0027-tool-panels-status-bar.md)          | v1.2.0 |
-| 高级过滤 (Set/Multi)     | Enterprise | 📝      | [0028](./0028-advanced-filtering.md)              | v1.2.0 |
-| 集成图表                 | Enterprise | 📝      | [0029](./0029-integrated-charts.md)               | v1.2.0 |
+| 树形数据                 | Enterprise | 📝      | [0020](./rfc/0020-tree-data.md)                       | v1.1.0 |
+| 主从表格 (Master/Detail) | Enterprise | 📝      | [0021](./rfc/0021-master-detail.md)                   | v1.1.0 |
+| 范围选择                 | Enterprise | ✅      | [0022](./rfc/completed/0022-range-selection.md)       | v1.1.0 |
+| 剪贴板操作               | Enterprise | ✅      | [0023](./rfc/completed/0023-clipboard-operations.md) | v1.1.0 |
+| 透视模式 (Pivot)         | Enterprise | 📝      | [0024](./rfc/0024-pivot-mode.md)                      | v1.2.0 |
+| Excel 导出（样式/公式）  | Enterprise | 📝      | [0025](./rfc/0025-excel-export-advanced.md)           | v1.2.0 |
+| 右键/列菜单              | Enterprise | 📝      | [0026](./rfc/0026-context-menu-column-menu.md)        | v1.1.0 |
+| 工具面板 / 状态栏        | Enterprise | 📝      | [0027](./rfc/0027-tool-panels-status-bar.md)          | v1.2.0 |
+| 高级过滤 (Set/Multi)     | Enterprise | 📝      | [0028](./rfc/0028-advanced-filtering.md)              | v1.2.0 |
+| 集成图表                 | Enterprise | 📝      | [0029](./rfc/0029-integrated-charts.md)               | v1.2.0 |
 
 ---
 
@@ -119,9 +119,9 @@
 
 | 功能                | AG Grid    | AC Grid | RFC                                     | 版本    |
 | ------------------- | ---------- | ------- | --------------------------------------- | ------- |
-| 单元格公式          | Enterprise | ✔️ 引擎 | [0030](./completed/0030-formulas.md)    | v2.0.0  |
-| 服务端行模型 (SSRM) | Enterprise | 🔮      | [0031](./0031-server-side-row-model.md) | v2.0.0  |
-| AI Toolkit          | Enterprise | 🔮      | [0032](./0032-ai-toolkit.md)            | Stretch |
+| 单元格公式          | Enterprise | ✔️ 引擎 | [0030](./rfc/completed/0030-formulas.md)    | v2.0.0  |
+| 服务端行模型 (SSRM) | Enterprise | 🔮      | [0031](./rfc/0031-server-side-row-model.md) | v2.0.0  |
+| AI Toolkit          | Enterprise | 🔮      | [0032](./rfc/0032-ai-toolkit.md)            | Stretch |
 
 ---
 
@@ -161,7 +161,7 @@
 
 ## 相关文档
 
-- [RFC 索引](./README.md)
+- [RFC 索引](./ROADMAP.md)
 - [项目路线图](../ROADMAP.md)
 - [任务追踪](../TASK_TRACKING.md)
-- [总体架构](completed/0001-ac-grid-architecture.md)
+- [总体架构](./rfc/completed/0001-ac-grid-architecture.md)

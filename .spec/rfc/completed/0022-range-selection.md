@@ -48,4 +48,4 @@ Mouse down/enter events track a rectangular range in an independent cell range s
 ## 参考资料
 
 - [AG Grid Range Selection](https://www.ag-grid.com/javascript-data-grid/range-selection/)
-- [PARITY_MATRIX](./PARITY_MATRIX.md)
+- [PARITY_MATRIX](../../PARITY_MATRIX.md)

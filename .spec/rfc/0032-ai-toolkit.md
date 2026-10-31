@@ -29,4 +29,4 @@
 ## 参考资料
 
 - [AG Grid AI Toolkit](https://www.ag-grid.com/javascript-data-grid/ai-toolkit/)
-- [PARITY_MATRIX](./PARITY_MATRIX.md)
+- [PARITY_MATRIX](../PARITY_MATRIX.md)

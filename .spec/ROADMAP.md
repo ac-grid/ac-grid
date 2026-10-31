@@ -3,7 +3,7 @@
 > **最后更新**: 2026-08-16  
 > **当前版本**: v0.3.0 (进行中)  
 > **下一版本**: v0.4.0（目标：v0.3.0 分组聚合完成后）  
-> **对标文档**: [PARITY_MATRIX.md](./rfc/PARITY_MATRIX.md)
+> **对标文档**: [PARITY_MATRIX.md](./PARITY_MATRIX.md)
 
 ## 📍 项目愿景
 
@@ -244,7 +244,7 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 ## 🎯 v1.1.0 - Enterprise 基础（2026年Q4）
 
-**目标**: AG Grid Enterprise 核心能力对标（见 [PARITY_MATRIX](./rfc/PARITY_MATRIX.md) Phase 2）
+**目标**: AG Grid Enterprise 核心能力对标（见 [PARITY_MATRIX](./PARITY_MATRIX.md) Phase 2）
 
 | 功能        | RFC                                                   | 状态      | 优先级 |
 | ----------- | ----------------------------------------------------- | --------- | ------ |
@@ -376,7 +376,7 @@ v1.0.0 ░░░░░░░░░░░░░░░░░░░░░░░░�
 
 ### 1. 选择一个任务
 
-查看 [RFC 索引](./rfc/README.md) 选择一个待实施的功能。
+查看本文件的 RFC 索引选择一个待实施的功能。
 
 ### 2. 编写或审查 RFC
 
@@ -400,14 +400,10 @@ v1.0.0 ░░░░░░░░░░░░░░░░░░░░░░░░�
 
 功能完成后，在本文件中更新状态。
 
-**详细指南**: 查看 [GETTING-STARTED.md](./rfc/GETTING-STARTED.md)
-
 ---
 
 ## 📚 相关资源
 
-- [RFC 索引](./rfc/README.md) - 所有 RFC 列表和状态
-- [快速开始指南](./rfc/GETTING-STARTED.md) - 如何开始开发
 - [架构文档](rfc/completed/0001-ac-grid-architecture.md) - 总体架构设计
 - [开发规范](./CLAUDE.md) - 编码规范和最佳实践
 - [项目 README](./README.md) - 项目介绍和使用指南

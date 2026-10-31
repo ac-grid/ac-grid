@@ -41,4 +41,4 @@ gridApi.createRangeChart(params: CreateRangeChartParams): ChartRef;
 ## 参考资料
 
 - [AG Grid Integrated Charts](https://www.ag-grid.com/javascript-data-grid/integrated-charts/)
-- [PARITY_MATRIX](./PARITY_MATRIX.md)
+- [PARITY_MATRIX](../PARITY_MATRIX.md)

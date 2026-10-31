@@ -19,7 +19,7 @@
 ### 快速链接
 
 - [项目路线图](../ROADMAP.md) - 了解开发计划和版本规划
-- [RFC 文档](./spec/rfc/README.md) - 查看详细的设计文档
+- [RFC 文档](../.spec/ROADMAP.md) - 查看详细的设计文档
 - [站点文档指南](../apps/site/public/docs/guide/) - 完整的用户指南
 
 ## 📖 指南详情
@@ -68,7 +68,7 @@
 
 - **数据操作**: [排序指南](../apps/site/public/docs/guide/features/sorting.md) | [过滤指南](../apps/site/public/docs/guide/features/filtering.md)
 - **样式定制**: [主题指南](../apps/site/public/docs/guide/features/theming.md)
-- **架构设计**: [RFC 文档](./rfc/README.md)
+- **架构设计**: [RFC 文档](../.spec/ROADMAP.md)
 
 ### 按类型查找
 
@@ -82,13 +82,13 @@
 
 1. 发现问题或需要改进？请提交 Issue
 2. 想要添加新指南？请参考现有指南的格式
-3. 想要更新 RFC？请查看 [RFC 管理规则](./rfc/README.md)
+3. 想要更新 RFC？请查看 [RFC 管理规则](../.spec/ROADMAP.md)
 
 ## 🔗 相关资源
 
 - [GitHub 仓库](https://github.com/systembugtj/ac-grid)
 - [项目路线图](../ROADMAP.md)
-- [RFC 索引](./rfc/README.md)
+- [RFC 索引](../.spec/ROADMAP.md)
 
 ---
 
