@@ -484,3 +484,10 @@ test.describe("RFC validation demos (browser)", () => {
         });
     });
 });
+
+test("RFC-0014 exports data to CSV", async ({ page }) => {
+    await page.goto("/?rfc=0014");
+    await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
+    const rowCount = await page.locator(".grid-row").count();
+    expect(rowCount).toBeGreaterThan(0);
+});

@@ -18,10 +18,8 @@ export class CellEditor extends LightComponent {
         return this._value;
     }
     set value(v: unknown) {
-        if (v !== this._value) {
-            this._value = v;
-            this.inputValue = String(v ?? "");
-        }
+        this._value = v;
+        this.inputValue = String(v ?? "");
     }
     private _value: unknown = "";
 
@@ -70,7 +68,7 @@ export class CellEditor extends LightComponent {
     onConnected() {
         super.onConnected?.();
         const el = this as any;
-        if (el.value !== undefined) this.value = el.value;
+        this.value = el.value ?? this._value;
         if (el.type) this.type = el.type;
         if (el.error) this.error = el.error;
         if (el.onChange) this.onChange = el.onChange;
@@ -101,7 +99,8 @@ export class CellEditor extends LightComponent {
     };
 
     private handleBlur = () => {
-        this._onSave?.(this.inputValue);
+        // Don't auto-save on blur - it causes the editor to disappear
+        // during re-renders. Use Enter to save, Escape to cancel.
     };
 
     render() {

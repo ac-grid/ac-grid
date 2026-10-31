@@ -1,0 +1,296 @@
+{
+  "criterion": "RFC-0033: each completed RFC needs >=1 independent E2E; RFC-0034 matrix binds product completion",
+  "totals": {
+    "uniqueRfcDocs": 34,
+    "registryDone": 12,
+    "registryBacklog": 20,
+    "matrixRows": 12,
+    "withE2eTest": 12,
+    "doneWithoutE2e": [],
+    "doneWithE2e": [
+      "0001",
+      "0002",
+      "0003",
+      "0004",
+      "0005",
+      "0006",
+      "0007",
+      "0008",
+      "0009",
+      "0016",
+      "0019",
+      "0030"
+    ],
+    "backlogWithoutE2e": [
+      "0010",
+      "0011",
+      "0012",
+      "0013",
+      "0014",
+      "0015",
+      "0017",
+      "0018",
+      "0020",
+      "0021",
+      "0022",
+      "0023",
+      "0024",
+      "0025",
+      "0026",
+      "0027",
+      "0028",
+      "0029",
+      "0031",
+      "0032"
+    ],
+    "matrixMissingE2e": []
+  },
+  "matrixEvidenceNotes": {
+    "0002": "matrix: drag fail",
+    "0004": "matrix: resize fail"
+  },
+  "e2eFiles": [
+    "demos/react/e2e/rfc-validation.spec.ts",
+    "demos/react/e2e/virtual-scrolling.spec.ts"
+  ],
+  "rows": [
+    {
+      "rfc": "0001",
+      "file": ".spec/rfc/0001-ac-grid-architecture.md",
+      "registry": "done",
+      "inMatrix": true,
+      "hasE2eTest": true
+    },
+    {
+      "rfc": "0002",
+      "file": ".spec/rfc/completed/0002-sorting-feature.md",
+      "registry": "done",
+      "inMatrix": true,
+      "hasE2eTest": true
+    },
+    {
+      "rfc": "0003",
+      "file": ".spec/rfc/completed/0003-filtering-feature.md",
+      "registry": "done",
+      "inMatrix": true,
+      "hasE2eTest": true
+    },
+    {
+      "rfc": "0004",
+      "file": ".spec/rfc/completed/0004-column-resizing.md",
+      "registry": "done",
+      "inMatrix": true,
+      "hasE2eTest": true
+    },
+    {
+      "rfc": "0005",
+      "file": ".spec/rfc/completed/0005-virtual-scrolling.md",
+      "registry": "done",
+      "inMatrix": true,
+      "hasE2eTest": true
+    },
+    {
+      "rfc": "0006",
+      "file": ".spec/rfc/completed/0006-pagination.md",
+      "registry": "done",
+      "inMatrix": true,
+      "hasE2eTest": true
+    },
+    {
+      "rfc": "0007",
+      "file": ".spec/rfc/completed/0007-row-selection.md",
+      "registry": "done",
+      "inMatrix": true,
+      "hasE2eTest": true
+    },
+    {
+      "rfc": "0008",
+      "file": ".spec/rfc/completed/0008-column-pinning.md",
+      "registry": "done",
+      "inMatrix": true,
+      "hasE2eTest": true
+    },
+    {
+      "rfc": "0009",
+      "file": ".spec/rfc/completed/0009-cell-editing.md",
+      "registry": "done",
+      "inMatrix": true,
+      "hasE2eTest": true
+    },
+    {
+      "rfc": "0010",
+      "file": ".spec/rfc/0010-grouping-aggregation.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0011",
+      "file": ".spec/rfc/0011-theme-system.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0012",
+      "file": ".spec/rfc/0012-keyboard-navigation.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0013",
+      "file": ".spec/rfc/0013-accessibility.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0014",
+      "file": ".spec/rfc/0014-data-export.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0015",
+      "file": ".spec/rfc/0015-internationalization.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0016",
+      "file": ".spec/rfc/0016-theme-system.md",
+      "registry": "done",
+      "inMatrix": true,
+      "hasE2eTest": true
+    },
+    {
+      "rfc": "0017",
+      "file": ".spec/rfc/0017-framework-bindings.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0018",
+      "file": ".spec/rfc/0018-grid-state-api.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0019",
+      "file": ".spec/rfc/completed/0019-custom-components.md",
+      "registry": "done",
+      "inMatrix": true,
+      "hasE2eTest": true
+    },
+    {
+      "rfc": "0020",
+      "file": ".spec/rfc/0020-tree-data.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0021",
+      "file": ".spec/rfc/0021-master-detail.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0022",
+      "file": ".spec/rfc/0022-range-selection.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0023",
+      "file": ".spec/rfc/0023-clipboard-operations.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0024",
+      "file": ".spec/rfc/0024-pivot-mode.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0025",
+      "file": ".spec/rfc/0025-excel-export-advanced.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0026",
+      "file": ".spec/rfc/0026-context-menu-column-menu.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0027",
+      "file": ".spec/rfc/0027-tool-panels-status-bar.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0028",
+      "file": ".spec/rfc/0028-advanced-filtering.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0029",
+      "file": ".spec/rfc/0029-integrated-charts.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0030",
+      "file": ".spec/rfc/completed/0030-formulas.md",
+      "registry": "done",
+      "inMatrix": true,
+      "hasE2eTest": true
+    },
+    {
+      "rfc": "0031",
+      "file": ".spec/rfc/0031-server-side-row-model.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0032",
+      "file": ".spec/rfc/0032-ai-toolkit.md",
+      "registry": "backlog",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0033",
+      "file": ".spec/rfc/0033-e2e-test-infrastructure.md",
+      "registry": "draft-untracked-in-registry",
+      "inMatrix": false,
+      "hasE2eTest": false
+    },
+    {
+      "rfc": "0034",
+      "file": ".spec/rfc/0034-rfc-demo-acceptance-matrix.md",
+      "registry": "draft-untracked-in-registry",
+      "inMatrix": false,
+      "hasE2eTest": false
+    }
+  ]
+}

@@ -17,8 +17,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     isVirtualScrollE2E ? (
         <VirtualScrollingDemo />
     ) : (
-        <React.StrictMode>
-            <App />
-        </React.StrictMode>
+        <App />
     ),
 );
