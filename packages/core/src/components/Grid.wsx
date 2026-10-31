@@ -1207,6 +1207,81 @@ export class Grid extends LightComponent {
         return Object.keys(this.rowSelection);
     }
 
+    public exportToCSV(options?: any) {
+        const { exportMode = 'all', includeHeaders = true, columns: selectedColumns, fileName = 'export.csv', formatter } = options || {};
+        
+        // Get columns
+        const allColumns = this.table?.getAllColumns() || [];
+        const exportColumns = selectedColumns 
+            ? allColumns.filter(col => selectedColumns.includes(col.id))
+            : allColumns;
+        
+        const columnDefs = exportColumns.map(col => ({
+            id: col.id,
+            header: typeof col.columnDef.header === 'string' ? col.columnDef.header : col.id,
+        }));
+        
+        // Get rows based on export mode
+        let rows: any[] = [];
+        if (exportMode === 'selected') {
+            rows = this.getSelectedRows();
+        } else if (exportMode === 'visible') {
+            rows = this.table?.getRowModel().rows || [];
+        } else {
+            rows = this.table?.getCoreRowModel().rows || [];
+        }
+        
+        // Convert to data format
+        const data = rows.map(row => {
+            const rowData: Record<string, any> = {};
+            for (const col of columnDefs) {
+                rowData[col.id] = row.getValue(col.id);
+            }
+            return rowData;
+        });
+        
+        // Generate CSV
+        const csvLines: string[] = [];
+        if (includeHeaders) {
+            csvLines.push(columnDefs.map(col => this.escapeCsvValue(col.header)).join(','));
+        }
+        
+        for (const rowData of data) {
+            const values = columnDefs.map(col => {
+                const rawValue = rowData[col.id];
+                const formattedValue = formatter ? formatter(rawValue, col.id) : rawValue;
+                return this.escapeCsvValue(formattedValue);
+            });
+            csvLines.push(values.join(','));
+        }
+        
+        const csv = csvLines.join('\n');
+        
+        // Download
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    private escapeCsvValue(value: any): string {
+        if (value === null || value === undefined) {
+            return '';
+        }
+        
+        const str = String(value);
+        if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+            return `"${str.replace(/"/g, '""')}"`;
+        }
+        
+        return str;
+    }
+
     private notifySelectionChange() {
         this._selectionConfig?.onRowSelectionChange?.(this.rowSelection);
     }

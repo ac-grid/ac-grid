@@ -64,7 +64,7 @@
 - v0.2.0: Virtual scroll (0005), Pagination (0006), Row selection (0007)
 - v0.3.0: Pinning (0008) ✅, Cell editing (0009) ✅, Grouping/aggregation (0010) ✅
 - v0.4.0: Custom components (0019) ✅, Theme advanced (0011) ✅, Keyboard (0012) ✅, a11y (0013) ✅
-- v0.5.0: CSV export (0014), i18n (0015) ✅, Framework bindings (0017), State API (0018)
+- v0.5.0: CSV export (0014) ✅, i18n (0015) ✅, Framework bindings (0017), State API (0018)
 
 ### Phase 2 — Enterprise (v1.1.0–v1.2.0)
 
@@ -83,7 +83,6 @@
 
 ## Active
 
-- [ ] Track RFC 0014: Data export (RFC 0014)
 - [ ] Track RFC 0016: Theme system architecture (RFC 0016)
 - [ ] Track RFC 0017: Framework bindings (RFC 0017)
 - [ ] Track RFC 0018: Grid state API (RFC 0018)
@@ -135,4 +134,6 @@
 - [x] Track RFC 0015: Internationalization (RFC 0015)
 
 - [x] Track RFC 0022: Range selection (RFC 0022)
+- [x] Track RFC 0014: Data export (RFC 0014) ✅ Completed
+
 
