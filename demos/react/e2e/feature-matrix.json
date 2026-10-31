@@ -1,6 +1,5 @@
 {
     "pending": {
-        "0014": "RFC-0014 data export is not merged yet; add its E2E in the same PR that archives it",
         "0020": "RFC-0020 tree data is a Draft; nothing implemented to test",
         "0021": "RFC-0021 master-detail is a Draft; nothing implemented to test",
         "0024": "RFC-0024 pivot mode is a Draft; nothing implemented to test",
