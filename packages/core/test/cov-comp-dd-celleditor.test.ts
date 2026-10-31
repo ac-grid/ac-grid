@@ -89,11 +89,11 @@ describe("CellEditor coverage", () => {
         expect(onCancel).toHaveBeenCalledTimes(1);
     });
 
-    it("blur saves the current value", async () => {
+    it("blur does not save (Enter saves, Escape cancels)", async () => {
         const onSave = vi.fn();
         const el = await mount({ value: "keep", onSave });
         input(el).dispatchEvent(new Event("blur"));
-        expect(onSave).toHaveBeenCalledWith("keep");
+        expect(onSave).not.toHaveBeenCalled();
     });
 
     it("handlers are safe without callbacks", async () => {
@@ -121,7 +121,7 @@ describe("CellEditor coverage", () => {
     it("onConnected skips falsy own props", async () => {
         const el = document.createElement("wsx-ac-cell-editor") as any;
         for (const k of ["value", "type", "error", "onChange", "onSave", "onCancel"]) {
-            Object.defineProperty(el, k, { value: k === "value" ? undefined : "", configurable: true });
+            Object.defineProperty(el, k, { value: k === "value" ? undefined : "", configurable: true, writable: true });
         }
         document.body.appendChild(el);
         await settle();
