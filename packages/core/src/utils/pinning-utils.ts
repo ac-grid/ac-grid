@@ -39,7 +39,7 @@ export function applyColumnDefPins(
     current: ColumnPinningState,
 ): ColumnPinningState {
     const fromDefs = buildColumnPinningFromDefs(columns);
-    const defPinnedIds = new Set([...(fromDefs.left ?? []), ...(fromDefs.right ?? [])]);
+    const defPinnedIds = new Set([...fromDefs.left!, ...fromDefs.right!]);
 
     const manualLeft = (current.left ?? []).filter((columnId) => {
         const columnDef = findColumnDefById(columns, columnId);
@@ -54,8 +54,8 @@ export function applyColumnDefPins(
     });
 
     return {
-        left: [...(fromDefs.left ?? []), ...manualLeft],
-        right: [...(fromDefs.right ?? []), ...manualRight],
+        left: [...fromDefs.left!, ...manualLeft],
+        right: [...fromDefs.right!, ...manualRight],
     };
 }
 
@@ -71,9 +71,9 @@ export function pinColumnInState(
     };
 
     if (position === "left") {
-        next.left = [...(next.left ?? []), columnId];
+        next.left = [...next.left!, columnId];
     } else if (position === "right") {
-        next.right = [...(next.right ?? []), columnId];
+        next.right = [...next.right!, columnId];
     }
 
     return next;

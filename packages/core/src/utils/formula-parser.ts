@@ -251,20 +251,14 @@ class Parser {
 
     private parseRefOrRange(): AstNode {
         const refToken = this.consume();
-        const start = parseA1Cell(refToken.value);
-        if (!start) {
-            throw makeError("#REF!", `Invalid reference: ${refToken.value}`);
-        }
+        const start = parseA1Cell(refToken.value)!;
         if (this.peek()?.type === "colon") {
             this.consume();
             const endToken = this.consume();
             if (endToken.type !== "ref") {
                 throw makeError("#REF!", "Expected cell after :");
             }
-            const range = parseA1Range(`${refToken.value}:${endToken.value}`);
-            if (!range) {
-                throw makeError("#REF!", `Invalid range: ${refToken.value}:${endToken.value}`);
-            }
+            const range = parseA1Range(`${refToken.value}:${endToken.value}`)!;
             return { kind: "range", cells: expandRange(range) };
         }
         return { kind: "ref", address: { row: start.row, col: start.col } };
@@ -442,17 +436,15 @@ function evaluateAst(
                     return left - right;
                 case "*":
                     return left * right;
-                case "/":
+                default:
                     return right === 0 ? makeError("#DIV/0!") : left / right;
             }
-            break;
         }
         case "call": {
             const args = node.args.map((arg) => evaluateAst(arg, getCell));
             return evaluateFunction(node.name, args, getCell);
         }
     }
-    return makeError("#ERROR!");
 }
 
 function evaluateFunction(

@@ -106,7 +106,7 @@ export function topologicalSortAffected(
             }
             // dep → key（依赖必须先算）
             adj.get(dep)!.push(key);
-            indegree.set(key, (indegree.get(key) ?? 0) + 1);
+            indegree.set(key, indegree.get(key)! + 1);
         }
     }
 
@@ -121,8 +121,8 @@ export function topologicalSortAffected(
     while (queue.length > 0) {
         const current = queue.shift()!;
         order.push(current);
-        for (const next of adj.get(current) ?? []) {
-            const nextDeg = (indegree.get(next) ?? 0) - 1;
+        for (const next of adj.get(current)!) {
+            const nextDeg = indegree.get(next)! - 1;
             indegree.set(next, nextDeg);
             if (nextDeg === 0) {
                 queue.push(next);

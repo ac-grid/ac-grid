@@ -61,21 +61,12 @@ export function parseA1Cell(input: string): CellRefToken | null {
         return null;
     }
     const [, absColMark, letters, absRowMark, rowText] = match;
-    try {
-        const col = lettersToColumnIndex(letters);
-        const row = Number(rowText) - 1;
-        if (row < 0) {
-            return null;
-        }
-        return {
-            col,
-            row,
-            absCol: absColMark === "$",
-            absRow: absRowMark === "$",
-        };
-    } catch {
-        return null;
-    }
+    return {
+        col: lettersToColumnIndex(letters),
+        row: Number(rowText) - 1,
+        absCol: absColMark === "$",
+        absRow: absRowMark === "$",
+    };
 }
 
 /**
