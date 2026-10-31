@@ -306,3 +306,12 @@ Status: discussed
 Touches: `.gitignore`, `AGENTS.md`, `.codegraph/`, `.reasongraph/`
 
 Init-produced untracked files were kept out of commits on the coverage work; they remain recoverable from stash and the temp artifacts directory rather than landing in the rebased PR history.
+
+### Verify PR #58 merge status and sync the checkout to latest main before deleting the branch
+Status: discussed — follows merge notice; no tool calls in this slice yet
+Touches: `.git/*`
+
+After the merge notice for PR #58, the agent planned to confirm the PR is merged on the remote, fast-forward or reset the local checkout onto the updated main tip, and only then consider deleting the feature branch. Unmerged local commits would be checked first so cleanup does not drop work still unique to the branch.
+
+Risk: Deleting the local branch before verifying merge and unmerged commits could discard commits not yet on main.
+Reviewer attention: Confirm PR #58 is on origin/main and the local checkout matches that tip before any branch deletion.
