@@ -56,6 +56,8 @@ export default defineConfig({
                 functions: 55,
                 branches: 35,
                 statements: 56,
+                // Every plain .ts file is fully covered; .wsx is held to the global floor (see #46).
+                "src/**/*.ts": { lines: 100, functions: 100, branches: 100, statements: 100 },
             },
         },
         server: {
