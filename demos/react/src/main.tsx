@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import "@ac-grid/theme-default";
 import { themeManager } from "@ac-grid/theme-base";
@@ -17,8 +16,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     isVirtualScrollE2E ? (
         <VirtualScrollingDemo />
     ) : (
-        <React.StrictMode>
-            <App />
-        </React.StrictMode>
+        <App />
     ),
 );

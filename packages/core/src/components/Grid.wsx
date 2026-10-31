@@ -153,7 +153,7 @@ export class Grid extends LightComponent {
     @state private sorting: SortingState = [];
     @state private columnFilters: Record<string, FilterCondition | string> = {};
     @state private globalFilter: string = "";
-    
+
     get openFilterMenu(): string | null { return this._openFilterMenu; }
     set openFilterMenu(val: string | null) {
         if (this._openFilterMenu !== val) {
@@ -163,7 +163,7 @@ export class Grid extends LightComponent {
         }
     }
     @state private _openFilterMenu: string | null = null;
-    
+
     @state private filterMenuPosition: { x: number; y: number } = { x: 0, y: 0 };
     private activeFilterColumn: any = null;
 
@@ -1207,6 +1207,81 @@ export class Grid extends LightComponent {
         return Object.keys(this.rowSelection);
     }
 
+    public exportToCSV(options?: any) {
+        const { exportMode = 'all', includeHeaders = true, columns: selectedColumns, fileName = 'export.csv', formatter } = options || {};
+
+        // Get columns
+        const allColumns = this.table?.getAllColumns() || [];
+        const exportColumns = selectedColumns
+            ? allColumns.filter(col => selectedColumns.includes(col.id))
+            : allColumns;
+
+        const columnDefs = exportColumns.map(col => ({
+            id: col.id,
+            header: typeof col.columnDef.header === 'string' ? col.columnDef.header : col.id,
+        }));
+
+        // Get rows based on export mode
+        let rows: any[] = [];
+        if (exportMode === 'selected') {
+            rows = this.getSelectedRows();
+        } else if (exportMode === 'visible') {
+            rows = this.table?.getRowModel().rows || [];
+        } else {
+            rows = this.table?.getCoreRowModel().rows || [];
+        }
+
+        // Convert to data format
+        const data = rows.map(row => {
+            const rowData: Record<string, any> = {};
+            for (const col of columnDefs) {
+                rowData[col.id] = row.getValue(col.id);
+            }
+            return rowData;
+        });
+
+        // Generate CSV
+        const csvLines: string[] = [];
+        if (includeHeaders) {
+            csvLines.push(columnDefs.map(col => this.escapeCsvValue(col.header)).join(','));
+        }
+
+        for (const rowData of data) {
+            const values = columnDefs.map(col => {
+                const rawValue = rowData[col.id];
+                const formattedValue = formatter ? formatter(rawValue, col.id) : rawValue;
+                return this.escapeCsvValue(formattedValue);
+            });
+            csvLines.push(values.join(','));
+        }
+
+        const csv = csvLines.join('\n');
+
+        // Download
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    private escapeCsvValue(value: any): string {
+        if (value === null || value === undefined) {
+            return '';
+        }
+
+        const str = String(value);
+        if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+            return `"${str.replace(/"/g, '""')}"`;
+        }
+
+        return str;
+    }
+
     private notifySelectionChange() {
         this._selectionConfig?.onRowSelectionChange?.(this.rowSelection);
     }
@@ -1271,7 +1346,7 @@ export class Grid extends LightComponent {
                 this.filterMenuContainer = document.createElement("div");
                 this.filterMenuContainer.className = "ac-grid-filter-menu-portal";
                 document.body.appendChild(this.filterMenuContainer);
-                
+
                 const closeHandler = (e: MouseEvent) => {
                     if (this.filterMenuContainer && !this.filterMenuContainer.contains(e.target as Node)) {
                          this.openFilterMenu = null;
@@ -1307,7 +1382,7 @@ export class Grid extends LightComponent {
             } else {
                 this.filterMenuPortal.unmount();
                 this.filterMenuContainer.innerHTML = '';
-                
+
                 const menu = document.createElement('wsx-ac-filter-menu') as any;
                 menu.column = this.activeFilterColumn;
                 menu.value = this.columnFilters[this.activeFilterColumn.id] ?? "";
@@ -1316,13 +1391,13 @@ export class Grid extends LightComponent {
                 menu._filterChangeCallback = filterParams.onFilterChange;
                 menu._onClose = filterParams.onClose;
             }
-            
+
             const { x, y } = this.filterMenuPosition;
             this.filterMenuContainer.style.position = 'absolute';
             this.filterMenuContainer.style.top = `${y}px`;
             this.filterMenuContainer.style.left = `${x}px`;
             this.filterMenuContainer.style.zIndex = '99999';
-            
+
         } else {
             this.filterMenuPortal.unmount();
             if (this.filterMenuContainer) {
@@ -1850,13 +1925,13 @@ export class Grid extends LightComponent {
                                         this.openFilterMenu === column.id;
                                     const filterValue =
                                         this.columnFilters[column.id] ?? "";
-                                    
+
                                     const isPinnedLeft = column.getIsPinned() === 'left';
                                     const isPinnedRight = column.getIsPinned() === 'right';
-                                    
+
                                     // Dynamic zIndex: active filter menu raises the header cell
                                     const activeZIndex = isFilterMenuOpen ? 100 : undefined;
-                                    
+
                                     const pinnedStyle = isPinnedLeft
                                         ? { left: `${column.getStart("left")}px`, position: 'sticky' as const, zIndex: activeZIndex || 3 }
                                         : isPinnedRight
@@ -2051,15 +2126,15 @@ export class Grid extends LightComponent {
                                     if (header.isPlaceholder) {
                                         return <div key={header.id} className="grid-header-cell" style={{ visibility: 'hidden' }} />;
                                     }
-                                    
+
                                     const column = header.column;
                                     const canFilter = (column.columnDef as any).enableColumnFilter !== false;
                                     const filterValue = this.columnFilters[column.id] ?? "";
-                                    
+
                                     const isPinnedLeft = column.getIsPinned() === 'left';
                                     const isPinnedRight = column.getIsPinned() === 'right';
-                                    
-                                    const pinnedStyle = isPinnedLeft 
+
+                                    const pinnedStyle = isPinnedLeft
                                         ? { left: `${column.getStart("left")}px`, position: 'sticky' as const, zIndex: 3 }
                                         : isPinnedRight
                                             ? { right: `${column.getAfter("right")}px`, position: 'sticky' as const, zIndex: 3 }
@@ -2242,7 +2317,7 @@ export class Grid extends LightComponent {
                             >
                                 {row.getVisibleCells().map((cell) => {
                                     let rendered: any;
-                                    
+
                                     if (cell.getIsGrouped()) {
                                         rendered = (
                                             <div className="grid-cell-group" style={{ paddingLeft: `${row.depth * 20}px` }}>
@@ -2265,11 +2340,11 @@ export class Grid extends LightComponent {
                                             cell.getContext(),
                                         );
                                     }
-                                    
+
                                     const column = cell.column;
                                     const isPinnedLeft = column.getIsPinned() === 'left';
                                     const isPinnedRight = column.getIsPinned() === 'right';
-                                    const pinnedStyle = isPinnedLeft 
+                                    const pinnedStyle = isPinnedLeft
                                         ? { left: `${column.getStart("left")}px`, position: 'sticky' as const, zIndex: 2 }
                                         : isPinnedRight
                                             ? { right: `${column.getAfter("right")}px`, position: 'sticky' as const, zIndex: 2 }
@@ -2688,7 +2763,8 @@ export class Grid extends LightComponent {
 
         this.editingState = { rowId, columnId, value: initialValue, error: undefined };
         this._editingConfig.onEditStart?.(rowId, columnId);
-        this.updateTable();
+        // editingState is @state, so re-render happens automatically;
+        // calling updateTable() again can cause the editor to disappear.
     }
 
     public saveEdit(newValue: unknown) {
@@ -2711,6 +2787,26 @@ export class Grid extends LightComponent {
 
         const editorType = resolveEditorType(columnDef);
         const coercedValue = coerceEditorValue(newValue, editorType);
+
+        // Update internal data
+        if (row) {
+            const nextData = [...this.gridData];
+            const original = nextData[row.index];
+            if (original && typeof original === "object") {
+                const updated = { ...original };
+                const path = columnId.split(".");
+                let target = updated;
+                for (const key of path.slice(0, -1)) {
+                    target[key] = { ...(target[key] ?? {}) };
+                    target = target[key];
+                }
+                target[path[path.length - 1]] = coercedValue;
+                nextData[row.index] = updated;
+                this._data = nextData;
+                this.gridData = nextData;
+            }
+        }
+
         this._editingConfig.onEditSave?.(rowId, columnId, coercedValue);
         this.cancelEdit(false);
     }

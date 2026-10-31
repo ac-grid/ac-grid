@@ -4,6 +4,7 @@ import {
   AGGREGATION_FN_SUM,
   type ColumnDef,
   type CreateGridOptions,
+  type ExportOptions,
   zhCN,
 } from "@ac-grid/core";
 
@@ -24,6 +25,7 @@ export const RFC_VALIDATION_ORDER = [
   "0011",
   "0012",
   "0013",
+  "0014",
   "0015",
   "0016",
   "0019",
@@ -37,6 +39,7 @@ export type RfcValidationId = (typeof RFC_VALIDATION_ORDER)[number];
 export const DEFAULT_RFC_ID: RfcValidationId = "0003";
 
 export type GridHostElement = HTMLElement & {
+  exportToCSV: (options?: ExportOptions) => void;
   setGlobalFilter?: (value: string) => void;
   clearFilters?: () => void;
   editingConfig?: unknown;
@@ -295,6 +298,27 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
           enabled: true,
           mode: "doubleClick",
         };
+      },
+    },
+    "0014": {
+      id: "0014",
+      title: "Data export",
+      multicaIssue: "ACG-17",
+      hint: "Click export button to download CSV file.",
+      rowCount: 50,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 4),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+      }),
+      afterMount: (grid) => {
+        // Add export button
+        const btn = document.createElement("button");
+        btn.textContent = "Export CSV";
+        btn.onclick = () => grid.exportToCSV({ fileName: "test.csv" });
+        grid.parentElement?.appendChild(btn);
       },
     },
     "0011": {

@@ -204,7 +204,7 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 | 功能     | RFC                                        | 状态      | 优先级 | 预计工作量 | 负责人 |
 | -------- | ------------------------------------------ | --------- | ------ | ---------- | ------ |
-| 数据导出 | [0014](./rfc/0014-data-export.md)          | ⏳ 待规划 | P1     | 5-7天      | TBD    |
+| 数据导出 | [0014](rfc/completed/0014-data-export.md)          | ⏳ 待规划 | P1     | 5-7天      | TBD    |
 | 国际化   | [0015](./rfc/completed/0015-internationalization.md) | ✔️ 已完成 | P1     | 5-7天      | Albert Li |
 
 **里程碑**:
@@ -408,7 +408,7 @@ v1.0.0 ░░░░░░░░░░░░░░░░░░░░░░░░�
 
 - [RFC 索引](./rfc/README.md) - 所有 RFC 列表和状态
 - [快速开始指南](./rfc/GETTING-STARTED.md) - 如何开始开发
-- [架构文档](./rfc/0001-ac-grid-architecture.md) - 总体架构设计
+- [架构文档](rfc/completed/0001-ac-grid-architecture.md) - 总体架构设计
 - [开发规范](./CLAUDE.md) - 编码规范和最佳实践
 - [项目 README](./README.md) - 项目介绍和使用指南
 

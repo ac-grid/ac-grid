@@ -4,7 +4,7 @@
 **版本**: 0.5.0  
 **作者**: Albert Li  
 **日期**: 2026-06-28  
-**相关 RFC**: [0001-ac-grid-architecture](./0001-ac-grid-architecture.md)
+**相关 RFC**: [0001-ac-grid-architecture](completed/0001-ac-grid-architecture.md)
 
 ## 概述
 

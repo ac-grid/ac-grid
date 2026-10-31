@@ -1,0 +1,447 @@
+{
+  "schemaVersion": 1,
+  "mapId": "ac-grid-rfc-e2e",
+  "revision": 4,
+  "language": "zh",
+  "project": {
+    "id": "ac-grid",
+    "name": "AC Grid — Demo-site RFC 与 E2E 覆盖",
+    "revision": "ddad6bd6aa76e0c0042ad46a40c5a82f0ac1f0d0"
+  },
+  "constraintDiscovery": {
+    "checkedAt": "2026-09-20T21:11:00.000Z",
+    "checkedPaths": [
+      "AGENTS.md",
+      "CLAUDE.md",
+      ".spec/rfc/0033-e2e-test-infrastructure.md",
+      ".spec/rfc/0034-rfc-demo-acceptance-matrix.md",
+      ".spec/TASK_TRACKING.md",
+      "demos/react/e2e/rfc-validation.spec.ts",
+      "demos/react/e2e/virtual-scrolling.spec.ts"
+    ],
+    "uninspectedPaths": [
+      "docs/persona",
+      ".cursor/skills",
+      "packages/theme-base",
+      "packages/theme-default",
+      "demos/wsx"
+    ]
+  },
+  "groups": [
+    {
+      "id": "grp-specs",
+      "name": "规格与跟踪",
+      "role": "generic",
+      "members": [
+        "rfc-catalog",
+        "acceptance-matrix",
+        "task-registry"
+      ],
+      "evidence": [
+        {
+          "path": ".spec/rfc/0034-rfc-demo-acceptance-matrix.md",
+          "note": "RFC 完成门槛绑定 demo 与 E2E。"
+        }
+      ]
+    },
+    {
+      "id": "grp-runtime",
+      "name": "运行时宿主",
+      "role": "runtime",
+      "members": [
+        "demo-react-host",
+        "grid-core"
+      ],
+      "evidence": [
+        {
+          "path": ".spec/rfc/0033-e2e-test-infrastructure.md",
+          "note": "demos/react 是浏览器验收宿主；core 提供 Grid 实现。"
+        }
+      ]
+    },
+    {
+      "id": "grp-verify",
+      "name": "浏览器验收",
+      "role": "interaction",
+      "members": [
+        "e2e-harness"
+      ],
+      "evidence": [
+        {
+          "path": "demos/react/e2e/rfc-validation.spec.ts",
+          "note": "Playwright 用例按 RFC 编号组织。"
+        }
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "id": "rfc-catalog",
+      "role": "generic",
+      "roleAssessment": {
+        "basis": "out-of-taxonomy",
+        "note": "规格文档目录，不属于 frontend/backend 等运行时角色。"
+      },
+      "name": "RFC 规格目录",
+      "kind": "local",
+      "responsibility": "保存全部 RFC（含 completed/ 与 backlog）；定义功能范围，不自动证明 E2E 存在。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": ".spec/rfc"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".spec/rfc/0033-e2e-test-infrastructure.md",
+          "line": 19,
+          "endLine": 19,
+          "note": "要求每个已完成 RFC 至少一个独立 E2E。"
+        },
+        {
+          "path": ".spec/TASK_TRACKING.md",
+          "line": 86,
+          "endLine": 117,
+          "note": "RFC→issue 表列出 done/backlog 状态。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 0,
+        "column": 0
+      }
+    },
+    {
+      "id": "acceptance-matrix",
+      "role": "generic",
+      "roleAssessment": {
+        "basis": "out-of-taxonomy",
+        "note": "验收矩阵文档门禁，非运行时模块。"
+      },
+      "name": "RFC Demo 验收矩阵",
+      "kind": "local",
+      "responsibility": "把已完成 RFC 绑定到 demo URL、必测行为与当前证据；失败不得标通过。",
+      "ownership": [
+        {
+          "kind": "file",
+          "path": ".spec/rfc/0034-rfc-demo-acceptance-matrix.md"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".spec/rfc/0034-rfc-demo-acceptance-matrix.md",
+          "line": 13,
+          "endLine": 25,
+          "note": "矩阵仅覆盖 12 个已完成 RFC 行。"
+        },
+        {
+          "path": ".spec/rfc/0034-rfc-demo-acceptance-matrix.md",
+          "line": 42,
+          "endLine": 44,
+          "note": "记录 RFC-0002 拖拽与 RFC-0004 resize 仍失败。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [
+        "Demo-site 集合与矩阵 12 行一致；backlog RFC 无 demo 页故不在本轮范围。"
+      ],
+      "layout": {
+        "row": 1,
+        "column": 0
+      }
+    },
+    {
+      "id": "task-registry",
+      "role": "generic",
+      "roleAssessment": {
+        "basis": "out-of-taxonomy",
+        "note": "项目管理跟踪表，非代码运行时。"
+      },
+      "name": "RFC→Issue 注册表",
+      "kind": "local",
+      "responsibility": "声明各 RFC 的 Multica issue 与 done/backlog；Registry done ≠ 产品 E2E 完成。",
+      "ownership": [
+        {
+          "kind": "file",
+          "path": ".spec/TASK_TRACKING.md"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".spec/rfc/0034-rfc-demo-acceptance-matrix.md",
+          "line": 9,
+          "endLine": 9,
+          "note": "明确 Registry done 只表示规格流程完成。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [
+        "TASK_TRACKING 尚未登记 RFC-0033/0034。"
+      ],
+      "layout": {
+        "row": 2,
+        "column": 0
+      }
+    },
+    {
+      "id": "demo-react-host",
+      "role": "frontend",
+      "name": "React Demo 宿主",
+      "kind": "local",
+      "responsibility": "RFC_VALIDATION_ORDER 提供 12 个 ?rfc= 验收页；另有 ?e2e=virtual-scroll 专供 0005。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "demos/react"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "demos/react/src/rfcValidationDemos.ts",
+          "line": 6,
+          "endLine": 19,
+          "note": "Demo site 仅暴露 12 个 Multica done RFC 导航。"
+        },
+        {
+          "path": "demos/react/src/main.tsx",
+          "line": 12,
+          "endLine": 22,
+          "note": "e2e=virtual-scroll 走 VirtualScrollingDemo，不经 App pills。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 0,
+        "column": 1
+      }
+    },
+    {
+      "id": "grid-core",
+      "role": "frontend",
+      "name": "Grid Core",
+      "kind": "local",
+      "responsibility": "WSX Grid 实现；E2E 通过真实 DOM/输入验证其行为。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "packages/core"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".spec/rfc/0033-e2e-test-infrastructure.md",
+          "line": 11,
+          "endLine": 13,
+          "note": "单测无法证明 WSX 绑定与渲染；需浏览器交互。"
+        },
+        {
+          "path": "packages/core/src/components/Grid.wsx",
+          "note": "arrayMove 导入 + --grid-columns setProperty 修复拖拽/列宽。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "e2e-harness",
+      "role": "generic",
+      "roleAssessment": {
+        "basis": "out-of-taxonomy",
+        "note": "Playwright 验收套件；taxonomy 无 testing 角色。"
+      },
+      "name": "Playwright E2E 套件",
+      "kind": "local",
+      "responsibility": "Demo-site 12 RFC E2E 全绿（含 ?rfc=0005）；专夹具 virtual-scroll 仍保留。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "demos/react/e2e"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "demos/react/e2e/rfc-validation.spec.ts",
+          "line": 3,
+          "endLine": 8,
+          "note": "RFC-0001 及后续编号用例。"
+        },
+        {
+          "path": "demos/react/e2e/virtual-scrolling.spec.ts",
+          "line": 6,
+          "endLine": 6,
+          "note": "RFC-0005 独立文件。"
+        },
+        {
+          "path": ".birdify/rfc-e2e-coverage.demo-site.json",
+          "note": "Demo-site 口径：12/12 covered；唯一路由偏差 0005。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 0,
+        "column": 2
+      }
+    },
+    {
+      "id": "playwright",
+      "role": "generic",
+      "roleAssessment": {
+        "basis": "out-of-taxonomy",
+        "note": "外部测试运行时，非本地业务角色。"
+      },
+      "name": "Playwright Chromium",
+      "kind": "external",
+      "responsibility": "执行浏览器端验收。",
+      "ownership": [],
+      "evidence": [
+        {
+          "path": ".spec/rfc/0033-e2e-test-infrastructure.md",
+          "line": 17,
+          "endLine": 17,
+          "note": "规定 Playwright Chromium 运行配置。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 1,
+        "column": 2
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-matrix-from-catalog",
+      "from": "acceptance-matrix",
+      "to": "rfc-catalog",
+      "label": "从已完成 RFC 取样",
+      "kind": "dependency",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": ".spec/rfc/0034-rfc-demo-acceptance-matrix.md",
+          "line": 11,
+          "endLine": 25,
+          "note": "矩阵行对应 completed 集合。"
+        }
+      ]
+    },
+    {
+      "id": "rel-matrix-requires-e2e",
+      "from": "acceptance-matrix",
+      "to": "e2e-harness",
+      "label": "要求对应 E2E 通过",
+      "kind": "control",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": ".spec/rfc/0034-rfc-demo-acceptance-matrix.md",
+          "line": 30,
+          "endLine": 36,
+          "note": "完成门槛含对应 E2E 通过。"
+        }
+      ]
+    },
+    {
+      "id": "rel-registry-status",
+      "from": "task-registry",
+      "to": "rfc-catalog",
+      "label": "标记 done/backlog",
+      "kind": "event",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": ".spec/TASK_TRACKING.md",
+          "line": 86,
+          "endLine": 117,
+          "note": "状态列与 RFC 编号对齐。"
+        }
+      ]
+    },
+    {
+      "id": "rel-e2e-drives-demo",
+      "from": "e2e-harness",
+      "to": "demo-react-host",
+      "label": "打开 ?rfc= 页面",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "demos/react/e2e/rfc-validation.spec.ts",
+          "line": 5,
+          "endLine": 5,
+          "note": "page.goto(\"/?rfc=0001\")。"
+        }
+      ]
+    },
+    {
+      "id": "rel-demo-uses-core",
+      "from": "demo-react-host",
+      "to": "grid-core",
+      "label": "挂载 wsx-ac-grid",
+      "kind": "dependency",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "demos/react/e2e/rfc-validation.spec.ts",
+          "line": 6,
+          "endLine": 7,
+          "note": "断言 wsx-ac-grid 与行渲染。"
+        }
+      ]
+    },
+    {
+      "id": "rel-e2e-uses-playwright",
+      "from": "e2e-harness",
+      "to": "playwright",
+      "label": "由 Chromium 执行",
+      "kind": "dependency",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": ".spec/rfc/0033-e2e-test-infrastructure.md",
+          "line": 27,
+          "endLine": 29,
+          "note": "pnpm --filter @ac-grid/demo-react test:e2e。"
+        }
+      ]
+    },
+    {
+      "id": "rel-infra-governs-e2e",
+      "from": "rfc-catalog",
+      "to": "e2e-harness",
+      "label": "RFC-0033 约束证据规则",
+      "kind": "control",
+      "visibility": "detail",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": ".spec/rfc/0033-e2e-test-infrastructure.md",
+          "line": 33,
+          "endLine": 42,
+          "note": "禁止仅检查静态存在性。"
+        }
+      ]
+    }
+  ]
+}

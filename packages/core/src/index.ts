@@ -214,6 +214,9 @@ export { ComponentPortal } from "./utils/component-portal";
 export { renderComponent } from "./utils/render-component";
 export { resolveHeaderContent } from "./utils/resolve-header-content";
 
+export { exportToCsv, rowsToCsv, escapeCsvValue, downloadFile } from "./utils/export";
+export type { ExportOptions, ExportMode, ExportColumn } from "./types/export";
+
 // 国际化 (RFC-0015)
 export {
   I18nManager,

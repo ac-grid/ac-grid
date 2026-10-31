@@ -5,7 +5,7 @@
 **作者**: Albert Li  
 **日期**: 2026-01-24  
 **最后更新**: 2026-01-31  
-**相关 RFC**: [0001-ac-grid-architecture](../0001-ac-grid-architecture.md)
+**相关 RFC**: [0001-ac-grid-architecture](0001-ac-grid-architecture.md)
 
 ## 目录
 
@@ -630,7 +630,7 @@ describe('Sorting Feature', () => {
 - [ag-Grid 排序文档](https://www.ag-grid.com/javascript-data-grid/row-sorting/)
 - [@tanstack/table-core 排序文档](https://tanstack.com/table/latest/docs/guide/sorting)
 - [MDN: Array.prototype.sort()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
-- [0001-ac-grid-architecture.md](../0001-ac-grid-architecture.md)
+- [0001-ac-grid-architecture.md](0001-ac-grid-architecture.md)
 
 ---
 

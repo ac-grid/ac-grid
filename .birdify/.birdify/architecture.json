@@ -1,0 +1,535 @@
+{
+  "schemaVersion": 1,
+  "mapId": "ac-grid-monorepo",
+  "revision": 1,
+  "language": "zh",
+  "project": {
+    "id": "ac-grid",
+    "name": "ac-grid"
+  },
+  "modules": [
+    {
+      "id": "theme-default",
+      "role": "frontend",
+      "name": "内置主题包",
+      "kind": "local",
+      "responsibility": "注册 light、dark、ocean 等内置主题到共享主题注册表。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "packages/theme-default"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "packages/theme-default/src/index.ts",
+          "note": "导入 themeManager 并 registerTheme 注册内置主题。",
+          "symbol": "themeManager"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 0,
+        "column": 0
+      }
+    },
+    {
+      "id": "theme-base",
+      "role": "frontend",
+      "name": "主题基础包",
+      "kind": "local",
+      "responsibility": "持有 ThemeManager 单例，负责主题注册与 CSS 变量应用。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "packages/theme-base"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "packages/theme-base/src/manager/ThemeManager.ts",
+          "note": "定义 ThemeManager 并导出单例。",
+          "symbol": "themeManager"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 0,
+        "column": 1
+      }
+    },
+    {
+      "id": "core-grid",
+      "role": "frontend",
+      "name": "Grid 核心",
+      "kind": "local",
+      "responsibility": "提供 <wsx-ac-grid> Web Component 与 createGrid 入口，实现排序、过滤、分页、选择、编辑、分组、剪贴板等功能。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "packages/core"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "packages/core/src/utils/create-grid.ts",
+          "note": "createGrid 汇总所有功能选项并创建 Grid 元素。",
+          "symbol": "createGrid"
+        },
+        {
+          "path": "packages/core/src/components/Grid.wsx",
+          "note": "Grid 组件实现。",
+          "symbol": "Grid"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "demo-react",
+      "role": "frontend",
+      "name": "React 验收台",
+      "kind": "local",
+      "responsibility": "按 RFC 提供验收页面并运行 Playwright E2E 与覆盖守卫。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "demos/react"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "demos/react/src/rfcValidationDemos.ts",
+          "note": "RFC_VALIDATION_SPECS 登记每个 RFC 的 demo。",
+          "symbol": "RFC_VALIDATION_SPECS"
+        },
+        {
+          "path": "demos/react/src/App.tsx",
+          "note": "通过 createGrid 挂载 grid。",
+          "symbol": "createGrid"
+        },
+        {
+          "path": "demos/react/playwright.config.ts",
+          "note": "启动 dev server 并运行 e2e。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 2,
+        "column": 0
+      }
+    },
+    {
+      "id": "demo-wsx",
+      "role": "frontend",
+      "name": "WSX 演示",
+      "kind": "local",
+      "responsibility": "用 WSX 组件展示 Grid 的基础功能。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "demos/wsx"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "demos/wsx/package.json",
+          "note": "依赖 core、theme-base、theme-default 工作区包。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 2,
+        "column": 1
+      }
+    },
+    {
+      "id": "site",
+      "role": "frontend",
+      "name": "文档站点",
+      "kind": "local",
+      "responsibility": "发布项目文档与演示的站点应用。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "apps/site"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "apps/site/package.json",
+          "note": "依赖 @ac-grid/core 工作区包。"
+        },
+        {
+          "path": "apps/site/vite.config.ts",
+          "note": "开发环境把 @ac-grid/core 别名到源码。"
+        }
+      ],
+      "status": "uncertain",
+      "openQuestions": [
+        "开发服务器因 @wsxjs/wsx-press 未安装无法启动；站点实际功能与部署状态未核实。"
+      ],
+      "layout": {
+        "row": 2,
+        "column": 2
+      }
+    },
+    {
+      "id": "agent-skill",
+      "role": "generic",
+      "name": "ac-grid Agent Skill",
+      "kind": "local",
+      "responsibility": "向 AI agent 说明如何配置和验证 ac-grid 功能，可由 npx skills 安装。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "skills/ac-grid"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "skills/ac-grid/SKILL.md",
+          "note": "技能入口与使用规则。"
+        },
+        {
+          "path": "skills/ac-grid/references/features.md",
+          "note": "每个已完成 RFC 的选项对照表。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 3,
+        "column": 0
+      },
+      "roleAssessment": {
+        "basis": "out-of-taxonomy",
+        "note": "职责是给 agent 提供使用说明，不属于 frontend、backend 等运行时角色。"
+      }
+    },
+    {
+      "id": "spec-rfc",
+      "role": "generic",
+      "name": "RFC 规格库",
+      "kind": "local",
+      "responsibility": "保存 RFC 文档、路线图与任务追踪，是已完成功能的唯一来源。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": ".spec"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".spec/rfc/0036-demo-quality-remediation.md",
+          "note": "记录 demo 与 E2E 质量整改方案。"
+        },
+        {
+          "path": ".spec/ROADMAP.md",
+          "note": "RFC 索引。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 3,
+        "column": 1
+      },
+      "roleAssessment": {
+        "basis": "out-of-taxonomy",
+        "note": "职责是规格文档与流程记录，不属于运行时角色。"
+      }
+    },
+    {
+      "id": "ci",
+      "role": "generic",
+      "name": "CI 流水线",
+      "kind": "local",
+      "responsibility": "在 PR 上运行单元测试与 Playwright E2E。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": ".github/workflows"
+        }
+      ],
+      "evidence": [
+        {
+          "path": ".github/workflows/pull-request.yml",
+          "note": "运行 pnpm test 与 pnpm test:e2e。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 3,
+        "column": 2
+      },
+      "roleAssessment": {
+        "basis": "out-of-taxonomy",
+        "note": "职责是自动化构建与测试，不属于运行时角色。"
+      }
+    },
+    {
+      "id": "spark-registry",
+      "role": "generic",
+      "name": "Spark 注册表",
+      "kind": "external",
+      "responsibility": "仓库外的个人项目与端口注册表，记录 ac-grid 的名称与端口。",
+      "ownership": [],
+      "evidence": [],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 1,
+        "column": 2
+      },
+      "roleAssessment": {
+        "basis": "out-of-taxonomy",
+        "note": "职责是项目与端口登记，不属于运行时角色。"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "td-tb",
+      "from": "theme-default",
+      "to": "theme-base",
+      "label": "注册内置主题",
+      "evidence": [
+        {
+          "path": "packages/theme-default/src/index.ts",
+          "note": "registerTheme 调用。",
+          "symbol": "themeManager"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "overview"
+    },
+    {
+      "id": "core-tb",
+      "from": "core-grid",
+      "to": "theme-base",
+      "label": "查询并应用主题",
+      "evidence": [
+        {
+          "path": "packages/core/src/components/Grid.wsx",
+          "note": "Grid 导入 themeManager。",
+          "symbol": "themeManager"
+        },
+        {
+          "path": "packages/core/vite.config.ts",
+          "note": "theme-base 必须是 external，保证与主题包共用同一注册表。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "overview"
+    },
+    {
+      "id": "dr-core",
+      "from": "demo-react",
+      "to": "core-grid",
+      "label": "创建并挂载 grid",
+      "evidence": [
+        {
+          "path": "demos/react/src/App.tsx",
+          "note": "createGrid 调用。",
+          "symbol": "createGrid"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "overview"
+    },
+    {
+      "id": "dr-td",
+      "from": "demo-react",
+      "to": "theme-default",
+      "label": "加载内置主题",
+      "evidence": [
+        {
+          "path": "demos/react/src/main.tsx",
+          "note": "导入 @ac-grid/theme-default。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "overview"
+    },
+    {
+      "id": "dr-tb",
+      "from": "demo-react",
+      "to": "theme-base",
+      "label": "应用外壳主题",
+      "evidence": [
+        {
+          "path": "demos/react/src/main.tsx",
+          "note": "themeManager.applyTheme。",
+          "symbol": "themeManager"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "detail"
+    },
+    {
+      "id": "dw-core",
+      "from": "demo-wsx",
+      "to": "core-grid",
+      "label": "使用 Grid",
+      "evidence": [
+        {
+          "path": "demos/wsx/package.json",
+          "note": "工作区依赖。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "overview"
+    },
+    {
+      "id": "site-core",
+      "from": "site",
+      "to": "core-grid",
+      "label": "展示 Grid",
+      "evidence": [
+        {
+          "path": "apps/site/package.json",
+          "note": "工作区依赖。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "overview"
+    },
+    {
+      "id": "ci-dr",
+      "from": "ci",
+      "to": "demo-react",
+      "label": "运行 E2E",
+      "evidence": [
+        {
+          "path": ".github/workflows/pull-request.yml",
+          "note": "执行 pnpm test:e2e。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "control",
+      "visibility": "overview"
+    },
+    {
+      "id": "dr-spec",
+      "from": "demo-react",
+      "to": "spec-rfc",
+      "label": "覆盖守卫读取已完成 RFC",
+      "evidence": [
+        {
+          "path": "demos/react/e2e/coverage.spec.ts",
+          "note": "扫描 .spec/rfc/completed。",
+          "symbol": "completedIds"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "overview"
+    },
+    {
+      "id": "dr-skill",
+      "from": "demo-react",
+      "to": "agent-skill",
+      "label": "覆盖守卫读取 skill 功能表",
+      "evidence": [
+        {
+          "path": "demos/react/e2e/coverage.spec.ts",
+          "note": "读取 skills/ac-grid/references/features.md。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "detail"
+    },
+    {
+      "id": "skill-core",
+      "from": "agent-skill",
+      "to": "core-grid",
+      "label": "描述 createGrid 选项",
+      "evidence": [
+        {
+          "path": "skills/ac-grid/references/features.md",
+          "note": "按 createGrid 选项键列出功能。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "detail"
+    },
+    {
+      "id": "dr-spark",
+      "from": "demo-react",
+      "to": "spark-registry",
+      "label": "端口登记",
+      "evidence": [
+        {
+          "path": ".spec/rfc/0037-dev-port-assignment.md",
+          "note": "RFC-0037 定义 demo-react 端口 5198 与 5201。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "detail"
+    },
+    {
+      "id": "dw-spark",
+      "from": "demo-wsx",
+      "to": "spark-registry",
+      "label": "端口登记",
+      "evidence": [
+        {
+          "path": ".spec/rfc/0037-dev-port-assignment.md",
+          "note": "RFC-0037 定义 demo-wsx 端口 5199。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "detail"
+    },
+    {
+      "id": "site-spark",
+      "from": "site",
+      "to": "spark-registry",
+      "label": "端口登记",
+      "evidence": [
+        {
+          "path": ".spec/rfc/0037-dev-port-assignment.md",
+          "note": "RFC-0037 定义 site 端口 5200 与 5202。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "kind": "dependency",
+      "visibility": "detail"
+    }
+  ]
+}

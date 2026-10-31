@@ -5,7 +5,7 @@
 **作者**: Albert Li  
 **日期**: 2026-01-24  
 **完成日期**: 2026-10-03  
-**相关 RFC**: [0001-ac-grid-architecture](../0001-ac-grid-architecture.md), [0016-theme-system](../0016-theme-system.md)
+**相关 RFC**: [0001-ac-grid-architecture](0001-ac-grid-architecture.md), [0016-theme-system](../0016-theme-system.md)
 
 ## 目录
 

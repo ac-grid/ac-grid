@@ -6,7 +6,7 @@
 **版本**: 0.4.0  
 **作者**: Albert Li  
 **日期**: 2026-01-24  
-**相关 RFC**: [0001-ac-grid-architecture](../0001-ac-grid-architecture.md), [0012-keyboard-navigation](./0012-keyboard-navigation.md)
+**相关 RFC**: [0001-ac-grid-architecture](0001-ac-grid-architecture.md), [0012-keyboard-navigation](./0012-keyboard-navigation.md)
 
 ## 目录
 

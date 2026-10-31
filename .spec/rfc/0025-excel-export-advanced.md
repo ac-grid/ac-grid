@@ -4,7 +4,7 @@
 **版本**: 1.2.0  
 **作者**: Albert Li  
 **日期**: 2026-06-28  
-**相关 RFC**: [0014](./0014-data-export.md)
+**相关 RFC**: [0014](completed/0014-data-export.md)
 
 ## 概述
 

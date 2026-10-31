@@ -241,7 +241,7 @@ git push origin feature/sorting
 
 - [RFC 索引](./README.md)
 - [RFC 模板](./RFC-TEMPLATE.md)
-- [总体架构](./0001-ac-grid-architecture.md)
+- [总体架构](completed/0001-ac-grid-architecture.md)
 - [排序功能示例](./completed/0002-sorting-feature.md)
 - [项目主 README](../../README.md)
 - [CLAUDE.md 开发规范](../../CLAUDE.md)
