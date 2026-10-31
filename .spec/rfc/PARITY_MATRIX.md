@@ -30,10 +30,10 @@
 
 | 功能                 | AG Grid   | AC Grid | RFC                                    | 版本   |
 | -------------------- | --------- | ------- | -------------------------------------- | ------ |
-| 列/行数据模型        | Community | ✅      | [0001](./0001-ac-grid-architecture.md) | v0.0.1 |
-| Web Components 核心  | —         | ✅      | [0001](./0001-ac-grid-architecture.md) | v0.0.1 |
-| 自定义单元格渲染     | Community | ✅      | [0001](./0001-ac-grid-architecture.md) | v0.0.1 |
-| 列/行拖拽重排        | Community | ✅      | [0001](./0001-ac-grid-architecture.md) | v0.0.1 |
+| 列/行数据模型        | Community | ✅      | [0001](completed/0001-ac-grid-architecture.md) | v0.0.1 |
+| Web Components 核心  | —         | ✅      | [0001](completed/0001-ac-grid-architecture.md) | v0.0.1 |
+| 自定义单元格渲染     | Community | ✅      | [0001](completed/0001-ac-grid-architecture.md) | v0.0.1 |
+| 列/行拖拽重排        | Community | ✅      | [0001](completed/0001-ac-grid-architecture.md) | v0.0.1 |
 | 主题系统（CSS 变量） | Community | ✅      | [0016](./0016-theme-system.md)         | v0.0.2 |
 
 ---
@@ -164,4 +164,4 @@
 - [RFC 索引](./README.md)
 - [项目路线图](../ROADMAP.md)
 - [任务追踪](../TASK_TRACKING.md)
-- [总体架构](./0001-ac-grid-architecture.md)
+- [总体架构](completed/0001-ac-grid-architecture.md)

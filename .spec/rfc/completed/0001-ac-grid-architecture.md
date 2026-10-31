@@ -1,10 +1,14 @@
 # RFC: AC Grid - 基于 Web Components 的数据表格组件库
 
-**状态**: 规划中  
+**Status:** Implemented
 **版本**: 0.0.1 → 1.0.0  
 **日期**: 2024-2026  
 **作者**: Albert Li  
-**最后更新**: 2026-01-24
+**最后更新**: 2026-10-30
+
+## Summary
+
+总体架构 RFC。各功能的具体设计已拆分为独立的子 RFC（0010–0042），本文件作为架构背景归档，不再承载新工作。
 
 ## 目录
 
@@ -36,15 +40,15 @@ AC Grid 是一个高性能的数据表格组件库，旨在作为 AG Grid 的替
 
 ### 计划特性（详见各功能 RFC）
 
-- 🚧 **排序功能**: 单列/多列排序，自定义排序函数 ([RFC-0002](./completed/0002-sorting-feature.md))
-- ✔️ **过滤功能**: 列过滤、全局搜索 ([RFC-0003](./completed/0003-filtering-feature.md))
-- ✅ **虚拟滚动**: 行虚拟化已落地 ([RFC-0005](./completed/0005-virtual-scrolling.md))
-- ✅ **分页**: 前端分页和服务端分页 ([RFC-0006](./completed/0006-pagination.md))
-- ✅ **行选择**: 单选/多选模式 ([RFC-0007](./completed/0007-row-selection.md))
-- ✅ **单元格编辑**: 内联编辑 ([RFC-0009](./completed/0009-cell-editing.md))
-- 📝 **主题系统**: 可定制主题 ([RFC-0011](./completed/0011-theme-system.md))
+- 🚧 **排序功能**: 单列/多列排序，自定义排序函数 ([RFC-0002](0002-sorting-feature.md))
+- ✔️ **过滤功能**: 列过滤、全局搜索 ([RFC-0003](0003-filtering-feature.md))
+- ✅ **虚拟滚动**: 行虚拟化已落地 ([RFC-0005](0005-virtual-scrolling.md))
+- ✅ **分页**: 前端分页和服务端分页 ([RFC-0006](0006-pagination.md))
+- ✅ **行选择**: 单选/多选模式 ([RFC-0007](0007-row-selection.md))
+- ✅ **单元格编辑**: 内联编辑 ([RFC-0009](0009-cell-editing.md))
+- 📝 **主题系统**: 可定制主题 ([RFC-0011](0011-theme-system.md))
 
-> 📖 **完整功能列表和实现状态**，请查看 [RFC 索引](./README.md)
+> 📖 **完整功能列表和实现状态**，请查看 [RFC 索引](../README.md)
 
 ## 背景与动机
 
@@ -77,40 +81,40 @@ AG Grid 是一个成熟的数据网格库，其核心架构包括：
 | 列定义                   | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
 | 自定义单元格渲染         | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
 | **数据操作**             |
-| 排序（单列）             | ✅             | ✅ 已实现    | [0002](./completed/0002-sorting-feature.md) | v0.1.0   |
-| 排序（多列）             | ✅             | ✅ 已实现    | [0002](./completed/0002-sorting-feature.md) | v0.1.0   |
-| 过滤（列过滤）           | ✅             | ✔️ 已完成    | [0003](./completed/0003-filtering-feature.md)         | v0.1.0   |
-| 过滤（全局搜索）         | ✅             | ✔️ 已完成    | [0003](./completed/0003-filtering-feature.md)         | v0.1.0   |
-| 快速过滤                 | ✅             | ✔️ 已完成    | [0003](./completed/0003-filtering-feature.md)         | v0.1.0   |
+| 排序（单列）             | ✅             | ✅ 已实现    | [0002](0002-sorting-feature.md) | v0.1.0   |
+| 排序（多列）             | ✅             | ✅ 已实现    | [0002](0002-sorting-feature.md) | v0.1.0   |
+| 过滤（列过滤）           | ✅             | ✔️ 已完成    | [0003](0003-filtering-feature.md)         | v0.1.0   |
+| 过滤（全局搜索）         | ✅             | ✔️ 已完成    | [0003](0003-filtering-feature.md)         | v0.1.0   |
+| 快速过滤                 | ✅             | ✔️ 已完成    | [0003](0003-filtering-feature.md)         | v0.1.0   |
 | **布局和显示**           |
-| 列调整大小               | ✅             | ✔️ 已完成    | [0004](./completed/0004-column-resizing.md)           | v0.1.0   |
+| 列调整大小               | ✅             | ✔️ 已完成    | [0004](0004-column-resizing.md)           | v0.1.0   |
 | 列重排序                 | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
-| 列固定（Pinning）        | ✅             | ✅ 已实现    | [0008](./completed/0008-column-pinning.md)  | v0.3.0   |
-| 自动列宽                 | ✅             | ✔️ 已完成    | [0004](./completed/0004-column-resizing.md)           | v0.1.0   |
+| 列固定（Pinning）        | ✅             | ✅ 已实现    | [0008](0008-column-pinning.md)  | v0.3.0   |
+| 自动列宽                 | ✅             | ✔️ 已完成    | [0004](0004-column-resizing.md)           | v0.1.0   |
 | **性能优化**             |
-| 虚拟滚动（行）           | ✅             | ✅ 已实现    | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0   |
-| 虚拟滚动（列）           | ✅             | 📝 规划中    | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0   |
-| 大数据集支持（100K+ 行） | ✅             | 📝 规划中    | [0005](./completed/0005-virtual-scrolling.md) | v0.2.0   |
+| 虚拟滚动（行）           | ✅             | ✅ 已实现    | [0005](0005-virtual-scrolling.md) | v0.2.0   |
+| 虚拟滚动（列）           | ✅             | 📝 规划中    | [0005](0005-virtual-scrolling.md) | v0.2.0   |
+| 大数据集支持（100K+ 行） | ✅             | 📝 规划中    | [0005](0005-virtual-scrolling.md) | v0.2.0   |
 | **交互功能**             |
-| 分页                     | ✅             | ✅ 已实现    | [0006](./completed/0006-pagination.md)                | v0.2.0   |
-| 行选择（单选）           | ✅             | ✅ 已实现    | [0007](./completed/0007-row-selection.md)             | v0.2.0   |
-| 行选择（多选）           | ✅             | ✅ 已实现    | [0007](./completed/0007-row-selection.md)             | v0.2.0   |
-| 范围选择                 | ✅             | ✅ 已实现    | [0007](./completed/0007-row-selection.md)             | v0.2.0   |
+| 分页                     | ✅             | ✅ 已实现    | [0006](0006-pagination.md)                | v0.2.0   |
+| 行选择（单选）           | ✅             | ✅ 已实现    | [0007](0007-row-selection.md)             | v0.2.0   |
+| 行选择（多选）           | ✅             | ✅ 已实现    | [0007](0007-row-selection.md)             | v0.2.0   |
+| 范围选择                 | ✅             | ✅ 已实现    | [0007](0007-row-selection.md)             | v0.2.0   |
 | 行拖拽重排序             | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
-| 单元格编辑               | ✅             | ✅ 已实现    | [0009](./completed/0009-cell-editing.md)    | v0.3.0   |
+| 单元格编辑               | ✅             | ✅ 已实现    | [0009](0009-cell-editing.md)    | v0.3.0   |
 | 键盘导航                 | ✅             | 📝 规划中    | [0012](./0012-keyboard-navigation.md)       | v0.4.0   |
 | **高级功能**             |
-| 行分组                   | ✅             | ✅ 已实现    | [0010](./completed/0010-grouping-aggregation.md)      | v0.3.0   |
-| 数据聚合                 | ✅             | ✅ 已实现    | [0010](./completed/0010-grouping-aggregation.md)      | v0.3.0   |
+| 行分组                   | ✅             | ✅ 已实现    | [0010](0010-grouping-aggregation.md)      | v0.3.0   |
+| 数据聚合                 | ✅             | ✅ 已实现    | [0010](0010-grouping-aggregation.md)      | v0.3.0   |
 | 树形数据                 | ✅             | 📝 规划中    | TBD                                         | v0.6.0+  |
 | 主从表格                 | ✅             | 📝 规划中    | TBD                                         | v0.6.0+  |
 | **用户体验**             |
-| 主题定制                 | ✅             | 📝 规划中    | [0011](./completed/0011-theme-system.md)              | v0.4.0   |
-| 国际化 (i18n)            | ✅             | ✅ 已实现    | [0015](./completed/0015-internationalization.md) | v0.5.0   |
-| 可访问性 (a11y)          | ✅             | ✅ 已实现    | [0013](completed/0013-accessibility.md)             | v0.4.0   |
+| 主题定制                 | ✅             | 📝 规划中    | [0011](0011-theme-system.md)              | v0.4.0   |
+| 国际化 (i18n)            | ✅             | ✅ 已实现    | [0015](0015-internationalization.md) | v0.5.0   |
+| 可访问性 (a11y)          | ✅             | ✅ 已实现    | [0013](0013-accessibility.md)             | v0.4.0   |
 | **数据导出**             |
-| CSV 导出                 | ✅             | 📝 规划中    | [0014](./0014-data-export.md)               | v0.5.0   |
-| Excel 导出               | ✅             | 📝 规划中    | [0014](./0014-data-export.md)               | v0.5.0   |
+| CSV 导出                 | ✅             | 📝 规划中    | [0014](../0014-data-export.md)               | v0.5.0   |
+| Excel 导出               | ✅             | 📝 规划中    | [0014](../0014-data-export.md)               | v0.5.0   |
 | **框架集成**             |
 | 纯 JavaScript            | ✅             | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
 | React                    | ✅ (官方)      | ✅ 已实现    | [0001](./0001-ac-grid-architecture.md)      | v0.0.1   |
@@ -672,9 +676,9 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 | 功能       | RFC                                     | 状态      | 优先级 |
 | ---------- | --------------------------------------- | --------- | ------ |
-| 排序功能   | [RFC-0002](./completed/0002-sorting-feature.md)   | 🚧 实施中 | P0     |
-| 过滤功能   | [RFC-0003](./completed/0003-filtering-feature.md) | ✔️ 已完成 | P0     |
-| 列调整大小 | [RFC-0004](./completed/0004-column-resizing.md)   | ✔️ 已完成 | P1     |
+| 排序功能   | [RFC-0002](0002-sorting-feature.md)   | 🚧 实施中 | P0     |
+| 过滤功能   | [RFC-0003](0003-filtering-feature.md) | ✔️ 已完成 | P0     |
+| 列调整大小 | [RFC-0004](0004-column-resizing.md)   | ✔️ 已完成 | P1     |
 
 **交付物**：
 
@@ -692,9 +696,9 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 | 功能     | RFC                                     | 状态      | 优先级 |
 | -------- | --------------------------------------- | --------- | ------ |
-| 虚拟滚动 | [RFC-0005](./completed/0005-virtual-scrolling.md) | ✔️ 已完成 | P0     |
-| 分页功能 | [RFC-0006](./completed/0006-pagination.md)        | ✅ 已完成 | P0     |
-| 行选择   | [RFC-0007](./completed/0007-row-selection.md)     | 📝 待编写 | P1     |
+| 虚拟滚动 | [RFC-0005](0005-virtual-scrolling.md) | ✔️ 已完成 | P0     |
+| 分页功能 | [RFC-0006](0006-pagination.md)        | ✅ 已完成 | P0     |
+| 行选择   | [RFC-0007](0007-row-selection.md)     | 📝 待编写 | P1     |
 
 **交付物**：
 
@@ -712,9 +716,9 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 | 功能       | RFC                                        | 状态      | 优先级 |
 | ---------- | ------------------------------------------ | --------- | ------ |
-| 列固定     | [RFC-0008](./completed/0008-column-pinning.md) | ✔️ 已完成 | P1     |
-| 单元格编辑 | [RFC-0009](./completed/0009-cell-editing.md) | ✔️ 已完成 | P0     |
-| 分组和聚合 | [RFC-0010](./completed/0010-grouping-aggregation.md) | ✔️ 已完成 | P1     |
+| 列固定     | [RFC-0008](0008-column-pinning.md) | ✔️ 已完成 | P1     |
+| 单元格编辑 | [RFC-0009](0009-cell-editing.md) | ✔️ 已完成 | P0     |
+| 分组和聚合 | [RFC-0010](0010-grouping-aggregation.md) | ✔️ 已完成 | P1     |
 
 **交付物**：
 
@@ -732,9 +736,9 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 | 功能     | RFC                                       | 状态      | 优先级 |
 | -------- | ----------------------------------------- | --------- | ------ |
-| 主题系统 | [RFC-0011](./completed/0011-theme-system.md)        | 📝 待编写 | P0     |
+| 主题系统 | [RFC-0011](0011-theme-system.md)        | 📝 待编写 | P0     |
 | 键盘导航 | [RFC-0012](./0012-keyboard-navigation.md) | 📝 待编写 | P1     |
-| 可访问性 | [RFC-0013](completed/0013-accessibility.md)       | ✔️ 已完成 | P0     |
+| 可访问性 | [RFC-0013](0013-accessibility.md)       | ✔️ 已完成 | P0     |
 
 **交付物**：
 
@@ -752,8 +756,8 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 | 功能     | RFC                                        | 状态      | 优先级 |
 | -------- | ------------------------------------------ | --------- | ------ |
-| 数据导出 | [RFC-0014](./0014-data-export.md)          | 📝 待编写 | P1     |
-| 国际化   | [RFC-0015](./completed/0015-internationalization.md) | ✔️ 已完成 | P1     |
+| 数据导出 | [RFC-0014](../0014-data-export.md)          | 📝 待编写 | P1     |
+| 国际化   | [RFC-0015](0015-internationalization.md) | ✔️ 已完成 | P1     |
 
 **交付物**：
 
@@ -795,7 +799,7 @@ AC Grid 采用**渐进式功能扩展**策略，每个版本聚焦一组相关�
 
 > 📌 **灵活调整**: 版本规划会根据用户反馈和实际需求动态调整。每个功能的详细设计请参考对应的 RFC 文档。
 
-> 📖 **RFC 索引**: 查看 [docs/rfc/README.md](./README.md) 了解所有 RFC 的状态和详情。
+> 📖 **RFC 索引**: 查看 [docs/rfc/README.md](../README.md) 了解所有 RFC 的状态和详情。
 
 ## 已实现功能的 Bug 修复记录
 

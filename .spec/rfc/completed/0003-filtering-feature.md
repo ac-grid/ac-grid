@@ -5,7 +5,7 @@
 **作者**: Albert Li  
 **日期**: 2026-01-24  
 **最后更新**: 2026-07-26  
-**相关 RFC**: [0001-ac-grid-architecture](../0001-ac-grid-architecture.md), [0002-sorting-feature](./0002-sorting-feature.md)
+**相关 RFC**: [0001-ac-grid-architecture](0001-ac-grid-architecture.md), [0002-sorting-feature](./0002-sorting-feature.md)
 
 ### 实现状态（当前代码库）
 

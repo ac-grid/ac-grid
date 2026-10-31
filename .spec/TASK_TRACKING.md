@@ -83,19 +83,12 @@
 
 ## Active
 
-- [ ] Track RFC 0001: AC Grid architecture (RFC 0001)
-- [x] Track RFC 0010: Grouping and aggregation (RFC 0010)
-- [x] Track RFC 0011: Theme system (RFC 0011)
-- [x] Track RFC 0012: Keyboard navigation (RFC 0012)
-- [x] Track RFC 0013: Accessibility (RFC 0013)
 - [ ] Track RFC 0014: Data export (RFC 0014)
-- [x] Track RFC 0015: Internationalization (RFC 0015)
 - [ ] Track RFC 0016: Theme system architecture (RFC 0016)
 - [ ] Track RFC 0017: Framework bindings (RFC 0017)
 - [ ] Track RFC 0018: Grid state API (RFC 0018)
 - [ ] Track RFC 0020: Tree data (RFC 0020)
 - [ ] Track RFC 0021: Master/detail (RFC 0021)
-- [x] Track RFC 0022: Range selection (RFC 0022)
 - [ ] Track RFC 0024: Pivot mode (RFC 0024)
 - [ ] Track RFC 0025: Advanced Excel export (RFC 0025)
 - [ ] Track RFC 0026: Context and column menus (RFC 0026)
@@ -115,10 +108,6 @@
   - [ ] Implement RFC 0041: Pinned column theme and horizontal scroll demo (child of 0039) (RFC 0041)
   - [ ] Implement RFC 0042: Empty and loading overlay theme (child of 0039) (RFC 0042)
 
-
-
-
-
 ## Done
 - [x] Track RFC 0002: Sorting (RFC 0002)
 - [x] Track RFC 0003: Filtering (RFC 0003)
@@ -133,3 +122,17 @@
 - [x] Track RFC 0030: Formulas (RFC 0030)
 
 ---
+- [x] Track RFC 0001: AC Grid architecture (RFC 0001)
+
+- [x] Track RFC 0010: Grouping and aggregation (RFC 0010)
+
+- [x] Track RFC 0011: Theme system (RFC 0011)
+
+- [x] Track RFC 0012: Keyboard navigation (RFC 0012)
+
+- [x] Track RFC 0013: Accessibility (RFC 0013)
+
+- [x] Track RFC 0015: Internationalization (RFC 0015)
+
+- [x] Track RFC 0022: Range selection (RFC 0022)
+
