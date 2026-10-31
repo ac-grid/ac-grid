@@ -113,7 +113,7 @@ ac-grid/
 ## 文档
 
 - [项目路线图](./.spec/ROADMAP.md) - 开发计划和版本规划
-- [RFC 文档](./.spec/rfc/README.md) - 详细设计文档
+- [RFC 路线图](./.spec/ROADMAP.md) - 详细设计文档
 - [用户指南](./apps/site/public/docs/guide/) - 排序、过滤、主题等功能指南
   - [排序功能指南](./apps/site/public/docs/guide/features/sorting.md)（[RFC-0002](./.spec/rfc/completed/0002-sorting-feature.md)）
   - [过滤功能指南](./apps/site/public/docs/guide/features/filtering.md)（[RFC-0003](./.spec/rfc/completed/0003-filtering-feature.md)）

@@ -47,4 +47,4 @@ interface GridOptions {
 ## 参考资料
 
 - [AG Grid Tree Data](https://www.ag-grid.com/javascript-data-grid/tree-data/)
-- [PARITY_MATRIX](./PARITY_MATRIX.md)
+- [PARITY_MATRIX](../PARITY_MATRIX.md)

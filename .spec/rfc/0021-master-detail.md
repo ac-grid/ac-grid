@@ -38,4 +38,4 @@ interface GridOptions {
 ## 参考资料
 
 - [AG Grid Master Detail](https://www.ag-grid.com/javascript-data-grid/master-detail/)
-- [PARITY_MATRIX](./PARITY_MATRIX.md)
+- [PARITY_MATRIX](../PARITY_MATRIX.md)

@@ -64,4 +64,4 @@ Framework App → Adapter Component → <ac-grid> → @ac-grid/core
 ## 参考资料
 
 - [AG Grid Frameworks](https://www.ag-grid.com/javascript-data-grid/community-vs-enterprise/)
-- [PARITY_MATRIX](./PARITY_MATRIX.md)
+- [PARITY_MATRIX](../PARITY_MATRIX.md)

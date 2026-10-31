@@ -1,6 +1,6 @@
 ---
 name: multica-orca
-description: "Use when working on a Multica issue (ACG-N / MUL-N) for a repo that ALSO tracks RFCs in .spec/rfc/ISSUE_REGISTRY.md — the ac-grid pipeline. Teaches the agent how to run the full loop end-to-end while keeping the three state sources consistent: Multica issue status ↔ Orca worktree card status ↔ ISSUE_REGISTRY.md. Covers which CLI to use when (multica for issue truth, orca for worktree/orchestration), the sync direction (git PR merge → Multica status → registry writeback), status mapping between Orca workspace-status and Multica issue status, and the side-effect warnings (status changes enqueue agents, mentions trigger runs). Use when: starting work on an RFC issue, opening/closing a worktree for an issue, linking a PR, marking an issue done, or syncing ISSUE_REGISTRY."
+description: "Use when working on a Multica issue (ACG-N / MUL-N) for a repo that ALSO tracks RFCs in .spec/ISSUE_REGISTRY.md — the ac-grid pipeline. Teaches the agent how to run the full loop end-to-end while keeping the three state sources consistent: Multica issue status ↔ Orca worktree card status ↔ ISSUE_REGISTRY.md. Covers which CLI to use when (multica for issue truth, orca for worktree/orchestration), the sync direction (git PR merge → Multica status → registry writeback), status mapping between Orca workspace-status and Multica issue status, and the side-effect warnings (status changes enqueue agents, mentions trigger runs). Use when: starting work on an RFC issue, opening/closing a worktree for an issue, linking a PR, marking an issue done, or syncing ISSUE_REGISTRY."
 ---
 
 # Multica + Orca: Consistency Workflow
@@ -15,7 +15,7 @@ knowing who updates what, in which order.
 |--------|------|-----------|-----------|
 | **Git / GitHub PR** | fact | "is it merged?" | agent (commit, PR, merge) |
 | **Multica issue** (`multica`) | tracker | status, assignee, comments, pipeline metadata | agent via `multica` CLI |
-| **`.spec/rfc/ISSUE_REGISTRY.md`** | mirror | RFC→issue map, stage, registry "done" count | agent, after Multica update |
+| **`.spec/ISSUE_REGISTRY.md`** | mirror | RFC→issue map, stage, registry "done" count | agent, after Multica update |
 
 **Sync direction (never reverse):**
 
@@ -44,7 +44,7 @@ about to touch:
 multica issue get ACG-13 --output json          # Multica truth (status, assignee, metadata)
 multica issue pull-requests ACG-13 --output json
 multica issue metadata list ACG-13 --output json
-git log --oneline -5 -- .spec/rfc/ISSUE_REGISTRY.md   # last registry sync
+git log --oneline -5 -- .spec/ISSUE_REGISTRY.md   # last registry sync
 ```
 
 Confirm no drift before writing anything: registry status should match Multica
@@ -121,12 +121,12 @@ multica issue comment add ACG-13 --content-file ./note.md   # "merged via PR #16
 # (write comment bodies to a file first — never inline with backticks/$())
 
 # 2. Registry: update the row AND the sync header
-#    Edit .spec/rfc/ISSUE_REGISTRY.md:
+#    Edit .spec/ISSUE_REGISTRY.md:
 #      row:  | 0019 | Custom components | [ACG-13](...) | done | 5 |
 #      header: > **Synced**: 2026-08-16 (Multica pipeline — ACG-13 done)
 
 # 3. Commit the writeback as a chore(spec) commit
-git add .spec/rfc/ISSUE_REGISTRY.md && git commit -m "chore(spec): mark ACG-13 done in ISSUE_REGISTRY"
+git add .spec/ISSUE_REGISTRY.md && git commit -m "chore(spec): mark ACG-13 done in ISSUE_REGISTRY"
 ```
 
 If the PR is still open, stop at `in_review` — never mark done pre-merge.

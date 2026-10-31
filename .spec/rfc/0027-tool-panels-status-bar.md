@@ -39,4 +39,4 @@ interface GridOptions {
 ## 参考资料
 
 - [AG Grid Tool Panel](https://www.ag-grid.com/javascript-data-grid/tool-panel/)
-- [PARITY_MATRIX](./PARITY_MATRIX.md)
+- [PARITY_MATRIX](../PARITY_MATRIX.md)

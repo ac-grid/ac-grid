@@ -38,4 +38,4 @@ interface ColumnDef {
 ## 参考资料
 
 - [AG Grid Pivoting](https://www.ag-grid.com/javascript-data-grid/pivoting/)
-- [PARITY_MATRIX](./PARITY_MATRIX.md)
+- [PARITY_MATRIX](../PARITY_MATRIX.md)
