@@ -106,11 +106,10 @@ Touches: `**/*test*`, `packages/core/src/**`
 Before finishing the component-coverage commits, the new tests plus the full unit suite were run; 51 files and 509 tests passed. Logic-module 100% remains blocked by the 17 dead sites, and .wsx 100% remains blocked by transform helpers.
 
 ### Wait for reasongraph pre-push hook without bypassing
-Status: discussed — push follow-through after branch commits were ready
-Touches: `.husky/pre-push`
+Status: discussed — continues in-flight push before any PR
+Touches: `.husky/pre-push`, `.reasongraph/*`
 
-The push was blocked by the repository’s reasongraph pre-push hook. The agent chose to wait for that hook to finish rather than skip or bypass it, so remote update proceeds only under the repo’s normal pre-push checks.
+The pre-push hook is still writing and pushing session digests; a first hook-generated commit is already on the remote. Further remote actions are held until that push finishes, without skipping the hook.
 
-Considered/rejected: Bypassing the hook (for example with a no-verify push) was rejected in favor of letting the hook complete.
-Risk: Push remains blocked or delayed until the hook finishes successfully.
-Reviewer attention: Confirm the push completed only after the reasongraph pre-push hook succeeded and was not skipped.
+Risk: PR creation stays blocked while the hook queue drains.
+Reviewer attention: Confirm the hook finished cleanly and session digests are on the branch before a PR is opened.
