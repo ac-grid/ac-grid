@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "project": {
+    "id": "ac-grid",
+    "name": "ac-grid"
+  },
+  "scope": "Partial semantic review for RFC E2E coverage check only. Sources: RFC-0033, RFC-0034. Full AGENTS/persona catalog collected but not fully rule-extracted.",
+  "architectureBinding": {
+    "mapId": "ac-grid-rfc-e2e",
+    "mapRevision": 2,
+    "sourceRevision": "ddad6bd6aa76e0c0042ad46a40c5a82f0ac1f0d0"
+  },
+  "groups": [
+    {
+      "sourcePath": ".spec/rfc/0033-e2e-test-infrastructure.md",
+      "category": "testing",
+      "topic": {
+        "id": "e2e-infra",
+        "name": "E2E 基础设施"
+      },
+      "rules": [
+        {
+          "id": "rule-e2e-per-completed-rfc",
+          "name": "每个已完成 RFC 至少一个独立 E2E",
+          "anchor": "每个已完成 RFC 至少一个独立 E2E 测试。",
+          "explanation": "Registry done 不够；产品验收要求每个 completed RFC 有独立浏览器测试。",
+          "condition": "当 RFC 标记为完成或声称产品完成时",
+          "applicability": "applicable",
+          "verification": "对照 demos/react/e2e 中含该 RFC 编号的 test，并确认矩阵行存在。",
+          "modules": [
+            "e2e-harness",
+            "rfc-catalog",
+            "acceptance-matrix"
+          ],
+          "targetRole": "generic",
+          "roleReason": "验收义务跨规格与测试套件，无单一 runtime 角色。"
+        },
+        {
+          "id": "rule-e2e-real-interaction",
+          "name": "E2E 必须通过真实用户交互触发",
+          "anchor": "测试必须通过用户交互触发行为：点击、输入、滚轮、键盘或 PointerEvent。",
+          "explanation": "禁止仅调用内部函数或检查组件存在作为通过证据。",
+          "condition": "编写或评审任何 RFC E2E 用例时",
+          "applicability": "applicable",
+          "verification": "阅读测试：须有 click/type/wheel/keyboard/PointerEvent，并断言可观察状态变化。",
+          "modules": [
+            "e2e-harness"
+          ],
+          "targetRole": "generic",
+          "roleReason": "测试证据规则，非 UI 渲染角色。"
+        },
+        {
+          "id": "rule-e2e-matrix-complete",
+          "name": "RFC-0034 矩阵每行须有独立测试",
+          "anchor": "RFC-0034 矩阵中每个 RFC 都有独立测试。",
+          "explanation": "基础设施验收项要求矩阵覆盖与测试一一对应。",
+          "condition": "声称 RFC-0033 验收完成时",
+          "applicability": "applicable",
+          "verification": "枚举矩阵 RFC 列，确认每个有独立 Playwright test。",
+          "modules": [
+            "acceptance-matrix",
+            "e2e-harness"
+          ],
+          "targetRole": "generic",
+          "roleReason": "跨矩阵与套件的门禁义务。"
+        }
+      ]
+    },
+    {
+      "sourcePath": ".spec/rfc/0034-rfc-demo-acceptance-matrix.md",
+      "category": "testing",
+      "topic": {
+        "id": "acceptance-gate",
+        "name": "产品完成门槛"
+      },
+      "rules": [
+        {
+          "id": "rule-done-needs-e2e",
+          "name": "产品完成必须通过矩阵对应 demo E2E",
+          "anchor": "Registry 中的 `done` 只表示规格流程完成；产品完成还必须通过本矩阵对应的 demo E2E。",
+          "explanation": "不能把 TASK_TRACKING done 当作浏览器验收通过。",
+          "condition": "在产品验收报告中称 RFC 完成时",
+          "applicability": "applicable",
+          "verification": "矩阵证据列与最近一次 Playwright 结果一致；失败不得写通过。",
+          "modules": [
+            "task-registry",
+            "acceptance-matrix",
+            "e2e-harness"
+          ],
+          "targetRole": "generic",
+          "roleReason": "流程门禁，非单一代码层。"
+        },
+        {
+          "id": "rule-fail-not-pass",
+          "name": "失败行为不得继续标记为通过",
+          "anchor": "失败行为记录在矩阵中，不能继续标记为通过。",
+          "explanation": "RFC-0002 拖拽与 RFC-0004 resize 当前失败时不得升为完成。",
+          "condition": "更新矩阵证据列或宣称 RFC 完成时",
+          "applicability": "applicable",
+          "verification": "核对矩阵「当前缺陷」与证据列；失败项不得写通过。",
+          "modules": [
+            "acceptance-matrix"
+          ],
+          "targetRole": "generic",
+          "roleReason": "文档诚实性规则。"
+        },
+        {
+          "id": "rule-new-rfc-sync",
+          "name": "新增 RFC 须同步 demo、E2E 与矩阵行",
+          "anchor": "新增 RFC 必须同步新增 demo 页面、E2E 用例和本矩阵行。",
+          "explanation": "避免规格前进而验收面缺口扩大。",
+          "condition": "新增或将 RFC 标为完成时",
+          "applicability": "applicable",
+          "verification": "检查 demo 路由、e2e 文件标题、矩阵表三处同号。",
+          "modules": [
+            "rfc-catalog",
+            "demo-react-host",
+            "e2e-harness",
+            "acceptance-matrix"
+          ],
+          "targetRole": "generic",
+          "roleReason": "跨规格/宿主/测试的同步义务。"
+        }
+      ]
+    }
+  ]
+}
