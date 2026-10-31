@@ -167,3 +167,38 @@ Status: discussed — RFC 0038; not implemented
 Touches: `demos/react/**`
 
 RFC 0038 adds a browser e2e performance benchmark at 10K rows to validate virtual scrolling.
+
+### Open PRs for chore/spec-cleanup, cov/unit-100, and feat/rfc-0014-data-export
+Status: directed
+Touches: `.spec/**`, `.reasongraph/why/main.md`, `packages/core/**`
+
+Three pull requests were opened so remaining worktrees were not left without reviewable branches: #54 on chore/spec-cleanup for clearing stale .spec files, #55 on cov/unit-100 for RFC 0043–0046 (eight commits), and #56 on feat/rfc-0014-data-export for the data-export work (four commits). Remaining PR-linked worktrees were left in place to be removed with post-pr after merge.
+
+Risk: Merging both #55 and #56 without rebasing will duplicate shared history.
+Reviewer attention: Confirm each PR’s head matches the intended worktree branch and that merge order accounts for the shared RFC commit.
+
+### Delete docs/rfc-coverage-100 after verifying its tip is contained in cov/unit-100
+Status: discussed
+Touches: `.spec/**`, `packages/core/**`
+
+Local branch docs/rfc-coverage-100 was force-deleted after confirming its only tip commit 070df2f is already an ancestor of cov/unit-100 (the #55 branch). Keeping a parallel local tip would only duplicate the RFC 0043–0046 specs commit already carried on the coverage PR.
+
+Considered/rejected: Retaining docs/rfc-coverage-100 as a separate local branch was rejected because that sole commit is already reachable from cov/unit-100.
+Risk: Anyone still pointing tools at the deleted local branch name will need to recreate it from 070df2f.
+
+### Remove merged or empty local feature branches and the unused dragfix worktree
+Status: discussed
+Touches: `.reasongraph/**`, `.spec/**`
+
+Worktree ac-grid-dragfix and branch fix/column-drag-reorder were removed because they had no commits beyond an auto-generated file change. Branches feat/rfc-0019-custom-components and feat/rfc-scroll-sync were deleted after confirming their tips matched already-merged PR heads (#16 and #17). The cleanup left the main checkout plus worktrees tied to open PRs.
+
+Considered/rejected: Keeping the merged feature branches or the empty dragfix worktree was rejected because they added local clutter with no unmerged work.
+
+### Rebase the second of #55/#56 after the first merges because both carry 070df2f
+Status: discussed — merge-order constraint noted during cleanup
+Touches: `.spec/**`, `packages/core/**`
+
+Both cov/unit-100 (#55) and feat/rfc-0014-data-export (#56) include commit 070df2f (the RFC 0043–0046 specs commit). After one merges, the other must be rebased so the shared commit does not land twice on main.
+
+Risk: Merging both without a rebase introduces a duplicate specs commit and noisy history.
+Reviewer attention: After the first of #55/#56 merges, verify the second is rebased onto updated main before merge.

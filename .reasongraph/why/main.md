@@ -202,3 +202,107 @@ Touches: `.reasongraph/state/**`
 Files under .reasongraph/state had been staged as additions but were not in HEAD. git restore --staged was used so the ignore rules take effect without removing the on-disk files. No commit was made.
 
 Risk: If those paths are re-added to the index before the nested gitignore is committed, session state can land in git again.
+
+### Fast-forward main and delete local fix/inline-editing-bug after PR #45 merges
+Status: directed
+Touches: `.reasongraph/why/main.md`, `fix-inline-editing-bug.md`
+
+The required order is to check out main and update it from the remote before deleting the already-merged feature branch. An earlier reverse order left HEAD detached instead of on main; the correction is to get this directory onto main first, then continue cleanup.
+
+Reviewer attention: Confirm this working tree is on main (not detached) before any further branch deletions.
+
+### Update main from the ac-grid-main worktree; leave this checkout detached at that tip
+Status: discussed — follows from directed cleanup when main is locked in another worktree
+Touches: `.reasongraph/why/fix-inline-editing-bug.md`
+
+main was already checked out in the ac-grid-main worktree, so the pull/fast-forward happened there instead of switching branches in the current tree. The current worktree was left on a detached HEAD at the same main tip so the update could finish without fighting the other checkout.
+
+Considered/rejected: Forcing a main checkout in the current worktree was rejected because git already had main bound to ac-grid-main.
+Risk: Detached HEAD in the feature worktree can confuse later local commits if someone forgets to create or switch to a branch first.
+
+### Preserve the untracked why digest while cleaning the merged branch
+Status: discussed
+Touches: `.reasongraph/why/main.md`, `fix-inline-editing-bug.md`
+
+While moving this directory onto main and syncing with origin/main, untracked why digest files including .reasongraph/why/main.md and fix-inline-editing-bug.md were kept in place rather than discarded by checkout or cleanup.
+
+### Remove extra git worktrees; keep only this checkout
+Status: directed
+Touches: `../ac-grid-cov`, `../ac-grid-specclean`, `../ac-grid-tmp-rfc-0014-data-export`, `../ac-grid-tmp-rfc-0008-column-pinning`
+
+After remotes were updated, the four temporary worktrees used for rebase and conflict resolution were force-removed and the local feat/rfc-0014-data-export and feat/rfc-0008-column-pinning branches were deleted, leaving only the primary checkout.
+
+Risk: Remote feature branches may still exist until separately deleted.
+
+### Leave dirty sibling worktrees in place rather than delete them
+Status: agent-initiated — not requested in plan or prompts
+Touches: `ac-grid-cov`, `ac-grid-specclean`
+
+After removing the detached surplus worktree, ac-grid-cov and ac-grid-specclean were left alone because ac-grid-cov still had uncommitted and untracked files; deleting them would risk data loss. No explicit rationale beyond that preservation concern was recorded for keeping both.
+
+Considered/rejected: Immediate deletion of all remaining worktrees was rejected to avoid losing uncommitted work under ac-grid-cov.
+Risk: Leftover worktrees continue to violate the no-worktree preference until they are cleaned after their dirty state is handled.
+Reviewer attention: Confirm whether ac-grid-cov and ac-grid-specclean should still be removed once their local changes are committed, stashed, or intentionally discarded.
+
+### Leave local main one commit ahead of origin/main after the checkout fix
+Status: discussed
+Touches: `.reasongraph/why/main.md`
+
+After switching this directory to main and clearing the detached worktree, local main was reported one commit ahead of origin/main at 2ec3c49. No push or reset of that tip was performed in this pass.
+
+Reviewer attention: Confirm whether 2ec3c49 should stay local-only, be pushed, or be dropped relative to origin/main.
+
+### Open PR #57 for feat/rfc-0008-column-pinning against main
+Status: directed
+Touches: `packages/core/*`, `.git`
+
+The agent pushed feat/rfc-0008-column-pinning and opened a PR onto main so the column-pinning branch could be reviewed through GitHub.
+
+### Rebase open PR worktrees onto origin/main before mergeability checks
+Status: discussed
+Touches: `.spec/rfc/README.md`, `.spec/rfc/PARITY_MATRIX.md`, `skills/ac-grid/references/features.md`, `packages/core/test/pinning.test.ts`
+
+Remaining PR branches were rebased onto fetched origin/main so conflict and mergeable status reflected current main rather than stale bases. Specclean and export branches hit RFC index conflicts; the cov branch needed working-tree cleanup before rebase could proceed.
+
+Reviewer attention: Confirm each rebased PR tip still carries only its intended commits relative to main.
+
+### Resolve specclean RFC index conflicts by dropping README and taking main PARITY_MATRIX
+Status: discussed
+Touches: `.spec/rfc/README.md`, `.spec/PARITY_MATRIX.md`, `.spec/rfc/PARITY_MATRIX.md`
+
+During rebase of the spec-cleanup branch, .spec/rfc/README.md was removed and PARITY_MATRIX was taken from the incoming main side so the index matched upstream layout after the conflict.
+
+### Move cov init artifacts aside and stash so rebase onto main can finish
+Status: discussed — unblock rebase of cov/unit-100
+Touches: `.reasongraph/state/`, `.reasongraph/config.json`, `.codegraph`, `skills/ac-grid/references/features.md`
+
+Uncommitted and untracked init outputs blocked checkout during rebase of the coverage branch. They were stashed and moved under a temp artifacts directory so rebase could continue, then the features.md conflict was resolved and the rebase completed.
+
+Considered/rejected: Leaving the untracked .reasongraph/state and .codegraph trees in place was rejected because git refused to overwrite them on checkout.
+Risk: Artifacts remain only in stash/temp; they were not committed on the coverage branch.
+
+### Update CellEditor unit tests for blur no longer saving after #45
+Status: discussed
+Touches: `packages/core/test/cov-comp-dd-celleditor.test.ts`, `packages/core/src/components/CellEditor.wsx`
+
+Rebasing the coverage branch onto main pulled CellEditor behavior from #45 where blur no longer auto-saves. Two cell-editor tests failed; they were rewritten to match the new blur semantics. Full core vitest then reported 519 passed across the suite before force-with-lease push of cov/unit-100.
+
+Reviewer attention: Confirm the revised tests assert the #45 blur contract and do not reintroduce save-on-blur expectations.
+
+### Close PR #56 after rebase showed RFC-0014 commits already on main
+Status: discussed
+Touches: `.spec/rfc/PARITY_MATRIX.md`, `packages/core/test/pinning.test.ts`
+
+After rebasing feat/rfc-0014-data-export, all four branch commits were already present on main and the tip matched upstream, so the open PR was empty and was closed rather than force-merged.
+
+### Abort the RFC-0008 rebase and close the duplicate pinning PR
+Status: discussed
+Touches: `packages/core/src/components/Grid.wsx`, `packages/core/src/utils/create-grid.*`
+
+Column pinning from RFC-0008 was already on main via the earlier merge. Continuing a conflicting rebase of the stale branch was aborted; the duplicate PR was closed instead of forcing an obsolete implementation through.
+
+### Leave init-generated uncommitted tooling files out of PR commits
+Status: discussed
+Touches: `.gitignore`, `AGENTS.md`, `.codegraph/`, `.reasongraph/`
+
+Init-produced untracked files were kept out of commits on the coverage work; they remain recoverable from stash and the temp artifacts directory rather than landing in the rebased PR history.
