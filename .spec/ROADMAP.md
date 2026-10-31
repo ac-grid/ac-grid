@@ -484,3 +484,7 @@ MIT License
 | 0040 | [Selection column order (child of 0039)](rfc/0040-selection-column-order.md) | Approved |
 | 0041 | [Pinned column theme and horizontal scroll demo (child of 0039)](rfc/0041-pinned-column-theme.md) | Approved |
 | 0042 | [Empty and loading overlay theme (child of 0039)](rfc/0042-overlay-theme.md) | Approved |
+| 0043 | [Full coverage to 100% (Umbrella)](rfc/0043-coverage-100-umbrella.md) | Approved |
+| 0044 | [Unit coverage for logic modules (child of 0043)](rfc/0044-unit-coverage-logic.md) | Approved |
+| 0045 | [E2E coverage of P0, P1 and P2 features (child of 0043)](rfc/0045-e2e-coverage-collection.md) | Approved |
+| 0046 | [Unit coverage for components (child of 0043)](rfc/0046-component-coverage-closure.md) | Approved |

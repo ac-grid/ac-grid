@@ -45,8 +45,5 @@ export function flexRender<T>(
     if (typeof render === "boolean") {
         return render ? "true" : "false";
     }
-    if (render === undefined) {
-        return null;
-    }
     return render;
 }

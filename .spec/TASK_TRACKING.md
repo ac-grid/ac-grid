@@ -106,6 +106,11 @@
   - [ ] Implement RFC 0040: Selection column order (child of 0039) (RFC 0040)
   - [ ] Implement RFC 0041: Pinned column theme and horizontal scroll demo (child of 0039) (RFC 0041)
   - [ ] Implement RFC 0042: Empty and loading overlay theme (child of 0039) (RFC 0042)
+- [ ] Implement RFC 0043: Full coverage to 100% (Umbrella) (RFC 0043)
+  - [ ] Implement RFC 0044: Unit coverage for logic modules (child of 0043) (RFC 0044)
+  - [ ] Implement RFC 0045: E2E coverage of P0, P1 and P2 features (child of 0043) (RFC 0045)
+  - [ ] Implement RFC 0046: Unit coverage for components (child of 0043) (RFC 0046)
+
 
 ## Done
 - [x] Track RFC 0002: Sorting (RFC 0002)

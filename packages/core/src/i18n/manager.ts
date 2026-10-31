@@ -143,7 +143,7 @@ export class I18nManager {
             return this.languagePacks.get(short)!;
         }
         // 回退到 en-US
-        return this.languagePacks.get("en-US") || enUS;
+        return this.languagePacks.get("en-US")!;
     }
 
     /**
