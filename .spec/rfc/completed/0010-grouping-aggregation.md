@@ -5,7 +5,7 @@
 **作者**: Albert Li  
 **日期**: 2026-01-24  
 **完成日期**: 2026-10-08  
-**相关 RFC**: [0001-ac-grid-architecture](../0001-ac-grid-architecture.md), [0002-sorting-feature](../completed/0002-sorting-feature.md), [0035-rfc-0010-e2e-coverage](../0035-rfc-0010-e2e-coverage.md)
+**相关 RFC**: [0001-ac-grid-architecture](0001-ac-grid-architecture.md), [0002-sorting-feature](../completed/0002-sorting-feature.md), [0035-rfc-0010-e2e-coverage](../0035-rfc-0010-e2e-coverage.md)
 
 ## 目录
 

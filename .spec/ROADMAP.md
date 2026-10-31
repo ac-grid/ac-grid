@@ -408,7 +408,7 @@ v1.0.0 ░░░░░░░░░░░░░░░░░░░░░░░░�
 
 - [RFC 索引](./rfc/README.md) - 所有 RFC 列表和状态
 - [快速开始指南](./rfc/GETTING-STARTED.md) - 如何开始开发
-- [架构文档](./rfc/0001-ac-grid-architecture.md) - 总体架构设计
+- [架构文档](rfc/completed/0001-ac-grid-architecture.md) - 总体架构设计
 - [开发规范](./CLAUDE.md) - 编码规范和最佳实践
 - [项目 README](./README.md) - 项目介绍和使用指南
 
