@@ -202,3 +202,28 @@ Touches: `.reasongraph/state/**`
 Files under .reasongraph/state had been staged as additions but were not in HEAD. git restore --staged was used so the ignore rules take effect without removing the on-disk files. No commit was made.
 
 Risk: If those paths are re-added to the index before the nested gitignore is committed, session state can land in git again.
+
+### Fast-forward main and delete local fix/inline-editing-bug after PR #45 merges
+Status: directed
+Touches: `.reasongraph/why/fix-inline-editing-bug.md`
+
+PR #45 was already merged, so main was fast-forwarded to a062b38 and the local fix/inline-editing-bug branch was deleted. The remote feature branch was already gone, so only the local branch needed cleanup.
+
+Reviewer attention: Confirm local main matches the merged tip and that fix/inline-editing-bug is gone locally.
+
+### Update main from the ac-grid-main worktree; leave this checkout detached at that tip
+Status: discussed — follows from directed cleanup when main is locked in another worktree
+Touches: `.reasongraph/why/fix-inline-editing-bug.md`
+
+main was already checked out in the ac-grid-main worktree, so the pull/fast-forward happened there instead of switching branches in the current tree. The current worktree was left on a detached HEAD at the same main tip so the update could finish without fighting the other checkout.
+
+Considered/rejected: Forcing a main checkout in the current worktree was rejected because git already had main bound to ac-grid-main.
+Risk: Detached HEAD in the feature worktree can confuse later local commits if someone forgets to create or switch to a branch first.
+
+### Preserve the untracked why digest while cleaning the merged branch
+Status: discussed
+Touches: `.reasongraph/why/fix-inline-editing-bug.md`
+
+The untracked .reasongraph/why/fix-inline-editing-bug.md file was left in the working tree during the branch cleanup so the privacy-safe digest for the merged work was not discarded with the branch.
+
+Risk: Leaving untracked why files around can clutter status until they are intentionally committed or removed.
