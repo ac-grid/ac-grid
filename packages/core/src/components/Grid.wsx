@@ -2763,7 +2763,8 @@ export class Grid extends LightComponent {
 
         this.editingState = { rowId, columnId, value: initialValue, error: undefined };
         this._editingConfig.onEditStart?.(rowId, columnId);
-        this.updateTable();
+        // editingState is @state, so re-render happens automatically;
+        // calling updateTable() again can cause the editor to disappear.
     }
 
     public saveEdit(newValue: unknown) {
@@ -2786,6 +2787,26 @@ export class Grid extends LightComponent {
 
         const editorType = resolveEditorType(columnDef);
         const coercedValue = coerceEditorValue(newValue, editorType);
+        
+        // Update internal data
+        if (row) {
+            const nextData = [...this.gridData];
+            const original = nextData[row.index];
+            if (original && typeof original === "object") {
+                const updated = { ...original };
+                const path = columnId.split(".");
+                let target = updated;
+                for (const key of path.slice(0, -1)) {
+                    target[key] = { ...(target[key] ?? {}) };
+                    target = target[key];
+                }
+                target[path[path.length - 1]] = coercedValue;
+                nextData[row.index] = updated;
+                this._data = nextData;
+                this.gridData = nextData;
+            }
+        }
+        
         this._editingConfig.onEditSave?.(rowId, columnId, coercedValue);
         this.cancelEdit(false);
     }

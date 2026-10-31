@@ -6,6 +6,7 @@ Option keys for `createGrid`. Shapes come from `packages/core/src/utils/create-g
 
 | RFC | Feature | Option |
 | --- | --- | --- |
+| 0001 | AC Grid architecture | Web Components core, column/row data model, drag-and-drop reordering |
 | 0002 | Sorting | `sorting: { enabled: true }`; Shift-click sorts by several columns |
 | 0003 | Filtering | `filtering: { enabled: true }`; set `filterType: "text" \| "number"` per column; global search: `grid.setGlobalFilter(text)` |
 | 0004 | Column resizing | `resizing: { enabled: true, defaultColumnWidth: 150, minColumnWidth: 60 }` |
@@ -18,6 +19,7 @@ Option keys for `createGrid`. Shapes come from `packages/core/src/utils/create-g
 | 0011 | Advanced themes | `theme: "light"`, `themeTransition: true`, `themeTransitionDuration: 150`; `grid.previewTheme(name)`, `grid.cancelPreview()`, `grid.applyTheme(name)` |
 | 0012 | Keyboard navigation | `enableKeyboardNavigation: true`, `keyboardNavigationMode` |
 | 0013 | Accessibility | `role="grid"`/`columnheader`/`gridcell` with `aria-rowindex`, `aria-colindex`, `aria-sort`, `aria-selected`; live `role="status"` announces sorting; options `ariaLabel`, `ariaDescription` |
+| 0014 | Data export | `grid.exportToCSV({ fileName, exportMode: "all" \| "selected" \| "visible", includeHeaders, columns, formatter })` |
 | 0015 | Internationalization | `i18n: { locale: "zh-CN", messages: zhCN.messages }` |
 | 0016 | Theme system | CSS variables such as `--ac-grid-bg-header`; built-in themes `light`, `dark`, `ocean`, `forest`, `sunset`, `bamboo`, `violet` |
 | 0019 | Custom components | `components: { noRowsOverlayComponent, fullWidthRowComponent, isFullWidthRow, isLoading }`; column `headerComponent` |
