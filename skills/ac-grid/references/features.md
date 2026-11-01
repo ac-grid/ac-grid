@@ -26,6 +26,7 @@ Option keys for `createGrid`. Shapes come from `packages/core/src/utils/create-g
 | 0022 | Range selection | `rangeSelection: { enabled: true }`; read with `grid.getCellRanges()` |
 | 0023 | Clipboard | `clipboard: { enabled: true, suppressClipboardApi, copyToClipboard, readFromClipboard, processCellForClipboard, processCellFromClipboard }`; Ctrl/Cmd+C copies the clicked cell, Ctrl/Cmd+V pastes from it |
 | 0030 | Formulas | `createFormulaEngineFromMatrix(matrix)` then `engine.getValue(row, col)`; cycles return `#CYCLE!` |
+| 0047 | Sorting disable | `sorting: { enabled: false }` turns sorting off for every column: header clicks do not reorder rows and no sort indicator renders |
 
 ## Not implemented (draft or stretch)
 
