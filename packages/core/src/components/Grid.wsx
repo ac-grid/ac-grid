@@ -44,6 +44,7 @@ import {
 import type { GridSelectionConfig } from "../types/selection";
 import type { GridClipboardConfig } from "../types/clipboard";
 import type { CellRange, GridRangeSelectionConfig } from "../types/range-selection";
+import type { RangeChartData } from "../types/range-chart";
 import type { GridPinningConfig } from "../types/pinning";
 import type { GridEditingConfig } from "../types/editing";
 import type { GridGroupingConfig } from "../types/grouping";
@@ -557,6 +558,27 @@ export class Grid extends LightComponent {
     }
     public getCellRanges(): CellRange[] {
         return this.cellRanges.map((range) => ({ ...range, columns: [...range.columns] }));
+    }
+    public getRangeChartData(range?: CellRange): RangeChartData {
+        const selectedRange = range ?? this.cellRanges[0];
+        const rows = this.table?.getRowModel().rows ?? [];
+        if (!selectedRange || rows.length === 0) return { columns: [], rowCount: 0 };
+
+        const columns = this.table?.getVisibleLeafColumns() ?? [];
+        const selectedColumnIds = new Set(selectedRange.columns);
+        const start = Math.max(0, selectedRange.startRow);
+        const end = Math.min(rows.length - 1, selectedRange.endRow);
+        const selectedRows = rows.slice(start, end + 1);
+
+        return {
+            columns: columns
+                .filter((column) => selectedColumnIds.has(column.id))
+                .map((column) => ({
+                    id: column.id,
+                    values: selectedRows.map((row) => row.getValue(column.id)),
+                })),
+            rowCount: selectedRows.length,
+        };
     }
     public clearCellRanges() {
         this.rangeAnchor = null;

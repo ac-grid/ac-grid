@@ -111,7 +111,7 @@
 | 右键/列菜单              | Enterprise | 📝      | [0026](./rfc/0026-context-menu-column-menu.md)        | v1.1.0 |
 | 工具面板 / 状态栏        | Enterprise | 📝      | [0027](./rfc/0027-tool-panels-status-bar.md)          | v1.2.0 |
 | 高级过滤 (Set/Multi)     | Enterprise | 📝      | [0028](./rfc/0028-advanced-filtering.md)              | v1.2.0 |
-| 集成图表                 | Enterprise | 📝      | [0029](./rfc/0029-integrated-charts.md)               | v1.2.0 |
+| 集成图表                 | Enterprise | ✅      | [0029](./rfc/completed/0029-integrated-charts.md)              | v1.2.0 |
 
 ---
 
