@@ -1,0 +1,30 @@
+{
+  "name": "@ac-grid/charts",
+  "version": "1.2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "@ac-grid/core": "workspace:^",
+    "chart.js": "^4.0.0",
+    "echarts": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "chart.js": { "optional": true },
+    "echarts": { "optional": true }
+  },
+  "devDependencies": {
+    "@ac-grid/core": "workspace:*",
+    "typescript": "^5.6.2"
+  }
+}

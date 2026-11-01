@@ -93,7 +93,6 @@
 - [ ] Track RFC 0026: Context and column menus (RFC 0026)
 - [ ] Track RFC 0027: Tool panels and status bar (RFC 0027)
 - [ ] Track RFC 0028: Advanced filtering (RFC 0028)
-- [ ] Track RFC 0029: Integrated charts (RFC 0029)
 - [ ] Track RFC 0031: Server-side row model (RFC 0031)
 - [ ] Track RFC 0032: AI toolkit (RFC 0032)
 - [ ] Track RFC 0033: E2E test infrastructure (RFC 0033)
@@ -110,7 +109,6 @@
   - [ ] Implement RFC 0044: Unit coverage for logic modules (child of 0043) (RFC 0044)
   - [ ] Implement RFC 0045: E2E coverage of P0, P1 and P2 features (child of 0043) (RFC 0045)
   - [ ] Implement RFC 0046: Unit coverage for components (child of 0043) (RFC 0046)
-
 
 ## Done
 - [x] Track RFC 0002: Sorting (RFC 0002)
@@ -140,3 +138,4 @@
 
 - [x] Track RFC 0022: Range selection (RFC 0022)
 - [x] Track RFC 0014: Data export (RFC 0014) ✅ Completed
+- [x] Track RFC 0029: Integrated charts (RFC 0029)
