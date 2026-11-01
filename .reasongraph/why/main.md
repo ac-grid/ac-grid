@@ -1,6 +1,6 @@
 # Why: main
 
-<!-- reasongraph:v1 generated 2026-10-31 — review before sharing; edit freely, edits are preserved -->
+<!-- reasongraph:v1 generated 2026-11-01 — review before sharing; edit freely, edits are preserved -->
 
 ## Intent
 Land the demo and E2E remediation onto main through develop, convert the stray virtual-scroll test plan into RFC-0038, specify P1 demo defects as umbrella RFC-0039 with children 0040–0042, and archive RFC-0001.
@@ -283,23 +283,23 @@ Risk: Artifacts remain only in stash/temp; they were not committed on the covera
 
 ### Update CellEditor unit tests for blur no longer saving after #45
 Status: discussed
-Touches: `packages/core/test/cov-comp-dd-celleditor.test.ts`, `packages/core/src/components/CellEditor.wsx`
+Touches: `**/CellEditor*`
 
-Rebasing the coverage branch onto main pulled CellEditor behavior from #45 where blur no longer auto-saves. Two cell-editor tests failed; they were rewritten to match the new blur semantics. Full core vitest then reported 519 passed across the suite before force-with-lease push of cov/unit-100.
-
-Reviewer attention: Confirm the revised tests assert the #45 blur contract and do not reintroduce save-on-blur expectations.
+Two CellEditor unit tests were rewritten because blur no longer auto-saves after the inline-editing change. The full unit suite then passed at 52 files and 519 tests.
 
 ### Close PR #56 after rebase showed RFC-0014 commits already on main
 Status: discussed
-Touches: `.spec/rfc/PARITY_MATRIX.md`, `packages/core/test/pinning.test.ts`
+Touches: `.spec/rfc/0014*`, `**/feature-matrix.json`
 
-After rebasing feat/rfc-0014-data-export, all four branch commits were already present on main and the tip matched upstream, so the open PR was empty and was closed rather than force-merged.
+After rebase the RFC-0014 export branch matched main and the PR was empty, so it was closed instead of force-merged.
 
 ### Abort the RFC-0008 rebase and close the duplicate pinning PR
 Status: discussed
-Touches: `packages/core/src/components/Grid.wsx`, `packages/core/src/utils/create-grid.*`
+Touches: `.spec/rfc/0008*`
 
-Column pinning from RFC-0008 was already on main via the earlier merge. Continuing a conflicting rebase of the stale branch was aborted; the duplicate PR was closed instead of forcing an obsolete implementation through.
+Column pinning had already landed on main through an earlier PR. The leftover feat/rfc-0008-column-pinning branch conflicted with main, so PR #57 was closed without merging.
+
+Considered/rejected: Force-merging the conflicting old pinning branch was rejected.
 
 ### Leave init-generated uncommitted tooling files out of PR commits
 Status: discussed
@@ -307,11 +307,105 @@ Touches: `.gitignore`, `AGENTS.md`, `.codegraph/`, `.reasongraph/`
 
 Init-produced untracked files were kept out of commits on the coverage work; they remain recoverable from stash and the temp artifacts directory rather than landing in the rebased PR history.
 
-### Verify PR #58 merge status and sync the checkout to latest main before deleting the branch
-Status: discussed — follows merge notice; no tool calls in this slice yet
-Touches: `.git/*`
+### Restrict .spec/rfc to NNNN-*.md files and delete superseded index docs
+Status: directed
+Touches: `.spec/rfc/README.md`, `.spec/rfc/roadmap.md`, `.spec/rfc/SUMMARY.md`, `.spec/rfc/GETTING-STARTED.md`, `.spec/rfc/RFC-TEMPLATE.md`, `.spec/0010-kickoff-brief.md`, `.spec/ROADMAP.md`
 
-After the merge notice for PR #58, the agent planned to confirm the PR is merged on the remote, fast-forward or reset the local checkout onto the updated main tip, and only then consider deleting the feature branch. Unmerged local commits would be checked first so cleanup does not drop work still unique to the branch.
+Under specify, .spec/rfc/ is reserved for NNNN-*.md RFCs and the live index is .spec/ROADMAP.md. Legacy README, roadmap, SUMMARY, GETTING-STARTED, RFC-TEMPLATE, and the completed 0010 kickoff brief were deleted because ROADMAP and specify deliver already replace them.
 
-Risk: Deleting the local branch before verifying merge and unmerged commits could discard commits not yet on main.
-Reviewer attention: Confirm PR #58 is on origin/main and the local checkout matches that tip before any branch deletion.
+Considered/rejected: Keeping the old index and template docs beside ROADMAP was rejected as duplicated layout.
+
+### Relocate PARITY_MATRIX and ISSUE_REGISTRY to the .spec root
+Status: discussed
+Touches: `.spec/PARITY_MATRIX.md`, `.spec/ISSUE_REGISTRY.md`, `.spec/rfc/*`
+
+PARITY_MATRIX.md and ISSUE_REGISTRY.md stay referenced from ROADMAP, TASK_TRACKING, many RFCs, and multica-orca docs. They were moved from rfc/ to the .spec root so rfc/ can stay NNNN-only without dropping those shared registries.
+
+Risk: Callers that still resolve the old rfc/ paths will break until their links are updated.
+Reviewer attention: Confirm inbound links from ROADMAP, RFCs, and related docs point at the .spec-root locations.
+
+### Repair RFC-0022 PARITY_MATRIX relative links
+Status: discussed — separate commit on PR #54
+Touches: `.spec/rfc/0022*`, `.spec/PARITY_MATRIX.md`
+
+RFC-0022 had broken PARITY_MATRIX links after the registry move. Those links were fixed in their own commit on the .spec cleanup PR.
+
+### Drop RFC-0014 from feature-matrix pending after it landed on main
+Status: discussed
+Touches: `**/feature-matrix.json`
+
+RFC-0014 is already on main and marked completed on ROADMAP. Leaving it as pending made the e2e feature guard treat it as stale, so that pending entry was removed from feature-matrix.json.
+
+### Leave init-generated uncommitted tooling files out of PR commits (updated)
+Status: discussed
+Touches: `.gitignore`, `AGENTS.md`
+
+Init-generated tooling files such as .gitignore and AGENTS.md were left uncommitted and were not included in the cleanup or coverage PR commits. Whether they remain on the main checkout after merge was left unverified.
+
+Reviewer attention: Confirm whether those untracked init artifacts are still present on the main worktree.
+
+### Remove extra git worktrees; keep only this checkout (updated)
+Status: directed
+Touches: `.`
+
+After PR #54 and #55 merged and the stale feature PRs closed, extra worktrees and local branches (including cov/unit-100, chore/spec-cleanup, chore/submit-all-local-main, and test) were removed so only the main checkout remains, matching origin/main. Remote feat/rfc-0008-column-pinning and feat/rfc-0014-data-export were deleted.
+
+### 为 sorting.enabled=false 建立 RFC-0047 并限定修复范围
+Status: discussed
+Touches: `.spec/rfc/0047-sorting-enabled-config.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
+
+The change was treated as a behavior fix because the existing API already exposed the option and its JSDoc described the default. RFC-0047 tracked the fix without changing the API shape.
+
+### Cover disabled sorting with a browser end-to-end test
+Status: discussed
+Touches: `rfc-validation.spec.ts`
+
+The end-to-end case disables sorting, clicks a column header twice, and checks that row order and sort indicators remain unchanged. It reproduced the defect before the fix and passed afterward.
+
+### Document sorting.enabled false in the feature reference
+Status: discussed
+Touches: `features.md`
+
+The feature reference now states that `enabled: false` disables sorting for all columns.
+
+### Build ReviewGraph data outside the repository
+Status: discussed
+Touches: `ReviewGraph data directory`
+
+ReviewGraph data was built outside the target repository to avoid adding generated index files to its working tree. The recorded build contained 1,581 nodes.
+
+### Initialize IssueGraph in stealth mode
+Status: discussed
+Touches: `.issuegraph/`
+
+Stealth initialization created the IssueGraph index and added it to `.git/info/exclude`, keeping generated index files out of repository commits.
+
+### Add an RFC-0047 validation demo and feature row for completed-RFC coverage
+Status: discussed
+Touches: `demos/react/src/rfcValidationDemos.ts`, `skills/ac-grid/references/features.md`
+
+The completed-RFC coverage guards require each completed RFC to have both a validation demo and a feature-reference row. RFC-0047 lacked both, so CI failed even though local end-to-end checks passed while the RFC was still Draft. The proposed repair was to add the RFC to the demo order and add a dedicated `0047` row.
+
+### Add an RFC-0047 validation demo and feature row for completed-RFC coverage
+Status: discussed — CI repair proposed; not yet applied
+Touches: `demos/react/src/rfcValidationDemos.ts`, `skills/ac-grid/references/features.md`
+
+The CI failure showed that completed RFCs are checked for both a validation demo and a skill feature row. Local checks had run before RFC-0047 entered the completed set, so they did not exercise these guards. The stated next step was to add both coverage entries in the existing PR worktree.
+
+### Keep developer API reference documentation separate from RFC-0047
+Status: discussed
+Touches: `.spec/rfc/0047-sorting-enabled-config.md`, `docs/*`, `apps/site/*`
+
+The change fixes existing sorting behavior without changing the API shape, so RFC-0047 only needs the existing feature reference updated. A generated API reference for developers would be a separate documentation effort; no implementation was recorded.
+
+### Disable table sorting when sortingConfig.enabled is false
+Status: discussed
+Touches: `Grid.wsx`
+
+The table receives `enableSorting: false` when sorting is disabled, so header clicks cannot change row order or show sort indicators. The change fixes the behavior with a four-line update.
+
+### Add an RFC-0047 validation demo and feature row for completed-RFC coverage (updated)
+Status: discussed
+Touches: `demos/react/src/rfcValidationDemos.ts`, `features.md`, `coverage.spec.ts`
+
+Completed-RFC coverage checks require each archived RFC to have a validation demo and a feature-reference row. The initial changes lacked RFC-0047-specific entries, so local checks passed while CI failed after the RFC was archived. The proposed coverage fix was not completed in the transcript.
