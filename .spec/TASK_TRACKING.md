@@ -111,7 +111,6 @@
   - [ ] Implement RFC 0045: E2E coverage of P0, P1 and P2 features (child of 0043) (RFC 0045)
   - [ ] Implement RFC 0046: Unit coverage for components (child of 0043) (RFC 0046)
 
-
 ## Done
 - [x] Track RFC 0002: Sorting (RFC 0002)
 - [x] Track RFC 0003: Filtering (RFC 0003)
@@ -140,3 +139,5 @@
 
 - [x] Track RFC 0022: Range selection (RFC 0022)
 - [x] Track RFC 0014: Data export (RFC 0014) ✅ Completed
+- [x] Implement RFC 0047: Honor sorting.enabled=false in Grid (RFC 0047)
+

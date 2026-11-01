@@ -7,7 +7,7 @@ Option keys for `createGrid`. Shapes come from `packages/core/src/utils/create-g
 | RFC | Feature | Option |
 | --- | --- | --- |
 | 0001 | AC Grid architecture | Web Components core, column/row data model, drag-and-drop reordering |
-| 0002 | Sorting | `sorting: { enabled: true }`; Shift-click sorts by several columns |
+| 0002 | Sorting | `sorting: { enabled: true }` (default); `enabled: false` disables sorting for all columns; Shift-click sorts by several columns |
 | 0003 | Filtering | `filtering: { enabled: true }`; set `filterType: "text" \| "number"` per column; global search: `grid.setGlobalFilter(text)` |
 | 0004 | Column resizing | `resizing: { enabled: true, defaultColumnWidth: 150, minColumnWidth: 60 }` |
 | 0005 | Virtual scrolling | `virtualization: { enabled: true, rowHeight: 35, overscan: 5 }` |

@@ -1564,6 +1564,10 @@ export class Grid extends LightComponent {
             columns: columnsWithGrouping,
             getCoreRowModel: getCoreRowModel(),
             getSortedRowModel: getSortedRowModel(),
+            ...(this._sortingConfigIsSet &&
+                this._sortingConfig.enabled === false && {
+                    enableSorting: false,
+                }),
             ...(isGroupingEnabled && {
                 getGroupedRowModel: getGroupedRowModel(),
                 getExpandedRowModel: getExpandedRowModel(),

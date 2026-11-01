@@ -484,3 +484,4 @@ MIT License
 | 0044 | [Unit coverage for logic modules (child of 0043)](rfc/0044-unit-coverage-logic.md) | Approved |
 | 0045 | [E2E coverage of P0, P1 and P2 features (child of 0043)](rfc/0045-e2e-coverage-collection.md) | Approved |
 | 0046 | [Unit coverage for components (child of 0043)](rfc/0046-component-coverage-closure.md) | Approved |
+| 0047 | [Honor sorting.enabled=false in Grid](rfc/completed/0047-sorting-enabled-config.md) | Implemented |

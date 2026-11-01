@@ -91,6 +91,27 @@ test.describe("RFC validation demos (browser)", () => {
             expect(sortedCheck.dom).toEqual(sortedCheck.model);
         });
 
+        test("sorting.enabled=false keeps row order and hides sort indicators (RFC-0047)", async ({ page }) => {
+            await page.evaluate(() => {
+                const grid = document.querySelector("wsx-ac-grid") as HTMLElement & {
+                    sortingConfig?: { enabled: boolean };
+                };
+                grid.sortingConfig = { enabled: false };
+            });
+            const firstNames = () =>
+                page.locator("wsx-ac-grid .grid-body .grid-row").evaluateAll((rows) =>
+                    rows.map((row) => row.querySelector(".grid-cell")?.textContent?.trim()),
+                );
+            const before = await firstNames();
+
+            const header = page.locator('.grid-header-cell[data-column-id="firstName"]');
+            await header.click();
+            await header.click();
+
+            expect(await firstNames()).toEqual(before);
+            await expect(page.locator("wsx-ac-grid wsx-ac-sorting-indicator")).toHaveCount(0);
+        });
+
     });
 
     test.describe("RFC-0002 horizontal scroll", () => {
