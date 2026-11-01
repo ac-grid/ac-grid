@@ -32,6 +32,7 @@ export const RFC_VALIDATION_ORDER = [
   "0022",
   "0023",
   "0030",
+  "0047",
 ] as const;
 
 export type RfcValidationId = (typeof RFC_VALIDATION_ORDER)[number];
@@ -547,6 +548,21 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
         data,
         columns,
         className: "h-full w-full",
+      }),
+    },
+    "0047": {
+      id: "0047",
+      title: "Sorting disabled",
+      multicaIssue: "ACG-47",
+      hint: "sorting.enabled=false：点击列头不应排序，也不显示排序指示器。",
+      rowCount: 50,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 4),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+        sorting: { enabled: false },
       }),
     },
   };
