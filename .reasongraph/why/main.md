@@ -1,6 +1,6 @@
 # Why: main
 
-<!-- reasongraph:v1 generated 2026-11-02 — review before sharing; edit freely, edits are preserved -->
+<!-- reasongraph:v1 generated 2026-11-08 — review before sharing; edit freely, edits are preserved -->
 
 ## Intent
 Land the demo and E2E remediation onto main through develop, convert the stray virtual-scroll test plan into RFC-0038, specify P1 demo defects as umbrella RFC-0039 with children 0040–0042, and archive RFC-0001.
@@ -497,3 +497,47 @@ Status: discussed
 Touches: `packages/core/dist/*`
 
 Playwright was loading an outdated core dist build, which obscured the implementation under test. Rebuilding core ensured browser validation exercised the current code.
+
+### Diagnose Enter-triggered editing with a failing focus-and-value test before changing implementation
+Status: discussed
+Touches: `packages/core/test/editing.test.ts`, `packages/core/src/components/CellEditor.wsx`, `packages/core/src/components/Grid.wsx`
+
+The agent planned to assert that Enter-triggered editing focuses the input and preserves the cell's original value. This would distinguish a focus restoration or render-timing issue from a value initialization issue before choosing a minimal fix.
+
+### Create and validate an RFC before implementing the Enter-editing fix
+Status: discussed
+Touches: `.spec/rfc/*`
+
+The agent planned to use the specify CLI to create an RFC and run its delivery, validation, and sync checks before implementation, following the repository's RFC workflow.
+
+### 将键盘导航 demo 与 E2E 归入 RFC-0012
+Status: discussed
+Touches: `/?rfc=0012`, `.spec/rfc/completed/`
+
+键盘导航 demo 路由和 Enter/Escape E2E 对应 RFC-0012。该 RFC 已归档为完成状态，因此无需再次关闭。
+
+### 通过 Specify 归档 RFC-0034
+Status: directed
+Touches: `.spec/rfc/**`
+
+代理通过 Specify 将已标记为 Implemented 的 RFC-0034 移入 completed，并同步路线图和任务跟踪链接。Specify 校验通过，归档变更提交为 d7f4659。
+
+### 保持 RFC-0040 待远端验证后再关闭
+Status: discussed
+Touches: `.spec/rfc/`
+
+选择列修复对应仍为 Approved 的 RFC-0040。关闭该 RFC 需要先推送并验证远端；当前记录的提交未包含推送或关闭。
+
+Reviewer attention: 确认 RFC-0040 仍处于 Approved，后续按远端验证流程关闭。
+
+### 提交全部暂存变更并保留现有分支
+Status: directed
+Touches: `.spec/rfc/`
+
+提交记录为 `93f8cb3 feat: complete selection and RFC demo coverage`，提交后工作区干净。记录显示未更改分支；三轮 E2E 共 111/111 通过，core 构建和 Specify 校验通过。
+
+### 保留未提交的 RFC-0047 草稿并暂停推送
+Status: discussed
+Touches: `.spec/rfc/**`, `ROADMAP*`, `TASK_TRACKING*`
+
+代理发现远端 RFC-0047 已用于排序修复，而本地同编号草稿涉及编辑焦点。为避免覆盖远端内容或错误重编号草稿，代理暂停推送；RFC-0034 的远端归档因此尚未完成。

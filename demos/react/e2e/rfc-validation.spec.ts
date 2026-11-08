@@ -369,6 +369,8 @@ test.describe("RFC validation demos (browser)", () => {
 
         const input = grid.locator("wsx-ac-cell-editor input");
         await expect(input).toBeVisible();
+        await expect(input).toBeFocused();
+        await expect(input).toHaveValue(original);
         await input.fill("Discard this keyboard edit");
         await input.press("Escape");
         await expect(cell).toHaveText(original);

@@ -164,4 +164,26 @@ describe("Grid Cell Editing", () => {
         grid.startEdit("u1", "name", "Alice");
         expect(onEditStart).not.toHaveBeenCalled();
     });
+
+    it("Enter starts editing with the input focused and the original value shown (RFC-0047)", async () => {
+        const grid = createEditingGrid({ editTrigger: "enter" });
+        grid.enableKeyboardNavigation = true;
+        container.appendChild(grid);
+
+        const root = () => (grid.shadowRoot || grid) as ParentNode;
+        await waitFor(() => {
+            expect(root().querySelector('[role="gridcell"][data-column-id="name"]')).toBeTruthy();
+        });
+
+        const cell = root().querySelector<HTMLElement>('[role="gridcell"][data-column-id="name"]')!;
+        cell.focus();
+        cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+
+        await waitFor(() => {
+            const input = root().querySelector<HTMLInputElement>("wsx-ac-cell-editor input");
+            expect(input).toBeTruthy();
+            expect(input!.value).toBe("Alice");
+            expect(document.activeElement === input || (root() as any).activeElement === input).toBe(true);
+        });
+    });
 });

@@ -109,7 +109,7 @@
   - [ ] Implement RFC 0044: Unit coverage for logic modules (child of 0043) (RFC 0044)
   - [ ] Implement RFC 0045: E2E coverage of P0, P1 and P2 features (child of 0043) (RFC 0045)
   - [ ] Implement RFC 0046: Unit coverage for components (child of 0043) (RFC 0046)
-
+- [ ] Implement RFC 0047: Enter 进入编辑时输入框聚焦并显示原值 (RFC 0047)
 
 ## Done
 - [x] Track RFC 0002: Sorting (RFC 0002)
