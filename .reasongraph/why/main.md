@@ -561,3 +561,17 @@ Status: discussed
 Touches: `packages/core/src/components/CellEditor.wsx`, `packages/core/test/accessibility.test.ts`, `packages/core/test/keyboard-navigation-integration.test.ts`
 
 全量单测有 519 项通过、2 项失败。还原 CellEditor 改动后，这两项仍失败，因此将其识别为基线失败，而非本次修复引入。
+
+### 保留远端 RFC-0047 排序修复并合并 RFC 跟踪记录
+Status: directed
+Touches: `.spec/rfc/completed/0047-sorting-enabled-config.md`, `ROADMAP*`
+
+合并保留远端 RFC-0047 的排序修复，并将本地 Enter 焦点工作移至 RFC-0048。合并后的 RFC-0034 跟踪记录包含 RFC-0047 的 demo 与 E2E 覆盖项。
+
+### 让 coverage guard 从归档目录读取 RFC-0034
+Status: discussed
+Touches: `*coverage*`
+
+RFC-0034 归档后，coverage guard 仍从活动目录读取它，导致完整 E2E 检查失败。读取路径需覆盖归档状态，才能让 guard 在 RFC 生命周期变更后继续找到该 RFC。
+
+Risk: 若路径处理只针对 RFC-0034，其他归档 RFC 仍可能无法通过覆盖检查。
