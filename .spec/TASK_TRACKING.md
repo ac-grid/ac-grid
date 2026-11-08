@@ -97,7 +97,6 @@
 - [ ] Track RFC 0031: Server-side row model (RFC 0031)
 - [ ] Track RFC 0032: AI toolkit (RFC 0032)
 - [ ] Track RFC 0033: E2E test infrastructure (RFC 0033)
-- [ ] Track RFC 0034: Completed RFC demo acceptance matrix (RFC 0034)
 - [ ] Track RFC 0035: RFC-0010 E2E coverage (RFC 0035)
 - [ ] Implement RFC 0036: Demo and E2E quality remediation (RFC 0036)
 - [ ] Implement RFC 0037: Dev port assignment and Spark registration (RFC 0037)
@@ -140,3 +139,4 @@
 
 - [x] Track RFC 0022: Range selection (RFC 0022)
 - [x] Track RFC 0014: Data export (RFC 0014) ✅ Completed
+- [x] Track RFC 0034: Completed RFC demo acceptance matrix (RFC 0034)

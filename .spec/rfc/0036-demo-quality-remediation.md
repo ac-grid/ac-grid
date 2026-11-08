@@ -3,7 +3,7 @@
 **Status:** Draft
 
 **Issues:** [#32](https://github.com/ac-grid/ac-grid/issues/32)–[#40](https://github.com/ac-grid/ac-grid/issues/40)
-**Related:** [0033](./0033-e2e-test-infrastructure.md), [0034](./0034-rfc-demo-acceptance-matrix.md)
+**Related:** [0033](./0033-e2e-test-infrastructure.md), [0034](completed/0034-rfc-demo-acceptance-matrix.md)
 
 ## Summary
 

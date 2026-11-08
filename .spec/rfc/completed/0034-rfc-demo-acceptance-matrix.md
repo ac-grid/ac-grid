@@ -7,7 +7,7 @@
 **日期**: 2026-10-11  
 **完成日期**: 2026-10-11  
 **关联 Issue**: [ACG-120](mention://issue/01a1040d-8350-7ea7-9bd3-0a85f1e1145a)  
-**相关 RFC**: [0033](./0033-e2e-test-infrastructure.md), [0035](./0035-rfc-0010-e2e-coverage.md)
+**相关 RFC**: [0033](../0033-e2e-test-infrastructure.md), [0035](../0035-rfc-0010-e2e-coverage.md)
 
 ## Summary
 
