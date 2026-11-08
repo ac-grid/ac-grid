@@ -93,7 +93,6 @@
 - [ ] Track RFC 0026: Context and column menus (RFC 0026)
 - [ ] Track RFC 0027: Tool panels and status bar (RFC 0027)
 - [ ] Track RFC 0028: Advanced filtering (RFC 0028)
-- [ ] Track RFC 0029: Integrated charts (RFC 0029)
 - [ ] Track RFC 0031: Server-side row model (RFC 0031)
 - [ ] Track RFC 0032: AI toolkit (RFC 0032)
 - [ ] Track RFC 0033: E2E test infrastructure (RFC 0033)
@@ -139,5 +138,6 @@
 
 - [x] Track RFC 0022: Range selection (RFC 0022)
 - [x] Track RFC 0014: Data export (RFC 0014) ✅ Completed
+- [x] Track RFC 0029: Integrated charts (RFC 0029)
 - [x] Implement RFC 0047: Honor sorting.enabled=false in Grid (RFC 0047)
 

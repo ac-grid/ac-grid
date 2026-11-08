@@ -265,7 +265,7 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | Excel 高级导出  | [0025](./rfc/0025-excel-export-advanced.md)  | 📝 草稿 | P2     |
 | 工具面板/状态栏 | [0027](./rfc/0027-tool-panels-status-bar.md) | 📝 草稿 | P2     |
 | 高级过滤        | [0028](./rfc/0028-advanced-filtering.md)     | 📝 草稿 | P1     |
-| 集成图表        | [0029](./rfc/0029-integrated-charts.md)      | 📝 草稿 | P2     |
+| 集成图表        | [0029](./rfc/completed/0029-integrated-charts.md) | ✅ 已完成 | P2     |
 
 ---
 
