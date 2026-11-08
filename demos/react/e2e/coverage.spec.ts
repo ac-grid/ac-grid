@@ -9,16 +9,44 @@ const completedIds = readdirSync(new URL("../../../.spec/rfc/completed/", import
 // Parse the order list as text: importing the demo module would load the browser-only core bundle.
 const demos = readFileSync(new URL("../src/rfcValidationDemos.ts", import.meta.url), "utf8");
 const demoIds = demos.match(/RFC_VALIDATION_ORDER = \[([^\]]*)\]/)![1].match(/\d{4}/g)!;
+const matrix = readFileSync(new URL("../../../.spec/rfc/0034-rfc-demo-acceptance-matrix.md", import.meta.url), "utf8");
+const matrixRows = new Map<string, { route: string; evidence: string }>();
+for (const line of matrix.split("\n")) {
+    const columns = line.split("|");
+    const id = columns[1]?.match(/\*\*(\d{4})\*\*/)?.[1];
+    if (id) {
+        matrixRows.set(id, {
+            route: columns[3]?.trim().replaceAll("`", "") ?? "",
+            evidence: columns[5]?.trim() ?? "",
+        });
+    }
+}
 const specs = ["rfc-validation.spec.ts", "virtual-scrolling.spec.ts"]
     .map((file) => readFileSync(new URL(file, import.meta.url), "utf8"))
     .join("\n");
+const hasE2eTitle = (id: string) => new RegExp(`(?:test|describe)\\(\\s*["'\`]RFC-${id}\\b`).test(specs);
 
 test("every completed RFC has a validation demo", () => {
     expect(completedIds.filter((id) => !demoIds.includes(id))).toEqual([]);
 });
 
-test("every completed RFC has an E2E test", () => {
-    expect(completedIds.filter((id) => !specs.includes(`RFC-${id}`))).toEqual([]);
+test("every interactive demo RFC has an acceptance matrix row and matching route", () => {
+    const missing = demoIds.filter((id) => !matrixRows.has(id));
+    const stale = [...matrixRows.keys()].filter((id) => !demoIds.includes(id));
+    const wrongRoutes = demoIds.filter((id) => {
+        const expected = id === "0005" ? "/?e2e=virtual-scroll" : `/?rfc=${id}`;
+        return matrixRows.get(id)?.route !== expected;
+    });
+    expect({ missing, stale, wrongRoutes }).toEqual({ missing: [], stale: [], wrongRoutes: [] });
+});
+
+test("every demo RFC has RFC-specific E2E evidence in its matrix row", () => {
+    const missingTitles = demoIds.filter((id) => !hasE2eTitle(id));
+    const missingEvidence = demoIds.filter((id) => {
+        const file = id === "0005" ? "virtual-scrolling.spec.ts" : "rfc-validation.spec.ts";
+        return !matrixRows.get(id)?.evidence.includes(file);
+    });
+    expect({ missingTitles, missingEvidence }).toEqual({ missingTitles: [], missingEvidence: [] });
 });
 
 // The skill is how agents learn each feature, so a completed RFC with no row there is undocumented.
@@ -38,8 +66,6 @@ for (const row of roadmap.matchAll(/\[(\d{4})\]\(([^)]*)\)[^|\n]*\|[^|\n]*\|\s*(
 const { pending } = JSON.parse(readFileSync(new URL("feature-matrix.json", import.meta.url), "utf8")) as {
     pending: Record<string, string>;
 };
-const hasE2eTitle = (id: string) => new RegExp(`(?:test|describe)\\(\\s*["'\`]RFC-${id}\\b`).test(specs);
-
 test("ROADMAP lists P0, P1 and P2 features", () => {
     const priorities = new Set([...features.values()].map((feature) => feature.priority));
     expect([...priorities].sort()).toEqual(["P0", "P1", "P2"]);

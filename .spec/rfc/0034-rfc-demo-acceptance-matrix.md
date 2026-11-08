@@ -50,15 +50,19 @@ AC Grid 建立「已完成 RFC 演示验收矩阵」（Demo Acceptance Matrix）
 | **0004** | 列调整大小 | `/?rfc=0004` | 拖拽表头右边缘 `.resizer` 句柄改变列宽，释放后宽度大于初始值 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0004 changes column width...`) | ✅ 达标 |
 | **0005** | 虚拟滚动 | `/?e2e=virtual-scroll` | 100K 级超大数据集渲染时，DOM 节点数维持窗口切片（<50 行），滚动后视口复用 | `demos/react/e2e/virtual-scrolling.spec.ts` (`mounts far fewer DOM rows`, `keeps DOM row window small`) | ✅ 达标 |
 | **0006** | 分页功能 | `/?rfc=0006` | 点击分页控件跳转至第 2 页，文本更新为 "Page 2 of 10" 且数据刷新 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0006 changes page...`) | ✅ 达标 |
-| **0007** | 行选择 | `/?rfc=0007` | 点击复选框选择单行，`grid.getSelectedRowIds()` 返回准确的选中行 ID | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0007 selects a row...`) | ✅ 达标 |
+| **0007** | 行选择与选择列 | `/?rfc=0007` | 初始选择列在首位；拖拽普通列后顺序正确；复选框与行文字垂直对齐误差不超过 2px；单行、Shift 范围、全选与取消均反映在选中 ID 中 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0007 keeps selection first and verifies checkbox selection behavior`) | ✅ 达标 |
 | **0008** | 列固定 (Pinning) | `/?rfc=0008` | 左右固定列计算对应 sticky 偏移，元素具备 `position: sticky` 样式 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0008 pins configured columns`) | ✅ 达标 |
-| **0009** | 单元格编辑 | `/?rfc=0009` | 双击单元格挂载 `<wsx-ac-cell-editor>` 编辑器输入框 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0009 starts editing on cell double click`) | ✅ 达标 |
+| **0009** | 单元格编辑 | `/?rfc=0009` | 双击进入编辑；Enter 保存新值；Escape 丢弃未保存值 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0009 saves edits with Enter and cancels edits with Escape`) | ✅ 达标 |
 | **0010** | 行分组与数据聚合 | `/?rfc=0010` | 1. 渲染分组头并计算 count/avg/sum 聚合值<br>2. 点击「全部折叠」收起至 3 个分组头<br>3. 点击单行展开及「全部展开」恢复全部叶子行 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0010 groups rows...`) | ✅ 达标 |
 | **0015** | 国际化 (i18n) | `/?rfc=0015` | 配置 zh-CN 语言包时，分页组件展示「显示第 1 至 10 条」中文本地化文案 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0015 renders pagination text from the zh-CN language pack`) | ✅ 达标 |
-| **0016** | 主题系统基础 | `/?rfc=0016` | Web Component 读取 CSS 自定义属性 `--ac-grid-bg-cell` 并在 DOM 中生效 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0016 applies theme variables...`) | ✅ 达标 |
+| **0016** | 主题系统基础 | `/?rfc=0016` | 修改宿主 `--ac-grid-bg-cell` 后，Grid 内部表面背景应用相同计算颜色 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0016 applies theme variables to the validation grid`) | ✅ 达标 |
 | **0019** | 自定义组件 | `/?rfc=0019` | 挂载用户自定义 header 渲染组件并显示 "Custom Name" | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0019 renders custom header component`) | ✅ 达标 |
 | **0030** | 单元格公式引擎 | `/?rfc=0030` | 独立引擎（未接入 Grid）：可编辑公式表输入数字与 `=` 公式；SUM、AVG、MAX-MIN、COUNT 求值；`#DIV/0!`、`#NAME?`、`#CYCLE!` 及环路消除后恢复；改动输入后依赖格增量重算 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0030 formula engine` 下 5 个用例) | ✅ 达标 |
 | **0011** | 高级主题功能 | `/?rfc=0011` | 预览主题改变 `--ac-grid-bg-header` 且不改变已应用主题；取消预览恢复原值；应用后持久 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0011 previews a theme...`) | ✅ 达标 |
+| **0012** | 键盘导航 | `/?rfc=0012` | 重渲染后焦点保留；方向键、Tab、Shift+Tab 移动单元格焦点；Enter 进入编辑，Escape 丢弃编辑 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0012 keeps keyboard focus...`, `RFC-0012 navigates with Tab...`) | ✅ 达标 |
+| **0013** | 可访问性 | `/?rfc=0013` | Grid、表头、行与单元格提供可访问角色和索引；排序方向及 live status 文案同步变化 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0013 exposes accessible grid roles and labels in the browser`) | ✅ 达标 |
+| **0014** | 数据导出 | `/?rfc=0014` | 点击 Export CSV 触发下载；文件名、CSV 表头和表格数据正确 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0014 downloads CSV with headers and grid data`) | ✅ 达标 |
+| **0022** | 范围选择 | `/?rfc=0022` | 拖拽选择矩形范围后 API 返回起止行及列 ID，且四个对应单元格标记为已选择 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0022 selects and highlights a rectangular cell range by dragging`) | ✅ 达标 |
 | **0023** | 剪贴板操作 | `/?rfc=0023` | 点选单元格后 Ctrl/Cmd+C 复制其文本；点选起始格后 Ctrl/Cmd+V 按 TSV 矩阵写入相邻单元格 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0023 copies...`, `RFC-0023 pastes...`) | ✅ 达标 |
 
 ---
@@ -89,6 +93,6 @@ AC Grid 建立「已完成 RFC 演示验收矩阵」（Demo Acceptance Matrix）
 ## 验收结果 (Acceptance Evidence)
 
 - **E2E 测试套件全绿**:
-  在单 worker 及 CI 模式下运行 `CI=1 pnpm test:e2e`，19 个端到端测试均稳定通过（覆盖 0001, 0002, 0003, 0004, 0005, 0006, 0007, 0008, 0009, 0010, 0015, 0016, 0019, 0030 及覆盖率校验与数据确定性校验）。
+在单 worker 及 CI 模式下运行 `CI=1 pnpm test:e2e`，19 个端到端测试均稳定通过（覆盖 0001, 0002, 0003, 0004, 0005, 0006, 0007, 0008, 0009, 0010, 0015, 0016, 0019, 0030 及覆盖率校验与数据确定性校验）。该记录是 RFC-0034 初次交付时的历史结果；当前矩阵与回归用例以本文件各行和实时 Playwright 套件为准。
 - **单元测试全绿**:
   运行 `pnpm test`，全套 28 个测试文件、204 个测试 100% 通过。

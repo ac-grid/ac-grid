@@ -162,12 +162,12 @@ function App() {
 
         host.replaceChildren();
         const grid = createGrid(gridOptions) as GridHostElement;
-        spec.afterMount?.(grid);
         grid.style.display = "block";
         grid.style.height = "100%";
         grid.style.width = "100%";
         gridRef.current = grid;
         host.appendChild(grid);
+        spec.afterMount?.(grid);
 
         return () => {
             host.replaceChildren();

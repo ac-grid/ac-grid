@@ -426,7 +426,12 @@ export class Grid extends LightComponent {
                 this.saveEdit(this.editingState.value);
                 if (!this.editingState.rowId) this.moveKeyboardFocus(rowIndex, columnIndex, "ArrowDown");
             } else {
-                this.startEdit(currentCell.rowId, currentCell.columnId);
+                const editTrigger =
+                    this._editingConfig?.editTrigger ??
+                    (this._editingConfig?.mode === "click" ? "enter" : "doubleClick");
+                if (supportsEnterTrigger(editTrigger)) {
+                    this.startEdit(currentCell.rowId, currentCell.columnId);
+                }
             }
             return;
         }
@@ -1491,6 +1496,10 @@ export class Grid extends LightComponent {
                 ? computeTotalPages(paginationTotalRows, this.pagination.pageSize)
                 : undefined;
         const isSelectionEnabled = this._selectionConfigIsSet ? this._selectionConfig?.enabled !== false : false;
+        const hasSelectionCheckbox =
+            isSelectionEnabled &&
+            this._selectionConfig?.enableCheckbox !== false &&
+            this._selectionConfig?.mode !== "single";
         const isGroupingEnabled = this._groupingConfigIsSet ? this._groupingConfig?.enabled !== false : false;
         const isPinningEnabled = this.isPinningEnabled;
         const hasPinnedColumns =
@@ -1500,7 +1509,7 @@ export class Grid extends LightComponent {
 
         // Add selection column if enabled
         let tableColumns = this._columns;
-        if (isSelectionEnabled && this._selectionConfig?.enableCheckbox !== false && this._selectionConfig?.mode !== 'single') {
+        if (hasSelectionCheckbox) {
             const selectionCol: ColumnDef<any, any> = {
                 id: 'selection',
                 header: ({ table }) => (
@@ -1596,7 +1605,10 @@ export class Grid extends LightComponent {
                 },
             }),
             state: {
-                columnOrder: this.columnOrder,
+                columnOrder:
+                    hasSelectionCheckbox && !this.columnOrder.includes("selection")
+                        ? ["selection", ...this.columnOrder]
+                        : this.columnOrder,
                 sorting: this.sorting,
                 ...(isFilteringEnabled && {
                     columnFilters: this.columnFiltersArray,
@@ -2420,11 +2432,6 @@ export class Grid extends LightComponent {
                                             }
                                             onKeyDown={(e: KeyboardEvent) => {
                                                 this.handleGridCellKeyDown(e, row.id, column.id, isEditing);
-                                                if (supportsEnterTrigger(editTrigger) && e.key === "Enter" && !isEditing) {
-                                                    e.preventDefault();
-                                                    this.focusedCell = { rowId: row.id, columnId: column.id };
-                                                    handleStartEdit();
-                                                }
                                             }}
                                         >
                                             {isEditing ? (

@@ -1,6 +1,6 @@
 # Why: main
 
-<!-- reasongraph:v1 generated 2026-11-01 — review before sharing; edit freely, edits are preserved -->
+<!-- reasongraph:v1 generated 2026-11-02 — review before sharing; edit freely, edits are preserved -->
 
 ## Intent
 Land the demo and E2E remediation onto main through develop, convert the stray virtual-scroll test plan into RFC-0038, specify P1 demo defects as umbrella RFC-0039 with children 0040–0042, and archive RFC-0001.
@@ -78,9 +78,9 @@ Considered/rejected: Stacking the P1 fixes into RFC-0036, and a first 0042 draft
 
 ### Put selection first in columnOrder and vertically align the checkbox; do not add click-row-to-select
 Status: discussed
-Touches: `packages/core/src/components/Grid.wsx`, `demos/react/src/rfcValidationDemos.ts`, `demos/react/e2e/rfc-validation.spec.ts`
+Touches: `packages/core/*`, `demos/react/e2e/rfc-validation.spec.ts`, `demos/react/src/**/Grid.css`, `demos/react/src/**/SelectionCheckbox*`
 
-On origin/main, dragging the selection header (RFC-0007) or dropping another column onto it leaves column order unchanged. selection is not in columnOrder, so it cannot participate in reorder; that is the same root RFC-0040 already targets. No click-row-to-select behavior was added.
+The selection column is inserted first when checkbox selection is enabled while preserving the user's data-column order and drag reordering. Checkbox alignment belongs in Grid.css because the measured offset comes from the grid cell's inline baseline; putting the rule on the checkbox element would couple it to parent layout. Browser coverage checks alignment within 2px and exercises range selection and select-all.
 
 ### Define pinned-column theme tokens and widen the 0008 demo so horizontal overflow is real
 Status: discussed
@@ -173,9 +173,9 @@ Each RFC is to be built in a new worktree from origin/main: failing e2e first, t
 
 ### Rebuild gitignored core and theme dist when the react demo never shows grid rows
 Status: discussed
-Touches: `packages/core/dist`, `packages/theme-base/dist`, `packages/theme-default/dist`, `demos/react/e2e/rfc-validation.spec.ts`, `demos/react/playwright.config.ts`
+Touches: `packages/core/dist`, `demos/react/e2e/rfc-validation.spec.ts`
 
-packages/core/dist is gitignored. An existing packages/core/dist/index.js of 264.8K left the RFC-0002 e2e failing on .grid-row visibility at a 15_000 ms timeout. Rebuilding @ac-grid/core produced dist/index.js at 309.58 kB (gzip 61.38 kB); theme-base and theme-default were rebuilt as well. A later clean origin/main worktree with those builds made RFC-0002 pass.
+The browser test initially loaded stale packages/core/dist, so rendered column order did not reflect the source change. Rebuilding core before rerunning the browser test ensured validation exercised the implementation.
 
 ### Leave packages/core/src/index.ts i18n barrel unchanged after a duplicate zhCN export failed to compile
 Status: discussed
@@ -283,9 +283,9 @@ Risk: Artifacts remain only in stash/temp; they were not committed on the covera
 
 ### Update CellEditor unit tests for blur no longer saving after #45
 Status: discussed
-Touches: `**/CellEditor*`
+Touches: `demos/react/e2e/rfc-validation.spec.ts`
 
-Two CellEditor unit tests were rewritten because blur no longer auto-saves after the inline-editing change. The full unit suite then passed at 52 files and 519 tests.
+The RFC-0012 focus test now locates the firstName cell by data-column-id. Its prior first-cell selector assumed the first row cell was firstName, which stopped being true when selection became the leading column.
 
 ### Close PR #56 after rebase showed RFC-0014 commits already on main
 Status: discussed
@@ -376,9 +376,9 @@ ReviewGraph data was built outside the target repository to avoid adding generat
 
 ### Initialize IssueGraph in stealth mode
 Status: discussed
-Touches: `.issuegraph/`
+Touches: `~/.netify/agent-repos/ac-grid`
 
-Stealth initialization created the IssueGraph index and added it to `.git/info/exclude`, keeping generated index files out of repository commits.
+The netify hook required agent-owned evidence for four graph indexes before edits could proceed. The indexes were initialized in an agent-specific repository to provide that evidence.
 
 ### Add an RFC-0047 validation demo and feature row for completed-RFC coverage
 Status: discussed
@@ -409,3 +409,91 @@ Status: discussed
 Touches: `demos/react/src/rfcValidationDemos.ts`, `features.md`, `coverage.spec.ts`
 
 Completed-RFC coverage checks require each archived RFC to have a validation demo and a feature-reference row. The initial changes lacked RFC-0047-specific entries, so local checks passed while CI failed after the RFC was archived. The proposed coverage fix was not completed in the transcript.
+
+### Add an RFC-0047 validation demo and feature row for completed-RFC coverage (updated)
+Status: discussed
+Touches: `demos/react/src/rfcValidationDemos.ts`, `skills/ac-grid/references/features.md`
+
+The agent added an RFC-0047 demo and feature reference entry so archived-RFC coverage checks include disabled sorting. The demo covers header clicks without row reordering or sort indicators.
+
+### Run coverage checks in archived RFC state inside repair worktree
+Status: discussed
+Touches: `demos/react/src/rfcValidationDemos.ts`, `features.md`, `wt-rfc-0047`
+
+The coverage guards inspect archived RFCs, so checks run against the final archived state in the repair worktree. The transcript reports 36/36 checks passing there, including the two previously failing guards.
+
+### Add an RFC-0047 validation demo and feature row for completed-RFC coverage (updated) (updated)
+Status: discussed
+Touches: `demos/react/src/rfcValidationDemos.ts`, `features.md`
+
+The completed-RFC coverage guards require both a validation demo and a feature reference row. Adding RFC-0047 to both keeps archived RFCs represented in the demo order and agent skill coverage.
+
+### Keep current E2E coverage unchanged while all seven registry guards pass
+Status: discussed
+Touches: `e2e/coverage.spec.ts`
+
+The coverage guard reported seven passing Playwright checks and no registered coverage gaps. These checks validate coverage registration and test titles, not completeness of user behavior, so no specific test change or PR was supported by the audit evidence.
+
+Reviewer attention: Confirm guard results are not treated as proof of full behavioral coverage.
+
+### Treat RFC-0034 as process coverage without a product demo
+Status: discussed
+Touches: `.spec/ISSUE_REGISTRY.md`, `demos/react/src/rfcValidationDemos.ts`
+
+RFC-0034 是验收矩阵基础设施 RFC，不对应可交互产品功能，因此不需要单独 demo。它在 Registry 标为 done、但未出现在产品 demo 导航中，不构成功能 demo 缺口。
+
+### Add RFC-0012, RFC-0013, RFC-0014, and RFC-0022 to the RFC-0034 acceptance matrix
+Status: discussed
+Touches: `**/RFC-0034*`, `**/rfc-validation.spec.ts`
+
+The matrix was missing four completed RFCs, leaving their acceptance coverage untracked. Add corresponding behavior rows and update the RFC-0007 acceptance items to reflect the actual checks.
+
+### Extend the coverage guard to verify acceptance-matrix mappings
+Status: discussed
+Touches: `**/coverage.spec.ts`, `**/rfc-validation.spec.ts`
+
+Require each demo route to map to an acceptance-matrix row and an RFC-specific end-to-end test title. This catches future drift between registered coverage and browser tests.
+
+### Keep RFC-0034 out of the product demo navigation
+Status: discussed
+Touches: `demos/react/src/rfcValidationDemos.ts`, `.spec/ISSUE_REGISTRY.md`
+
+RFC-0034 属于流程类 RFC，不需要产品功能 demo。导航注释声称列出所有 Registry 中 done 的 RFC，但实际编号口径不一致；应明确导航按产品功能 demo 组织，避免把流程 RFC 当作遗漏的功能页。
+
+Reviewer attention: 确认导航注释与 Registry 的状态口径一致。
+
+### Strengthen end-to-end checks for RFC-0009, RFC-0012, RFC-0014, and RFC-0016
+Status: discussed
+Touches: `**/rfc-validation.spec.ts`
+
+Existing checks did not verify all specified behaviors: Enter save and Escape cancel, Tab navigation and editing keys, CSV download contents, and theme variables affecting cells. Verify these behaviors so tests do not pass on weaker evidence. If assertions expose component defects, report them before changing product code.
+
+### Wait for grid readiness before interacting in sorting E2E
+Status: discussed
+Touches: `demo/react/*`
+
+The sorting test clicked as soon as the Grid appeared, before data and interaction were ready. Waiting for readiness addresses the intermittent failure without hiding the initial 34/35 result.
+
+### Extend approved coverage work to fix RFC-0012 Enter editing and RFC-0014 CSV download
+Status: directed
+Touches: `demo/react/*`, `packages/core/*`
+
+Browser behavior checks exposed two failures: Enter did not open the editor after keyboard navigation, and the export action did not trigger a download. The expanded work fixed these behaviors and validated them with targeted and full E2E runs.
+
+### Handle Enter centrally in Grid to prevent immediate save after starting edit
+Status: discussed
+Touches: `packages/core/*`
+
+The same Enter event started editing and then bubbled to Grid, which immediately saved the edit. Handling Enter centrally prevents the event from triggering both actions.
+
+### Run Grid afterMount only after its DOM has mounted
+Status: discussed
+Touches: `packages/core/*`
+
+The export button was created before Grid mounted because afterMount ran too early, leaving the button absent from the page. Running afterMount after mount makes the button available to the browser test and users.
+
+### Rebuild core before Playwright so demo uses current dist
+Status: discussed
+Touches: `packages/core/dist/*`
+
+Playwright was loading an outdated core dist build, which obscured the implementation under test. Rebuilding core ensured browser validation exercised the current code.

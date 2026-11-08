@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+
 import { expect, test } from "@playwright/test";
 
 import { domQuiet, gridReady } from "./helpers";
@@ -6,6 +8,7 @@ test.describe("RFC validation demos (browser)", () => {
     test("RFC-0013 exposes accessible grid roles and labels in the browser", async ({ page }) => {
         await page.goto("/?rfc=0013");
         const grid = page.getByRole("grid", { name: "Data grid" });
+        await gridReady(page);
         await expect(grid).toBeVisible({ timeout: 15_000 });
         await expect(grid.getByRole("columnheader").first()).toHaveAttribute("aria-label", "First Name");
         await expect(grid.getByRole("row").nth(1).getByRole("gridcell").first()).toHaveAttribute("aria-colindex", "1");
@@ -237,27 +240,85 @@ test.describe("RFC validation demos (browser)", () => {
         await expect(page.locator(".pagination-controls")).toContainText("Page 2 of 10");
     });
 
-    test("RFC-0007 selects a row through its checkbox", async ({ page }) => {
+    test("RFC-0007 keeps selection first and verifies checkbox selection behavior", async ({ page }) => {
         await page.goto("/?rfc=0007");
         await gridReady(page);
-        await page.locator("wsx-ac-selection-checkbox input").nth(1).click();
+        const headerIds = () =>
+            page.locator(".grid-header-cell[data-column-id]").evaluateAll((nodes) =>
+                nodes.map((node) => node.getAttribute("data-column-id")),
+            );
+        await expect.poll(headerIds).toEqual(["selection", "firstName", "lastName", "age", "status"]);
+
+        const source = page.locator('.grid-header-cell[data-column-id="firstName"] .drag-handle-button');
+        const target = page.locator('.grid-header-cell[data-column-id="lastName"]');
+        const sourceBox = await source.boundingBox();
+        const targetBox = await target.boundingBox();
+        expect(sourceBox).toBeTruthy();
+        expect(targetBox).toBeTruthy();
+        await page.mouse.move(sourceBox!.x + sourceBox!.width / 2, sourceBox!.y + sourceBox!.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(targetBox!.x + targetBox!.width / 2, targetBox!.y + targetBox!.height / 2, { steps: 12 });
+        await page.mouse.up();
+        await expect.poll(headerIds).toEqual(["selection", "lastName", "firstName", "age", "status"]);
+
+        const rows = page.locator(".grid-body .grid-row");
+        const firstRow = rows.first();
+        await expect(firstRow.locator(".grid-cell").first()).toHaveAttribute("data-column-id", "selection");
+        const checkbox = page.locator("wsx-ac-selection-checkbox input").nth(1);
+        const checkboxCenter = await checkbox.evaluate((input) => {
+            const bounds = input.getBoundingClientRect();
+            return bounds.top + bounds.height / 2;
+        });
+        const textCenter = await firstRow.locator('.grid-cell[data-column-id="firstName"]').evaluate((cell) => {
+            const range = document.createRange();
+            range.selectNodeContents(cell);
+            const bounds = range.getBoundingClientRect();
+            return bounds.top + bounds.height / 2;
+        });
+        expect(Math.abs(checkboxCenter - textCenter)).toBeLessThanOrEqual(2);
+
+        await checkbox.click();
+        const selectedIds = () =>
+            page.evaluate(() => {
+                const grid = document.querySelector("wsx-ac-grid") as HTMLElement & {
+                    getSelectedRowIds?: () => string[];
+                };
+                return grid.getSelectedRowIds?.() ?? [];
+            });
+        await expect.poll(selectedIds).toEqual([await firstRow.getAttribute("data-row-id")]);
+        await rows.nth(2).click({ modifiers: ["Shift"] });
+        const expectedRangeIds = await rows.evaluateAll((nodes) =>
+            nodes.slice(0, 3).map((row) => row.getAttribute("data-row-id")),
+        );
+        await expect.poll(async () => (await selectedIds()).sort()).toEqual([...expectedRangeIds].sort());
+
+        const selectAll = page.locator(".grid-header-row wsx-ac-selection-checkbox input");
+        await selectAll.click();
         await expect
-            .poll(() =>
-                page.evaluate(() => {
-                    const grid = document.querySelector("wsx-ac-grid") as HTMLElement & {
-                        getSelectedRowIds?: () => string[];
-                    };
-                    return grid.getSelectedRowIds?.().length ?? 0;
-                }),
-            )
-            .toBe(1);
+            .poll(async () => (await selectedIds()).length)
+            .toBe(50);
+        await selectAll.click();
+        await expect.poll(selectedIds).toHaveLength(0);
     });
 
-    test("RFC-0009 starts editing on cell double click", async ({ page }) => {
+    test("RFC-0009 saves edits with Enter and cancels edits with Escape", async ({ page }) => {
         await page.goto("/?rfc=0009");
         await gridReady(page);
-        await page.locator(".grid-row .grid-cell").first().dblclick();
-        await expect(page.locator("wsx-ac-cell-editor")).toHaveCount(1);
+        const cell = page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first();
+        const original = await cell.innerText();
+        const input = page.locator("wsx-ac-cell-editor input");
+
+        await cell.dblclick();
+        await expect(input).toBeVisible();
+        await input.fill(`${original} Saved`);
+        await input.press("Enter");
+        await expect(cell).toHaveText(`${original} Saved`);
+
+        await cell.dblclick();
+        await expect(input).toBeVisible();
+        await input.fill("Discard this edit");
+        await input.press("Escape");
+        await expect(cell).toHaveText(`${original} Saved`);
     });
 
     test("RFC-0012 keeps keyboard focus after the grid re-renders and moves it with the arrow keys", async ({ page }) => {
@@ -271,7 +332,7 @@ test.describe("RFC validation demos (browser)", () => {
                 return active?.matches(".grid-cell") ? `${active.dataset.rowId}:${active.dataset.columnId}` : null;
             });
 
-        await page.locator(".grid-row .grid-cell").first().focus();
+        await page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first().focus();
         // A person pauses before pressing a key; the focus change re-renders the grid in that window.
         await domQuiet(page);
         expect(await activeCell(), "focus must survive the re-render").toMatch(/:firstName$/);
@@ -284,6 +345,33 @@ test.describe("RFC validation demos (browser)", () => {
         await page.keyboard.press("ArrowDown");
         await expect.poll(activeCell).toMatch(/^(?!.*row-0).*:lastName$/);
         await expect.poll(focusedColumn).toBe("lastName");
+    });
+
+    test("RFC-0012 navigates with Tab and opens an escapable editor with Enter", async ({ page }) => {
+        await page.goto("/?rfc=0012");
+        await gridReady(page);
+        const grid = page.locator("wsx-ac-grid");
+        const focusedColumn = () => grid.evaluate((element: any) => element.getFocusedCell()?.columnId);
+        const cell = page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first();
+        const original = await cell.innerText();
+
+        await cell.focus();
+        await domQuiet(page);
+        await page.keyboard.press("Tab");
+        await expect.poll(focusedColumn).toBe("lastName");
+        await domQuiet(page);
+        await page.keyboard.press("Shift+Tab");
+        await expect.poll(focusedColumn).toBe("firstName");
+        await domQuiet(page);
+        await cell.focus();
+        await domQuiet(page);
+        await page.keyboard.press("Enter");
+
+        const input = grid.locator("wsx-ac-cell-editor input");
+        await expect(input).toBeVisible();
+        await input.fill("Discard this keyboard edit");
+        await input.press("Escape");
+        await expect(cell).toHaveText(original);
     });
 
     test("RFC-0008 pins configured columns", async ({ page }) => {
@@ -338,9 +426,11 @@ test.describe("RFC validation demos (browser)", () => {
     test("RFC-0016 applies theme variables to the validation grid", async ({ page }) => {
         await page.goto("/?rfc=0016");
         await gridReady(page);
+        const grid = page.locator("wsx-ac-grid");
+        await grid.evaluate((element) => element.style.setProperty("--ac-grid-bg-cell", "rgb(12, 34, 56)"));
         await expect
-            .poll(() => page.locator("wsx-ac-grid").evaluate((element) => getComputedStyle(element).getPropertyValue("--ac-grid-bg-cell")))
-            .not.toBe("");
+            .poll(() => grid.locator(".ac-grid").evaluate((element) => getComputedStyle(element).backgroundColor))
+            .toBe("rgb(12, 34, 56)");
     });
 
     test("RFC-0010 groups rows, calculates aggregations, and expands/collapses groups", async ({ page }) => {
@@ -485,9 +575,19 @@ test.describe("RFC validation demos (browser)", () => {
     });
 });
 
-test("RFC-0014 exports data to CSV", async ({ page }) => {
+test("RFC-0014 downloads CSV with headers and grid data", async ({ page }) => {
     await page.goto("/?rfc=0014");
-    await expect(page.locator(".grid-row").first()).toBeVisible({ timeout: 15_000 });
-    const rowCount = await page.locator(".grid-row").count();
-    expect(rowCount).toBeGreaterThan(0);
+    await gridReady(page);
+    const firstName = await page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first().innerText();
+    const [download] = await Promise.all([
+        page.waitForEvent("download"),
+        page.getByRole("button", { name: "Export CSV" }).click(),
+    ]);
+
+    expect(download.suggestedFilename()).toBe("test.csv");
+    const filePath = await download.path();
+    expect(filePath).toBeTruthy();
+    const csv = await readFile(filePath!, "utf8");
+    expect(csv.split("\n")[0]).toBe("First Name,Last Name,Age,Status");
+    expect(csv).toContain(firstName);
 });

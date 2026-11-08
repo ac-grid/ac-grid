@@ -60,6 +60,24 @@ describe("Grid Row Selection", () => {
         });
     });
 
+    it("places the selection column first without changing user column order", async () => {
+        const grid = createSelectionGrid("multiple");
+        grid.columns = [
+            { id: "age", accessorKey: "name", header: "Age" },
+            { id: "name", accessorKey: "name", header: "Name" },
+        ];
+        container.appendChild(grid);
+
+        await waitFor(() => {
+            const root = grid.shadowRoot || grid;
+            const headerIds = Array.from(
+                root.querySelectorAll<HTMLElement>(".grid-header-cell[data-column-id]"),
+                (header) => header.dataset.columnId,
+            );
+            expect(headerIds).toEqual(["selection", "age", "name"]);
+        });
+    });
+
     it("selectRow replaces previous selection in single mode", async () => {
         const grid = createSelectionGrid("single");
         container.appendChild(grid);
