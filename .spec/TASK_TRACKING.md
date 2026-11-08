@@ -139,3 +139,5 @@
 - [x] Track RFC 0022: Range selection (RFC 0022)
 - [x] Track RFC 0014: Data export (RFC 0014) ✅ Completed
 - [x] Track RFC 0029: Integrated charts (RFC 0029)
+- [x] Implement RFC 0047: Honor sorting.enabled=false in Grid (RFC 0047)
+
