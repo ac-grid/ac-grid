@@ -544,17 +544,17 @@ origin/main 已用 RFC-0047 记录 sorting.enabled=false 修复。本地 Enter �
 
 ### 在 CellEditor 连接时从 value attribute 初始化编辑值
 Status: discussed
-Touches: `packages/core/src/components/CellEditor.wsx`
+Touches: `packages/core/src/components/CellEditor.wsx`, `packages/core/test/editing.test.ts`
 
-Grid 将单元格原值作为 attribute 传给自定义编辑器，而 CellEditor 原先只读取属性值，导致输入框初始为空。连接时读取 attribute 可保持现有属性接口并修复数据流。临时还原修复后，浏览器断言确认期望值为 “Erik”、实际值为空。
+Grid 通过 `value` attribute 传入单元格原值，但 CellEditor 未读取该值，且 WSX 的状态重渲染有延迟，导致输入框初始为空。连接时读取 attribute，并在聚焦所在帧直接设置输入框值，使编辑器不依赖延迟重渲染即可显示原值。
 
-Risk: 修复目前只覆盖 value attribute；type attribute 未读取，数字编辑器仍可能显示为 text 输入框。
+Risk: 浏览器对 number 输入框写入非数字字符串时会将值置空。
 
 ### 为 Enter 编辑增加原值和焦点断言
 Status: discussed
-Touches: `packages/core/test/editing.test.ts`, `demos/react/e2e/rfc-validation.spec.ts`
+Touches: `demos/react/e2e/rfc-validation.spec.ts`, `packages/core/test/editing.test.ts`
 
-单元测试覆盖 Enter 编辑后的输入值与焦点，浏览器端到端用例也加入相同断言。修复前单测复现空值；临时撤销修复后，端到端断言确认原值缺失，因此这些检查能捕获目标缺陷。
+仅检查编辑器可见无法发现输入框丢失原值。单测和 RFC-0012 的端到端用例增加焦点及原值断言；临时撤销修复后，原值断言失败，确认它能捕获该缺陷。
 
 ### 对照基线确认两项全量单测失败与修复无关
 Status: discussed
