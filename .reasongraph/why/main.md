@@ -516,11 +516,13 @@ Touches: `/?rfc=0012`, `.spec/rfc/completed/`
 
 键盘导航 demo 路由和 Enter/Escape E2E 对应 RFC-0012。该 RFC 已归档为完成状态，因此无需再次关闭。
 
-### 通过 Specify 归档 RFC-0034
-Status: directed
-Touches: `.spec/rfc/**`
+### 将覆盖率守卫路径指向归档后的 RFC-0034
+Status: discussed
+Touches: `demos/react/e2e/coverage.spec.ts`, `.spec/rfc/completed/0034-*.md`
 
-代理通过 Specify 将已标记为 Implemented 的 RFC-0034 移入 completed，并同步路线图和任务跟踪链接。Specify 校验通过，归档变更提交为 d7f4659。
+覆盖率守卫仍从 RFC 活跃目录读取 RFC-0034，但该 RFC 已移至 completed 目录，导致文件读取报错。摘要指出应更新读取路径；此修复尚未实施。
+
+Risk: 覆盖率端到端套件因文件不存在而失败。
 
 ### 保持 RFC-0040 待远端验证后再关闭
 Status: discussed
@@ -544,23 +546,21 @@ origin/main 已用 RFC-0047 记录 sorting.enabled=false 修复。本地 Enter �
 
 ### 在 CellEditor 连接时从 value attribute 初始化编辑值
 Status: discussed
-Touches: `packages/core/src/components/CellEditor.wsx`, `packages/core/test/editing.test.ts`
+Touches: `packages/core/src/components/CellEditor.wsx`
 
-Grid 通过 `value` attribute 传入单元格原值，但 CellEditor 未读取该值，且 WSX 的状态重渲染有延迟，导致输入框初始为空。连接时读取 attribute，并在聚焦所在帧直接设置输入框值，使编辑器不依赖延迟重渲染即可显示原值。
-
-Risk: 浏览器对 number 输入框写入非数字字符串时会将值置空。
+CellEditor 在连接时读取 value attribute，并在聚焦帧直接写入输入框，避免依赖延迟的 WSX 状态重渲染。attribute 缺失或为空时使用空字符串；数字 0 不会被当作空值。
 
 ### 为 Enter 编辑增加原值和焦点断言
 Status: discussed
-Touches: `demos/react/e2e/rfc-validation.spec.ts`, `packages/core/test/editing.test.ts`
+Touches: `packages/core/test/editing.test.ts`, `demos/react/e2e/rfc-validation.spec.ts`
 
-仅检查编辑器可见无法发现输入框丢失原值。单测和 RFC-0012 的端到端用例增加焦点及原值断言；临时撤销修复后，原值断言失败，确认它能捕获该缺陷。
+新增单测和 Playwright 端到端断言，验证 Enter 后输入框保留原值并获得焦点。修复前，原值断言复现空输入框；修复后通过。
 
-### 对照基线确认两项全量单测失败与修复无关
+### 补充双击编辑路径的原值断言
 Status: discussed
-Touches: `packages/core/src/components/CellEditor.wsx`, `packages/core/test/accessibility.test.ts`, `packages/core/test/keyboard-navigation-integration.test.ts`
+Touches: `demos/react/e2e/rfc-validation.spec.ts`
 
-全量单测有 519 项通过、2 项失败。还原 CellEditor 改动后，这两项仍失败，因此将其识别为基线失败，而非本次修复引入。
+Enter 与双击共用 CellEditor，双击路径也可能受到原值初始化问题影响；现有双击用例只检查编辑器可见，未检查原值。补充断言尚未实施。
 
 ### 保留远端 RFC-0047 排序修复并合并 RFC 跟踪记录
 Status: directed
@@ -575,3 +575,57 @@ Touches: `*coverage*`
 RFC-0034 归档后，coverage guard 仍从活动目录读取它，导致完整 E2E 检查失败。读取路径需覆盖归档状态，才能让 guard 在 RFC 生命周期变更后继续找到该 RFC。
 
 Risk: 若路径处理只针对 RFC-0034，其他归档 RFC 仍可能无法通过覆盖检查。
+
+### 对照基线确认两项全量单测失败与修复无关 (updated)
+Status: discussed
+Touches: `packages/core/test/accessibility.test.ts`, `packages/core/test/keyboard-navigation-integration.test.ts`, `packages/core/src/components/CellEditor.wsx`
+
+还原 CellEditor 改动后，两项失败仍存在，确认它们也出现在基线中。最新全量结果为 519 项通过、2 项失败；当前 HEAD 的全量单测仍未通过。
+
+Reviewer attention: 确认失败用例与 Enter 编辑路径的预期是否一致，并据此判断是否需要修复。
+
+### 保留 RFC-0009 偶发端到端失败作为未解决问题
+Status: discussed
+Touches: `demos/react/e2e/rfc-validation.spec.ts`
+
+RFC-0009 单独运行六次均通过，但并行运行时出现一次失败并显示“ErikErik Saved”。渲染竞态仅是未证实的猜测，尚无已确认机制或修复。
+
+Reviewer attention: 确认并行运行中的重复保存是否与 CellEditor 改动相关。
+
+### 验证 CellEditor 的 type 属性读取条件
+Status: discussed
+Touches: `packages/core/src/components/CellEditor.wsx`
+
+摘要指出，type getter 默认返回 text，使第 73 行的 if (el.type) 条件可能恒真并覆盖 _type。该行为仅通过代码检查提出，尚未验证或修复。
+
+Reviewer attention: 验证 getter 行为及其对非 text 输入类型的影响。
+
+### Initialize CellEditor input from value attribute on connection
+Status: discussed
+Touches: `packages/core/src/components/CellEditor.wsx`
+
+Grid passes the original cell value as an attribute, but CellEditor did not read it. Because WSX state updates render asynchronously, the input could be empty at focus time. Read the attribute and write directly to the input during the focus frame.
+
+### Assert original value and focus in Enter-edit coverage
+Status: discussed
+Touches: `packages/core/test/editing.test.ts`, `demos/react/e2e/rfc-validation.spec.ts`
+
+Visibility alone did not catch the empty-input defect. Add assertions for focus and the original value; the test failed before the fix and passed afterward.
+
+### Keep RFC-0048 approved until acceptance criteria pass
+Status: discussed
+Touches: `.spec/rfc/0048-enter-edit-focus-and-value.md`
+
+Implementation and focused end-to-end checks passed, but full core tests still had two failures and the coverage comparison lacked a confirmed summary. Archive only after remaining acceptance criteria are verified.
+
+### Keep RFC-0009 intermittent end-to-end failure unresolved
+Status: discussed
+Touches: `demos/react/e2e/rfc-validation.spec.ts`
+
+The failure appeared during parallel execution but passed in six isolated runs. The suspected rendering race was not established, so the cause remains unconfirmed.
+
+### 保留 doubleClick 作为默认编辑触发方式并显式配置 Enter 测试
+Status: discussed
+Touches: `packages/core/test/keyboard-navigation-integration.test.ts`, `packages/core/src/components/CellEditor.wsx`
+
+实现保留现有默认触发方式，避免改变产品行为。需要验证 Enter 编辑的测试显式设置 `editTrigger: "both"`。
