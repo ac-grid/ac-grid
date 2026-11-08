@@ -94,7 +94,7 @@ test.describe("RFC validation demos (browser)", () => {
             expect(sortedCheck.dom).toEqual(sortedCheck.model);
         });
 
-        test("sorting.enabled=false keeps row order and hides sort indicators (RFC-0047)", async ({ page }) => {
+        test("RFC-0047 disables sorting when configured off", async ({ page }) => {
             await page.evaluate(() => {
                 const grid = document.querySelector("wsx-ac-grid") as HTMLElement & {
                     sortingConfig?: { enabled: boolean };
@@ -444,6 +444,27 @@ test.describe("RFC validation demos (browser)", () => {
             return ranges[0] ?? null;
         })).toEqual({ startRow: 0, endRow: 1, columns: ["firstName", "lastName"] });
         await expect(grid.locator('.grid-cell[data-range-selected="true"]')).toHaveCount(4);
+    });
+
+    test("RFC-0029 creates a bar chart from selected grid data", async ({ page }) => {
+        await page.goto("/?rfc=0029");
+        const grid = page.locator("wsx-ac-grid");
+        await gridReady(page);
+        const start = grid.locator('.grid-cell[data-column-id="firstName"]').nth(0);
+        const end = grid.locator('.grid-cell[data-column-id="age"]').nth(1);
+        await start.hover();
+        await page.mouse.down();
+        await end.hover();
+        await page.mouse.up();
+
+        await page.getByTestId("create-range-chart").click();
+        const chart = page.getByRole("figure", { name: "bar chart" });
+        await expect(chart).toBeVisible();
+        const bars = chart.locator("svg rect");
+        await expect(bars).toHaveCount(2);
+        await expect(bars.nth(0)).toHaveAttribute("data-label", (await start.textContent())!.trim());
+        await expect(bars.nth(1)).toHaveAttribute("data-label", (await grid.locator('.grid-cell[data-column-id="firstName"]').nth(1).textContent())!.trim());
+        await expect(bars.first()).toHaveAttribute("data-value", /^\d+$/);
     });
 
     test("RFC-0016 applies theme variables to the validation grid", async ({ page }) => {

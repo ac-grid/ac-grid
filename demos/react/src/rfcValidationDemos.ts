@@ -7,6 +7,7 @@ import {
   type ExportOptions,
   zhCN,
 } from "@ac-grid/core";
+import { setupIntegratedCharts, type ChartSpec, type GridChartHost } from "@ac-grid/charts";
 
 import type { Person } from "./stories/makeData";
 
@@ -31,6 +32,7 @@ export const RFC_VALIDATION_ORDER = [
   "0019",
   "0022",
   "0023",
+  "0029",
   "0030",
   "0047",
 ] as const;
@@ -533,6 +535,59 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
       }),
       afterMount: (grid) => {
         grid.editingConfig = { enabled: true, mode: "doubleClick" };
+      },
+    },
+    "0029": {
+      id: "0029",
+      title: "Integrated charts",
+      multicaIssue: "ACG-29",
+      hint: "拖选姓名和年龄单元格，再创建柱状图；图表按所选行显示年龄。",
+      rowCount: 10,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 3),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        rangeSelection: { enabled: true },
+        enableCharts: true,
+      }),
+      afterMount: (host) => {
+        const grid = host as unknown as GridChartHost;
+        const charts = setupIntegratedCharts(grid, {
+          container: "dock",
+          adapter: {
+            render: (container, spec: ChartSpec) => {
+              const values = spec.series[0]?.values.map(Number) ?? [];
+              const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+              svg.setAttribute("viewBox", `0 0 ${spec.labels.length * 64} 180`);
+              svg.setAttribute("role", "img");
+              svg.setAttribute("aria-label", "Selected ages");
+              const max = Math.max(...values, 1);
+              values.forEach((value, index) => {
+                const bar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                bar.setAttribute("x", String(index * 64 + 12));
+                bar.setAttribute("y", String(140 - value / max * 110));
+                bar.setAttribute("width", "40");
+                bar.setAttribute("height", String(value / max * 110));
+                bar.setAttribute("data-label", String(spec.labels[index]));
+                bar.setAttribute("data-value", String(value));
+                svg.appendChild(bar);
+              });
+              container.appendChild(svg);
+              return { destroy: () => svg.remove() };
+            },
+          },
+        });
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "Create range chart";
+        button.setAttribute("data-testid", "create-range-chart");
+        button.onclick = () => charts.createRangeChart({
+          type: "bar",
+          categoryColumn: "firstName",
+          seriesColumns: ["age"],
+        });
+        host.parentElement?.appendChild(button);
       },
     },
     "0030": {

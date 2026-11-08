@@ -161,7 +161,7 @@ function App() {
         }
 
         host.replaceChildren();
-        const grid = createGrid(gridOptions) as GridHostElement;
+        const grid = createGrid(gridOptions) as unknown as GridHostElement;
         grid.style.display = "block";
         grid.style.height = "100%";
         grid.style.width = "100%";

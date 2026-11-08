@@ -25,11 +25,12 @@ Option keys for `createGrid`. Shapes come from `packages/core/src/utils/create-g
 | 0019 | Custom components | `components: { noRowsOverlayComponent, fullWidthRowComponent, isFullWidthRow, isLoading }`; column `headerComponent` |
 | 0022 | Range selection | `rangeSelection: { enabled: true }`; read with `grid.getCellRanges()` |
 | 0023 | Clipboard | `clipboard: { enabled: true, suppressClipboardApi, copyToClipboard, readFromClipboard, processCellForClipboard, processCellFromClipboard }`; Ctrl/Cmd+C copies the clicked cell, Ctrl/Cmd+V pastes from it |
+| 0029 | Integrated charts | `enableCharts: true`, `rangeSelection: { enabled: true }`, and `setupIntegratedCharts(grid, { adapter })`; create bar, line, or pie chart from selected range |
 | 0030 | Formulas | `createFormulaEngineFromMatrix(matrix)` then `engine.getValue(row, col)`; cycles return `#CYCLE!` |
 | 0047 | Sorting disable | `sorting: { enabled: false }` turns sorting off for every column: header clicks do not reorder rows and no sort indicator renders |
 
 ## Not implemented (draft or stretch)
 
-0014 data export, 0017 framework bindings, 0018 state API, 0020 tree data, 0021 master-detail, 0024 pivot, 0025 advanced Excel export, 0026 context menu, 0027 tool panels, 0028 advanced filtering, 0029 charts, 0031 server-side row model, 0032 AI toolkit.
+0014 data export, 0017 framework bindings, 0018 state API, 0020 tree data, 0021 master-detail, 0024 pivot, 0025 advanced Excel export, 0026 context menu, 0027 tool panels, 0028 advanced filtering, 0031 server-side row model, 0032 AI toolkit.
 
 When one of these is implemented, add its row above and bump `version` in `skill-release.json`.

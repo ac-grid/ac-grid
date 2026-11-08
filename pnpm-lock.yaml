@@ -36,6 +36,9 @@ importers:
 
   demos/react:
     dependencies:
+      '@ac-grid/charts':
+        specifier: workspace:*
+        version: link:../../packages/charts
       '@ac-grid/core':
         specifier: workspace:*
         version: link:../../packages/core

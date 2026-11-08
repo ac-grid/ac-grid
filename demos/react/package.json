@@ -14,6 +14,7 @@
         "test:e2e:ui": "playwright test --ui"
     },
     "dependencies": {
+        "@ac-grid/charts": "workspace:*",
         "@ac-grid/core": "workspace:*",
         "@ac-grid/theme-base": "workspace:*",
         "@ac-grid/theme-default": "workspace:*",
