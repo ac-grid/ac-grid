@@ -9,7 +9,7 @@ const completedIds = readdirSync(new URL("../../../.spec/rfc/completed/", import
 // Parse the order list as text: importing the demo module would load the browser-only core bundle.
 const demos = readFileSync(new URL("../src/rfcValidationDemos.ts", import.meta.url), "utf8");
 const demoIds = demos.match(/RFC_VALIDATION_ORDER = \[([^\]]*)\]/)![1].match(/\d{4}/g)!;
-const matrix = readFileSync(new URL("../../../.spec/rfc/0034-rfc-demo-acceptance-matrix.md", import.meta.url), "utf8");
+const matrix = readFileSync(new URL("../../../.spec/rfc/completed/0034-rfc-demo-acceptance-matrix.md", import.meta.url), "utf8");
 const matrixRows = new Map<string, { route: string; evidence: string }>();
 for (const line of matrix.split("\n")) {
     const columns = line.split("|");

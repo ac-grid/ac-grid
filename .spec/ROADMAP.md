@@ -265,7 +265,7 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 | Excel 高级导出  | [0025](./rfc/0025-excel-export-advanced.md)  | 📝 草稿 | P2     |
 | 工具面板/状态栏 | [0027](./rfc/0027-tool-panels-status-bar.md) | 📝 草稿 | P2     |
 | 高级过滤        | [0028](./rfc/0028-advanced-filtering.md)     | 📝 草稿 | P1     |
-| 集成图表        | [0029](./rfc/0029-integrated-charts.md)      | 📝 草稿 | P2     |
+| 集成图表        | [0029](./rfc/completed/0029-integrated-charts.md) | ✅ 已完成 | P2     |
 
 ---
 
@@ -484,4 +484,5 @@ MIT License
 | 0044 | [Unit coverage for logic modules (child of 0043)](rfc/0044-unit-coverage-logic.md) | Approved |
 | 0045 | [E2E coverage of P0, P1 and P2 features (child of 0043)](rfc/0045-e2e-coverage-collection.md) | Approved |
 | 0046 | [Unit coverage for components (child of 0043)](rfc/0046-component-coverage-closure.md) | Approved |
-| 0047 | [Enter 进入编辑时输入框聚焦并显示原值](rfc/0047-enter-edit-focus-and-value.md) | Approved |
+| 0047 | [Honor sorting.enabled=false in Grid](rfc/completed/0047-sorting-enabled-config.md) | Implemented |
+| 0048 | [Enter 进入编辑时输入框聚焦并显示原值](rfc/0048-enter-edit-focus-and-value.md) | Approved |

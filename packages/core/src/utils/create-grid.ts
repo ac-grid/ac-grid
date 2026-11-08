@@ -20,6 +20,7 @@ import type { GridGroupingConfig } from "../types/grouping";
 import type { GridClipboardConfig } from "../types/clipboard";
 import type { GridI18nConfig } from "../types/i18n";
 import type { GridRangeSelectionConfig } from "../types/range-selection";
+import type { GridChartThemeOverrides, GridElement } from "../types/range-chart";
 import type { KeyboardNavigationMode } from "./keyboard-navigation";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
@@ -103,6 +104,10 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
    * 自定义文本消息（RFC-0015）
    */
   messages?: Record<string, string>;
+  /** Enable chart creation through the optional @ac-grid/charts package (RFC-0029). */
+  enableCharts?: boolean;
+  /** Theme values used by chart adapters (RFC-0029). */
+  chartThemeOverrides?: GridChartThemeOverrides;
   /**
    * 初始主题名称（RFC-0011）
    */
@@ -141,7 +146,7 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
  */
 export function createGrid<TData extends { userId?: string }>(
   options: CreateGridOptions<TData>,
-): HTMLElement {
+): GridElement {
   const {
     data,
     columns,
@@ -164,6 +169,8 @@ export function createGrid<TData extends { userId?: string }>(
   // 确保组件已注册（导入时会自动注册）
   // 创建自定义元素
   const gridElement = document.createElement("wsx-ac-grid") as any;
+  gridElement.enableCharts = options.enableCharts ?? false;
+  gridElement.chartThemeOverrides = options.chartThemeOverrides;
 
   if (options.keyboardNavigationMode) gridElement.keyboardNavigationMode = options.keyboardNavigationMode;
   if (options.enableKeyboardNavigation !== undefined) gridElement.enableKeyboardNavigation = options.enableKeyboardNavigation;
@@ -252,5 +259,5 @@ export function createGrid<TData extends { userId?: string }>(
     container.appendChild(gridElement);
   }
 
-  return gridElement;
+  return gridElement as GridElement;
 }

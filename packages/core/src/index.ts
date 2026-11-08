@@ -27,6 +27,7 @@ export type {
 export type { GridSelectionConfig } from "./types/selection";
 export type { ClipboardCellParams, ClipboardPasteParams, GridClipboardConfig } from "./types/clipboard";
 export type { CellRange, GridRangeSelectionConfig } from "./types/range-selection";
+export type { GridChartThemeOverrides, GridElement, RangeChartColumn, RangeChartData } from "./types/range-chart";
 export type { KeyboardNavigationMode, CellPosition } from "./utils/keyboard-navigation";
 export type { GridPinningConfig } from "./types/pinning";
 export type {

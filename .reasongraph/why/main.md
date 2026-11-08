@@ -530,14 +530,34 @@ Touches: `.spec/rfc/`
 
 Reviewer attention: 确认 RFC-0040 仍处于 Approved，后续按远端验证流程关闭。
 
-### 提交全部暂存变更并保留现有分支
-Status: directed
-Touches: `.spec/rfc/`
+### 在连接时同步输入框值后再聚焦
+Status: discussed
+Touches: `packages/core/src/components/CellEditor.wsx`
 
-提交记录为 `93f8cb3 feat: complete selection and RFC demo coverage`，提交后工作区干净。记录显示未更改分支；三轮 E2E 共 111/111 通过，core 构建和 Specify 校验通过。
+WSX 的状态更新在首次渲染后延迟，单靠更新状态无法保证聚焦当帧的输入框已显示原值。因此连接时直接写入 input.value，再执行聚焦，避免依赖后续重渲染。
 
-### 保留未提交的 RFC-0047 草稿并暂停推送
+### 将 Enter 焦点草稿重新编号为 RFC-0048
 Status: discussed
 Touches: `.spec/rfc/**`, `ROADMAP*`, `TASK_TRACKING*`
 
-代理发现远端 RFC-0047 已用于排序修复，而本地同编号草稿涉及编辑焦点。为避免覆盖远端内容或错误重编号草稿，代理暂停推送；RFC-0034 的远端归档因此尚未完成。
+origin/main 已用 RFC-0047 记录 sorting.enabled=false 修复。本地 Enter 编辑焦点草稿改为 RFC-0048，远端 RFC-0047 和本地焦点工作均保留；合并时同步了路线图和任务跟踪。
+
+### 在 CellEditor 连接时从 value attribute 初始化编辑值
+Status: discussed
+Touches: `packages/core/src/components/CellEditor.wsx`
+
+Grid 将单元格原值作为 attribute 传给自定义编辑器，而 CellEditor 原先只读取属性值，导致输入框初始为空。连接时读取 attribute 可保持现有属性接口并修复数据流。临时还原修复后，浏览器断言确认期望值为 “Erik”、实际值为空。
+
+Risk: 修复目前只覆盖 value attribute；type attribute 未读取，数字编辑器仍可能显示为 text 输入框。
+
+### 为 Enter 编辑增加原值和焦点断言
+Status: discussed
+Touches: `packages/core/test/editing.test.ts`, `demos/react/e2e/rfc-validation.spec.ts`
+
+单元测试覆盖 Enter 编辑后的输入值与焦点，浏览器端到端用例也加入相同断言。修复前单测复现空值；临时撤销修复后，端到端断言确认原值缺失，因此这些检查能捕获目标缺陷。
+
+### 对照基线确认两项全量单测失败与修复无关
+Status: discussed
+Touches: `packages/core/src/components/CellEditor.wsx`, `packages/core/test/accessibility.test.ts`, `packages/core/test/keyboard-navigation-integration.test.ts`
+
+全量单测有 519 项通过、2 项失败。还原 CellEditor 改动后，这两项仍失败，因此将其识别为基线失败，而非本次修复引入。

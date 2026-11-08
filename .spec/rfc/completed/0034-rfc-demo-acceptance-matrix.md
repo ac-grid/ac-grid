@@ -58,6 +58,7 @@ AC Grid 建立「已完成 RFC 演示验收矩阵」（Demo Acceptance Matrix）
 | **0016** | 主题系统基础 | `/?rfc=0016` | 修改宿主 `--ac-grid-bg-cell` 后，Grid 内部表面背景应用相同计算颜色 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0016 applies theme variables to the validation grid`) | ✅ 达标 |
 | **0019** | 自定义组件 | `/?rfc=0019` | 挂载用户自定义 header 渲染组件并显示 "Custom Name" | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0019 renders custom header component`) | ✅ 达标 |
 | **0030** | 单元格公式引擎 | `/?rfc=0030` | 独立引擎（未接入 Grid）：可编辑公式表输入数字与 `=` 公式；SUM、AVG、MAX-MIN、COUNT 求值；`#DIV/0!`、`#NAME?`、`#CYCLE!` 及环路消除后恢复；改动输入后依赖格增量重算 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0030 formula engine` 下 5 个用例) | ✅ 达标 |
+| **0047** | 禁用排序 | `/?rfc=0047` | 设置 `sorting.enabled=false` 后，点击表头不改变行顺序，也不显示排序指示器 | `demos/react/e2e/rfc-validation.spec.ts` (`sorting.enabled=false keeps row order and hides sort indicators (RFC-0047)`) | ✅ 达标 |
 | **0011** | 高级主题功能 | `/?rfc=0011` | 预览主题改变 `--ac-grid-bg-header` 且不改变已应用主题；取消预览恢复原值；应用后持久 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0011 previews a theme...`) | ✅ 达标 |
 | **0012** | 键盘导航 | `/?rfc=0012` | 重渲染后焦点保留；方向键、Tab、Shift+Tab 移动单元格焦点；Enter 进入编辑，Escape 丢弃编辑 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0012 keeps keyboard focus...`, `RFC-0012 navigates with Tab...`) | ✅ 达标 |
 | **0013** | 可访问性 | `/?rfc=0013` | Grid、表头、行与单元格提供可访问角色和索引；排序方向及 live status 文案同步变化 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0013 exposes accessible grid roles and labels in the browser`) | ✅ 达标 |
