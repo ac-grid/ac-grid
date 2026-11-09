@@ -291,7 +291,7 @@ AC Grid 致力于成为 **基于 Web Components 标准的高性能数据表格�
 
 | 功能                         | RFC                                               | 状态      |
 | ---------------------------- | ------------------------------------------------- | --------- |
-| 框架绑定 Vue/Angular/Svelte  | [0017](./rfc/0017-framework-bindings.md)          | 📝 草稿   |
+| Framework bindings React/Vue/Angular/Svelte | [0017](./rfc/completed/0017-framework-bindings.md) | ✔️ 已完成 |
 | Grid 状态 API                | [0018](rfc/completed/0018-grid-state-api.md)              | ✔️ 已完成 |
 | 自定义 Header/Filter/Overlay | [0019](./rfc/completed/0019-custom-components.md) | ✔️ 已完成 |
 

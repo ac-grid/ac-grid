@@ -8,7 +8,7 @@
 
 本项目采用 monorepo 结构，使用 pnpm 和 Turbo 进行管理：
 
-- `packages/ac-grid-react` - React 版本的 Grid 组件库（基于 @tanstack/react-table）
+- `packages/react`, `packages/vue`, `packages/angular`, and `packages/svelte` - Framework adapters for the `wsx-ac-grid` custom element
 - `demos/react` - React 版本的演示应用（包含 Storybook）
 
 ## 功能特性
@@ -38,20 +38,21 @@
 ## 安装
 
 ```bash
-pnpm add @ac-grid/core
+pnpm add @ac-grid/core @ac-grid/react react react-dom
 ```
+
+For Vue, Angular, or Svelte, install `@ac-grid/vue`, `@ac-grid/angular`, or `@ac-grid/svelte` with that framework. See the [framework bindings guide](./docs/framework-bindings.md).
 
 ## 使用
 
 ```tsx
-import { Grid, DraggableHandler } from '@ac-grid/core';
-import { ColumnDef } from '@tanstack/react-table';
+import { AcGrid } from '@ac-grid/react';
+import type { ColumnDef } from '@ac-grid/core';
 
 const columns: ColumnDef<Person>[] = [
   {
     id: 'drag-handle',
     header: 'Move',
-    cell: ({ row }) => <DraggableHandler rowId={row.id} />,
     size: 60,
   },
   {
@@ -62,7 +63,7 @@ const columns: ColumnDef<Person>[] = [
 ];
 
 function App() {
-  return <Grid data={data} columns={columns} />;
+  return <AcGrid data={data} columns={columns} />;
 }
 ```
 

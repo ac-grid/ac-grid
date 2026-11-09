@@ -92,7 +92,7 @@
 
 | 功能                                | AG Grid   | AC Grid | RFC                                           | 版本   |
 | ----------------------------------- | --------- | ------- | --------------------------------------------- | ------ |
-| 框架绑定 (Vue/Angular/Svelte)       | Community | 📝      | [0017](./rfc/0017-framework-bindings.md)          | v0.5.0 |
+| Framework bindings (React/Vue/Angular/Svelte) | Community | ✔️ | [0017](./rfc/completed/0017-framework-bindings.md) | v0.5.0 |
 | Grid 状态 API / 持久化              | Community | ✔️      | [0018](rfc/completed/0018-grid-state-api.md)              | v0.5.0 |
 | 自定义组件（Header/Filter/Overlay） | Community | ✔️      | [0019](./rfc/completed/0019-custom-components.md) | v0.4.0 |
 
@@ -136,11 +136,11 @@
 
 ---
 
-## 开放产品决策
+## Product decisions
 
-| ID  | 问题                  | 选项                                | 建议                                            |
+| ID  | 问题                  | 选项                                | 决策                                            |
 | --- | --------------------- | ----------------------------------- | ----------------------------------------------- |
-| D1  | 首发框架绑定          | React-only / 三框架 / WC-only       | WC-first + React demo；0017 覆盖 Vue/Angular    |
+| D1  | Framework adapters    | React / Vue / Angular / Svelte over the Web Component | Implemented in RFC-0017 |
 | D2  | Enterprise 功能许可证 | 全 MIT / `@ac-grid/enterprise` 分包 | 全 MIT，用 optional peer 拆分大包               |
 | D3  | 渲染技术              | 纯 DOM / Canvas 混合                | 保持 DOM + 虚拟滚动；Canvas 仅评估 100K+ 列场景 |
 | D4  | Pinning 归属          | Community vs Enterprise 对标        | 纳入 v0.3.0 Community 路线（用户期望）          |
@@ -152,10 +152,10 @@
 | 范围                | RFC 数 | 已实现 | 进行中 | 草稿   |
 | ------------------- | ------ | ------ | ------ | ------ |
 | Phase 0             | 2      | 2      | 0      | 0      |
-| Phase 1 (0002–0019) | 18     | 10     | 0      | 8      |
+| Phase 1 (0002–0019) | 18     | 11     | 0      | 7      |
 | Phase 2 (0020–0029) | 10     | 0      | 0      | 10     |
 | Phase 3 (0030–0032) | 3      | 1      | 0      | 2      |
-| **合计**            | **33** | **13** | **0**  | **20** |
+| **合计**            | **33** | **14** | **0**  | **19** |
 
 ---
 
