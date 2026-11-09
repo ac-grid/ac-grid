@@ -1107,3 +1107,19 @@ Status: discussed — proposed direction; consolidation not decided or implement
 Touches: `.agents/skills/*`, `.claude/skills/*`, `.cursor/skills/*`, `.opencode/skills/*`
 
 The repository already tracks `multica-cli`, `multica-orca`, and `ui-ux-pro-max` under `.agents/skills`. Other harness directories contain copies, including differing `ui-ux-pro-max` versions, so a canonical source could reduce drift. Discovery behavior and copy removal remain unresolved.
+
+### Use .agents/skills as the canonical location for repository skills (updated)
+Status: discussed
+Touches: `.agents/skills/*`, `.claude/skills/wsx-apply`
+
+The agent moved `wsx-apply` into `.agents/skills/` and left a symlink at its former Claude Code path so the skill remains discoverable there. Symlink loading was not verified.
+
+Considered/rejected: Removing the old path could prevent Claude Code from loading the skill.
+
+### Move Multica reference skills from .spec into .agents/skills
+Status: discussed
+Touches: `.spec/multica-skills/*`, `.agents/skills/multica-*`, `.birdify/constraints.catalog.json`
+
+The agent moved the three versioned Multica skill references and their README into the repository’s canonical skills directory. It updated 29 Birdify constraint references to the new paths; the old-path search returned zero matches.
+
+Risk: The moves are staged, while the Birdify catalog changes are unstaged; they need deliberate staging before commit.
