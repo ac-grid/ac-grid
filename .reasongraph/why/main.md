@@ -761,7 +761,7 @@ Commits should stage only named paths so unrelated workspace changes are not swe
 Status: discussed
 Touches: `.spec/rfc/0050-documentation-coverage.md`, `.spec/rfc/0051-api-reference-docs.md`, `.spec/rfc/0052-feature-guides.md`, `.spec/rfc/0053-readme-refresh.md`
 
-The four RFC issues use `RFC-00NN: name` titles and include RFC path, status, and scope. They remain unassigned in backlog while their RFCs are Draft, avoiding agent execution before approval.
+The four documentation RFC issues remain unassigned and in backlog while their RFCs are Draft. This avoids triggering implementation work before the RFCs are approved.
 
 ### Defer typedoc integration choice until feasibility is assessed
 Status: discussed
@@ -844,3 +844,19 @@ Status: discussed
 Touches: `packages/core TSV serialization source`, `TSV serialization tests`
 
 通过临时破坏 `serializeTsv` 的引号转义来确认测试能检测回归；报告称测试捕获了该破坏，随后源码已恢复。
+
+### Generate API reference from public types and TSDoc
+Status: discussed
+Touches: `packages/core/src/types/*.ts`, `packages/core/src/index.ts`
+
+The API reference is planned from exported types and TSDoc using the documentation framework’s typedoc route. This keeps reference content tied to the public API and avoids a separately maintained hand-written reference.
+
+Considered/rejected: A hand-written API reference was rejected because it would duplicate source definitions.
+
+### Create RFC-0050 umbrella with three documentation child RFCs
+Status: discussed
+Touches: `.spec/rfc/0050-documentation-coverage.md`, `.spec/rfc/0051-api-reference-docs.md`, `.spec/rfc/0052-feature-guides.md`, `.spec/rfc/0053-readme-refresh.md`
+
+RFC-0050 serves as an index and closes after its child RFCs are complete. RFC-0051 covers API reference published at `/docs/api/` for all `index.ts` exports; RFC-0052 covers feature guides in two batches with examples tied to demos or end-to-end tests; RFC-0053 aligns the root README and `docs/README.md` with workspace packages, roadmap status, and checked links.
+
+Risk: All four RFCs remain Draft, so implementation scope is not yet approved.
