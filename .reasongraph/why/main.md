@@ -757,11 +757,11 @@ Touches: `.reasongraph/why/main.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md
 
 Commits should stage only named paths so unrelated workspace changes are not swept in. The hook-generated ReasonGraph digest requires diff review before deciding whether to include it.
 
-### Keep Multica RFC issues in backlog until approval
+### Keep unapproved RFC issues in backlog without assignees
 Status: discussed
 Touches: `.spec/rfc/0050-documentation-coverage.md`, `.spec/rfc/0051-api-reference-docs.md`, `.spec/rfc/0052-feature-guides.md`, `.spec/rfc/0053-readme-refresh.md`
 
-The four documentation RFC issues remain unassigned and in backlog while their RFCs are Draft. This avoids triggering implementation work before the RFCs are approved.
+The RFCs are Draft, so their corresponding issues remain in backlog without assignees. This avoids activating implementation work before approval.
 
 ### Defer typedoc integration choice until feasibility is assessed
 Status: discussed
@@ -847,24 +847,68 @@ Touches: `packages/core TSV serialization source`, `TSV serialization tests`
 
 ### Generate API reference from public types and TSDoc
 Status: discussed
-Touches: `.spec/rfc/0051-api-reference-docs.md`
+Touches: `packages/core/src/types/*.ts`, `packages/core/src/index.ts`
 
-The API reference is specified to derive from public types and TSDoc, then publish under `/docs/api/`. Acceptance criteria cover all 61 exports from `index.ts`, fail the build when pages are missing, verify that TSDoc edits change generated pages, and check the result in a browser.
+The API reference is planned from exported types and TSDoc using the documentation framework’s typedoc route. This keeps reference content tied to the public API and avoids a separately maintained hand-written reference.
+
+Considered/rejected: A hand-written API reference was rejected because it would duplicate source definitions.
 
 ### Create RFC-0050 umbrella with three documentation child RFCs
 Status: discussed
 Touches: `.spec/rfc/0050-documentation-coverage.md`, `.spec/rfc/0051-api-reference-docs.md`, `.spec/rfc/0052-feature-guides.md`, `.spec/rfc/0053-readme-refresh.md`
 
-The work is split into an umbrella RFC and three focused child RFCs so API reference generation, feature guides, and README repairs can be scoped and tracked independently. All four RFCs remain Draft until approved.
+The umbrella RFC tracks the overall documentation gap and closes after its three child RFCs are complete. Separate child RFCs keep API reference generation, feature guides, and README updates independently scoped.
 
-### Add feature guides backed by existing demos or end-to-end coverage
+### Create RFC-0050 umbrella with three documentation child RFCs (updated)
 Status: discussed
-Touches: `.spec/rfc/0052-feature-guides.md`
+Touches: `.spec/rfc/0050-documentation-coverage.md`, `.spec/rfc/0051-api-reference-docs.md`, `.spec/rfc/0052-feature-guides.md`, `.spec/rfc/0053-readme-refresh.md`
 
-The first guide batch covers editing, keyboard navigation, pagination, and virtual scrolling. Each example must match an existing demo or end-to-end test, with browser review for each guide.
+RFC-0050 serves as an index and closes only after all three child RFCs are complete. The child RFCs separate API reference generation, feature guides, and README/index corrections so each has focused acceptance criteria.
 
-### Refresh root README and documentation index
+Risk: All four RFCs remain Draft; implementation and issue activation depend on approval.
+
+### Generate API reference from public types and TSDoc (updated)
 Status: discussed
-Touches: `.spec/rfc/0053-readme-refresh.md`
+Touches: `packages/*/src/index.ts`, `docs/api/`
 
-The RFC targets stale documentation links and package references in the root README and `docs/README.md`. Acceptance criteria include link checks, package-list comparison against `pnpm-workspace.yaml`, and feature-status comparison against `.spec/ROADMAP.md`.
+RFC-0051 defines API pages from public type exports and TSDoc, keeping reference content tied to source definitions. Acceptance criteria cover every export, fail the build when a page is missing, verify that TSDoc edits appear, and check pages in a browser.
+
+Risk: A missing-page guard must detect omissions reliably; the RFC requires a mutation check.
+
+### Add usage guides for existing features with demo or E2E examples
+Status: discussed
+Touches: `docs/`
+
+RFC-0052 starts with editing, keyboard navigation, pagination, and virtual scrolling guides. Examples must match existing demos or end-to-end coverage, so documentation does not describe unsupported behavior; each guide is checked in a browser.
+
+### Refresh README package, roadmap, and accessibility links
+Status: discussed
+Touches: `README.md`, `docs/README.md`, `pnpm-workspace.yaml`, `.spec/ROADMAP.md`
+
+RFC-0053 ties package listings to workspace configuration and feature status to the spec roadmap. Link checks include a mutation check; the RFC records that both READMEs link to a missing root roadmap, the root README names `packages/ac-grid-react`, and the docs index lacks an accessibility link.
+
+### 仅对 attribute-only CellEditor 初始化值执行回退写入
+Status: discussed
+Touches: `packages/core/*`, `RFC-0048`
+
+直接读取 value attribute 的既有调用路径需要保留初始值，因此补回该路径的兼容写入。Grid 已预设 property 时跳过回退写入，避免重复设置文本。
+
+Reviewer attention: 确认 attribute-only 路径保留原值，Grid 预设 property 路径不重复写入；相关单测通过。
+
+### 限制 CellEditor 测试 teardown 的焦点清理范围
+Status: discussed
+Touches: `packages/core/*`
+
+测试遗留的焦点污染了 PaginationControls 的跨文件重渲染，导致分页 i18n 测试失败。teardown 仅 blur 自身容器内的活动元素，避免影响其他组件。组合测试 33/33 通过。
+
+### 仅在远端确认提交后将 RFC-0048 和 RFC-0049 标记为 Implemented
+Status: discussed
+Touches: `RFC-0048`, `RFC-0049`
+
+RFC 状态流转依赖实现提交已推送并存在于远端。先推送并核对远端提交，再通过 Specify 更新状态并归档，保证 RFC 生命周期记录与代码状态一致。
+
+### 如实报告全量覆盖率，不将范围测试当作全包 100%
+Status: discussed
+Touches: `packages/core/*`, `RFC-0043`
+
+全量 core 覆盖率为语句 71.89%、分支 48.04%、函数 71.52%、行 75.28%，结果为 527 通过、1 跳过。RFC-0043 才负责提升全包覆盖率至 100%，因此本次验证报告保留实测范围与数值。
