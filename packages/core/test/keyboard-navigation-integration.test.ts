@@ -64,7 +64,7 @@ describe("Grid keyboard navigation", () => {
 
   it("uses Enter to start editing and Escape to clear the active edit", async () => {
     const grid = makeGrid();
-    grid.editingConfig = { enabled: true, editTrigger: "both" };
+    grid.editingConfig = { enabled: true, editTrigger: "enter" };
     container.appendChild(grid);
     await waitFor(() => expect(root(grid).querySelector("[data-grid-cell]")).toBeTruthy());
     grid.focusCell("r1", "name");
