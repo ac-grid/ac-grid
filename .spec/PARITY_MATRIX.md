@@ -93,7 +93,7 @@
 | 功能                                | AG Grid   | AC Grid | RFC                                           | 版本   |
 | ----------------------------------- | --------- | ------- | --------------------------------------------- | ------ |
 | 框架绑定 (Vue/Angular/Svelte)       | Community | 📝      | [0017](./rfc/0017-framework-bindings.md)          | v0.5.0 |
-| Grid 状态 API / 持久化              | Community | 📝      | [0018](./rfc/0018-grid-state-api.md)              | v0.5.0 |
+| Grid 状态 API / 持久化              | Community | ✔️      | [0018](rfc/completed/0018-grid-state-api.md)              | v0.5.0 |
 | 自定义组件（Header/Filter/Overlay） | Community | ✔️      | [0019](./rfc/completed/0019-custom-components.md) | v0.4.0 |
 
 ---

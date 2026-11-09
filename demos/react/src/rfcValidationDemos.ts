@@ -29,6 +29,7 @@ export const RFC_VALIDATION_ORDER = [
   "0014",
   "0015",
   "0016",
+  "0018",
   "0019",
   "0022",
   "0023",
@@ -535,6 +536,43 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
       }),
       afterMount: (grid) => {
         grid.editingConfig = { enabled: true, mode: "doubleClick" };
+      },
+    },
+    "0018": {
+      id: "0018",
+      title: "Grid state API",
+      multicaIssue: "DEV-20",
+      hint: "点击按钮调用 setState / resetState；下方输出 getState() 的 JSON。",
+      rowCount: 10,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 3),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        pagination: { enabled: true, pageSize: 5, pageSizeOptions: [5, 10] },
+      }),
+      afterMount: (host) => {
+        const grid = host as GridHostElement & {
+          getState: () => unknown;
+          setState: (state: unknown) => void;
+          resetState: () => void;
+        };
+        const output = document.createElement("pre");
+        output.setAttribute("data-testid", "grid-state-output");
+        const show = () => { output.textContent = JSON.stringify(grid.getState()); };
+        const add = (label: string, testId: string, run: () => void) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = label;
+          button.setAttribute("data-testid", testId);
+          button.onclick = () => { run(); show(); };
+          host.parentElement?.appendChild(button);
+        };
+        add("Sort by age", "state-set-sort", () => grid.setState({ sorting: [{ id: "age", desc: false }] }));
+        add("Reset state", "state-reset", () => grid.resetState());
+        add("Read state", "state-read", () => {});
+        host.parentElement?.appendChild(output);
+        show();
       },
     },
     "0029": {

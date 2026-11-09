@@ -47,6 +47,7 @@ import type { CellRange, GridRangeSelectionConfig } from "../types/range-selecti
 import type { RangeChartData } from "../types/range-chart";
 import type { GridPinningConfig } from "../types/pinning";
 import type { GridEditingConfig } from "../types/editing";
+import type { ExportOptions } from "../types/export";
 import type { GridGroupingConfig } from "../types/grouping";
 import type { GridI18nConfig } from "../types/i18n";
 import { I18nManager, defaultI18nManager } from "../i18n/manager";
@@ -90,6 +91,7 @@ import {
 } from "../utils/editing-utils";
 import type { EditorProps } from "../types/editing";
 import { parseTsv, serializeTsv } from "../utils/clipboard";
+import { downloadFile, rowsToCsv } from "../utils/export";
 import {
     draggable,
     dropTargetForElements,
@@ -104,6 +106,8 @@ import "./GlobalSearch.wsx";
 import "./PaginationControls.wsx";
 import { themeManager } from "@ac-grid/theme-base";
 import { getNextCellPosition, type KeyboardNavigationMode } from "../utils/keyboard-navigation";
+import type { GridState, GridStateKey, GridStatePatch, GridStatePersistence } from "../types/grid-state";
+import { DEFAULT_GRID_STATE, deserializeGridState, mergeGridState, serializeGridState } from "../utils/grid-state";
 
 /** 默认列宽信息，保证 table.getState().columnSizingInfo 永不为 undefined，避免 "reading 'isResizingColumn'" 报错 */
 const DEFAULT_COLUMN_SIZING_INFO = {
@@ -139,6 +143,82 @@ export interface GridProps<TData extends { userId?: string }> {
  */
 @autoRegister({ tagName: "wsx-ac-grid" })
 export class Grid extends LightComponent {
+    private _statePersistence?: GridStatePersistence;
+    private restoredState = false;
+
+    public get statePersistence(): GridStatePersistence | undefined { return this._statePersistence; }
+    public set statePersistence(value: GridStatePersistence | undefined) { this._statePersistence = value; }
+
+    connectedCallback() {
+        super.connectedCallback();
+        if (!this.restoredState) {
+            this.restoredState = true;
+            const saved = this.readPersistedState();
+            if (saved) this.applyGridState(saved);
+        }
+    }
+
+    public getState(): GridState {
+        return {
+            stateVersion: 1,
+            columnSizing: { ...this.columnSizing },
+            columnOrder: [...this.columnOrder],
+            sorting: this.sorting.map((item) => ({ ...item })),
+            columnFilters: { ...this.columnFilters },
+            globalFilter: this.globalFilter,
+            pagination: { ...this.pagination },
+            scrollTop: this.bodyScrollElement?.scrollTop ?? this.virtualState.scrollTop,
+        };
+    }
+
+    public setState(state: GridStatePatch): void {
+        this.applyGridState(mergeGridState(this.getState(), state));
+        this.persistGridState();
+    }
+
+    public resetState(keys?: GridStateKey[]): void {
+        const state = this.getState();
+        const resetKeys = keys ?? (Object.keys(DEFAULT_GRID_STATE) as GridStateKey[]);
+        const patch = Object.fromEntries(resetKeys.map((key) => [key, DEFAULT_GRID_STATE[key]])) as GridStatePatch;
+        this.applyGridState(mergeGridState(state, patch));
+        this.persistGridState();
+    }
+
+    private applyGridState(state: GridState): void {
+        this.columnSizing = { ...state.columnSizing };
+        this.columnOrder = [...state.columnOrder];
+        this.sorting = state.sorting.map((item) => ({ ...item }));
+        this.columnFilters = { ...state.columnFilters };
+        this.globalFilter = state.globalFilter;
+        this.pagination = { ...state.pagination };
+        this.virtualState = { ...this.virtualState, scrollTop: state.scrollTop };
+        if (this.bodyScrollElement) this.bodyScrollElement.scrollTop = state.scrollTop;
+        this.updateTable();
+        this.updateVirtualization();
+    }
+
+    private readPersistedState(): GridState | null {
+        const config = this._statePersistence;
+        if (!config?.key) return null;
+        try {
+            const storage = config.storage ?? (typeof localStorage !== "undefined" ? localStorage : undefined);
+            return storage ? deserializeGridState(storage.getItem(config.key)) : null;
+        } catch {
+            return null;
+        }
+    }
+
+    private persistGridState(): void {
+        const config = this._statePersistence;
+        if (!config?.key) return;
+        try {
+            const storage = config.storage ?? (typeof localStorage !== "undefined" ? localStorage : undefined);
+            storage?.setItem(config.key, serializeGridState(this.getState()));
+        } catch {
+            // Storage can be unavailable or quota-limited; the in-memory grid remains usable.
+        }
+    }
+
     /** Accessible name and description (RFC-0013). */
     @state private _ariaLabel = "Data grid";
     @state private _ariaDescription = "";
@@ -1105,6 +1185,7 @@ export class Grid extends LightComponent {
         const pageIndex = clampPageIndex(next.pageIndex, totalPages);
         const normalized = { ...next, pageIndex };
         this.pagination = normalized;
+        this.persistGridState();
         this._paginationConfig?.onPaginationChange?.(normalized);
         this.updateTable();
         if (this.isServerPaginationMode && this._paginationConfig?.onServerPagination) {
@@ -1234,7 +1315,7 @@ export class Grid extends LightComponent {
         return Object.keys(this.rowSelection);
     }
 
-    public exportToCSV(options?: any) {
+    public exportToCSV(options: ExportOptions = {}) {
         const { exportMode = 'all', includeHeaders = true, columns: selectedColumns, fileName = 'export.csv', formatter } = options || {};
 
         // Get columns
@@ -1268,45 +1349,8 @@ export class Grid extends LightComponent {
         });
 
         // Generate CSV
-        const csvLines: string[] = [];
-        if (includeHeaders) {
-            csvLines.push(columnDefs.map(col => this.escapeCsvValue(col.header)).join(','));
-        }
-
-        for (const rowData of data) {
-            const values = columnDefs.map(col => {
-                const rawValue = rowData[col.id];
-                const formattedValue = formatter ? formatter(rawValue, col.id) : rawValue;
-                return this.escapeCsvValue(formattedValue);
-            });
-            csvLines.push(values.join(','));
-        }
-
-        const csv = csvLines.join('\n');
-
-        // Download
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-
-    private escapeCsvValue(value: any): string {
-        if (value === null || value === undefined) {
-            return '';
-        }
-
-        const str = String(value);
-        if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
-            return `"${str.replace(/"/g, '""')}"`;
-        }
-
-        return str;
+        const csv = rowsToCsv(data, columnDefs, { includeHeaders, formatter });
+        downloadFile(csv, fileName, 'text/csv;charset=utf-8;');
     }
 
     private notifySelectionChange() {
@@ -1349,6 +1393,7 @@ export class Grid extends LightComponent {
     }
 
     private onBodyScroll = (target: HTMLElement) => {
+        this.persistGridState();
         if (!this._virtualizationConfig.enabled) {
             return;
         }
@@ -1668,6 +1713,7 @@ export class Grid extends LightComponent {
                             ? updater(this.columnSizing || {})
                             : updater;
                     this.columnSizing = newSizing;
+                    this.persistGridState();
                     this._resizingConfig?.onColumnSizingChange?.(newSizing);
                     this.updateTable();
                 },
@@ -1712,6 +1758,7 @@ export class Grid extends LightComponent {
                         ? updater(this.columnOrder)
                         : updater;
                 this.columnOrder = newOrder;
+                this.persistGridState();
                 this.updateTable();
             },
             onSortingChange: (updater) => {
@@ -1720,6 +1767,7 @@ export class Grid extends LightComponent {
                         ? updater(this.sorting)
                         : updater;
                 this.sorting = newSorting;
+                this.persistGridState();
                 this._sortingConfig?.onSortingChange?.(newSorting);
                 this.updateTable();
                 this.updateVirtualization();
@@ -1756,6 +1804,7 @@ export class Grid extends LightComponent {
                         });
                     }
                     this.columnFilters = record;
+                    this.persistGridState();
                     this.notifyFilterChange();
                     this.updateTable();
                     this.updateVirtualization();
@@ -1765,6 +1814,7 @@ export class Grid extends LightComponent {
                         typeof updater === "function"
                             ? updater(this.globalFilter)
                             : String(updater ?? "");
+                    this.persistGridState();
                     this.notifyFilterChange();
                     this.updateTable();
                     this.updateVirtualization();
@@ -2226,6 +2276,7 @@ export class Grid extends LightComponent {
                                 return;
                             }
                             this.bodyScrollElement = el;
+                            if (this.virtualState.scrollTop > 0) el.scrollTop = this.virtualState.scrollTop;
                             this.syncBodyScroll();
                             this.syncHeaderScroll();
                             this.bodyResizeObserver?.disconnect();
@@ -2539,6 +2590,7 @@ export class Grid extends LightComponent {
     public setSorting(sorting: SortingState): void {
         this.sorting = sorting;
         this.updateTable();
+        this.persistGridState();
     }
 
     /**
@@ -2554,6 +2606,7 @@ export class Grid extends LightComponent {
     public resetSorting(): void {
         this.sorting = [];
         this.updateTable();
+        this.persistGridState();
     }
 
     private toggleColumnSort(columnId: string, shiftKey: boolean) {
@@ -2594,6 +2647,7 @@ export class Grid extends LightComponent {
         const rowHeight = this._virtualizationConfig.rowHeight ?? 35;
         bodyScrollElement.scrollTop = scrollOffsetForRow(clampedIndex, rowHeight);
         this.updateVirtualization();
+        this.persistGridState();
     }
 
     /** RFC-0005: 当前可见行索引区间 [start, end) */
@@ -2608,6 +2662,7 @@ export class Grid extends LightComponent {
         this.notifyFilterChange();
         this.updateTable();
         this.updateVirtualization();
+        this.persistGridState();
     }
 
     /**
@@ -2634,6 +2689,7 @@ export class Grid extends LightComponent {
         this.notifyFilterChange();
         this.updateTable();
         this.updateVirtualization();
+        this.persistGridState();
     }
 
     /** RFC-0003: 清除所有过滤 */
@@ -2644,6 +2700,7 @@ export class Grid extends LightComponent {
         this.updateTable();
         this.updateVirtualization();
         this.updateFilterMenuPortal();
+        this.persistGridState();
     }
 
     /** RFC-0003: 获取当前过滤状态 */
@@ -2669,6 +2726,7 @@ export class Grid extends LightComponent {
         this.columnSizing = newSizing;
         this._resizingConfig?.onColumnSizingChange?.(newSizing);
         this.updateTable();
+        this.persistGridState();
     }
 
     /** RFC-0004: 获取列宽 */

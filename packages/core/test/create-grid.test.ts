@@ -81,4 +81,30 @@ describe("createGrid", () => {
         expect(grid.i18nConfig.locale).toBe("zh-CN");
         expect(grid.i18nManager.getLocale()).toBe("zh-CN");
     });
+
+    it("exposes grid state methods and persists state through injected storage", () => {
+        const values = new Map<string, string>();
+        const storage = {
+            getItem: (key: string) => values.get(key) ?? null,
+            setItem: (key: string, value: string) => values.set(key, value),
+            removeItem: (key: string) => values.delete(key),
+        };
+        values.set("grid-state", JSON.stringify({
+            stateVersion: 1,
+            sorting: [{ id: NAME_COLUMN_ID, desc: true }],
+        }));
+
+        const grid = createGrid({
+            data: [{ userId: "1", name: "Ada" }],
+            columns: [{ accessorKey: NAME_COLUMN_ID, header: "Name" }],
+            persistState: { key: "grid-state", storage },
+            container,
+        });
+
+        expect(grid.getState().sorting).toEqual([{ id: NAME_COLUMN_ID, desc: true }]);
+        grid.setState({ globalFilter: "Ada" });
+        expect(JSON.parse(values.get("grid-state")!).globalFilter).toBe("Ada");
+        grid.resetState(["globalFilter"]);
+        expect(grid.getState().globalFilter).toBe("");
+    });
 });

@@ -49,6 +49,7 @@ Use the custom element `<wsx-ac-grid>` (or the tag your wrapper exposes). Pass `
 
 - [Sorting](/docs/guide/features/sorting) – Enable and customize column sorting
 - [Filtering](/docs/guide/features/filtering) – Column filters and global search
+- [Grid state](/docs/guide/features/grid-state) – Read, restore, and persist grid state
 - [Theming](/docs/guide/features/theming) – Light/dark and custom themes
 - [API Reference](https://github.com/systembugtj/ac-grid) – Types and exports from `@ac-grid/core`
 - [RFCs](https://github.com/systembugtj/ac-grid/tree/main/docs/rfc) – Design docs and roadmap
