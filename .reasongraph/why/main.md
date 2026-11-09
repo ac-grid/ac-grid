@@ -18,9 +18,9 @@ Risk: Spark port.md and project.md remain uncommitted and still contain unrelate
 
 ### Keep ac-grid off Vite's default 5173; use reserved ports with strictPort
 Status: discussed
-Touches: `demos/react/playwright.config.ts`, `demos/react/vite.config.ts`
+Touches: `project.md`, `port.md`, `各服务 package.json 与开发、预览、端到端测试配置`
 
-Drag probes and Playwright continued to bind Vite at 127.0.0.1:5201 with --strictPort, not 5173. A leftover Vite on 5201 made Playwright webServer fail with “http://127.0.0.1:5201/?e2e=virtual-scroll is already used”; that process was killed before the RFC-0002 run that passed.
+为避免端口冲突，各服务改用已登记端口并启用 `strictPort`，使端口被占用时明确失败，不会静默回退。报告记录 React 5198、WSX 5199、站点开发 5200、端到端测试 5201、站点预览 5202、Storybook 6007；5198、5199 和 5201 已验证。
 
 ### Do not merge PR #41 while GitHub reports CONFLICTING
 Status: discussed
@@ -802,3 +802,45 @@ Status: discussed
 Touches: `.spec/rfc/*`
 
 排序演示的实现须等待对应 RFC 获批；草案阶段不启动实现，以保持 RFC 审批门槛。
+
+### Replace text-only RFC checks with interactive behavior tests
+Status: discussed
+Touches: `App.tsx`, `Playwright RFC-0001 and RFC-0030 test files`
+
+RFC-0001 和 RFC-0030 的原测试只断言文本，无法证明交互行为。工作改为实现交互式公式表并用行为测试替换弱断言；报告称新测试在功能损坏时失败、恢复后通过。
+
+### Use a shared quiet-wait helper for initialization-race tests
+Status: discussed
+Touches: `Playwright test helper`, `RFC-0022 test`, `sorting test`
+
+多个测试等待初始化稳定的方式不一致，排序测试还使用固定的 `waitForTimeout(300)`。统一 helper 并让等待依赖实际稳定条件，避免测试依赖任意延迟。报告称全量测试连续 10 次通过，每次 26/26；修复前约 9 次中有 6 次失败。
+
+### Restore focus through the grid cells' existing key attribute
+Status: discussed
+Touches: `RFC-0012 Playwright test`, `Grid cell rendering code`
+
+WSX 的重渲染焦点恢复按 `data-wsx-key` 查找元素，而网格单元格使用 `key`，导致恢复逻辑找不到目标。修复围绕真实键盘操作验证焦点恢复，并加入可复用的安静等待；报告称全量测试连续 10 次通过。
+
+### Keep Playwright end-to-end tests parallel
+Status: discussed
+Touches: `Playwright configuration`
+
+串行运行会掩盖并行环境中的真实失败，因此恢复上游并行配置，并修复并行运行中暴露的问题。报告称完整端到端套件在并行配置下连续 15 次通过。
+
+### Measure coverage across all core source files
+Status: discussed
+Touches: `packages/core coverage configuration`
+
+原覆盖率配置只纳入 5 个已达到 100% 的文件，无法反映整个 core 的测试缺口。配置改为统计全部 `src`，门槛设在实测基线并要求只升不降；记录的基线为行覆盖率 58.8%、分支覆盖率 35.3%、函数覆盖率 55.4%。
+
+### Keep sorting.enabled false as an unresolved product bug
+Status: discussed
+Touches: `Grid sorting implementation`, `sorting-related RFC`
+
+检查发现 `sorting: { enabled: false }` 没有关闭排序，说明配置行为与预期不符。该缺陷已记录到 RFC，但当前修复状态未确认。
+
+### Validate TSV quote escaping with a mutation check
+Status: discussed
+Touches: `packages/core TSV serialization source`, `TSV serialization tests`
+
+通过临时破坏 `serializeTsv` 的引号转义来确认测试能检测回归；报告称测试捕获了该破坏，随后源码已恢复。
