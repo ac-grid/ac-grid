@@ -486,3 +486,4 @@ MIT License
 | 0046 | [Unit coverage for components (child of 0043)](rfc/0046-component-coverage-closure.md) | Approved |
 | 0047 | [Honor sorting.enabled=false in Grid](rfc/completed/0047-sorting-enabled-config.md) | Implemented |
 | 0048 | [Enter 进入编辑时输入框聚焦并显示原值](rfc/0048-enter-edit-focus-and-value.md) | Approved |
+| 0049 | [未开键盘导航时 Enter 触发编辑仍生效](rfc/0049-enter-trigger-without-keyboard-nav.md) | Approved |
