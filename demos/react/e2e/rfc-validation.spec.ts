@@ -446,6 +446,22 @@ test.describe("RFC validation demos (browser)", () => {
         await expect(grid.locator('.grid-cell[data-range-selected="true"]')).toHaveCount(4);
     });
 
+    test("RFC-0018 sets and resets grid state through the state API", async ({ page }) => {
+        await page.goto("/?rfc=0018");
+        const grid = page.locator("wsx-ac-grid");
+        await gridReady(page);
+        const output = page.getByTestId("grid-state-output");
+        const ages = () => grid.locator('.grid-cell[data-column-id="age"]').allTextContents().then((cells) => cells.map((cell) => Number(cell.trim())));
+
+        await page.getByTestId("state-set-sort").click();
+        expect(JSON.parse((await output.textContent())!).sorting).toEqual([{ id: "age", desc: false }]);
+        const sorted = await ages();
+        expect(sorted).toEqual([...sorted].sort((a, b) => a - b));
+
+        await page.getByTestId("state-reset").click();
+        expect(JSON.parse((await output.textContent())!).sorting).toEqual([]);
+    });
+
     test("RFC-0029 creates a bar chart from selected grid data", async ({ page }) => {
         await page.goto("/?rfc=0029");
         const grid = page.locator("wsx-ac-grid");
