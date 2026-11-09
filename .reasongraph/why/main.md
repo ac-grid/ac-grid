@@ -847,14 +847,24 @@ Touches: `packages/core TSV serialization source`, `TSV serialization tests`
 
 ### Generate API reference from public types and TSDoc
 Status: discussed
-Touches: `packages/core/src/types/*.ts`, `packages/core/src/index.ts`
+Touches: `.spec/rfc/0051-api-reference-docs.md`
 
-The API reference is planned from exported types and TSDoc using the documentation framework’s typedoc route. This keeps reference content tied to the public API and avoids a separately maintained hand-written reference.
-
-Considered/rejected: A hand-written API reference was rejected because it would duplicate source definitions.
+The API reference is specified to derive from public types and TSDoc, then publish under `/docs/api/`. Acceptance criteria cover all 61 exports from `index.ts`, fail the build when pages are missing, verify that TSDoc edits change generated pages, and check the result in a browser.
 
 ### Create RFC-0050 umbrella with three documentation child RFCs
 Status: discussed
 Touches: `.spec/rfc/0050-documentation-coverage.md`, `.spec/rfc/0051-api-reference-docs.md`, `.spec/rfc/0052-feature-guides.md`, `.spec/rfc/0053-readme-refresh.md`
 
-The umbrella RFC tracks the overall documentation gap and closes after its three child RFCs are complete. Separate child RFCs keep API reference generation, feature guides, and README updates independently scoped.
+The work is split into an umbrella RFC and three focused child RFCs so API reference generation, feature guides, and README repairs can be scoped and tracked independently. All four RFCs remain Draft until approved.
+
+### Add feature guides backed by existing demos or end-to-end coverage
+Status: discussed
+Touches: `.spec/rfc/0052-feature-guides.md`
+
+The first guide batch covers editing, keyboard navigation, pagination, and virtual scrolling. Each example must match an existing demo or end-to-end test, with browser review for each guide.
+
+### Refresh root README and documentation index
+Status: discussed
+Touches: `.spec/rfc/0053-readme-refresh.md`
+
+The RFC targets stale documentation links and package references in the root README and `docs/README.md`. Acceptance criteria include link checks, package-list comparison against `pnpm-workspace.yaml`, and feature-status comparison against `.spec/ROADMAP.md`.
