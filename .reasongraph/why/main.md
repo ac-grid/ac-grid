@@ -503,11 +503,13 @@ Touches: `packages/core/test/editing.test.ts`, `packages/core/src/components/Cel
 
 The agent planned to assert that Enter-triggered editing focuses the input and preserves the cell's original value. This would distinguish a focus restoration or render-timing issue from a value initialization issue before choosing a minimal fix.
 
-### Create and validate an RFC before implementing the Enter-editing fix
+### Create and validate an RFC before the Enter-editing fix
 Status: discussed
-Touches: `.spec/rfc/*`
+Touches: `.spec/rfc/0047-enter-edit-focus-and-value.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
 
-The agent planned to use the specify CLI to create an RFC and run its delivery, validation, and sync checks before implementation, following the repository's RFC workflow.
+将 Enter 编辑时焦点与原值问题记录为 RFC-0047，并在实施前验证和批准范围。RFC 状态推进至 Approved；本次代码改动围绕该问题展开。
+
+Risk: 记录显示 RFC 检查通过，但 `sync-check` 退出码未单独核对。
 
 ### 将键盘导航 demo 与 E2E 归入 RFC-0012
 Status: discussed
@@ -609,7 +611,7 @@ Touches: `packages/core/src/**/*CellEditor*`, `packages/core/**/*CellEditor*`
 Status: discussed
 Touches: `packages/core/test/editing.test.ts`, `demos/react/e2e/rfc-validation.spec.ts`
 
-Visibility alone did not catch the empty-input defect. Add assertions for focus and the original value; the test failed before the fix and passed afterward.
+Enter 编辑覆盖需同时断言焦点和原值，才能捕捉输入框为空这一根因。修复前的回归验证中，原值断言失败而焦点断言通过；修复后新增单测通过。
 
 ### Keep RFC-0048 approved until acceptance criteria pass
 Status: discussed
@@ -619,9 +621,11 @@ Implementation and focused end-to-end checks passed, but full core tests still h
 
 ### Keep RFC-0009 intermittent end-to-end failure unresolved
 Status: discussed
-Touches: `demos/react/e2e/rfc-validation.spec.ts`
+Touches: `demos/react/e2e/`
 
-The failure appeared during parallel execution but passed in six isolated runs. The suspected rendering race was not established, so the cause remains unconfirmed.
+RFC-0009 单独运行通过，但整体端到端运行曾失败，随后单独重复六次通过；该差异提示并行运行时可能存在渲染竞态，现有证据不足以确认问题已解决。
+
+Reviewer attention: 确认后续整体并行端到端运行是否稳定；不要将单独重跑通过视为竞态已修复。
 
 ### 保留 doubleClick 作为默认编辑触发方式并显式配置 Enter 测试
 Status: discussed
@@ -774,11 +778,11 @@ The project has no API documentation generator, while `@wsxjs/wsx-press` include
 
 ### 推送实现与 ReasonGraph 生成提交并核对远端 SHA
 Status: discussed
-Touches: `.reasongraph/why/**`
+Touches: `main`, `.reasongraph/why/`
 
-实现提交已推送到 main；ReasonGraph hook 随后生成了本地提交。同步命令未能处理 14 个历史会话，但确认 why-pack 已提交且 RFC 变更未受影响，因此继续推送生成提交并核对远端 SHA。
+推送实现提交后，pre-push hook 又生成 why-pack 提交，使本地 `main` 再次领先。代理继续推送，直到本地与远端 SHA 一致；远端已收到的提交为 `46be960`，随后生成的本地提交为 `9c42b7e`。
 
-Risk: 历史会话未完成蒸馏；自动生成提交可能包含尚未处理的会话状态。
+Risk: ReasonGraph pre-push hook 的 Codex 与 Claude 后端均发生超时，推送可能延迟。
 
 ### Reject post-render CellEditor value writes after stress failures
 Status: discussed
@@ -945,3 +949,9 @@ Status: discussed
 Touches: `.spec/rfc/**/*0048*`, `.spec/rfc/**/*0049*`, `.spec/rfc/**/*0054*`
 
 Specify 将 RFC-0048、RFC-0049 和 RFC-0054 标记为 Implemented 并归档，且同步检查通过。
+
+### 在连接时同步输入框值后再聚焦 (updated)
+Status: discussed
+Touches: `packages/core/src/components/CellEditor.wsx`
+
+Grid 通过 `value` attribute 将单元格原值传给编辑器，但编辑器未读取该 attribute；延迟的状态重渲染会让输入框在聚焦时仍为空。连接时读取 attribute，并在聚焦同一帧写入输入框，可避免依赖延迟重渲染。
