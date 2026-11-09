@@ -47,6 +47,7 @@ import type { CellRange, GridRangeSelectionConfig } from "../types/range-selecti
 import type { RangeChartData } from "../types/range-chart";
 import type { GridPinningConfig } from "../types/pinning";
 import type { GridEditingConfig } from "../types/editing";
+import type { ExportOptions } from "../types/export";
 import type { GridGroupingConfig } from "../types/grouping";
 import type { GridI18nConfig } from "../types/i18n";
 import { I18nManager, defaultI18nManager } from "../i18n/manager";
@@ -90,6 +91,7 @@ import {
 } from "../utils/editing-utils";
 import type { EditorProps } from "../types/editing";
 import { parseTsv, serializeTsv } from "../utils/clipboard";
+import { downloadFile, rowsToCsv } from "../utils/export";
 import {
     draggable,
     dropTargetForElements,
@@ -1234,7 +1236,7 @@ export class Grid extends LightComponent {
         return Object.keys(this.rowSelection);
     }
 
-    public exportToCSV(options?: any) {
+    public exportToCSV(options: ExportOptions = {}) {
         const { exportMode = 'all', includeHeaders = true, columns: selectedColumns, fileName = 'export.csv', formatter } = options || {};
 
         // Get columns
@@ -1268,45 +1270,8 @@ export class Grid extends LightComponent {
         });
 
         // Generate CSV
-        const csvLines: string[] = [];
-        if (includeHeaders) {
-            csvLines.push(columnDefs.map(col => this.escapeCsvValue(col.header)).join(','));
-        }
-
-        for (const rowData of data) {
-            const values = columnDefs.map(col => {
-                const rawValue = rowData[col.id];
-                const formattedValue = formatter ? formatter(rawValue, col.id) : rawValue;
-                return this.escapeCsvValue(formattedValue);
-            });
-            csvLines.push(values.join(','));
-        }
-
-        const csv = csvLines.join('\n');
-
-        // Download
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-
-    private escapeCsvValue(value: any): string {
-        if (value === null || value === undefined) {
-            return '';
-        }
-
-        const str = String(value);
-        if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
-            return `"${str.replace(/"/g, '""')}"`;
-        }
-
-        return str;
+        const csv = rowsToCsv(data, columnDefs, { includeHeaders, formatter });
+        downloadFile(csv, fileName, 'text/csv;charset=utf-8;');
     }
 
     private notifySelectionChange() {

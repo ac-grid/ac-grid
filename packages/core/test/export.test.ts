@@ -25,6 +25,10 @@ describe("export utilities", () => {
     it("wraps values with newlines in quotes", () => {
       expect(escapeCsvValue("line1\nline2")).toBe('"line1\nline2"');
     });
+
+    it("wraps carriage returns in quotes", () => {
+      expect(escapeCsvValue("line1\rline2")).toBe('"line1\rline2"');
+    });
   });
 
   describe("rowsToCsv", () => {
