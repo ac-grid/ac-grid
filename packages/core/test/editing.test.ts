@@ -165,7 +165,60 @@ describe("Grid Cell Editing", () => {
         expect(onEditStart).not.toHaveBeenCalled();
     });
 
-    it("Enter starts editing with the input focused and the original value shown (RFC-0047)", async () => {
+    describe("Enter trigger independent of keyboard navigation (RFC-0049)", () => {
+        async function pressEnterOnNameCell(grid: any) {
+            container.appendChild(grid);
+            const root = () => (grid.shadowRoot || grid) as ParentNode;
+            const cellSelector = '[role="gridcell"][data-column-id="name"]';
+            await waitFor(() => expect(root().querySelector(cellSelector)).toBeTruthy());
+            root()
+                .querySelector<HTMLElement>(cellSelector)!
+                .dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+            return root;
+        }
+
+        it("opens the editor on Enter when editTrigger is 'both' and keyboard navigation is off", async () => {
+            const onEditStart = vi.fn();
+            const grid = createEditingGrid({ editTrigger: "both", onEditStart });
+            const root = await pressEnterOnNameCell(grid);
+
+            await waitFor(() => expect(root().querySelector("wsx-ac-cell-editor")).toBeTruthy());
+            const input = root().querySelector<HTMLInputElement>("wsx-ac-cell-editor input");
+            await waitFor(() => {
+                expect(input).toBeTruthy();
+                expect(input!.value).toBe("Alice");
+                expect(document.activeElement === input || (root() as any).activeElement === input).toBe(true);
+            });
+            expect(onEditStart).toHaveBeenCalledTimes(1);
+            expect(onEditStart).toHaveBeenCalledWith("u1", "name");
+        });
+
+        it("does not open the editor on Enter when editTrigger is 'doubleClick'", async () => {
+            const onEditStart = vi.fn();
+            const grid = createEditingGrid({ editTrigger: "doubleClick", onEditStart });
+            const root = await pressEnterOnNameCell(grid);
+
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            expect(root().querySelector("wsx-ac-cell-editor")).toBeFalsy();
+            expect(onEditStart).not.toHaveBeenCalled();
+        });
+
+        it("starts editing exactly once when keyboard navigation is on", async () => {
+            const onEditStart = vi.fn();
+            const grid = createEditingGrid({ editTrigger: "both", onEditStart });
+            grid.enableKeyboardNavigation = true;
+            const root = await pressEnterOnNameCell(grid);
+
+            await waitFor(() => expect(root().querySelector("wsx-ac-cell-editor")).toBeTruthy());
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            const input = root().querySelector<HTMLInputElement>("wsx-ac-cell-editor input");
+            expect(input?.value).toBe("Alice");
+            expect(document.activeElement === input || (root() as any).activeElement === input).toBe(true);
+            expect(onEditStart).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    it("Enter starts editing with the input focused and the original value shown (RFC-0048)", async () => {
         const grid = createEditingGrid({ editTrigger: "enter" });
         grid.enableKeyboardNavigation = true;
         container.appendChild(grid);
@@ -186,4 +239,34 @@ describe("Grid Cell Editing", () => {
             expect(document.activeElement === input || (root() as any).activeElement === input).toBe(true);
         });
     });
+
+    it.each([
+        { columnId: "name", editor: undefined, value: "Alice" },
+        { columnId: "age", editor: "number", value: "30" },
+        { columnId: "date", editor: "date", value: "2026-11-08" },
+    ])("Enter preserves $columnId value and focuses editor input (RFC-0048)", async ({ columnId, editor, value }) => {
+        const grid = createEditingGrid({ editTrigger: "enter" });
+        grid.enableKeyboardNavigation = true;
+        if (columnId === "date") {
+            grid.data = [{ userId: "u1", date: value }];
+            grid.columns = [{ id: "date", accessorKey: "date", header: "Date", editor }];
+        }
+        container.appendChild(grid);
+
+        const root = () => (grid.shadowRoot || grid) as ParentNode;
+        const cellSelector = `[role="gridcell"][data-column-id="${columnId}"]`;
+        await waitFor(() => expect(root().querySelector(cellSelector)).toBeTruthy());
+        const cell = root().querySelector<HTMLElement>(cellSelector)!;
+        cell.focus();
+        cell.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+
+        await waitFor(() => {
+            const input = root().querySelector<HTMLInputElement>("wsx-ac-cell-editor input");
+            expect(input).toBeTruthy();
+            expect(input!.value).toBe(value);
+            expect(input!.type).toBe(editor ?? "text");
+            expect(document.activeElement === input || (root() as any).activeElement === input).toBe(true);
+        });
+    });
+
 });

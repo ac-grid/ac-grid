@@ -30,8 +30,16 @@ Enter 路径：`Grid.wsx` `handleGridKeyDown` → `startEdit(rowId, columnId)` �
 ## Design
 
 1. 在 `packages/core/test/editing.test.ts` 增加失败用例：Enter 触发编辑，断言焦点与原值。
-2. 用该用例确认根因后，做最小修复。预期只改 `packages/core/src/components/CellEditor.wsx`（属性与聚焦时序）；若根因在重渲染焦点恢复，则最小改动 `Grid.wsx`。
+2. 用该用例确认根因后，做最小修复。
 3. 保持 `packages/core` 现有覆盖率要求。
+
+实际根因与落点：
+
+- 原值：Grid 的 JSX 只把 `value`、`type` 作为 attribute 传给 `wsx-ac-cell-editor`，而 `CellEditor` 首次渲染时读取 JavaScript property。修复：在 `renderCellEditor` 的 `ref` 中、元素尚未连接（`!el.isConnected`）时，把 `value` 与 `type` 写入 DOM property，保证首次渲染前就位，重渲染时不会覆盖用户已输入的内容。
+- 焦点：WSX 在重渲染前记录带 `data-wsx-key` 的焦点元素，渲染后在 `requestAnimationFrame` 中恢复。编辑中的单元格仍带 `data-wsx-key`，会在编辑器聚焦之后把焦点抢回单元格。修复：单元格处于编辑状态时不设置 `data-wsx-key`，焦点归编辑器。
+- 时序：`CellEditor` 只在 `requestAnimationFrame` 中聚焦输入框，不再重复写入 `input.value`。额外写入会和受控输入状态竞争，导致快速编辑时重复文本。
+
+试过但放弃的做法：在 `CellEditor` 渲染后用 rAF 写 `input.value`。它在 RFC-0009 保存用例的加压测试中出现偶发的重复文本（基线 0/90 失败，该做法至少 7/90 失败）。
 
 ## Acceptance
 

@@ -397,6 +397,27 @@ test.describe("RFC validation demos (browser)", () => {
         await expect(cell).toHaveText(original);
     });
 
+    test("RFC-0049 starts edit on Enter when keyboard navigation is disabled", async ({ page }) => {
+        await page.goto("/?rfc=0009");
+        await gridReady(page);
+        const grid = page.locator("wsx-ac-grid");
+        await expect.poll(() => grid.evaluate((element: any) => element.enableKeyboardNavigation)).toBeFalsy();
+        await grid.evaluate((element: any) => {
+            element.editingConfig = { enabled: true, editTrigger: "both" };
+        });
+
+        const cell = page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first();
+        const original = await cell.innerText();
+        await cell.focus();
+        await domQuiet(page);
+        await page.keyboard.press("Enter");
+
+        const input = grid.locator("wsx-ac-cell-editor input");
+        await expect(input).toBeVisible();
+        await expect(input).toBeFocused();
+        await expect(input).toHaveValue(original);
+    });
+
     test("RFC-0008 pins configured columns", async ({ page }) => {
         await page.setViewportSize({ width: 500, height: 600 });
         await page.goto("/?rfc=0008");
