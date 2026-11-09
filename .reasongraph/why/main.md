@@ -788,3 +788,11 @@ Status: discussed
 Touches: `.spec/rfc/0048-enter-edit-focus-and-value.md`
 
 The agent updated the Design section to match the observed causes and implementation in `Grid.wsx`; the earlier description pointed to `CellEditor.wsx`. This keeps the RFC useful for reviewing the actual behavior change.
+
+### Use a theme token for grid overlay backgrounds
+Status: discussed
+Touches: `**/Grid.css`, `.spec/rfc/0042-overlay-theme.md`
+
+The agent chose `--ac-grid-bg-overlay` for `.grid-overlay` instead of a hard-coded white background, with each built-in theme defining the token. This keeps overlay backgrounds aligned with theme-aware text colors. Acceptance criteria require dark-theme contrast of at least 4.5:1 and a regression check that fails if the background is changed back to white.
+
+Risk: The loading overlay was inferred to share the same issue; it had not been independently reproduced.
