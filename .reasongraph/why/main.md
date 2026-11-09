@@ -29,24 +29,22 @@ Touches: `packages/core/src/components/Grid.wsx`, `demos/react/e2e/rfc-validatio
 PR #41 could not be merged: mergeable was CONFLICTING because main had landed RFC-0013 accessibility on the same two files the branch had edited. No merge was performed at that point. CI on the pre-merge tip was still green for unit tests and Playwright e2e.
 
 ### Resolve Grid.wsx by combining RFC-0013 ARIA with the branch's focus, clipboard, and drag attributes
-Status: directed
-Touches: `packages/core/src/components/Grid.wsx`
+Status: discussed
+Touches: `Grid.wsx`
 
-The merge kept RFC-0013 role, aria-rowindex, aria-colindex, and aria-selected, and kept data-wsx-key and key from the branch. Keyboard tabIndex follows RFC-0013 roving tabindex and falls back to the editable/clipboard tabIndex only when keyboard navigation is off. The className join was taken from the RFC-0013 side because the branch had concatenated grid-cell without a space, producing grid-cellcolumn-dragging during drag. After merge, core unit tests were 234 passed and coverage was lines 59.4% / branches 36.1%.
-
-Reviewer attention: Confirm the combined cell markup still restores WSX focus and still exposes ARIA for RFC-0013.
+The merge retains RFC-0013 role and ARIA attributes alongside the branch's key attributes. Keyboard navigation keeps RFC-0013 tabIndex behavior, with editable and clipboard behavior used when keyboard navigation is disabled. The class name includes a separating space so drag state does not produce a malformed class.
 
 ### Keep both RFC-0013 and RFC-0001 coverage in the validation spec
-Status: directed
-Touches: `demos/react/e2e/rfc-validation.spec.ts`
+Status: discussed
+Touches: `rfc-validation.spec.ts`
 
-The e2e conflict was resolved by retaining the RFC-0013 accessibility tests from main and the rewritten RFC-0001 tests from the branch rather than choosing one side.
+Both RFCs retain coverage in the validation spec so the merge preserves checks for each behavior.
 
 ### Add an RFC-0013 demo spec, skill row, and e2e query so the coverage guard can pass after the merge
-Status: discussed — Follows from the existing coverage guard plus the directed merge, not a new product request
-Touches: `demos/react/src/rfcValidationDemos.ts`, `skills/ac-grid/references/features.md`, `demos/react/e2e/rfc-validation.spec.ts`, `demos/react/e2e/coverage.spec.ts`
+Status: discussed
+Touches: `features.md`, `RFC-0013 demo`, `RFC-0013 demo spec`, `skill coverage table`
 
-After merging main, the coverage guard failed because RFC-0013 was completed on main without a demo in RFC_VALIDATION_ORDER or a features.md row. A 0013 demo spec was added, the skill matrix gained an Accessibility row, and the RFC-0013 e2e was pointed at ?rfc=0013. Full e2e then ran 31/31 three times under the parallel Playwright config. The guard catching a real gap was treated as intended behavior, not something to weaken.
+The coverage guard found that completed RFC-0013 lacked a demo and corresponding skill coverage. Adding those artifacts lets the guard verify the completed feature.
 
 ### Leave demos/react Storybook tsc errors untouched
 Status: agent-initiated — not requested in plan or prompts
@@ -55,45 +53,40 @@ Touches: `demos/react/src/stories/Page.tsx`
 tsc --noEmit in demos/react still failed on src/stories files missing ../../lib/components/Header. Those files were not part of the merge resolution and were left as-is.
 
 ### Convert the stray virtual-scroll test-plan document into RFC-0038 via the specify CLI and do not copy its claims
-Status: directed
-Touches: `.spec/rfc/0038-virtual-scrolling-verification.md`, `.spec/rfc/completed/test-plan.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`, `demos/react/e2e/virtual-scrolling.spec.ts`, `packages/core/test/virtual-scrolling.test.ts`, `packages/core/src/utils/virtual-scroll.ts`
+Status: discussed
+Touches: `.spec/test-plan.md`, `.spec/rfc/0038-virtual-scrolling-verification.md`, `.spec/rfc/completed/test-plan.md`, `ROADMAP.md`, `TASK_TRACKING.md`
 
-specify init/deliver created RFC-0038 as Draft, validate passed, and the non-RFC file under completed/ was removed. The original document was not copied: it listed VirtualizedRow.wsx, VirtualizedColumn.wsx, and virtual-scroll-example.tsx as created though they are absent; it said tests were still to be written though three unit files and one e2e already exist; it marked performance as estimated-achieved with no measurements; and it proposed JSDOM frame-rate checks, which cannot measure layout. RFC-0038 P0 requires browser e2e that assert rendered row content after wheel scroll, bottom and top, and resize, each with mutation checks. P1 is a 10K-row benchmark with thresholds set after measuring. Native scrollbar drag is documented as untestable in Playwright; wheel and scrollTop cover the behavior instead.
-
-Considered/rejected: Keeping a free-form test-plan.md in the RFC tree, copying the original as-is, JSDOM FPS, and Playwright-dragging the native scrollbar.
+RFC-0038 replaces the stray test-plan with a validated proposal. The source made unsupported claims about files, existing tests, and performance results, and proposed frame-rate testing in JSDOM, which lacks browser layout and rendering. The RFC calls for browser correctness coverage and measuring performance before setting thresholds.
 
 ### Delete the untracked checkout copy of test-plan.md
 Status: directed
-Touches: `.spec/test-plan.md`, `.spec/rfc/completed/test-plan.md`
+Touches: `.spec/test-plan.md`
 
-The untracked .spec/test-plan.md on the stale checkout was removed after its content had been absorbed into RFC-0038 on the PR branch. It was never a git-tracked file there. A leftover index deletion of completed/test-plan.md on that checkout was left uncommitted because origin/main already lacks the file.
+The untracked test-plan copy was removed after its useful scope had been captured in RFC-0038.
 
 ### Stop expanding RFC-0036; split P1 demo defects into umbrella 0039 and three child RFCs
 Status: discussed
-Touches: `.spec/rfc/0039-*.md`, `.spec/rfc/0040-*.md`, `.spec/rfc/0041-*.md`, `.spec/rfc/0042-overlay-theme.md`
+Touches: `.spec/rfc/0036-*.md`, `.spec/rfc/0039-*.md`, `.spec/rfc/0040-*.md`, `.spec/rfc/0041-*.md`, `.spec/rfc/0042-*.md`
 
-The work groups the three demo issues under RFC-0039 as an index, with separate child RFCs for selection-column layout, pinned-column theming, and overlay theming. This keeps each child’s goals and acceptance criteria independently reviewable.
+RFC-0036 combined multiple root causes and priority levels, so the work is organized as an umbrella with focused child RFCs. RFC-0040 covers selection-column placement and alignment, RFC-0041 covers pinned-column theme tokens and horizontal overflow, and RFC-0042 covers the row-view demo and theme behavior.
 
 ### Put selection first in columnOrder and vertically align the checkbox; do not add click-row-to-select
 Status: discussed
-Touches: `packages/core/*`, `demos/react/e2e/rfc-validation.spec.ts`, `demos/react/src/**/Grid.css`, `demos/react/src/**/SelectionCheckbox*`
+Touches: `.spec/rfc/0040-*.md`, `Grid.wsx`
 
-The selection column is inserted first when checkbox selection is enabled while preserving the user's data-column order and drag reordering. Checkbox alignment belongs in Grid.css because the measured offset comes from the grid cell's inline baseline; putting the rule on the checkbox element would couple it to parent layout. Browser coverage checks alignment within 2px and exercises range selection and select-all.
+The selection column was absent from columnOrder, causing it to appear last, and the checkbox alignment was visibly wrong. Row-click selection is outside the existing RFC-0007 behavior, which covers checkbox selection and Shift range selection.
 
 ### Define pinned-column theme tokens and widen the 0008 demo so horizontal overflow is real
 Status: discussed
-Touches: `.spec/rfc/0041-pinned-column-theme.md`, `packages/core/src/components/Grid.css`, `packages/theme-base`, `packages/theme-default`, `demos/react/src/rfcValidationDemos.ts`, `demos/react/e2e/rfc-validation.spec.ts`
+Touches: `.spec/rfc/0041-*.md`, `Grid.css`, `RFC-0008 demo`
 
-Issue #36 had no horizontal scrollbar because total column width was 910px inside a 1134px container. A separate real defect: pinned header/cell backgrounds use --ac-grid-bg-header-pinned and --ac-grid-bg-cell-pinned with light fallbacks that no theme defines, so pinned cells go white on dark themes. RFC-0041 requires those tokens on the built-in themes, 0008 columns wider than 1.5× the container, e2e that scrollWidth > clientWidth, pinned columns stay put while unpinned move, and dark-theme contrast at least 4.5:1, plus mutation checks. Implementation had not started in this segment.
+The demo's total column width was smaller than its container, so it could not demonstrate horizontal scrolling. Pinned columns also lacked dark-theme background variables and fell back to a light background.
 
 ### Scope RFC-0042 to empty/loading overlay theme, not a full-width row view
 Status: discussed
-Touches: `.spec/rfc/0042-overlay-theme.md`, `Grid.css`
+Touches: `.spec/rfc/0042-*.md`, `RFC-0019 demo`, `Grid.css`
 
-The reproduced issue is the empty-data overlay: its hard-coded white background conflicts with theme-based text color in dark mode. The RFC calls for a theme token and demo controls to verify empty and loading overlays; loading behavior still requires direct validation. Full-width row views remain outside scope.
-
-Risk: Loading-overlay impact was inferred from shared styling and had not been independently reproduced.
-Reviewer attention: Confirm dark-theme text contrast meets the specified 4.5:1 threshold and that the acceptance check fails if the background reverts to white.
+The reported row-view theme issue could not be reproduced because the demo had no row view. RFC-0042 requires a representative demo before evaluating theme behavior; if the first test passes, the issue is demo coverage rather than a core rendering defect.
 
 ### Advance RFC-0038 through 0042 to Approved via specify and do not start implementation until that status exists
 Status: directed
@@ -131,21 +124,16 @@ Touches: `.birdify/`
 After PR #41 landed on develop and PR #42 landed on main, ac-grid-latest, fix/rfc-demo-e2e-skill, ac-grid-sync, and chore/sync-main-into-develop were removed. Untracked .birdify/ was copied onto the primary checkout before removing ac-grid-latest. Two prunable /private/tmp worktrees were left alone. The primary checkout stayed on stale local main until a later reset.
 
 ### Close RFC-0001 as Implemented through specify, add the missing Status/Summary headers, and repair stale 0012/0001 relative links
-Status: directed
-Touches: `.spec/rfc/completed/0001-ac-grid-architecture.md`, `.spec/rfc/0001-ac-grid-architecture.md`, `.spec/rfc/completed/0009-cell-editing.md`, `.spec/rfc/completed/0012-keyboard-navigation.md`, `.spec/rfc/completed/0013-accessibility.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
+Status: discussed
+Touches: `.spec/rfc/completed/0001-ac-grid-architecture.md`, `.spec/rfc/0009-*.md`, `.spec/rfc/0012-*.md`, `.spec/rfc/0013-*.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
 
-0001 used a legacy header without **Status:**, so specify advance reported OK but changed nothing until **Status:** Implemented and a ## Summary were added. archive moved it to completed/. Checklist items inside 0001 were left because archived RFCs may keep them. Relative links in 0001, 0009, 0012, and 0013 that still pointed at unarchived 0001/0012 paths were rewritten so sync-check became OK. Work landed via PR #44 as e4acd4b. Implemented was chosen because archive only accepts Implemented, Rejected, Superseded, or Pending.
-
-Risk: Hand-rewriting links in completed RFCs sits outside the specify CLI. Treating the architecture RFC as Implemented because later feature RFCs exist may overstate that 0001's original checklist is done.
-Reviewer attention: Read the new Summary and Status on completed/0001 and the 0012 link rewrites in 0009/0012/0013.
+The agent added the current-format Status header and Summary section because the lifecycle command did not recognize the old-format status, then advanced and archived RFC-0001. Implemented was selected because the archive command accepts only Implemented or Rejected. The agent also repaired relative links between the listed RFCs.
 
 ### Reset the stale local main to origin/main after backing up the extra local commit
-Status: directed — The backup branch itself was not requested
-Touches: `.spec/rfc/completed/test-plan.md`
+Status: discussed
+Touches: `main`
 
-Local main was ahead 1 / behind 14. The extra commit 73a8c53 was already contained on origin via f90bfdb, and origin/main has no completed/test-plan.md, so the staged deletion of that file was discarded. backup/main-73a8c53 was created, then main was hard-reset to origin/main at e4acd4b so Vite uses 5198–5202. Untracked .birdify/ and Playwright test-results/ were left.
-
-Risk: A hard reset drops any uncommitted index state on that checkout. The backup branch is leftover unless deleted.
+The agent synchronized local main with origin/main after preserving the extra local commit on a backup branch. The backup was later deleted, leaving local main aligned with the remote tip.
 
 ### Treat pin-boundary and selection header drops as silent no-ops; unpinned-to-unpinned reorder works
 Status: directed
@@ -955,3 +943,161 @@ Status: discussed
 Touches: `packages/core/src/components/CellEditor.wsx`
 
 Grid 通过 `value` attribute 将单元格原值传给编辑器，但编辑器未读取该 attribute；延迟的状态重渲染会让输入框在聚焦时仍为空。连接时读取 attribute，并在聚焦同一帧写入输入框，可避免依赖延迟重渲染。
+
+### Push generated ReasonGraph digest after syncing pending sessions
+Status: discussed
+Touches: `.reasongraph/why/`
+
+The second push reached `9c42b7e`, but the hook generated another why-pack commit, `3be0aa3`. The agent chose to run `reasongraph sync` to clear pending sessions before the final push.
+
+### Move the generic getting-started guide to docs
+Status: discussed
+Touches: `.spec/rfc/GETTING-STARTED.md`, `docs/GETTING-STARTED.md`
+
+The guide is general project documentation, so it belongs under `docs/` rather than beside RFCs. Its links were updated to match the new location.
+
+### Merge RFC tracking and parity into canonical files
+Status: discussed
+Touches: `.spec/rfc/roadmap.md`, `.spec/rfc/ISSUE_REGISTRY.md`, `.spec/rfc/PARITY_MATRIX.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
+
+The dependency graph and AG Grid parity content were folded into `.spec/ROADMAP.md`; RFC-to-issue mappings were folded into `.spec/TASK_TRACKING.md`. The roadmap already listed RFCs 0001–0032, and the registry added issue mapping absent from task tracking, so both sources could be removed after preserving their unique content.
+
+Considered/rejected: Keeping separate detail files would preserve redundant sources and require ongoing cross-file synchronization.
+
+### Remove the RFC template and stale summary instead of retaining RFC-specific docs
+Status: discussed
+Touches: `.spec/rfc/RFC-TEMPLATE.md`, `.spec/rfc/SUMMARY.md`, `docs/RFC-TEMPLATE.md`, `docs/RFC-SUMMARY.md`, `.spec/rfc/README.md`
+
+The template was removed rather than copied into another document, and the historical summary was dropped as superseded. Useful RFC management rules remained in `.spec/rfc/README.md`.
+
+### Merge docs README content into the repository README
+Status: directed
+Touches: `docs/README.md`, `README.md`
+
+Unique documentation links and pointers were added to the root README, then the duplicate docs README was removed so there is one project entry point.
+
+### Update documentation links after the RFC file consolidation
+Status: discussed
+Touches: `docs/GETTING-STARTED.md`, `README.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`, `.spec/rfc/*.md`, `.claude/skills/multica-orca/SKILL.md`, `.cursor/skills/multica-orca/SKILL.md`, `.opencode/skills/multica-orca/SKILL.md`, `.agent/skills/multica-orca/SKILL.md`
+
+Links were redirected to the canonical roadmap and task-tracking files after the standalone registry and parity documents were removed. The Multica workflow copies were updated because they instructed future runs to edit the deleted registry path.
+
+### Update RFC path references to the refactored demo directories
+Status: directed
+Touches: `.spec/rfc/0017-framework-bindings.md`, `.spec/rfc/completed/0005-virtual-scrolling.md`, `.spec/rfc/completed/0006-pagination.md`
+
+References were changed from the previous `apps/demo-*` locations to `demos/react` and `demos/wsx` so the RFCs point to the current repository layout.
+
+### Track the RFC-0010 coverage gap in a separate RFC before implementation
+Status: directed
+Touches: `.spec/rfc/0035-rfc-0010-e2e-coverage.md`, `demos/react/src/rfcValidationDemos.ts`, `demos/react/e2e/rfc-validation.spec.ts`, `.spec/rfc/0010-grouping-aggregation.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
+
+The audit found grouping and aggregation already implemented and covered by a 298-line unit suite, while the `?rfc=0010` demo route and matching end-to-end test were missing. RFC-0035 records the smaller coverage and status correction scope rather than treating the feature as a fresh implementation. The RFC validated as Draft, and implementation remained pending approval.
+
+### Keep unit and end-to-end coverage as separate 100% gates
+Status: directed
+Touches: `.spec/rfc/0043-*.md`, `.spec/rfc/0044-*.md`, `.spec/rfc/0045-*.md`, `.spec/rfc/0046-*.md`, `ROADMAP.md`
+
+单元测试以 `packages/core` 的语句、分支、函数和行覆盖率各 100% 为目标。端到端测试按 ROADMAP 中的 P0、P1、P2 功能清单检查覆盖，不采集或合并 V8 代码覆盖率；两类门槛分别报告、分别检查。
+
+Considered/rejected: 拒绝合并单元与端到端覆盖率，也拒绝用 V8 排除项或豁免清单凑足 100%。
+
+### Collect Playwright coverage separately with V8
+Status: discussed
+Touches: `.spec/rfc/0045-*.md`
+
+RFC-0045 specifies V8 coverage collection from Playwright, mapped to packages/core/src, with a separate output directory and test:e2e:coverage command. Its acceptance criteria require the report to contain no Vitest data.
+
+### Require mutation checks and justified coverage exclusions
+Status: discussed
+Touches: `.spec/rfc/0043-*.md`, `.spec/rfc/0044-*.md`, `.spec/rfc/0045-*.md`, `.spec/rfc/0046-*.md`
+
+The RFCs require mutation checks that demonstrate tests fail when covered behavior is broken. Coverage exclusions use v8 ignore only with a written reason, a registry entry, and a cap.
+
+### Split coverage work into an umbrella and three scoped RFCs
+Status: discussed
+Touches: `.spec/rfc/0043-*.md`, `.spec/rfc/0044-*.md`, `.spec/rfc/0045-*.md`, `.spec/rfc/0046-*.md`
+
+RFC-0043 defines the overall coverage target; RFC-0044 covers pure-logic unit tests, RFC-0045 covers end-to-end coverage collection and gating, and RFC-0046 addresses .wsx component gaps. Scope remains packages/core, with each suite's gaps addressed by that suite's tests.
+
+### Keep the RFC-0014 work in separate local commits
+Status: discussed
+Touches: `packages/core/src/utils/export.ts`, `packages/core/src/types/export.ts`, `packages/core/src/components/Grid.wsx`, `packages/core/test/export.test.ts`, `.spec/rfc/*`, `.gitignore`, `.reasongraph/.gitignore`, `.reasongraph/why/main.md`, `.birdify/*`
+
+The local branch separates the export implementation, repository and ReasonGraph ignore artifacts, and Birdify artifacts into three commits. The branch was not pushed, and the export tests had not been run before the export commit.
+
+### Implement CSV export through Grid API and shared export utilities
+Status: directed
+Touches: `packages/core/src/utils/export.ts`, `packages/core/src/types/export.ts`, `packages/core/src/components/Grid.wsx`, `packages/core/src/index.ts`
+
+The implementation adds CSV generation, download handling, export modes, column filtering, and custom formatting through the Grid API. This keeps export behavior reusable and exposes its types from the core package.
+
+### Cover CSV export behavior with unit tests
+Status: directed
+Touches: `packages/core/test/export.test.ts`
+
+Unit tests exercise CSV generation and export behavior. The export test file reported 10 passing tests.
+
+### Rebuild theme-base to resolve stale output behind theme integration failures
+Status: discussed
+Touches: `packages/theme-base/*`
+
+Rebuilding the package resolved the three theme integration failures without changing Grid code. The full core suite then reported 244 passing tests.
+
+### Restore i18n exports from the core entry point
+Status: discussed
+Touches: `packages/core/src/index.ts`
+
+The earlier entry-point edit removed the existing i18n export block, so the built package lacked `zhCN` and the demo import failed. Restoring the exports made `zhCN` appear in the build output.
+
+### Keep custom editor support through column editor functions
+Status: discussed
+Touches: `packages/core/src/types/editing.ts`, `packages/core/src/utils/editing-utils.ts`
+
+The existing editor utility recognizes function-valued `columnDef.editor` as a custom editor, while the built-in editor type lists text, number, and date. This preserves the current extension point for custom editors.
+
+### Remove blur-triggered saving from CellEditor
+Status: discussed
+Touches: `packages/core/src/components/CellEditor.wsx`
+
+The editor saved and closed on every blur, which could discard the editing session when focus changed during rendering. Saving now uses explicit Enter handling; Escape cancels the edit.
+
+Considered/rejected: Keeping blur-to-save was rejected because unrelated focus changes could close the editor.
+
+### Update grid data when an edit is saved
+Status: discussed
+Touches: `packages/core/src/components/Grid.wsx`
+
+The optional `onEditSave` callback left the edited value unchanged when consumers omitted it. The grid now updates its internal data and still invokes the callback for consumers that need external persistence.
+
+Risk: Consumers that also update the same data in `onEditSave` may need to check for duplicate update behavior.
+
+### Initialize CellEditor input from its value property
+Status: discussed
+Touches: `packages/core/src/components/CellEditor.wsx`
+
+The original cell value was not reliably displayed when the editor opened. The value setter no longer skips initialization based on equality with its default, and connection setup reads the component's current value.
+
+### Disable StrictMode in the React demo
+Status: directed
+Touches: `demos/react/src/main.tsx`
+
+Removing the StrictMode wrapper was chosen to avoid development-only double mounting in the demo while investigating the editor behavior.
+
+### Add RFC-0014 validation demo and coverage (updated)
+Status: discussed
+Touches: `demos/react/src/rfcValidationDemos.ts`, `demos/react/e2e/rfc-validation.spec.ts`, `skills/ac-grid/references/features.md`
+
+The completed-RFC coverage guard required a demo, end-to-end test, and feature reference entry for RFC-0014. The validation demo and browser test cover CSV export, with the feature row making the RFC discoverable to the guard.
+
+### Create PR #45 for inline editing fixes
+Status: directed
+Touches: `packages/core/src/components/CellEditor.wsx`, `packages/core/src/components/Grid.wsx`, `demos/react/src/main.tsx`, `demos/react/src/rfcValidationDemos.ts`, `demos/react/e2e/rfc-validation.spec.ts`, `skills/ac-grid/references/features.md`, `PARITY_MATRIX.md`
+
+The inline editing and validation changes were committed on `fix/inline-editing-bug`, pushed, and submitted as PR #45 to keep the changes reviewable and mergeable.
+
+### Use a main worktree without switching the current branch
+Status: directed
+Touches: `../ac-grid-main`
+
+A separate worktree for `main` was requested so work on that branch can proceed without switching the current checkout. The transcript shows an attempt to add the worktree, but does not show its result.
