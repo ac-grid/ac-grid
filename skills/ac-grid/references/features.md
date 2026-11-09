@@ -29,6 +29,9 @@ Option keys for `createGrid`. Shapes come from `packages/core/src/utils/create-g
 | 0029 | Integrated charts | `enableCharts: true`, `rangeSelection: { enabled: true }`, and `setupIntegratedCharts(grid, { adapter })`; create bar, line, or pie chart from selected range |
 | 0030 | Formulas | `createFormulaEngineFromMatrix(matrix)` then `engine.getValue(row, col)`; cycles return `#CYCLE!` |
 | 0047 | Sorting disable | `sorting: { enabled: false }` turns sorting off for every column: header clicks do not reorder rows and no sort indicator renders |
+| 0048 | Enter edit focus and value | Enter opens text, number, or date editor with focus and original value preserved |
+| 0049 | Enter edit trigger without keyboard navigation | `editTrigger: "enter"` or `"both"` starts edit when keyboard navigation is disabled |
+| 0054 | Pagination i18n live update | Assigning an i18n manager after connection updates pagination labels; falsy assignments retain current manager |
 
 ## Not implemented (draft or stretch)
 

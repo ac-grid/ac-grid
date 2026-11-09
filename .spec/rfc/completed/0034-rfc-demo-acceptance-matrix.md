@@ -59,6 +59,9 @@ AC Grid 建立「已完成 RFC 演示验收矩阵」（Demo Acceptance Matrix）
 | **0019** | 自定义组件 | `/?rfc=0019` | 挂载用户自定义 header 渲染组件并显示 "Custom Name" | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0019 renders custom header component`) | ✅ 达标 |
 | **0030** | 单元格公式引擎 | `/?rfc=0030` | 独立引擎（未接入 Grid）：可编辑公式表输入数字与 `=` 公式；SUM、AVG、MAX-MIN、COUNT 求值；`#DIV/0!`、`#NAME?`、`#CYCLE!` 及环路消除后恢复；改动输入后依赖格增量重算 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0030 formula engine` 下 5 个用例) | ✅ 达标 |
 | **0047** | 禁用排序 | `/?rfc=0047` | 设置 `sorting.enabled=false` 后，点击表头不改变行顺序，也不显示排序指示器 | `demos/react/e2e/rfc-validation.spec.ts` (`sorting.enabled=false keeps row order and hides sort indicators (RFC-0047)`) | ✅ 达标 |
+| **0048** | Enter 编辑焦点与原值 | `/?rfc=0048` | text、number、date 三类编辑器按 Enter 后均获得焦点并保留原值 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0048 focuses ...`) | ✅ 达标 |
+| **0049** | 无键盘导航时 Enter 触发编辑 | `/?rfc=0049` | enter/both 在键盘导航关闭时启动编辑；doubleClick 不响应 Enter；开启导航时只启动一次 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0049 ...`) | ✅ 达标 |
+| **0054** | 分页 i18n 动态更新 | `/?rfc=0054` | 默认文案正确；连接后自定义 i18n 更新可见文案，空赋值保留当前 manager | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0054 ...`) | ✅ 达标 |
 | **0011** | 高级主题功能 | `/?rfc=0011` | 预览主题改变 `--ac-grid-bg-header` 且不改变已应用主题；取消预览恢复原值；应用后持久 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0011 previews a theme...`) | ✅ 达标 |
 | **0012** | 键盘导航 | `/?rfc=0012` | 重渲染后焦点保留；方向键、Tab、Shift+Tab 移动单元格焦点；Enter 进入编辑，Escape 丢弃编辑 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0012 keeps keyboard focus...`, `RFC-0012 navigates with Tab...`) | ✅ 达标 |
 | **0013** | 可访问性 | `/?rfc=0013` | Grid、表头、行与单元格提供可访问角色和索引；排序方向及 live status 文案同步变化 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0013 exposes accessible grid roles and labels in the browser`) | ✅ 达标 |

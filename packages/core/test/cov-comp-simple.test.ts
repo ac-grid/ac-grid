@@ -50,7 +50,9 @@ describe("SortingIndicator", () => {
         const el = await mount("wsx-ac-sorting-indicator", { direction: "asc" });
         el.direction = "asc";
         el.direction = "desc";
+        await waitFor(() => expect(el.querySelector(".sort-indicator").getAttribute("aria-label")).toBe("Sorted descending"));
         el.index = 0; el.index = 0; el.index = undefined;
+        await waitFor(() => expect(el.querySelector(".sort-index")).toBeNull());
         expect(el.direction).toBe("desc");
         expect(el.index).toBeUndefined();
         const custom = { t: (_k: string, _p: any, d: string) => "X" + d };

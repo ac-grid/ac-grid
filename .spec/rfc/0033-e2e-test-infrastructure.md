@@ -1,30 +1,48 @@
-# RFC-0033: E2E 测试基础设施
+# RFC-0033: E2E test infrastructure
 
-**状态**: 📝 草稿  
-**版本**: 0.1.0  
-**作者**: Albert Li  
-**日期**: 2026-10-11  
-**关联 Issue**: ACG-119  
-**相关 RFC**: [0035](./0035-rfc-0010-e2e-coverage.md)
+**Status:** Approved
 
-## 概述
+## Summary
 
-提供可重复的浏览器验收工具链：Playwright Chromium 对 `demos/react`，确定性数据，每个已完成 RFC 至少一条 E2E。
+Run repeatable Chromium browser acceptance tests for interactive AC Grid features in `demos/react`. Keep fixture data deterministic and require each completed interactive RFC to have a matching demo, acceptance-matrix row, browser test, and feature guide entry.
 
-## 设计目标
+## Problem
 
-- [x] **Playwright harness**: `demos/react/playwright.config.ts` 自动启动 `pnpm dev:e2e`，`pnpm test:e2e` 一键运行；PR 门禁见 `.github/workflows/pull-request.yml`。
-- [x] **确定性 fixtures**: `makeData` 固定 `FIXTURE_SEED`，demo、Storybook、E2E 数据一致；`e2e/coverage.spec.ts` 校验刷新后首行不变。
-- [x] **覆盖守卫**: `e2e/coverage.spec.ts` 保证 `RFC_VALIDATION_ORDER` 中每个 RFC 在 spec 文件里都有对应测试。
-- [x] **新增 RFC-0015 验收**: `?rfc=0015` 使用 zh-CN 语言包，E2E 断言分页文案。
-- [ ] **每个已完成 RFC 一条 E2E**: 仍缺 RFC-0011、RFC-0023（见下）。
+Unit tests do not prove that the browser renders and wires Web Components correctly. The original RFC also treated every completed RFC as an interactive feature. That incorrectly required browser demos for coverage-policy and test-infrastructure RFCs such as RFC-0044.
 
-## 已知缺口
+## Goals
 
-- **RFC-0023 剪贴板**: `Grid.wsx` 中 `handleClipboardCopy`/`handleClipboardPaste` 与 `activeClipboardCell` 未接入任何事件监听或单元格点击，浏览器中无法触发，E2E 无从验证。需先补齐 core 接线。
-- **RFC-0011 高级主题**: demo 尚无验收页。
-- **RFC-0010 折叠按钮竞态**: 首次点击 `collapse-all-btn` 偶尔在 grid 就绪前落空，测试以 `toPass` 重试规避，根因未查。
+- Run the React demo's Chromium E2E suite through `pnpm test:e2e`.
+- Keep fixture rows deterministic across page reloads.
+- Check that completed interactive RFCs have registered demos, matrix rows, and matching Playwright evidence.
+- Check that implemented P0, P1, and P2 roadmap features have RFC-titled E2E tests.
+- Keep infrastructure and coverage-policy RFCs out of the interactive-demo requirement while retaining their feature-guide entries.
 
-## 验收
+## Non-goals
 
-`CI=1 pnpm test:e2e`：19 个测试通过（Chromium，单 worker）。
+- Replace browser tests with JSDOM tests.
+- Require browser demos for RFCs that define infrastructure or test policy without user-facing runtime behavior.
+- Collect browser JavaScript coverage as a substitute for feature-scenario coverage.
+
+## Design
+
+1. `demos/react/playwright.config.ts` starts the E2E demo server and runs Chromium tests.
+2. `demos/react/src/stories/makeData.ts` uses a fixed fixture seed.
+3. `demos/react/e2e/coverage.spec.ts` checks completed interactive RFCs against `RFC_VALIDATION_ORDER`, the RFC-0034 matrix, and Playwright titles. It separately checks all completed RFC IDs against `skills/ac-grid/references/features.md`.
+4. RFC-0034 and RFC-0044 do not require demo routes because they define the demo matrix and unit-coverage policy. Their feature-guide rows remain required.
+5. The same coverage spec checks implemented P0, P1, and P2 roadmap entries and rejects stale pending entries.
+
+## Acceptance
+
+- `CI=1 pnpm test:e2e` passes in Chromium.
+- The coverage spec passes for every completed interactive RFC and every implemented P0, P1, and P2 roadmap feature.
+- Fixture data remains identical across reloads.
+- Every completed RFC, including infrastructure RFCs, has a row in the ac-grid feature guide.
+
+## Implementation evidence
+
+- Playwright runs serially against the React demo using its configured development server.
+- `coverage.spec.ts` validates demo registration, matrix routes, RFC-specific test titles, roadmap coverage, and fixture determinism.
+- RFC-0011, RFC-0023, and RFC-0010 have browser demo evidence in `rfc-validation.spec.ts`.
+- RFC-0044 is a unit-coverage RFC and has no browser-visible behavior; the coverage guard excludes it from demo checks while keeping its feature-guide check.
+- `CI=1 pnpm test:e2e` passed 50/50 Chromium tests in 49.7 seconds after the RFC-0044 policy fix.

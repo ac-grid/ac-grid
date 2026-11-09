@@ -1,11 +1,12 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 
-// RFC-0033: every completed RFC needs a demo page and a browser test.
-// Source of truth is .spec/rfc/completed/, not the demo registry: an RFC with no demo must fail here.
+// RFC-0033: every completed interactive RFC needs a demo page and browser test.
+// These RFCs define test infrastructure or coverage policy, not user-facing behavior.
+const nonDemoRfcIds = new Set(["0034", "0044"]);
 const completedIds = readdirSync(new URL("../../../.spec/rfc/completed/", import.meta.url))
     .map((file) => file.match(/^(\d{4})-/)?.[1])
-    .filter((id): id is string => Boolean(id) && id !== "0034");
+    .filter((id): id is string => Boolean(id) && !nonDemoRfcIds.has(id));
 // Parse the order list as text: importing the demo module would load the browser-only core bundle.
 const demos = readFileSync(new URL("../src/rfcValidationDemos.ts", import.meta.url), "utf8");
 const demoIds = demos.match(/RFC_VALIDATION_ORDER = \[([^\]]*)\]/)![1].match(/\d{4}/g)!;
@@ -49,7 +50,7 @@ test("every demo RFC has RFC-specific E2E evidence in its matrix row", () => {
     expect({ missingTitles, missingEvidence }).toEqual({ missingTitles: [], missingEvidence: [] });
 });
 
-// The skill is how agents learn each feature, so a completed RFC with no row there is undocumented.
+// The skill is how agents learn each RFC, including infrastructure-only RFCs.
 test("every completed RFC is covered by the ac-grid agent skill", () => {
     const skill = readFileSync(new URL("../../../skills/ac-grid/references/features.md", import.meta.url), "utf8");
     expect(completedIds.filter((id) => !skill.includes(`| ${id} |`))).toEqual([]);

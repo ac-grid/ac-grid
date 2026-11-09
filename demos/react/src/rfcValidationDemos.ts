@@ -36,6 +36,9 @@ export const RFC_VALIDATION_ORDER = [
   "0029",
   "0030",
   "0047",
+  "0048",
+  "0049",
+  "0054",
 ] as const;
 
 export type RfcValidationId = (typeof RFC_VALIDATION_ORDER)[number];
@@ -120,6 +123,12 @@ const PERSON_COLUMNS: ColumnDef<Person>[] = [
     size: 120,
     filterType: "number",
   },
+];
+
+const RFC_0048_COLUMNS: ColumnDef<Person>[] = [
+  PERSON_COLUMNS[0]!,
+  { ...PERSON_COLUMNS[2]!, editor: "number" },
+  { id: "birthDate", accessorKey: "userId", header: "Birth Date", editor: "date" },
 ];
 
 export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
@@ -656,6 +665,57 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
         columns,
         className: "h-full w-full",
         sorting: { enabled: false },
+      }),
+    },
+    "0048": {
+      id: "0048",
+      title: "Enter edit focus and value",
+      multicaIssue: "RFC-0048",
+      hint: "按 Enter 编辑 text、number、date 单元格，输入框应聚焦且保留原值。",
+      rowCount: 1,
+      showGlobalSearch: false,
+      columns: RFC_0048_COLUMNS,
+      buildOptions: (data) => ({
+        data: data.slice(0, 1).map((person) => ({ ...person, userId: "2026-11-08" })),
+        columns: RFC_0048_COLUMNS,
+        className: "h-full w-full",
+        enableKeyboardNavigation: true,
+      }),
+      afterMount: (grid) => {
+        grid.editingConfig = { enabled: true, editTrigger: "enter" };
+      },
+    },
+    "0049": {
+      id: "0049",
+      title: "Enter edit trigger without keyboard navigation",
+      multicaIssue: "RFC-0049",
+      hint: "Enter 与 both 触发器在关闭键盘导航时仍可启动编辑。",
+      rowCount: 10,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 4),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+        enableKeyboardNavigation: false,
+      }),
+      afterMount: (grid) => {
+        grid.editingConfig = { enabled: true, editTrigger: "both" };
+      },
+    },
+    "0054": {
+      id: "0054",
+      title: "Pagination i18n live update",
+      multicaIssue: "RFC-0054",
+      hint: "分页控件连接后支持自定义 i18n，空赋值保留当前 manager。",
+      rowCount: 50,
+      showGlobalSearch: false,
+      columns: PERSON_COLUMNS.slice(0, 4),
+      buildOptions: (data, columns) => ({
+        data,
+        columns,
+        className: "h-full w-full",
+        pagination: { enabled: true, pageSize: 10, pageSizeOptions: [10, 20] },
       }),
     },
   };

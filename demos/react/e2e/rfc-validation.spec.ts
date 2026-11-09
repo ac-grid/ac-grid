@@ -398,7 +398,7 @@ test.describe("RFC validation demos (browser)", () => {
     });
 
     test("RFC-0049 starts edit on Enter when keyboard navigation is disabled", async ({ page }) => {
-        await page.goto("/?rfc=0009");
+        await page.goto("/?rfc=0049");
         await gridReady(page);
         const grid = page.locator("wsx-ac-grid");
         await expect.poll(() => grid.evaluate((element: any) => element.enableKeyboardNavigation)).toBeFalsy();
@@ -416,6 +416,117 @@ test.describe("RFC validation demos (browser)", () => {
         await expect(input).toBeVisible();
         await expect(input).toBeFocused();
         await expect(input).toHaveValue(original);
+    });
+
+    test.describe("RFC-0048 Enter editor value and focus", () => {
+        async function enterEditor(page: import("@playwright/test").Page, columnId: string) {
+            const cell = page.locator(`.grid-row .grid-cell[data-column-id="${columnId}"]`).first();
+            const original = (await cell.innerText()).trim();
+            await cell.focus();
+            await domQuiet(page);
+            await page.keyboard.press("Enter");
+            const input = page.locator("wsx-ac-grid wsx-ac-cell-editor input");
+            await expect(input).toBeVisible();
+            await expect(input).toBeFocused();
+            await expect(input).toHaveValue(original);
+            return input;
+        }
+
+        test("RFC-0048 focuses text editor and preserves original value", async ({ page }) => {
+            await page.goto("/?rfc=0048");
+            await gridReady(page);
+            const input = await enterEditor(page, "firstName");
+            await expect(input).toHaveAttribute("type", "text");
+        });
+
+        test("RFC-0048 focuses number editor and preserves original value", async ({ page }) => {
+            await page.goto("/?rfc=0048");
+            await gridReady(page);
+            const input = await enterEditor(page, "age");
+            await expect(input).toHaveAttribute("type", "number");
+        });
+
+        test("RFC-0048 focuses date editor and preserves original value", async ({ page }) => {
+            await page.goto("/?rfc=0048");
+            await gridReady(page);
+            const input = await enterEditor(page, "birthDate");
+            await expect(input).toHaveAttribute("type", "date");
+        });
+    });
+
+    test("RFC-0049 starts edit on Enter when trigger is enter and keyboard navigation is disabled", async ({ page }) => {
+        await page.goto("/?rfc=0049");
+        await gridReady(page);
+        const grid = page.locator("wsx-ac-grid");
+        await grid.evaluate((element: any) => {
+            element.editingConfig = { enabled: true, editTrigger: "enter" };
+        });
+        const cell = page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first();
+        const original = (await cell.innerText()).trim();
+        await cell.focus();
+        await domQuiet(page);
+        await page.keyboard.press("Enter");
+        const input = grid.locator("wsx-ac-cell-editor input");
+        await expect(input).toBeVisible();
+        await expect(input).toBeFocused();
+        await expect(input).toHaveValue(original);
+    });
+
+    test("RFC-0049 does not start edit on Enter for doubleClick trigger", async ({ page }) => {
+        await page.goto("/?rfc=0049");
+        await gridReady(page);
+        const grid = page.locator("wsx-ac-grid");
+        await grid.evaluate((element: any) => {
+            element.editingConfig = { enabled: true, editTrigger: "doubleClick" };
+        });
+        const cell = page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first();
+        await cell.focus();
+        await domQuiet(page);
+        await page.keyboard.press("Enter");
+        await page.waitForTimeout(150);
+        await expect(grid.locator("wsx-ac-cell-editor")).toHaveCount(0);
+    });
+
+    test("RFC-0049 starts edit once when keyboard navigation handles Enter", async ({ page }) => {
+        await page.goto("/?rfc=0012");
+        await gridReady(page);
+        const grid = page.locator("wsx-ac-grid");
+        await grid.evaluate((element: any) => {
+            (window as any).__editStarts = 0;
+            element.editingConfig = {
+                enabled: true,
+                editTrigger: "both",
+                onEditStart: () => ((window as any).__editStarts += 1),
+            };
+        });
+        const cell = page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first();
+        await cell.focus();
+        await domQuiet(page);
+        await page.keyboard.press("Enter");
+        await expect(grid.locator("wsx-ac-cell-editor input")).toBeFocused();
+        await expect.poll(() => page.evaluate(() => (window as any).__editStarts)).toBe(1);
+    });
+
+    test("RFC-0054 shows default pagination labels without a custom manager", async ({ page }) => {
+        await page.goto("/?rfc=0054");
+        await gridReady(page);
+        await expect(page.locator("wsx-ac-pagination-controls .pagination-info")).toHaveText(
+            "Showing 1 to 10 of 50 results",
+        );
+    });
+
+    test("RFC-0054 rerenders custom pagination labels and ignores falsy manager", async ({ page }) => {
+        await page.goto("/?rfc=0054");
+        await gridReady(page);
+        const grid = page.locator("wsx-ac-grid");
+        await grid.evaluate((element: any) => {
+            const controls = element.querySelector("wsx-ac-pagination-controls");
+            controls.i18n = { t: (_key: string, _params: unknown, fallback: string) => `~${fallback}` };
+            controls.i18n = null;
+        });
+        await expect(page.locator("wsx-ac-pagination-controls .pagination-info")).toHaveText(
+            "~Showing 1 ~to 10 ~of 50 ~results",
+        );
     });
 
     test("RFC-0008 pins configured columns", async ({ page }) => {
