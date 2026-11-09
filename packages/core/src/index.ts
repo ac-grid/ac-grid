@@ -17,6 +17,7 @@ export type {
   GridFilteringConfig,
 } from "./types/filtering";
 export type { GridResizingConfig } from "./types/resizing";
+export type { GridState, GridStateKey, GridStatePatch, GridStatePersistence, GridStateStorage } from "./types/grid-state";
 export type { GridVirtualizationConfig } from "./types/virtualization";
 export type {
   GridPaginationConfig,
@@ -109,6 +110,7 @@ export type { DropdownOption, DropdownProps } from "./components/Dropdown.wsx";
 
 // 导出工具函数
 export { arrayMove } from "./utils/array-move";
+export { deserializeGridState, mergeGridState, normalizeGridState, serializeGridState } from "./utils/grid-state";
 export { parseTsv, serializeTsv } from "./utils/clipboard";
 export { createGrid } from "./utils/create-grid";
 export type { CreateGridOptions } from "./utils/create-grid";

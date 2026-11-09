@@ -1,4 +1,5 @@
 import type { CellRange } from "./range-selection";
+import type { GridState, GridStateKey, GridStatePatch } from "./grid-state";
 
 export interface RangeChartColumn {
   id: string;
@@ -23,4 +24,7 @@ export interface GridElement extends HTMLElement {
   chartThemeOverrides?: GridChartThemeOverrides;
   getCellRanges(): CellRange[];
   getRangeChartData(range?: CellRange): RangeChartData;
+  getState(): GridState;
+  setState(state: GridStatePatch): void;
+  resetState(keys?: GridStateKey[]): void;
 }
