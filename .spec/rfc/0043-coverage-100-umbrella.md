@@ -28,7 +28,7 @@
 
 | RFC | Concern |
 |-----|---------|
-| [0044](0044-unit-coverage-logic.md) | Unit coverage for logic modules |
+| [0044](completed/0044-unit-coverage-logic.md) | Unit coverage for logic modules |
 | [0045](0045-e2e-coverage-collection.md) | E2E coverage of P0, P1 and P2 features |
 | [0046](0046-component-coverage-closure.md) | Unit coverage for components |
 

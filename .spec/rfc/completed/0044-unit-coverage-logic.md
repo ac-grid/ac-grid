@@ -1,8 +1,8 @@
 # RFC 0044: Unit coverage for logic modules (child of 0043)
 
-**Status:** Approved
+**Status:** Implemented
 
-**Parent:** [0043](0043-coverage-100-umbrella.md)
+**Parent:** [0043](../0043-coverage-100-umbrella.md)
 
 ## Summary
 
@@ -19,8 +19,8 @@
 
 ## Non-goals
 
-- `src/components/*.wsx`：见 [0046](0046-component-coverage-closure.md)。
-- E2E：见 [0045](0045-e2e-coverage-collection.md)。
+- `src/components/*.wsx`：见 [0046](../0046-component-coverage-closure.md)。
+- E2E：见 [0045](../0045-e2e-coverage-collection.md)。
 - 用 `v8 ignore` 或排除文件来凑 100%：不允许。
 
 ## Design
