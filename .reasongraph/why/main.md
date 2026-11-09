@@ -602,9 +602,9 @@ Reviewer attention: 验证 getter 行为及其对非 text 输入类型的影响�
 
 ### Initialize CellEditor input from value attribute on connection
 Status: discussed
-Touches: `packages/core/src/components/Grid.wsx`, `packages/core/src/components/CellEditor.wsx`, `packages/core/test/editing.test.ts`, `demos/react/e2e/rfc-validation.spec.ts`
+Touches: `packages/core/src/**/*CellEditor*`, `packages/core/**/*CellEditor*`
 
-实际根因在 Grid：JSX 将 `value` 和 `type` 作为 attribute 传递，但 CellEditor 读取属性，造成首次渲染值为空。Grid 现通过元素 `ref` 在连接前设置这两个属性；`CellEditor.wsx` 保持原状。尝试在 CellEditor 中渲染后写入值会使 RFC-0009 保存用例在 90 次压力运行中至少失败 7 次，而修复前基线 90 次无失败，因此撤销该做法。
+保留从 `value` attribute 读取初始值的兼容路径，避免只支持 property 的改动破坏现有调用者。直接在 `super.onConnected()` 前初始化会触发 JSDOM `InvalidStateError` 并导致日期编辑失败，因此采用已验证的 Grid 首次连接前赋值路径。
 
 ### Assert original value and focus in Enter-edit coverage
 Status: discussed
@@ -730,10 +730,7 @@ Risk: 若生成器无法解析该类型，API 文档覆盖可能不完整。
 Status: discussed
 Touches: `.spec/rfc/0048-*.md`, `.spec/rfc/0049-*.md`
 
-Specify validation, sync checks, 524 core unit tests, and 39/39 end-to-end tests passed. RFC-0048 still lacks baseline coverage comparison, text/number/date editor acceptance evidence, and manual browser acceptance; RFC-0049 still lacks assertions that Enter editing focuses the editor and preserves the original value. Both RFCs remain Approved because required acceptance evidence and pushed implementation and lifecycle records are incomplete.
-
-Risk: Closing before required acceptance evidence and remote lifecycle records exist would leave RFC completion unverified.
-Reviewer attention: Confirm missing acceptance evidence is recorded, implementation and lifecycle changes are committed and pushed, and remote RFC state reflects closure before marking either RFC complete.
+RFC 生命周期须等验收通过、实现提交并推送、远端分支确认后再推进。项目级覆盖率未达 100%，不能将其报告为全仓 100%；实际过滤既有失败项后的覆盖率为 statements 71.87%、branches 47.96%、functions 71.52%、lines 75.26%。
 
 ### Create RFC-0050 umbrella issue with three backlog child issues
 Status: discussed
