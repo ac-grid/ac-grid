@@ -37,9 +37,9 @@ Enter 路径：`Grid.wsx` `handleGridKeyDown` → `startEdit(rowId, columnId)` �
 
 - 原值：Grid 的 JSX 只把 `value`、`type` 作为 attribute 传给 `wsx-ac-cell-editor`，而 `CellEditor` 首次渲染时读取 JavaScript property。修复：在 `renderCellEditor` 的 `ref` 中、元素尚未连接（`!el.isConnected`）时，把 `value` 与 `type` 写入 DOM property，保证首次渲染前就位，重渲染时不会覆盖用户已输入的内容。
 - 焦点：WSX 在重渲染前记录带 `data-wsx-key` 的焦点元素，渲染后在 `requestAnimationFrame` 中恢复。编辑中的单元格仍带 `data-wsx-key`，会在编辑器聚焦之后把焦点抢回单元格。修复：单元格处于编辑状态时不设置 `data-wsx-key`，焦点归编辑器。
-- 时序：`CellEditor` 只在 `requestAnimationFrame` 中聚焦输入框，不再重复写入 `input.value`。额外写入会和受控输入状态竞争，导致快速编辑时重复文本。
+- 时序：Grid 已在连接前写入 property 时，`CellEditor` 不会在 `requestAnimationFrame` 再写 `input.value`，避免与受控输入状态竞争并造成重复文本。仅当直接消费者通过 attribute 提供初值时，编辑器才在聚焦前补写一次，保持原有调用方式。
 
-试过但放弃的做法：在 `CellEditor` 渲染后用 rAF 写 `input.value`。它在 RFC-0009 保存用例的加压测试中出现偶发的重复文本（基线 0/90 失败，该做法至少 7/90 失败）。
+试过但放弃的做法：无条件在 `CellEditor` 渲染后用 rAF 写 `input.value`。它在 RFC-0009 保存用例的加压测试中出现偶发的重复文本（基线 0/90 失败，该做法至少 7/90 失败）。最终实现只为未预设 property 的 attribute 调用保留一次性回退写入。
 
 ## Acceptance
 

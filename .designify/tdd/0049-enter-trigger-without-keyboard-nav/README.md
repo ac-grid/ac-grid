@@ -9,4 +9,4 @@ RED mutation check:
 - Removed the Enter branch from the cell key handler in `Grid.wsx`. `pnpm --filter @ac-grid/core exec vitest run test/editing.test.ts -t 'Enter trigger independent of keyboard navigation'` failed because no editor appeared. Two non-trigger cases passed.
 - Restored the implementation. The focused suite passed: 7 tests passed, 8 skipped. Chromium E2E passed: 1 test.
 
-The full core suite passed with 52 test files and 527 tests. The complete Chromium E2E suite passed: 40 tests. The RFC acceptance cases are covered. Package code coverage is 71.87% statements, 47.96% branches, 71.52% functions, and 75.26% lines when excluding one independently reproducible, unrelated pagination i18n failure. RFC-0043's package-wide 100% target remains unmet.
+Final verification: `pnpm --filter @ac-grid/core test:coverage` passed with 52 test files, 527 tests passed, and one skipped. Coverage measured 71.89% statements, 48.04% branches, 71.52% functions, and 75.28% lines. `pnpm --filter @ac-grid/demo-react test:e2e` passed all 40 Chromium tests. RFC-0049's browser case passed with keyboard navigation disabled. RFC-0043's package-wide 100% target remains unmet.

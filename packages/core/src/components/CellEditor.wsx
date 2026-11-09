@@ -68,7 +68,9 @@ export class CellEditor extends LightComponent {
     onConnected() {
         super.onConnected?.();
         const el = this as any;
-        this.value = el.value ?? this._value;
+        const valueWasSetBeforeConnect = this._value !== "";
+        this.value = valueWasSetBeforeConnect ? this._value : (this.getAttribute("value") ?? "");
+        if (this._type === "text") this.type = this.getAttribute("type") ?? this._type;
         if (el.type) this.type = el.type;
         if (el.error) this.error = el.error;
         if (el.onChange) this.onChange = el.onChange;
@@ -79,6 +81,9 @@ export class CellEditor extends LightComponent {
             const input =
                 this.shadowRoot?.querySelector("input") ||
                 this.querySelector("input");
+            if (!valueWasSetBeforeConnect && this.hasAttribute("value") && input) {
+                input.value = this.inputValue;
+            }
             input?.focus();
         });
     }

@@ -42,6 +42,8 @@ describe("Grid Cell Editing", () => {
     });
 
     afterEach(() => {
+        const activeElement = document.activeElement;
+        if (activeElement instanceof HTMLElement && container.contains(activeElement)) activeElement.blur();
         document.body.removeChild(container);
         container.innerHTML = "";
     });
@@ -266,6 +268,18 @@ describe("Grid Cell Editing", () => {
             expect(input!.value).toBe(value);
             expect(input!.type).toBe(editor ?? "text");
             expect(document.activeElement === input || (root() as any).activeElement === input).toBe(true);
+        });
+    });
+
+    it("keeps attribute-provided values for direct CellEditor consumers", async () => {
+        const editor = document.createElement("wsx-ac-cell-editor");
+        editor.setAttribute("value", "Attribute value");
+        container.appendChild(editor);
+
+        await waitFor(() => {
+            const input = editor.shadowRoot?.querySelector<HTMLInputElement>("input") ?? editor.querySelector<HTMLInputElement>("input");
+            expect(input?.value).toBe("Attribute value");
+            expect(document.activeElement).toBe(input);
         });
     });
 
