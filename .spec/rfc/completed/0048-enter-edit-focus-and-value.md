@@ -1,6 +1,6 @@
 # RFC 0048: Enter 进入编辑时输入框聚焦并显示原值
 
-**Status:** Approved
+**Status:** Implemented
 
 ## Summary
 

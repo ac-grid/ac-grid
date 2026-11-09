@@ -107,8 +107,10 @@
   - [ ] Implement RFC 0044: Unit coverage for logic modules (child of 0043) (RFC 0044)
   - [ ] Implement RFC 0045: E2E coverage of P0, P1 and P2 features (child of 0043) (RFC 0045)
   - [ ] Implement RFC 0046: Unit coverage for components (child of 0043) (RFC 0046)
-- [ ] Implement RFC 0048: Enter 进入编辑时输入框聚焦并显示原值 (RFC 0048)
-- [ ] Implement RFC 0049: 未开键盘导航时 Enter 触发编辑仍生效 (RFC 0049)
+- [ ] Implement RFC 0050: 文档覆盖：API 参考、功能指南与 README (Umbrella) (RFC 0050)
+  - [ ] Implement RFC 0051: API 参考文档（由类型定义生成） (child of 0050) (RFC 0051)
+  - [ ] Implement RFC 0052: 已实现功能的使用指南 (child of 0050) (RFC 0052)
+  - [ ] Implement RFC 0053: 根 README 与文档索引更新 (child of 0050) (RFC 0053)
 
 ## Done
 - [x] Track RFC 0002: Sorting (RFC 0002)
@@ -142,3 +144,6 @@
 - [x] Implement RFC 0047: Honor sorting.enabled=false in Grid (RFC 0047)
 - [x] Track RFC 0034: Completed RFC demo acceptance matrix (RFC 0034)
 - [x] Track RFC 0018: Grid state API (RFC 0018)
+- [x] Implement RFC 0048: Enter 进入编辑时输入框聚焦并显示原值 (RFC 0048)
+- [x] Implement RFC 0049: 未开键盘导航时 Enter 触发编辑仍生效 (RFC 0049)
+- [x] Implement RFC 0054: PaginationControls 动态更新自定义 i18n (RFC 0054)

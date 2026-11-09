@@ -52,3 +52,4 @@ test-results/
 .graphify/
 # Added by reviewgraph
 .reviewgraph/
+.playwright-mcp/

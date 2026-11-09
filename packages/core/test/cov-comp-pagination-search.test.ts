@@ -111,10 +111,10 @@ describe("PaginationControls", () => {
     it("uses a custom i18n manager and ignores falsy ones", async () => {
         const custom = { t: (_k: string, _p: any, d: string) => `~${d}` };
         const el = await mount("wsx-ac-pagination-controls", { totalRows: 5, totalPages: 1 });
+        await waitFor(() => expect(info(el)).toBe("Showing 1 to 5 of 5 results"));
         el.i18n = custom;
         el.i18n = null;
         expect(el.i18n).toBe(custom);
-        el.rerender();
         await waitFor(() => expect(info(el)).toBe("~Showing 1 ~to 5 ~of 5 ~results"));
     });
 

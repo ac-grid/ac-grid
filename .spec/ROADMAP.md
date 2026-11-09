@@ -485,5 +485,10 @@ MIT License
 | 0045 | [E2E coverage of P0, P1 and P2 features (child of 0043)](rfc/0045-e2e-coverage-collection.md) | Approved |
 | 0046 | [Unit coverage for components (child of 0043)](rfc/0046-component-coverage-closure.md) | Approved |
 | 0047 | [Honor sorting.enabled=false in Grid](rfc/completed/0047-sorting-enabled-config.md) | Implemented |
-| 0048 | [Enter 进入编辑时输入框聚焦并显示原值](rfc/0048-enter-edit-focus-and-value.md) | Approved |
-| 0049 | [未开键盘导航时 Enter 触发编辑仍生效](rfc/0049-enter-trigger-without-keyboard-nav.md) | Approved |
+| 0048 | [Enter 进入编辑时输入框聚焦并显示原值](rfc/completed/0048-enter-edit-focus-and-value.md) | Implemented |
+| 0049 | [未开键盘导航时 Enter 触发编辑仍生效](rfc/completed/0049-enter-trigger-without-keyboard-nav.md) | Implemented |
+| 0050 | [文档覆盖：API 参考、功能指南与 README (Umbrella)](rfc/0050-documentation-coverage.md) | Draft |
+| 0051 | [API 参考文档（由类型定义生成） (child of 0050)](rfc/0051-api-reference-docs.md) | Draft |
+| 0052 | [已实现功能的使用指南 (child of 0050)](rfc/0052-feature-guides.md) | Draft |
+| 0053 | [根 README 与文档索引更新 (child of 0050)](rfc/0053-readme-refresh.md) | Draft |
+| 0054 | [PaginationControls 动态更新自定义 i18n](rfc/completed/0054-pagination-i18n-after-connection.md) | Implemented |

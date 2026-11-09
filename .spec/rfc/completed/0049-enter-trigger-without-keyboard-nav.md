@@ -1,6 +1,6 @@
 # RFC 0049: 未开键盘导航时 Enter 触发编辑仍生效
 
-**Status:** Approved
+**Status:** Implemented
 
 ## Summary
 

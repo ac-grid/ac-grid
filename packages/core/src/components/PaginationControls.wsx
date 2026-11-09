@@ -43,9 +43,12 @@ export class PaginationControls extends LightComponent {
     set i18n(v: I18nManager) {
         if (v && v !== this._i18n) {
             this._i18n = v;
+            if (this.connected) {
+                requestAnimationFrame(() => this._rerender());
+            }
         }
     }
-    @state private _i18n: I18nManager = defaultI18nManager;
+    private _i18n: I18nManager = defaultI18nManager;
 
     // Callbacks
     private onPageChange?: (page: number) => void;
