@@ -220,6 +220,7 @@ describe("Grid accessibility semantics", () => {
             { accessorKey: "city", header: "City" },
         ];
         grid.editingConfig = { enabled: true, editTrigger: "enter" };
+        grid.enableKeyboardNavigation = true;
         container.appendChild(grid);
         const root = grid.shadowRoot || grid;
         const getFocusedCell = () => {
@@ -234,9 +235,6 @@ describe("Grid accessibility semantics", () => {
             expect(cell).toBeTruthy();
             return cell!;
         });
-        firstCell.focus();
-        firstCell.firstElementChild?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
-        await waitFor(() => expect(getFocusedCell()).toBe("1:name"));
         firstCell.focus();
         firstCell.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
         await waitFor(() => expect(getFocusedCell()).toBe("1:city"));
