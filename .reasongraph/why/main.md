@@ -915,16 +915,16 @@ Touches: `.git/worktrees/*`
 Merged PR worktrees and branches were cleaned up after verifying their content and merge state. The main checkout was left clean and synchronized with origin/main.
 
 ### 由 PaginationControls 的 i18n setter 单独安排下一帧渲染
-Status: directed
-Touches: `packages/core/src/**/*PaginationControls*`, `packages/core/**/*PaginationControls*`
+Status: discussed
+Touches: `**/PaginationControls*`
 
-通用状态调度器在渲染期间丢弃更新，导致 `_isRendering` 卡在 `true`，后续 i18n setter 和显式重渲染都失效。让 setter 自行安排下一帧，修复组件动态文案更新。
+通用状态调度器在 `_isRendering` 为 `true` 时会丢弃更新。i18n setter 在组件连接后安排下一帧重渲染，避免文案更新被丢弃。
 
 ### 用默认文案到自定义文案的回归测试覆盖 i18n 更新
-Status: directed
-Touches: `packages/core/**/*PaginationControls*test*`
+Status: discussed
+Touches: `**/PaginationControls*`
 
-隔离测试复现了动态 i18n 文案未更新。回归测试先验证默认文案，再切换自定义文案，并检查 falsy 值仍被保留。
+回归测试覆盖默认文案、自定义文案，以及忽略 `null` 的行为，确认 i18n 更新路径正确。
 
 ### 将 RFC-0054 的测试通过与覆盖率门槛失败分开报告
 Status: discussed
@@ -1101,3 +1101,9 @@ Status: directed
 Touches: `../ac-grid-main`
 
 A separate worktree for `main` was requested so work on that branch can proceed without switching the current checkout. The transcript shows an attempt to add the worktree, but does not show its result.
+
+### Use .agents/skills as the canonical location for repository skills
+Status: discussed — proposed direction; consolidation not decided or implemented
+Touches: `.agents/skills/*`, `.claude/skills/*`, `.cursor/skills/*`, `.opencode/skills/*`
+
+The repository already tracks `multica-cli`, `multica-orca`, and `ui-ux-pro-max` under `.agents/skills`. Other harness directories contain copies, including differing `ui-ux-pro-max` versions, so a canonical source could reduce drift. Discovery behavior and copy removal remain unresolved.
