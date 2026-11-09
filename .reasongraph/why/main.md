@@ -944,11 +944,11 @@ Touches: `packages/core/src/components/CellEditor.wsx`
 
 Grid 通过 `value` attribute 将单元格原值传给编辑器，但编辑器未读取该 attribute；延迟的状态重渲染会让输入框在聚焦时仍为空。连接时读取 attribute，并在聚焦同一帧写入输入框，可避免依赖延迟重渲染。
 
-### Push generated ReasonGraph digest after syncing pending sessions
+### 推送生成的 ReasonGraph digest after syncing pending sessions
 Status: discussed
-Touches: `.reasongraph/why/`
+Touches: `.reasongraph/why/**`
 
-The second push reached `9c42b7e`, but the hook generated another why-pack commit, `3be0aa3`. The agent chose to run `reasongraph sync` to clear pending sessions before the final push.
+同步完成后，本地生成两个 why-pack 提交，远端尚未包含这些提交。推送并核对最终 SHA，确保生成的 digest 与远端一致。
 
 ### Move the generic getting-started guide to docs
 Status: discussed
