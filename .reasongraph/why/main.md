@@ -172,9 +172,9 @@ Each RFC is to be built in a new worktree from origin/main: failing e2e first, t
 
 ### Rebuild gitignored core and theme dist when the react demo never shows grid rows
 Status: discussed
-Touches: `packages/core/dist`, `demos/react/e2e/rfc-validation.spec.ts`
+Touches: `packages/core/dist/**`, `packages/theme/dist/**`
 
-The browser test initially loaded stale packages/core/dist, so rendered column order did not reflect the source change. Rebuilding core before rerunning the browser test ensured validation exercised the implementation.
+Local end-to-end checks initially lacked generated dist output. Building the packages before rerunning the coverage guard made the demo use current artifacts; the guard passed 7 of 7 checks.
 
 ### Leave packages/core/src/index.ts i18n barrel unchanged after a duplicate zhCN export failed to compile
 Status: discussed
@@ -282,23 +282,23 @@ Risk: Artifacts remain only in stash/temp; they were not committed on the covera
 
 ### Update CellEditor unit tests for blur no longer saving after #45
 Status: discussed
-Touches: `demos/react/e2e/rfc-validation.spec.ts`
+Touches: `**/*CellEditor*test*`
 
-The RFC-0012 focus test now locates the firstName cell by data-column-id. Its prior first-cell selector assumed the first row cell was firstName, which stopped being true when selection became the leading column.
+The tests were changed to match the existing behavior after blur stopped saving. Restoring the old save behavior would contradict that change.
+
+Risk: Tests may miss a regression if blur-save behavior is later reintroduced intentionally.
 
 ### Close PR #56 after rebase showed RFC-0014 commits already on main
 Status: discussed
-Touches: `.spec/rfc/*`
+Touches: `.spec/rfc/*0014*.md`
 
-关闭 PR #56，因为其 RFC-0014 提交已包含在 main 中，继续合并会重复已有改动。
+Rebasing showed the PR's RFC-0014 changes were already present on main, leaving no distinct change to merge. Closing the empty PR avoids duplicating landed work.
 
 ### Abort the RFC-0008 rebase and close the duplicate pinning PR
 Status: discussed
-Touches: `.spec/rfc/0008*`
+Touches: `.spec/rfc/*0008*.md`
 
-Column pinning had already landed on main through an earlier PR. The leftover feat/rfc-0008-column-pinning branch conflicted with main, so PR #57 was closed without merging.
-
-Considered/rejected: Force-merging the conflicting old pinning branch was rejected.
+The pinning implementation had already landed through another PR, making the rebased branch obsolete. Closing it avoids merging stale or duplicate changes.
 
 ### Leave init-generated uncommitted tooling files out of PR commits
 Status: discussed
@@ -324,16 +324,16 @@ Risk: Callers that still resolve the old rfc/ paths will break until their links
 Reviewer attention: Confirm inbound links from ROADMAP, RFCs, and related docs point at the .spec-root locations.
 
 ### Repair RFC-0022 PARITY_MATRIX relative links
-Status: discussed — separate commit on PR #54
-Touches: `.spec/rfc/0022*`, `.spec/PARITY_MATRIX.md`
+Status: discussed
+Touches: `.spec/rfc/*0022*.md`
 
-RFC-0022 had broken PARITY_MATRIX links after the registry move. Those links were fixed in their own commit on the .spec cleanup PR.
+A broken relative link was corrected so RFC-0022 points to the parity matrix at its current location.
 
 ### Drop RFC-0014 from feature-matrix pending after it landed on main
 Status: discussed
 Touches: `feature-matrix.json`
 
-从待处理列表移除 RFC-0014，因为路线图已将其标为完成，覆盖守卫会将旧 pending 项视为过期。
+RFC-0014 was already completed on main, while the feature matrix still listed it as pending. Removing the stale entry aligns the coverage guard with the archived implementation state.
 
 ### Leave init-generated uncommitted tooling files out of PR commits (updated)
 Status: discussed
@@ -727,9 +727,12 @@ Risk: 若生成器无法解析该类型，API 文档覆盖可能不完整。
 
 ### Keep RFC-0048 and RFC-0049 approved until closure evidence is complete
 Status: discussed
-Touches: `.spec/rfc/0048-*.md`, `.spec/rfc/0049-*.md`
+Touches: `Grid.wsx`, `PaginationControls`
 
-RFC 生命周期须等验收通过、实现提交并推送、远端分支确认后再推进。项目级覆盖率未达 100%，不能将其报告为全仓 100%；实际过滤既有失败项后的覆盖率为 statements 71.87%、branches 47.96%、functions 71.52%、lines 75.26%。
+Agent merged remote `main` changes, then reran validation because `Grid.wsx` changed. Focused unit tests passed 34/34 and Chromium end-to-end tests passed 42/42, but the full unit suite still had one reproducible failure in an unchanged pagination i18n test; RFCs therefore remain Approved pending complete acceptance evidence.
+
+Risk: Implementation push may proceed while RFC closure remains blocked by the existing pagination test failure.
+Reviewer attention: Confirm remote implementation commit and track the pagination i18n failure before marking either RFC Implemented.
 
 ### Create RFC-0050 umbrella issue with three backlog child issues
 Status: discussed
@@ -912,3 +915,9 @@ Status: discussed
 Touches: `packages/core/*`, `RFC-0043`
 
 全量 core 覆盖率为语句 71.89%、分支 48.04%、函数 71.52%、行 75.28%，结果为 527 通过、1 跳过。RFC-0043 才负责提升全包覆盖率至 100%，因此本次验证报告保留实测范围与数值。
+
+### Remove extra git worktrees; keep only this checkout (updated)
+Status: discussed
+Touches: `.git/worktrees/*`
+
+Merged PR worktrees and branches were cleaned up after verifying their content and merge state. The main checkout was left clean and synchronized with origin/main.
