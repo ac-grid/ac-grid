@@ -749,7 +749,7 @@ RFC-0050 serves as an index and closes after its three child RFCs are complete. 
 Status: discussed
 Touches: `.spec/rfc/0050-documentation-coverage.md`, `.spec/rfc/0051-api-reference-docs.md`, `.spec/rfc/0052-feature-guides.md`, `.spec/rfc/0053-readme-refresh.md`
 
-All four documentation RFCs remain Draft, and implementation must wait for approval. Their validation and sync checks passed.
+All four RFCs remain Draft, so implementation does not begin before approval.
 
 ### Use explicit paths for commits and review hook-generated digest changes
 Status: discussed
@@ -857,6 +857,4 @@ Considered/rejected: A hand-written API reference was rejected because it would 
 Status: discussed
 Touches: `.spec/rfc/0050-documentation-coverage.md`, `.spec/rfc/0051-api-reference-docs.md`, `.spec/rfc/0052-feature-guides.md`, `.spec/rfc/0053-readme-refresh.md`
 
-RFC-0050 serves as an index and closes after its child RFCs are complete. RFC-0051 covers API reference published at `/docs/api/` for all `index.ts` exports; RFC-0052 covers feature guides in two batches with examples tied to demos or end-to-end tests; RFC-0053 aligns the root README and `docs/README.md` with workspace packages, roadmap status, and checked links.
-
-Risk: All four RFCs remain Draft, so implementation scope is not yet approved.
+The umbrella RFC tracks the overall documentation gap and closes after its three child RFCs are complete. Separate child RFCs keep API reference generation, feature guides, and README updates independently scoped.
