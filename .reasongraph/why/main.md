@@ -70,11 +70,9 @@ The untracked .spec/test-plan.md on the stale checkout was removed after its con
 
 ### Stop expanding RFC-0036; split P1 demo defects into umbrella 0039 and three child RFCs
 Status: discussed
-Touches: `.spec/rfc/0036-demo-quality-remediation.md`, `.spec/rfc/0039-demo-defects-p1.md`, `.spec/rfc/0040-selection-column-order.md`, `.spec/rfc/0041-pinned-column-theme.md`, `.spec/rfc/0042-overlay-theme.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
+Touches: `.spec/rfc/0039-*.md`, `.spec/rfc/0040-*.md`, `.spec/rfc/0041-*.md`, `.spec/rfc/0042-overlay-theme.md`
 
-RFC-0036 already bundled multiple root causes and P0–P3 work, which violates one-RFC-one-concern. P1 issues #35, #36, and #38 were specified as umbrella 0039 plus children 0040, 0041, and 0042 via specify deliver --umbrella and --parent. RFC-0036 stayed Draft and was not reopened. Titles were delivered without extra parentheses because the CLI already appends (Umbrella). A first 0039 generation with a broken title was discarded uncommitted and redelivered. Child Related links to RFC-0016 point at .spec/rfc/0016-theme-system.md, not completed/, after sync-check flagged the wrong path. All four validates were OK; remaining sync-check failures were pre-existing 0001/0009/0012/0013 links, left alone until the 0001 close.
-
-Considered/rejected: Stacking the P1 fixes into RFC-0036, and a first 0042 draft scoped to a full-width row-view demo.
+The work groups the three demo issues under RFC-0039 as an index, with separate child RFCs for selection-column layout, pinned-column theming, and overlay theming. This keeps each child’s goals and acceptance criteria independently reviewable.
 
 ### Put selection first in columnOrder and vertically align the checkbox; do not add click-row-to-select
 Status: discussed
@@ -89,12 +87,13 @@ Touches: `.spec/rfc/0041-pinned-column-theme.md`, `packages/core/src/components/
 Issue #36 had no horizontal scrollbar because total column width was 910px inside a 1134px container. A separate real defect: pinned header/cell backgrounds use --ac-grid-bg-header-pinned and --ac-grid-bg-cell-pinned with light fallbacks that no theme defines, so pinned cells go white on dark themes. RFC-0041 requires those tokens on the built-in themes, 0008 columns wider than 1.5× the container, e2e that scrollWidth > clientWidth, pinned columns stay put while unpinned move, and dark-theme contrast at least 4.5:1, plus mutation checks. Implementation had not started in this segment.
 
 ### Scope RFC-0042 to empty/loading overlay theme, not a full-width row view
-Status: directed
-Touches: `.spec/rfc/0042-overlay-theme.md`, `packages/core/src/components/Grid.css`, `packages/core/src/components/Grid.wsx`, `packages/theme-base`, `packages/theme-default`, `demos/react/src/rfcValidationDemos.ts`, `demos/react/e2e/rfc-validation.spec.ts`
+Status: discussed
+Touches: `.spec/rfc/0042-overlay-theme.md`, `Grid.css`
 
-Issue #38 is the no-rows overlay ignoring theme, not a full-width row view. Clearing 0019 data under a dark theme showed .grid-overlay hard-coded to rgba(255,255,255,0.72) while overlay text uses a theme text token, washing out the grid. RFC-0042 was rebuilt as 0042-overlay-theme: background becomes var(--ac-grid-bg-overlay) with that fallback, every built-in theme defines the token, demo 0019 gets a clear-data control and light/dark toggle, and e2e require the no-rows overlay, dark contrast at least 4.5:1, color change on theme toggle, and a loading overlay check, with a mutation that restoring hard-coded white must fail. Full-width row view is a Non-goal. Loading overlay was inferred to share the same CSS and listed for live check rather than separately reproduced. Uncommitted wrong-slug drafts were deleted and redelivered before commit 774db55.
+The reproduced issue is the empty-data overlay: its hard-coded white background conflicts with theme-based text color in dark mode. The RFC calls for a theme token and demo controls to verify empty and loading overlays; loading behavior still requires direct validation. Full-width row views remain outside scope.
 
-Considered/rejected: Adding a fullWidthRowComponent demo and treating missing row view as the #38 bug.
+Risk: Loading-overlay impact was inferred from shared styling and had not been independently reproduced.
+Reviewer attention: Confirm dark-theme text contrast meets the specified 4.5:1 threshold and that the acceptance check fails if the background reverts to white.
 
 ### Advance RFC-0038 through 0042 to Approved via specify and do not start implementation until that status exists
 Status: directed
@@ -769,3 +768,11 @@ Status: discussed
 Touches: `.spec/rfc/0051-api-reference-docs.md`, `package.json`
 
 The project has no API documentation generator, while `@wsxjs/wsx-press` includes a typedoc dependency. Whether it can be reused directly remains unassessed.
+
+### 推送实现与 ReasonGraph 生成提交并核对远端 SHA
+Status: discussed
+Touches: `.reasongraph/why/**`
+
+实现提交已推送到 main；ReasonGraph hook 随后生成了本地提交。同步命令未能处理 14 个历史会话，但确认 why-pack 已提交且 RFC 变更未受影响，因此继续推送生成提交并核对远端 SHA。
+
+Risk: 历史会话未完成蒸馏；自动生成提交可能包含尚未处理的会话状态。
