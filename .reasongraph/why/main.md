@@ -1157,3 +1157,81 @@ Status: discussed
 Touches: `.spec/rfc/0044-*.md`, `.spec/rfc/completed/0044-*.md`
 
 实现提交和生命周期变更均已推送，且本地与远端 HEAD 一致后，才将 RFC-0044 标为 Implemented 并归档。同步检查通过。
+
+### Measure grouping performance budgets with thread CPU time
+Status: discussed
+Touches: `packages/core/test/grouping.test.ts`
+
+The grouping budget now measures current-thread CPU time because wall-clock measurements included time lost to machine contention. A process-wide CPU measurement also proved noisy because it included V8 helper-thread work. The 500 ms and 16 ms budgets remain unchanged; 30 repeated runs passed, and injected CPU delays exceeded the budgets.
+
+### Document dependency security alert remediation in RFC 0055
+Status: directed
+Touches: `.spec/rfc/0055-dependency-security-alerts.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
+
+RFC 0055 records a remediation scope for 36 open alerts affecting 18 packages. It proposes upgrading direct dependencies within their current major versions and using existing pnpm overrides for transitive dependencies; the RFC remains Draft pending approval.
+
+Risk: The proposed remediation may not resolve every alert without major-version changes or dependency-specific exceptions.
+
+### Defer the ECharts major-version upgrade pending a compatibility decision
+Status: discussed
+Touches: `packages/charts/package.json`, `.spec/rfc/0055-dependency-security-alerts.md`
+
+The alert's fixed version is ECharts 6.1.0, while the charts package declares a ^5.0.0 peer range. The RFC records alternatives instead of changing the dependency or peer range before compatibility is decided.
+
+Considered/rejected: Upgrading ECharts immediately would conflict with the declared peer range and make an unvalidated major-version change.
+
+### Commit the requested workspace changes in scoped commits
+Status: directed
+Touches: `packages/core/test/grouping.test.ts`, `.spec/rfc/0055-dependency-security-alerts.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`, `demos/*`, `packages/*`
+
+The workspace changes were committed in four commits grouped by concern, with explicit file paths used for staging. The commits cover the grouping test, RFC tracking, coverage and demo updates, and generated activity digests. Changes were committed locally and not pushed.
+
+### Require browser demos only for interactive RFCs
+Status: discussed
+Touches: `coverage.spec.ts`
+
+The coverage guard incorrectly required a browser demo for RFC-0044, whose acceptance criteria cover pure logic through unit tests. The guard should require demos for interactive RFCs while retaining route and feature-matrix consistency checks.
+
+Considered/rejected: Adding an unrelated UI demo for RFC-0044 would satisfy the guard while misrepresenting the RFC's scope.
+
+### Exclude instrumented performance timings while preserving normal performance gates
+Status: discussed
+Touches: `packages/core/**`, `**/*SortingIndicator*`
+
+V8 coverage instrumentation made the 10K performance assertions exceed their timing limit, so those timing cases are skipped during coverage collection. Ordinary test runs retain the performance assertions; coverage runs are not used to measure timing.
+
+### Wait for visible state changes in SortingIndicator tests
+Status: discussed
+Touches: `**/*SortingIndicator*`
+
+Synchronous state updates occasionally left the DOM stale during coverage runs. Tests now wait for each observable result, stabilizing the regression checks without changing component behavior.
+
+### Keep RFC-0033 and RFC-0035 approved until implementation is pushed
+Status: discussed
+Touches: `.spec/rfc/0033-*.md`, `.spec/rfc/0035-*.md`
+
+Both RFCs were reformatted and passed Specify validation, but implementation and remote verification were incomplete. Their lifecycle state remains Approved until implementation commits are pushed and closure requirements are met.
+
+### Report measured coverage without treating behavior coverage as source coverage
+Status: discussed
+Touches: `packages/core/**`, `coverage.spec.ts`
+
+Browser scenarios passed 9/9 and the full Playwright suite passed 50/50, but measured core coverage remained below 100%: statements 72.51%, branches 48.63%, functions 72.18%, and lines 75.88%. CellEditor measured 61.81%, Grid 66.62%, and PaginationControls 66.30%; these results do not satisfy a 100% source coverage target.
+
+### Close RFC-0044 after implementation and lifecycle commits are pushed
+Status: discussed
+Touches: `packages/core/test/grid-state.test.ts`, `packages/core/src/utils/grid-state.ts`, `docs/specs/**`
+
+RFC-0044 was marked Implemented and archived after its implementation and lifecycle commits were pushed and the remote SHA was checked. The state tests grew from 3 to 35 observable-behavior cases, and an internal builder removed unreachable merge fallback logic without changing the exported signature or behavior.
+
+### Create RFC-0055 for dependency alert remediation
+Status: directed
+Touches: `RFC-0055 file`, `ROADMAP.md`, `TASK_TRACKING.md`
+
+A separate RFC records the dependency alert remediation work and its roadmap tracking. The RFC was written and validated; implementation had not started in this session.
+
+### Split pending changes into four scoped commits
+Status: directed
+Touches: `packages/core/test/grouping.test.ts`, `RFC-0055 file`, `ROADMAP.md`, `TASK_TRACKING.md`, `.reasongraph/why/main.md`, `packages/core/test/cov-comp-simple.test.ts`
+
+Pending work was committed in four commits grouped by concern and staged with explicit paths. These commits were not pushed. An unexpected first-commit file and insertion count was investigated, but the final transcript does not state the exact resolution; verify each commit's file list before pushing.
