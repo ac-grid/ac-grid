@@ -776,3 +776,15 @@ Touches: `.reasongraph/why/**`
 实现提交已推送到 main；ReasonGraph hook 随后生成了本地提交。同步命令未能处理 14 个历史会话，但确认 why-pack 已提交且 RFC 变更未受影响，因此继续推送生成提交并核对远端 SHA。
 
 Risk: 历史会话未完成蒸馏；自动生成提交可能包含尚未处理的会话状态。
+
+### Reject post-render CellEditor value writes after stress failures
+Status: discussed
+Touches: `packages/core/src/components/CellEditor.wsx`
+
+The agent reverted the post-render `input.value` write after stress runs showed 7/90 failures with that approach versus 0/90 on the baseline. Failures duplicated old and new cell text, so the approach was not safe to keep.
+
+### Align RFC-0048 Design with the implemented root cause
+Status: discussed
+Touches: `.spec/rfc/0048-enter-edit-focus-and-value.md`
+
+The agent updated the Design section to match the observed causes and implementation in `Grid.wsx`; the earlier description pointed to `CellEditor.wsx`. This keeps the RFC useful for reviewing the actual behavior change.
