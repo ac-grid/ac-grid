@@ -672,3 +672,36 @@ test("RFC-0014 downloads CSV with headers and grid data", async ({ page }) => {
     expect(csv.split("\n")[0]).toBe("First Name,Last Name,Age,Status");
     expect(csv).toContain(firstName);
 });
+
+test("RFC-0014 exports selected rows and requested columns without headers", async ({ page }) => {
+    await page.goto("/?rfc=0014");
+    await gridReady(page);
+    const expectedName = await page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first().innerText();
+    const [download] = await Promise.all([
+        page.waitForEvent("download"),
+        page.evaluate(() => {
+            const grid = document.querySelector("wsx-ac-grid") as HTMLElement & {
+                table?: { getCoreRowModel: () => { rows: Array<{ id: string }> } };
+                selectRow: (id: string) => void;
+                exportToCSV: (options: {
+                    fileName: string;
+                    exportMode: "selected";
+                    includeHeaders: boolean;
+                    columns: string[];
+                }) => void;
+            };
+            const firstRow = grid.table!.getCoreRowModel().rows[0];
+            grid.selectRow(firstRow.id);
+            grid.exportToCSV({
+                fileName: "selected.csv",
+                exportMode: "selected",
+                includeHeaders: false,
+                columns: ["firstName"],
+            });
+        }),
+    ]);
+
+    expect(download.suggestedFilename()).toBe("selected.csv");
+    const csv = await readFile((await download.path())!, "utf8");
+    expect(csv).toBe(expectedName);
+});
