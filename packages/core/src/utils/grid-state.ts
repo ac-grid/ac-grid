@@ -15,6 +15,10 @@ export function normalizeGridState(value: unknown): GridState | null {
   if (!value || typeof value !== "object") return null;
   const state = value as Record<string, unknown>;
   if (state.stateVersion !== 1) return null;
+  return buildGridState(state);
+}
+
+function buildGridState(state: Record<string, unknown>): GridState {
   return {
     ...DEFAULT_GRID_STATE,
     columnSizing: isNumberRecord(state.columnSizing) ? state.columnSizing : {},
@@ -42,7 +46,7 @@ export function normalizeGridState(value: unknown): GridState | null {
 
 export function mergeGridState(current: GridState, patch: GridStatePatch): GridState {
   const { stateVersion: _version, ...updates } = patch;
-  return normalizeGridState({ ...current, ...updates, stateVersion: 1 }) ?? current;
+  return buildGridState({ ...current, ...updates });
 }
 
 export function deserializeGridState(serialized: string | null): GridState | null {
