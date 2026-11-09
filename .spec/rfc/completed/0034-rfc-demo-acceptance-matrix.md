@@ -65,6 +65,7 @@ AC Grid 建立「已完成 RFC 演示验收矩阵」（Demo Acceptance Matrix）
 | **0014** | 数据导出 | `/?rfc=0014` | 点击 Export CSV 触发下载；文件名、CSV 表头和表格数据正确 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0014 downloads CSV with headers and grid data`) | ✅ 达标 |
 | **0022** | 范围选择 | `/?rfc=0022` | 拖拽选择矩形范围后 API 返回起止行及列 ID，且四个对应单元格标记为已选择 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0022 selects and highlights a rectangular cell range by dragging`) | ✅ 达标 |
 | **0023** | 剪贴板操作 | `/?rfc=0023` | 点选单元格后 Ctrl/Cmd+C 复制其文本；点选起始格后 Ctrl/Cmd+V 按 TSV 矩阵写入相邻单元格 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0023 copies...`, `RFC-0023 pastes...`) | ✅ 达标 |
+| **0018** | Grid 状态 API | `/?rfc=0018` | 点击按钮后 `setState` 应用排序并按年龄升序重排行，`getState()` 输出含该排序；`resetState` 后排序清空 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0018 sets and resets grid state through the state API`) | ✅ 达标 |
 | **0029** | 集成图表 | `/?rfc=0029` | 拖选单元格范围并创建柱状图；图表显示所选行的姓名分类和年龄数据 | `demos/react/e2e/rfc-validation.spec.ts` (`RFC-0029 creates a bar chart from selected grid data`) | ✅ 达标 |
 
 ---

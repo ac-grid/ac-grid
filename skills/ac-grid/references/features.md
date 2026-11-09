@@ -22,6 +22,7 @@ Option keys for `createGrid`. Shapes come from `packages/core/src/utils/create-g
 | 0014 | Data export | `grid.exportToCSV({ fileName, exportMode: "all" \| "selected" \| "visible", includeHeaders, columns, formatter })` |
 | 0015 | Internationalization | `i18n: { locale: "zh-CN", messages: zhCN.messages }` |
 | 0016 | Theme system | CSS variables such as `--ac-grid-bg-header`; built-in themes `light`, `dark`, `ocean`, `forest`, `sunset`, `bamboo`, `violet` |
+| 0018 | Grid state | `grid.getState()`, `grid.setState(partial)`, `grid.resetState(keys?)`; `persistState: { key, storage }` restores and saves versioned state (sizing, order, sorting, filters, pagination, scrollTop) |
 | 0019 | Custom components | `components: { noRowsOverlayComponent, fullWidthRowComponent, isFullWidthRow, isLoading }`; column `headerComponent` |
 | 0022 | Range selection | `rangeSelection: { enabled: true }`; read with `grid.getCellRanges()` |
 | 0023 | Clipboard | `clipboard: { enabled: true, suppressClipboardApi, copyToClipboard, readFromClipboard, processCellForClipboard, processCellFromClipboard }`; Ctrl/Cmd+C copies the clicked cell, Ctrl/Cmd+V pastes from it |

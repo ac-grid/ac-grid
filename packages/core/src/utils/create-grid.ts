@@ -22,6 +22,7 @@ import type { GridI18nConfig } from "../types/i18n";
 import type { GridRangeSelectionConfig } from "../types/range-selection";
 import type { GridChartThemeOverrides, GridElement } from "../types/range-chart";
 import type { KeyboardNavigationMode } from "./keyboard-navigation";
+import type { GridStatePersistence } from "../types/grid-state";
 
 export interface CreateGridOptions<TData extends { userId?: string }> {
   /**
@@ -82,6 +83,8 @@ export interface CreateGridOptions<TData extends { userId?: string }> {
   rangeSelection?: GridRangeSelectionConfig;
   /** Enable opt-in keyboard navigation (RFC-0012). */
   enableKeyboardNavigation?: boolean;
+  /** Restore and save grid state using the supplied storage (RFC-0018). */
+  persistState?: GridStatePersistence;
   /** Cell-wise or row-wise arrow navigation (RFC-0012). */
   keyboardNavigationMode?: KeyboardNavigationMode;
   /**
@@ -171,6 +174,7 @@ export function createGrid<TData extends { userId?: string }>(
   const gridElement = document.createElement("wsx-ac-grid") as any;
   gridElement.enableCharts = options.enableCharts ?? false;
   gridElement.chartThemeOverrides = options.chartThemeOverrides;
+  if (options.persistState) gridElement.statePersistence = options.persistState;
 
   if (options.keyboardNavigationMode) gridElement.keyboardNavigationMode = options.keyboardNavigationMode;
   if (options.enableKeyboardNavigation !== undefined) gridElement.enableKeyboardNavigation = options.enableKeyboardNavigation;
