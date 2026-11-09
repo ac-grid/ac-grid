@@ -68,8 +68,7 @@ export class CellEditor extends LightComponent {
     onConnected() {
         super.onConnected?.();
         const el = this as any;
-        // Grid passes value as an attribute; the property getter only has it if set before connect.
-        this.value = this._value !== "" ? this._value : (this.getAttribute("value") ?? "");
+        this.value = el.value ?? this._value;
         if (el.type) this.type = el.type;
         if (el.error) this.error = el.error;
         if (el.onChange) this.onChange = el.onChange;
@@ -80,7 +79,6 @@ export class CellEditor extends LightComponent {
             const input =
                 this.shadowRoot?.querySelector("input") ||
                 this.querySelector("input");
-            if (input) input.value = this.inputValue;
             input?.focus();
         });
     }

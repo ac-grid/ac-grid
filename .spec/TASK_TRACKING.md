@@ -108,6 +108,7 @@
   - [ ] Implement RFC 0045: E2E coverage of P0, P1 and P2 features (child of 0043) (RFC 0045)
   - [ ] Implement RFC 0046: Unit coverage for components (child of 0043) (RFC 0046)
 - [ ] Implement RFC 0048: Enter 进入编辑时输入框聚焦并显示原值 (RFC 0048)
+- [ ] Implement RFC 0049: 未开键盘导航时 Enter 触发编辑仍生效 (RFC 0049)
 
 ## Done
 - [x] Track RFC 0002: Sorting (RFC 0002)

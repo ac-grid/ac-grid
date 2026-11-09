@@ -2502,7 +2502,7 @@ export class Grid extends LightComponent {
                                         <div
                                             key={cell.id}
                                             // WSX restores focus after a rerender only for elements carrying data-wsx-key.
-                                            data-wsx-key={cell.id}
+                                            data-wsx-key={isEditing ? undefined : cell.id}
                                             className={`grid-cell ${isColumnDragging ? "column-dragging" : ""} ${isColumnDragOver ? "column-drag-over" : ""}`}
                                             role="gridcell"
                                             aria-rowindex={(rowIndexes.get(row.id) ?? rowIndex) + headerGroups.length + 1}
@@ -2544,6 +2544,17 @@ export class Grid extends LightComponent {
                                             }
                                             onKeyDown={(e: KeyboardEvent) => {
                                                 this.handleGridCellKeyDown(e, row.id, column.id, isEditing);
+                                                if (
+                                                    !this._enableKeyboardNavigation &&
+                                                    supportsEnterTrigger(editTrigger) &&
+                                                    e.key === "Enter" &&
+                                                    !isEditing &&
+                                                    e.target === e.currentTarget
+                                                ) {
+                                                    e.preventDefault();
+                                                    this.focusedCell = { rowId: row.id, columnId: column.id };
+                                                    handleStartEdit();
+                                                }
                                             }}
                                         >
                                             {isEditing ? (
@@ -2864,6 +2875,12 @@ export class Grid extends LightComponent {
                 if (el) {
                     (el as any).onSave = (value: unknown) => this.saveEdit(value);
                     (el as any).onCancel = () => this.cancelEdit();
+                    // JSX only sets attributes; CellEditor reads properties. Seed once, before it connects
+                    // and first renders, so a later grid re-render cannot overwrite what the user typed.
+                    if (!el.isConnected) {
+                        (el as any).value = this.editingState.value;
+                        (el as any).type = editorType;
+                    }
                 }
             }}
         />
