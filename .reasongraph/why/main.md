@@ -748,9 +748,11 @@ All four RFCs remain Draft, so implementation does not begin before approval.
 
 ### Use explicit paths for commits and review hook-generated digest changes
 Status: discussed
-Touches: `.reasongraph/why/main.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`, `.spec/rfc/0048-enter-edit-focus-and-value.md`, `.spec/rfc/0049-enter-trigger-without-keyboard-nav.md`
+Touches: `.reasongraph/why/main.md`, `grid-state.test.ts`, `mergeGridState`
 
-Commits should stage only named paths so unrelated workspace changes are not swept in. The hook-generated ReasonGraph digest requires diff review before deciding whether to include it.
+提交使用路径限定，仅包含目标文件；未混入已暂存的其他内容。处于 review 中的 ReasonGraph digest 保持未改动。
+
+Risk: 提交推送同时包含本地此前领先的三个提交；其文件范围经路径限定。
 
 ### Keep unapproved RFC issues in backlog without assignees
 Status: discussed
@@ -1123,3 +1125,35 @@ Touches: `.spec/multica-skills/*`, `.agents/skills/multica-*`, `.birdify/constra
 The agent moved the three versioned Multica skill references and their README into the repository’s canonical skills directory. It updated 29 Birdify constraint references to the new paths; the old-path search returned zero matches.
 
 Risk: The moves are staged, while the Birdify catalog changes are unstaged; they need deliberate staging before commit.
+
+### Measure RFC-0044 coverage against actual execution data
+Status: discussed
+Touches: `packages/core/src/utils/*`, `packages/core/src/i18n/*`, `packages/core/src/types/*`, `packages/core/vite.config.ts`
+
+The agent ran full core coverage and filtered results to RFC-0044 directories so reported gaps reflect executed code rather than checklist assumptions. Pure type files and files with no executable functions were excluded from the apparent zero-coverage gaps because they contain no coverable statements.
+
+Risk: Coverage report initially counted 0/0 type-only files as 0%; treating those as real gaps would misstate RFC status.
+
+### Keep the grouping performance budget unchanged despite load-related failure
+Status: discussed
+Touches: `grouping.test.ts`
+
+10K 行性能用例测得 545ms，超过 500ms 预算；未修改代码的 HEAD 上也出现失败。保持预算不变且不跳过测试，待负载降低后重跑完整 Vitest 套件。
+
+### Cover grid-state normalization and merge edge cases with behavior tests
+Status: discussed
+Touches: `grid-state.test.ts`
+
+将行为测试扩展到 35 个用例，覆盖 grid-state 规范化与合并边界，作为移除不可达回退逻辑的依据。
+
+### Remove unreachable grid-state merge fallback through an internal builder
+Status: discussed
+Touches: `grid-state.test.ts`, `mergeGridState`
+
+移除 mergeGridState 中不可达的 `?? current` 回退；扩展后的行为测试为该简化提供覆盖。
+
+### 仅在远端确认提交后将 RFC-0044 标记为 Implemented 并归档
+Status: discussed
+Touches: `.spec/rfc/0044-*.md`, `.spec/rfc/completed/0044-*.md`
+
+实现提交和生命周期变更均已推送，且本地与远端 HEAD 一致后，才将 RFC-0044 标为 Implemented 并归档。同步检查通过。
