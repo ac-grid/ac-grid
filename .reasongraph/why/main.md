@@ -1,6 +1,6 @@
 # Why: main
 
-<!-- reasongraph:v1 generated 2026-11-08 — review before sharing; edit freely, edits are preserved -->
+<!-- reasongraph:v1 generated 2026-11-09 — review before sharing; edit freely, edits are preserved -->
 
 ## Intent
 Land the demo and E2E remediation onto main through develop, convert the stray virtual-scroll test plan into RFC-0038, specify P1 demo defects as umbrella RFC-0039 with children 0040–0042, and archive RFC-0001.
@@ -546,15 +546,15 @@ origin/main 已用 RFC-0047 记录 sorting.enabled=false 修复。本地 Enter �
 
 ### 在 CellEditor 连接时从 value attribute 初始化编辑值
 Status: discussed
-Touches: `packages/core/src/components/CellEditor.wsx`
+Touches: `packages/core/src/components/Grid.wsx`, `packages/core/src/components/CellEditor.wsx`
 
-CellEditor 在连接时读取 value attribute，并在聚焦帧直接写入输入框，避免依赖延迟的 WSX 状态重渲染。attribute 缺失或为空时使用空字符串；数字 0 不会被当作空值。
+Grid 在编辑器连接前通过属性设置值和类型，避免连接后的异步写入覆盖用户输入。CellEditor 中曾尝试的动画帧写值会造成 RFC-0009 端到端测试间歇失败，因此应保留 Grid 侧预置方案。
 
-### 为 Enter 编辑增加原值和焦点断言
+### 在键盘导航关闭时由单元格处理 Enter 编辑触发
 Status: discussed
-Touches: `packages/core/test/editing.test.ts`, `demos/react/e2e/rfc-validation.spec.ts`
+Touches: `packages/core/src/components/Grid.wsx`, `packages/core/test/editing.test.ts`, `packages/core/test/accessibility.test.ts`, `packages/core/test/keyboard-navigation-integration.test.ts`
 
-新增单测和 Playwright 端到端断言，验证 Enter 后输入框保留原值并获得焦点。修复前，原值断言复现空输入框；修复后通过。
+关闭键盘导航时，网格级 `handleGridKeyDown` 会提前返回，导致 `editTrigger: "enter"` 和 `"both"` 无效。单元格 `onKeyDown` 只在键盘导航关闭时处理该 Enter 行为；导航开启时仍由网格级处理，避免重复触发。新增行为用例覆盖未启用导航、`doubleClick` 和导航开启的情形；核心全量单测 52 个文件、524 个测试通过。
 
 ### 补充双击编辑路径的原值断言
 Status: discussed
@@ -562,11 +562,11 @@ Touches: `demos/react/e2e/rfc-validation.spec.ts`
 
 Enter 与双击共用 CellEditor，双击路径也可能受到原值初始化问题影响；现有双击用例只检查编辑器可见，未检查原值。补充断言尚未实施。
 
-### 保留远端 RFC-0047 排序修复并合并 RFC 跟踪记录
-Status: directed
-Touches: `.spec/rfc/completed/0047-sorting-enabled-config.md`, `ROADMAP*`
+### 将开发者 API 参考文档与 RFC-0047 分开
+Status: discussed
+Touches: `.spec/rfc/0051-api-reference-docs.md`
 
-合并保留远端 RFC-0047 的排序修复，并将本地 Enter 焦点工作移至 RFC-0048。合并后的 RFC-0034 跟踪记录包含 RFC-0047 的 demo 与 E2E 覆盖项。
+API 参考文档覆盖公开导出，属于独立文档工作，应避免并入排序修复 RFC-0047。
 
 ### 让 coverage guard 从归档目录读取 RFC-0034
 Status: discussed
@@ -602,9 +602,9 @@ Reviewer attention: 验证 getter 行为及其对非 text 输入类型的影响�
 
 ### Initialize CellEditor input from value attribute on connection
 Status: discussed
-Touches: `packages/core/src/components/CellEditor.wsx`
+Touches: `packages/core/src/components/Grid.wsx`, `packages/core/src/components/CellEditor.wsx`, `packages/core/test/editing.test.ts`, `demos/react/e2e/rfc-validation.spec.ts`
 
-Grid passes the original cell value as an attribute, but CellEditor did not read it. Because WSX state updates render asynchronously, the input could be empty at focus time. Read the attribute and write directly to the input during the focus frame.
+实际根因在 Grid：JSX 将 `value` 和 `type` 作为 attribute 传递，但 CellEditor 读取属性，造成首次渲染值为空。Grid 现通过元素 `ref` 在连接前设置这两个属性；`CellEditor.wsx` 保持原状。尝试在 CellEditor 中渲染后写入值会使 RFC-0009 保存用例在 90 次压力运行中至少失败 7 次，而修复前基线 90 次无失败，因此撤销该做法。
 
 ### Assert original value and focus in Enter-edit coverage
 Status: discussed
@@ -629,3 +629,146 @@ Status: discussed
 Touches: `packages/core/test/keyboard-navigation-integration.test.ts`, `packages/core/src/components/CellEditor.wsx`
 
 实现保留现有默认触发方式，避免改变产品行为。需要验证 Enter 编辑的测试显式设置 `editTrigger: "both"`。
+
+### 补齐 RFC-0029 图表 demo 与浏览器验收
+Status: discussed
+Touches: `RFC-0029 图表 demo 路径`, `RFC-0034 验收矩阵`, `归档 RFC 覆盖检查路径`
+
+将 RFC-0029 图表 demo 纳入验收覆盖，并修正覆盖检查，使其从归档位置读取 RFC-0034。完整端到端套件通过，结果为 39/39；相关 core 单测通过，结果为 20/20。
+
+Risk: 并行运行时曾出现 grid 未及时加载；单 worker 完整重跑通过。
+
+### 为关闭键盘导航时的 Enter 编辑行为建立 RFC-0049
+Status: discussed
+Touches: `.spec/rfc/0049-enter-trigger-without-keyboard-nav.md`, `packages/core/src/components/Grid.wsx`, `packages/core/test/editing.test.ts`
+
+网格级 Enter 处理受键盘导航开关控制；关闭导航时，启用 Enter 触发的单元格需自行启动编辑。保留网格级处理作为导航开启时的路径，并测试关闭、开启及 doubleClick 配置下的行为。
+
+### 在编辑期间移除单元格的 data-wsx-key
+Status: discussed
+Touches: `packages/core/src/components/Grid.wsx`
+
+WSX 会按 data-wsx-key 恢复单元格焦点，导致焦点从编辑输入框移回单元格。编辑期间省略该键可让焦点留在输入框，并由端到端焦点断言覆盖此行为。
+
+### 将 RFC-0048 保持 Approved 直到验收标准通过
+Status: discussed
+Touches: `.spec/rfc/0048-enter-edit-focus-and-value.md`, `.spec/rfc/0049-enter-trigger-without-keyboard-nav.md`
+
+两个 RFC 已通过验证和同步检查，但仍处于 Approved；RFC 生命周期应等实现提交推送并确认远端后再推进到 Implemented 和归档。
+
+### 更新 CellEditor 单元测试以适配 blur 不再保存
+Status: discussed
+Touches: `packages/core/test/keyboard-navigation-integration.test.ts`
+
+键盘导航集成测试显式启用 both 编辑触发方式，使 Enter 编辑行为与当前触发配置一致。
+
+### 在编辑期间移除单元格的 data-wsx-key
+Status: discussed
+Touches: `packages/core/src/components/Grid.wsx`, `demos/react/e2e/rfc-validation.spec.ts`
+
+端到端验收需同时确认编辑输入框获得焦点且显示原值；单元测试无法单独证明 WSX 不会在浏览器中恢复单元格焦点。
+
+### Use fnm with Node.js 22 for project commands
+Status: directed
+Touches: `package.json`
+
+The agent selected fnm to run the project with Node.js 22 because the package metadata still pins Node.js 22.23.2 through a Volta block, while fnm provides Node.js 22.23.4. The repository configuration was not changed.
+
+### Recover from an invalid working directory before reloading fnm
+Status: discussed
+Touches: `/Users/albert.li/.zshrc`
+
+The agent traced the Volta, fnm, and pnpm errors to a shell whose current directory no longer exists. Reloading the shell configuration can invoke fnm, which also needs a valid current directory, so recovery requires changing to an existing directory or opening a new terminal first.
+
+### Defer Node version configuration cleanup to the RFC process
+Status: discussed
+Touches: `package.json`, `.node-version`
+
+The agent identified a stale Volta block and proposed a `.node-version` file for fnm auto-switching. Those configuration edits were deferred as a separate change requiring the repository's RFC process.
+
+### 先 RFC 后实现
+Status: directed
+Touches: `.spec/rfc/*.md`
+
+Persistent changes require an RFC created and validated before implementation. Code changes remain gated on explicit RFC approval.
+
+### 从公开导出生成 API 参考并发布到站点
+Status: discussed
+Touches: `.spec/rfc/0051-api-reference-docs.md`, `packages/core/src/index.ts`, `apps/site/public/docs/api/`
+
+The package export barrel is the API's authoritative surface. The proposal generates reference pages from types and TSDoc, publishes them under `/docs/api/`, and makes missing pages fail the build.
+
+### 为已实现但缺少文档的功能补充使用指南 (updated)
+Status: discussed
+Touches: `.spec/rfc/0052-feature-guides.md`, `apps/site/public/docs/guide/`
+
+Existing guides omit several implemented features. The first proposed batch covers editing, keyboard navigation, pagination, and virtual scrolling, with examples tied to existing demos or end-to-end coverage.
+
+### 更新 README 以反映当前包结构和可达文档
+Status: discussed
+Touches: `.spec/rfc/0053-readme-refresh.md`, `README.md`, `docs/README.md`, `pnpm-workspace.yaml`, `.spec/ROADMAP.md`
+
+The root README describes an outdated package layout and version. The proposal aligns package listings with the workspace and feature status with the roadmap; both README link to a nonexistent root `ROADMAP.md`.
+
+### 将 typedoc 产物设为构建时生成而非入库
+Status: discussed
+Touches: `.spec/rfc/0051-api-reference-docs.md`, `apps/site/`
+
+API 页面由源码类型生成，可在站点构建前生成产物，避免提交重复维护的生成文件。该方式仍需站点依赖可用并验证构建链路。
+
+Considered/rejected: 将生成产物入库会增加需要随源码同步维护的重复内容。
+
+### 保持 GridSortingConfig 类型位置不变，先验证文档生成器
+Status: discussed
+Touches: `.spec/rfc/0051-api-reference-docs.md`, `packages/core/src/components/Grid.wsx`
+
+GridSortingConfig 位于 Grid.wsx，typedoc 可能无法解析。先验证工具解析能力；若需移动类型定义，应作为独立产品代码变更处理。
+
+Risk: 若生成器无法解析该类型，API 文档覆盖可能不完整。
+
+### Keep RFC-0048 and RFC-0049 approved until closure evidence is complete
+Status: discussed
+Touches: `.spec/rfc/0048-*.md`, `.spec/rfc/0049-*.md`
+
+Specify validation, sync checks, 524 core unit tests, and 39/39 end-to-end tests passed. RFC-0048 still lacks baseline coverage comparison, text/number/date editor acceptance evidence, and manual browser acceptance; RFC-0049 still lacks assertions that Enter editing focuses the editor and preserves the original value. Both RFCs remain Approved because required acceptance evidence and pushed implementation and lifecycle records are incomplete.
+
+Risk: Closing before required acceptance evidence and remote lifecycle records exist would leave RFC completion unverified.
+Reviewer attention: Confirm missing acceptance evidence is recorded, implementation and lifecycle changes are committed and pushed, and remote RFC state reflects closure before marking either RFC complete.
+
+### Create RFC-0050 umbrella issue with three backlog child issues
+Status: discussed
+Touches: `./mc-0050.md`
+
+The agent created DEV-188 for RFC-0050 and DEV-189 through DEV-191 for RFC-0051 through RFC-0053, linking each child to the umbrella issue. All four issues use `backlog` status and remain unassigned because the RFCs are Draft.
+
+Reviewer attention: Confirm issue titles, parent-child links, and backlog statuses for DEV-188 through DEV-191.
+
+### 将文档覆盖拆成总纲与三个独立子 RFC
+Status: discussed
+Touches: `.spec/rfc/0050-documentation-coverage.md`, `.spec/rfc/0051-api-reference-docs.md`, `.spec/rfc/0052-feature-guides.md`, `.spec/rfc/0053-readme-refresh.md`
+
+RFC-0050 serves as an index and closes after its three child RFCs are complete. RFC-0051 covers generated API reference, RFC-0052 covers feature guides, and RFC-0053 covers README updates.
+
+### Keep RFC-0050 through RFC-0053 in Draft until approved
+Status: discussed
+Touches: `.spec/rfc/0050-documentation-coverage.md`, `.spec/rfc/0051-api-reference-docs.md`, `.spec/rfc/0052-feature-guides.md`, `.spec/rfc/0053-readme-refresh.md`
+
+All four documentation RFCs remain Draft, and implementation must wait for approval. Their validation and sync checks passed.
+
+### Use explicit paths for commits and review hook-generated digest changes
+Status: discussed
+Touches: `.reasongraph/why/main.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`, `.spec/rfc/0048-enter-edit-focus-and-value.md`, `.spec/rfc/0049-enter-trigger-without-keyboard-nav.md`
+
+Commits should stage only named paths so unrelated workspace changes are not swept in. The hook-generated ReasonGraph digest requires diff review before deciding whether to include it.
+
+### Keep Multica RFC issues in backlog until approval
+Status: discussed
+Touches: `.spec/rfc/0050-documentation-coverage.md`, `.spec/rfc/0051-api-reference-docs.md`, `.spec/rfc/0052-feature-guides.md`, `.spec/rfc/0053-readme-refresh.md`
+
+The four RFC issues use `RFC-00NN: name` titles and include RFC path, status, and scope. They remain unassigned in backlog while their RFCs are Draft, avoiding agent execution before approval.
+
+### Defer typedoc integration choice until feasibility is assessed
+Status: discussed
+Touches: `.spec/rfc/0051-api-reference-docs.md`, `package.json`
+
+The project has no API documentation generator, while `@wsxjs/wsx-press` includes a typedoc dependency. Whether it can be reused directly remains unassessed.
