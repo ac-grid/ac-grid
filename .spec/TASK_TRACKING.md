@@ -84,7 +84,6 @@
 ## Active
 
 - [ ] Track RFC 0016: Theme system architecture (RFC 0016)
-- [ ] Track RFC 0017: Framework bindings (RFC 0017)
 - [ ] Track RFC 0020: Tree data (RFC 0020)
 - [ ] Track RFC 0021: Master/detail (RFC 0021)
 - [ ] Track RFC 0024: Pivot mode (RFC 0024)
@@ -147,3 +146,4 @@
 - [x] Implement RFC 0048: Enter 进入编辑时输入框聚焦并显示原值 (RFC 0048)
 - [x] Implement RFC 0049: 未开键盘导航时 Enter 触发编辑仍生效 (RFC 0049)
 - [x] Implement RFC 0054: PaginationControls 动态更新自定义 i18n (RFC 0054)
+- [x] Track RFC 0017: Framework bindings (RFC 0017)

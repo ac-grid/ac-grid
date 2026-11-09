@@ -1,0 +1,28 @@
+{
+  "name": "@ac-grid/vue",
+  "version": "0.5.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "@ac-grid/core": "^0.0.1",
+    "vue": ">=3.3"
+  },
+  "devDependencies": {
+    "@ac-grid/core": "workspace:*",
+    "typescript": "^5.6.2",
+    "vue": "^3.5.0"
+  }
+}

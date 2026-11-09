@@ -216,6 +216,8 @@ export {
 export { ComponentPortal } from "./utils/component-portal";
 export { renderComponent } from "./utils/render-component";
 export { resolveHeaderContent } from "./utils/resolve-header-content";
+export { syncGridProperties } from "./utils/framework-bindings";
+export type { FrameworkGridProps, GridConfiguration } from "./types/framework-bindings";
 
 export { exportToCsv, rowsToCsv, escapeCsvValue, downloadFile } from "./utils/export";
 export type { ExportOptions, ExportMode, ExportColumn } from "./types/export";
