@@ -288,9 +288,9 @@ The RFC-0012 focus test now locates the firstName cell by data-column-id. Its pr
 
 ### Close PR #56 after rebase showed RFC-0014 commits already on main
 Status: discussed
-Touches: `.spec/rfc/0014*`, `**/feature-matrix.json`
+Touches: `.spec/rfc/*`
 
-After rebase the RFC-0014 export branch matched main and the PR was empty, so it was closed instead of force-merged.
+关闭 PR #56，因为其 RFC-0014 提交已包含在 main 中，继续合并会重复已有改动。
 
 ### Abort the RFC-0008 rebase and close the duplicate pinning PR
 Status: discussed
@@ -331,9 +331,9 @@ RFC-0022 had broken PARITY_MATRIX links after the registry move. Those links wer
 
 ### Drop RFC-0014 from feature-matrix pending after it landed on main
 Status: discussed
-Touches: `**/feature-matrix.json`
+Touches: `feature-matrix.json`
 
-RFC-0014 is already on main and marked completed on ROADMAP. Leaving it as pending made the e2e feature guard treat it as stale, so that pending entry was removed from feature-matrix.json.
+从待处理列表移除 RFC-0014，因为路线图已将其标为完成，覆盖守卫会将旧 pending 项视为过期。
 
 ### Leave init-generated uncommitted tooling files out of PR commits (updated)
 Status: discussed
@@ -796,3 +796,9 @@ Touches: `**/Grid.css`, `.spec/rfc/0042-overlay-theme.md`
 The agent chose `--ac-grid-bg-overlay` for `.grid-overlay` instead of a hard-coded white background, with each built-in theme defining the token. This keeps overlay backgrounds aligned with theme-aware text colors. Acceptance criteria require dark-theme contrast of at least 4.5:1 and a regression check that fails if the background is changed back to white.
 
 Risk: The loading overlay was inferred to share the same issue; it had not been independently reproduced.
+
+### 先 RFC 后实现 (updated)
+Status: discussed
+Touches: `.spec/rfc/*`
+
+排序演示的实现须等待对应 RFC 获批；草案阶段不启动实现，以保持 RFC 审批门槛。
