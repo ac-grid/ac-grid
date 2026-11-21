@@ -1436,3 +1436,19 @@ Status: discussed
 Touches: `packages/core/src/components/Grid.wsx`, `packages/core/src/components/SelectionCheckbox.wsx`, `packages/core/test/selection-checkbox-render.test.ts`, `demos/react/e2e/rfc-validation.spec.ts`
 
 修复后，250 次并行 RFC-0007 端到端执行全部通过；核心包 568 项测试通过，覆盖率门槛未报错；全量端到端测试 50 项通过，连续三轮通过，构建任务 7/7 成功。变异检查也确认撤销全选处理器或强制重绘会使相应端到端断言失败。
+
+### Close RFC-0056 as Implemented after validation
+Status: discussed
+Touches: `.spec/rfc/0056-select-all-handler-and-e2e-render-race.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
+
+The RFC was advanced to Implemented and archived after validation. The transcript reports eight guard tests passing.
+
+Reviewer attention: Confirm the archived RFC and tracking files match the pushed state.
+
+### Update RFC-0045 to reference the resolved RFC-0007 selection failure
+Status: discussed
+Touches: `.spec/rfc/completed/0045-e2e-coverage-collection.md`
+
+The Delivery note was changed from unresolved to resolved because RFC-0056 identified and fixed a delayed redraw that replaced the DOM during a checkbox click. The transcript reports 250/250 passes under the same parallel reproduction.
+
+Risk: The historical failure summary now includes a specific root cause and result; ensure both are supported by RFC-0056 evidence.
