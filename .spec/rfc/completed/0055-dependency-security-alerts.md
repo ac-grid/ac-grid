@@ -1,6 +1,6 @@
 # RFC 0055: 修复 Dependabot 依赖漏洞告警
 
-**Status:** Approved
+**Status:** Implemented
 
 ## Summary
 
@@ -66,3 +66,19 @@ GitHub Dependabot 对默认分支报告 36 条未关闭告警（4 critical、10 
 - `demos/react` 的 e2e 通过，`apps/site` 的构建与 `typecheck`、`lint` 通过，Storybook 能构建。
 - 变异检查：把某条 override 临时去掉，对应告警范围内的旧版本必须重新出现在 `pnpm why` 的结果里；恢复后消失。
 - 已发布包（`@ac-grid/core`、`@ac-grid/charts` 等）的 `dependencies`、`peerDependencies` 范围，在 `git diff` 中只有 Task 4 的 `@ac-grid/charts` `echarts` peer 范围一处变化。
+
+## Delivery
+
+- 提交 `7a6fce2`（升级与 overrides）、`03f23cf`（`i18next-http-backend` override），均已推送到 `origin/main`。
+- 告警：`gh api .../dependabot/alerts?state=open` 推送前 36 条；第一次推送后 4 条，均为 `i18next-http-backend`；第二次推送后 0 条。
+- 与设计不同的三处：
+  - `pnpm-workspace.yaml` 的 `"apps/"` 改为 `"apps/*"`。原写法不匹配任何包，`apps/site` 不在锁文件里，无法验证也无法冻结；改后站点的传递依赖进入锁文件，由此多出 4 条 `i18next-http-backend` 告警，用 override `^4.0.4` 处理（`@wsxjs/wsx-i18next` 最新版仍声明 `^2`，升父包解决不了）。
+  - 遇到的 override 范围按告警范围写，`minimatch` 的 9.x、10.x 两条旧 override 合并为 `>=7.0.0 <11.0.1`。
+  - Storybook 8 到 10：移除 addon-essentials、addon-interactions、blocks、test，新增 addon-docs，故事导入改为 `@storybook/react-vite`、`storybook/test`、`@storybook/addon-docs/blocks`。
+- 变异检查：去掉 `minimatch@>=7.0.0 <11.0.1` override 后，锁文件重新出现 9.0.3、9.0.9、10.0.3；恢复后 0 条，`pnpm install --frozen-lockfile` 通过。
+- 检查结果：`packages/core` 覆盖率运行 563 通过、2 跳过（性能用例在覆盖率模式下跳过），退出码 0；`demos/react` e2e 50 通过；全部包构建通过；`apps/site` 构建通过；`@ac-grid/charts` 在 echarts 6.1.0 下构建通过（适配器只用 `init`、`setOption`、`dispose`）。
+- 未达成或未验证，均不是本次升级引入：
+  - `apps/site` 的 `typecheck` 失败于 `@wsxjs/wsx-core` 0.1.1 源码的 TS2612；`lint` 失败于 `eslint.config.js` 引用了未声明的 `@wsxjs/eslint-plugin-wsx`；`test` 因没有任何测试文件而退出码 1。站点此前不在 workspace 内，这些检查从未在 CI 里跑过。
+  - Storybook 构建在升级前就是坏的：`Button`、`Header`、`Label`、`Page`、`Table` 五个模板故事导入的 `../../lib/components/*` 在 git 历史中从未存在。仅保留 `GroupingAggregation` 与 mdx 时，Storybook 10 构建通过，验证后已还原配置。
+  - 只有类型检查，没有 echarts 5.6.0 与 6.1.0 的运行时对比测试。
+  - e2e 日志里出现 vite 客户端的 `Cannot read properties of undefined (reading 'checked')`，测试仍全部通过，未追查。

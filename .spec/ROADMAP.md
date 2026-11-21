@@ -492,4 +492,4 @@ MIT License
 | 0052 | [已实现功能的使用指南 (child of 0050)](rfc/0052-feature-guides.md) | Draft |
 | 0053 | [根 README 与文档索引更新 (child of 0050)](rfc/0053-readme-refresh.md) | Draft |
 | 0054 | [PaginationControls 动态更新自定义 i18n](rfc/completed/0054-pagination-i18n-after-connection.md) | Implemented |
-| 0055 | [修复 Dependabot 依赖漏洞告警](rfc/0055-dependency-security-alerts.md) | Approved |
+| 0055 | [修复 Dependabot 依赖漏洞告警](rfc/completed/0055-dependency-security-alerts.md) | Implemented |
