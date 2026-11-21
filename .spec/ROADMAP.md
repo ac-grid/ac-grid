@@ -495,4 +495,4 @@ MIT License
 | 0055 | [修复 Dependabot 依赖漏洞告警](rfc/completed/0055-dependency-security-alerts.md) | Implemented |
 | 0056 | [Select-all handler error and RFC-0007 E2E render race](rfc/completed/0056-select-all-handler-and-e2e-render-race.md) | Implemented |
 | 0057 | [apps/site typecheck, lint and test failures](rfc/completed/0057-site-checks-green.md) | Implemented |
-| 0058 | [Runtime test of the ECharts adapter on ECharts 6](rfc/0058-echarts-adapter-runtime-test.md) | Approved |
+| 0058 | [Runtime test of the ECharts adapter on ECharts 6](rfc/completed/0058-echarts-adapter-runtime-test.md) | Implemented |

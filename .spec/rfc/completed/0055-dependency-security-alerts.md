@@ -80,5 +80,5 @@ GitHub Dependabot 对默认分支报告 36 条未关闭告警（4 critical、10 
 - 未达成或未验证，均不是本次升级引入：
   - `apps/site` 的 `typecheck` 失败于 `@wsxjs/wsx-core` 0.1.1 源码的 TS2612；`lint` 失败于 `eslint.config.js` 引用了未声明的 `@wsxjs/eslint-plugin-wsx`；`test` 因没有任何测试文件而退出码 1。站点此前不在 workspace 内，这些检查从未在 CI 里跑过。
   - Storybook 构建在升级前就是坏的：`Button`、`Header`、`Label`、`Page`、`Table` 五个模板故事导入的 `../../lib/components/*` 在 git 历史中从未存在。仅保留 `GroupingAggregation` 与 mdx 时，Storybook 10 构建通过，验证后已还原配置。
-  - 只有类型检查，没有 echarts 5.6.0 与 6.1.0 的运行时对比测试。
+  - 只有类型检查，没有 echarts 5.6.0 与 6.1.0 的运行时对比测试。**后续已补**：[RFC 0058](0058-echarts-adapter-runtime-test.md) 做了运行时对比，发现升到 6 之后适配器的 `textColor` 在数值轴上失效（全局 `textStyle.color` 不再生效），已修复并加了测试。上面 Task 4 的前提“`packages/charts` 的测试在 5.6.0 与 6.1.0 下都通过”当时并不成立，因为该包没有任何测试。
   - e2e 日志里出现 vite 客户端的 `Cannot read properties of undefined (reading 'checked')`，测试仍全部通过，未追查。
