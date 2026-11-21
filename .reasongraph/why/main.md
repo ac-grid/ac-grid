@@ -1335,11 +1335,11 @@ Touches: `packages/charts/*`, `.spec/rfc/completed/0055-dependency-security-aler
 
 现有验证只覆盖类型检查，没有对 ECharts 5.6.0 和 6.1.0 做运行时对比。兼容性结论因此仍限于适配器使用的 API 表面。
 
-### Treat RFC-0055 as a non-demo RFC in coverage guards
+### Treat RFC-0045 as a non-demo RFC in coverage guards
 Status: discussed
-Touches: `demos/react/e2e/coverage.spec.ts`
+Touches: `.spec/rfc/0045-e2e-coverage-collection.md`, `demos/react/e2e/coverage.spec.ts`
 
-The completed-RFC coverage guard requires a demo unless an RFC is explicitly listed as non-demo. RFC-0055 covers dependency remediation and has no product demo, so the guard exempts it alongside the existing non-demo RFCs.
+将 RFC-0045 标记为 Implemented 并归档后，覆盖率守卫失败，因为它要求每个已完成 RFC 都有产品演示。该 RFC 只涉及测试与流程策略，没有面向用户的行为，因此将其加入非演示 RFC 集合。
 
 ### Keep RFC-0055 exempt from product-demo coverage
 Status: discussed
