@@ -1,6 +1,6 @@
 # RFC 0057: apps/site typecheck, lint and test failures
 
-**Status:** Approved
+**Status:** Implemented
 
 ## Summary
 
@@ -44,3 +44,25 @@
 - 三项命令退出码均为 0，且不使用 `passWithNoTests`。
 - 变异检查：改坏 `MetaManager.update`（例如不再写 `og:title`），对应测试必须变红。
 - 全量构建、`pnpm install --frozen-lockfile` 通过。
+
+## Delivery
+
+实现提交 `7f6c662`，已推送到 `origin/main` 并核对远端。
+
+**根因与结果。**
+
+- typecheck：HEAD 的配置下 `tsc --noEmit` 报 `TS2612` 两条、退出码 2；站点 tsconfig 设 `useDefineForClassFields: false` 后退出码 0。wsx 自己的文档对 `@state` 也要求这个设置。
+- lint：补声明 `@wsxjs/eslint-plugin-wsx@^0.1.1`、`@eslint/js`、`globals`（`pnpm-lock.yaml` +21 行），`pnpm run lint` 退出码 0、0 个警告。原有 5 个警告一并修掉：`App.wsx` 两个未使用的 import，`vite.config.ts` 三个多余的 `as any`（去掉后类型检查无插件类型错误，`pnpm build` 通过）。
+- test：新增 3 个测试文件、26 个测试（`MetaManager`、`getRouteMeta`/`routeMeta`、`ErrorHandler`），`pnpm run test` 退出码 0，没有使用 `--passWithNoTests`。
+
+**验证。** 根目录 `pnpm lint` 5/5、`pnpm test` 8/8（站点 26 个、core 568 个）、`pnpm build` 7/7，`pnpm install --frozen-lockfile` 通过。
+
+**变异检查。** 去掉 `og:title` 写入、`setStructuredData` 不再移除旧脚本、RFC 标题不带 id、`MAX_ERRORS` 改为 11，各自让对应测试变红，恢复后 26/26。
+
+**过程中修正的错误。**
+
+- 测试里最初用 `innerHTML` 清空 `<head>`，被 `wsx/no-inner-html` 报错；改为 `replaceChildren()`，没有动规则。
+- 我写的脚本曾把 `apps/site/package.json` 整体从 2 空格重排成 4 空格，已恢复原格式，最终只有 3 行改动。
+- rtk 包装器会改写 `pnpm exec tsc` 的输出，出现过不存在的 `TS2882` 假报错；用 `rtk proxy` 和 `node tsc` 复核真实退出码为 0。
+
+**未处理。** 编辑器 LSP 对 `vite.config.ts` 报 `@wsxjs/wsx-press/node` 缺类型声明：第三方包没带 `.d.ts`，`vite.config.ts` 也不在 `tsc` 项目内，不影响任何检查，未处理。

@@ -2,9 +2,9 @@ import { readFileSync, readdirSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 
 // RFC-0033: every completed interactive RFC needs a demo page and browser test.
-// These RFCs define test infrastructure or coverage policy, or fix a defect in another RFC's demo (0056 fixes 0007),
-// so they have no demo of their own.
-const nonDemoRfcIds = new Set(["0034", "0044", "0045", "0055", "0056"]);
+// These RFCs define test infrastructure, coverage policy or tooling checks, or fix a defect in another RFC's demo
+// (0056 fixes 0007), so they have no demo of their own.
+const nonDemoRfcIds = new Set(["0034", "0044", "0045", "0055", "0056", "0057"]);
 const completedIds = readdirSync(new URL("../../../.spec/rfc/completed/", import.meta.url))
     .map((file) => file.match(/^(\d{4})-/)?.[1])
     .filter((id): id is string => Boolean(id) && !nonDemoRfcIds.has(id));
