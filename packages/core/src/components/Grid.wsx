@@ -1583,9 +1583,9 @@ export class Grid extends LightComponent {
                     <wsx-ac-selection-checkbox
                         checked={table.getIsAllRowsSelected()}
                         indeterminate={table.getIsSomeRowsSelected()}
-                        onChange={table.getToggleAllRowsSelectedHandler()}
+                        onChange={(checked: boolean) => table.toggleAllRowsSelected(checked)}
                         ref={(el: HTMLElement | null) => {
-                            if (el) (el as any).onChange = table.getToggleAllRowsSelectedHandler();
+                            if (el) (el as any).onChange = (checked: boolean) => table.toggleAllRowsSelected(checked);
                         }}
                     />
                 ),

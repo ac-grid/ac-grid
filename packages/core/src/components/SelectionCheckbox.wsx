@@ -11,6 +11,17 @@ export interface SelectionCheckboxProps {
 
 @autoRegister({ tagName: "wsx-ac-selection-checkbox" })
 export class SelectionCheckbox extends LightComponent {
+    // wsx h() turns a true boolean prop into an attribute, not a property. It is set before the element connects,
+    // so reading it here fixes the first render without scheduling a second one that would drop focus.
+    static get observedAttributes(): string[] {
+        return ["checked", "indeterminate"];
+    }
+
+    onAttributeChanged(name: string, _oldValue: string | null, value: string | null) {
+        if (name === "checked") this._checked = value !== null;
+        else if (name === "indeterminate") this._indeterminate = value !== null;
+    }
+
     get checked(): boolean { return this._checked; }
     set checked(val: boolean) { this._checked = val; }
     @state private _checked: boolean = false;
@@ -44,6 +55,9 @@ export class SelectionCheckbox extends LightComponent {
     };
 
     render() {
+        // wsx defers a parent re-render while an input has focus; the grid must re-render at once to show the selection.
+        // wsx restores focus after a re-render by data-wsx-key, so each checkbox needs a key unique to its row.
+        const rowId = this.closest("[data-row-id]")?.getAttribute("data-row-id");
         return (
             <div className="selection-checkbox-wrapper" onClick={(e) => e.stopPropagation()}>
                 <input
@@ -53,6 +67,8 @@ export class SelectionCheckbox extends LightComponent {
                     indeterminate={this._indeterminate}
                     onChange={this.handleChange}
                     title={this._title}
+                    data-wsx-force-render="true"
+                    data-wsx-key={rowId ? `selection-${rowId}` : "selection-all"}
                 />
             </div>
         );
