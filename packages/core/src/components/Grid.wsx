@@ -517,9 +517,28 @@ export class Grid extends LightComponent {
             return;
         }
         if (event.key === "Tab" || event.key.startsWith("Arrow")) {
+            const next = getNextCellPosition(
+                { row: rowIndex, column: columnIndex },
+                event.key,
+                rows.length,
+                columns.length,
+                this._keyboardNavigationMode,
+                event.shiftKey,
+            );
+            const isTabBoundary =
+                event.key === "Tab" &&
+                next.row === rowIndex &&
+                next.column === columnIndex;
+            if (isTabBoundary) {
+                if (editing) {
+                    this.saveEdit(this.editingState.value, false);
+                    if (this.editingState.rowId) event.preventDefault();
+                }
+                return;
+            }
             event.preventDefault();
             if (editing) {
-                this.saveEdit(this.editingState.value);
+                this.saveEdit(this.editingState.value, false);
                 if (this.editingState.rowId) return;
             }
             this.moveKeyboardFocus(rowIndex, columnIndex, event.key, event.shiftKey);
@@ -2875,7 +2894,7 @@ export class Grid extends LightComponent {
         // calling updateTable() again can cause the editor to disappear.
     }
 
-    public saveEdit(newValue: unknown) {
+    public saveEdit(newValue: unknown, restoreFocus = true) {
         const { rowId, columnId } = this.editingState;
         if (!rowId || !columnId) return;
 
@@ -2916,17 +2935,17 @@ export class Grid extends LightComponent {
         }
 
         this._editingConfig.onEditSave?.(rowId, columnId, coercedValue);
-        this.cancelEdit(false);
+        this.cancelEdit(false, restoreFocus);
     }
 
-    public cancelEdit(notify = true) {
+    public cancelEdit(notify = true, restoreFocus = true) {
         const { rowId, columnId } = this.editingState;
         if (rowId && columnId && notify) {
             this._editingConfig.onEditCancel?.(rowId, columnId);
         }
         this.editingState = { rowId: null, columnId: null, value: null };
         this.updateTable();
-        if (rowId && columnId) {
+        if (restoreFocus && rowId && columnId) {
             const rowIndex = this.getDisplayRows().findIndex((row) => row.id === rowId);
             if (rowIndex >= 0) this.focusGridCell(rowId, columnId, rowIndex);
         }
