@@ -1,6 +1,6 @@
 # Why: main
 
-<!-- reasongraph:v1 generated 2026-11-09 — review before sharing; edit freely, edits are preserved -->
+<!-- reasongraph:v1 generated 2026-11-21 — review before sharing; edit freely, edits are preserved -->
 
 ## Intent
 Land the demo and E2E remediation onto main through develop, convert the stray virtual-scroll test plan into RFC-0038, specify P1 demo defects as umbrella RFC-0039 with children 0040–0042, and archive RFC-0001.
@@ -1162,7 +1162,7 @@ Touches: `.spec/rfc/0044-*.md`, `.spec/rfc/completed/0044-*.md`
 Status: discussed
 Touches: `packages/core/test/grouping.test.ts`
 
-The grouping budget now measures current-thread CPU time because wall-clock measurements included time lost to machine contention. A process-wide CPU measurement also proved noisy because it included V8 helper-thread work. The 500 ms and 16 ms budgets remain unchanged; 30 repeated runs passed, and injected CPU delays exceeded the budgets.
+The performance budgets measure synchronous, single-threaded work. Thread CPU time avoids unrelated system load and V8 garbage-collection helper threads inflating measurements; existing budgets remain unchanged.
 
 ### Document dependency security alert remediation in RFC 0055
 Status: directed
@@ -1226,12 +1226,66 @@ RFC-0044 was marked Implemented and archived after its implementation and lifecy
 
 ### Create RFC-0055 for dependency alert remediation
 Status: directed
-Touches: `RFC-0055 file`, `ROADMAP.md`, `TASK_TRACKING.md`
+Touches: `.spec/rfc/0055-dependency-security-alerts.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
 
-A separate RFC records the dependency alert remediation work and its roadmap tracking. The RFC was written and validated; implementation had not started in this session.
+The RFC records a scoped plan for dependency alert remediation and remains Draft pending approval. The ECharts peer dependency decision is deferred until its alert source is investigated; no dependency implementation is authorized by the draft.
 
 ### Split pending changes into four scoped commits
 Status: directed
 Touches: `packages/core/test/grouping.test.ts`, `RFC-0055 file`, `ROADMAP.md`, `TASK_TRACKING.md`, `.reasongraph/why/main.md`, `packages/core/test/cov-comp-simple.test.ts`
 
 Pending work was committed in four commits grouped by concern and staged with explicit paths. These commits were not pushed. An unexpected first-commit file and insertion count was investigated, but the final transcript does not state the exact resolution; verify each commit's file list before pushing.
+
+### Bump affected Vite dependencies to ^6.4.6
+Status: discussed
+Touches: `packages/core/package.json`, `packages/theme-base/package.json`, `packages/theme-default/package.json`, `demos/wsx/package.json`, `demos/react/package.json`
+
+The agent identified 6.4.6 as the newest 6.x release and the minimum needed to address the alerts. Keeping the bump within 6.x avoids an unrelated major upgrade; Vite 8 was therefore excluded.
+
+### Keep apps/site on Vite 7 and verify lockfile resolution
+Status: discussed
+Touches: `apps/site/package.json`, `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`
+
+The agent noted that apps/site already declares Vite 7 and the cited alert range should not apply there. It planned to verify that the lockfile preserves Vite 7 and does not resolve an affected Vite 6.4.3 copy.
+
+### Upgrade alerted dependencies to latest versions, including major releases
+Status: directed
+Touches: `.spec/rfc/0055-dependency-security-alerts.md`, `packages/*/package.json`, `apps/site/package.json`, `demos/*/package.json`, `package.json`, `pnpm-lock.yaml`
+
+The dependency scope was changed to allow major-version upgrades for alerted direct dependencies while excluding unrelated packages. The selected versions included Vite 8.3.8, Vitest 5.1.1, and Storybook 10.6.8.
+
+### Include apps/site in the pnpm workspace
+Status: agent-initiated — not requested in plan or prompts
+Touches: `pnpm-workspace.yaml`, `apps/site/package.json`, `pnpm-lock.yaml`
+
+The existing workspace pattern excluded apps/site, preventing workspace installs and validation against the upgraded dependencies. The pattern was widened to include apps/*; the site build passed, while its typecheck and lint still failed.
+
+### Migrate React demo stories to Storybook 10 package exports
+Status: discussed
+Touches: `demos/react/package.json`, `demos/react/src/stories/*`, `demos/react/.storybook/main.ts`
+
+Storybook 10 required updated package versions and import paths for the React demo. The Storybook build remained blocked by template stories importing a lib/components path absent from repository history, so migration validation excluded those stories.
+
+### Override vulnerable transitive dependency ranges
+Status: discussed
+Touches: `package.json`, `pnpm-lock.yaml`
+
+Workspace overrides moved alerted transitive dependencies into fixed release ranges. Install resolution reported zero vulnerable matches across 36 alert ranges, and a mutation check confirmed the minimatch override removed vulnerable resolutions.
+
+### Allow ECharts 6 in the charts peer range
+Status: discussed
+Touches: `packages/charts/package.json`
+
+The charts package was updated to accept ECharts 5 or 6, with ECharts 6 added as a development dependency for validation. This preserves compatibility with existing ECharts 5 consumers while enabling the alerted dependency upgrade.
+
+### Restore generated build artifacts before committing dependency changes
+Status: discussed
+Touches: `apps/site/.wsx-press/docs-meta.json`, `apps/site/.wsx-press/docs-toc.json`, `apps/site/.wsx-press/search-index.json`, `packages/theme-base/tsconfig.tsbuildinfo`
+
+Builds regenerated four tracked artifacts unrelated to the dependency change, so they were restored before the scoped commit.
+
+### Verify dependency upgrade with full build and browser coverage
+Status: discussed
+Touches: `packages/core/*`, `packages/theme-base/*`, `packages/theme-default/*`, `apps/site/*`, `demos/react/*`, `demos/wsx/*`
+
+The verification pass reported all package builds passing, 563 core tests passing with two performance tests skipped under coverage, and all 50 browser end-to-end tests passing. The Storybook build remained blocked by pre-existing template story imports.
