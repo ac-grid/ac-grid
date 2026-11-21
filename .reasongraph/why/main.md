@@ -1270,7 +1270,10 @@ Storybook 10 required updated package versions and import paths for the React de
 Status: discussed
 Touches: `package.json`, `pnpm-lock.yaml`
 
-Workspace overrides moved alerted transitive dependencies into fixed release ranges. Install resolution reported zero vulnerable matches across 36 alert ranges, and a mutation check confirmed the minimatch override removed vulnerable resolutions.
+The workspace lockfile resolved i18next-http-backend to 2.7.3, while the remaining alerts covered versions below 4.0.4. Because the upstream dependency range still allowed the vulnerable version, a pnpm override forced the dependency to ^4.0.4. The site build passed after the override.
+
+Considered/rejected: Updating the parent dependency was rejected because its newer release still pinned i18next-http-backend to ^2.0.0.
+Risk: The override crosses a major version boundary and may introduce compatibility issues in the dependent package.
 
 ### Allow ECharts 6 in the charts peer range
 Status: discussed
