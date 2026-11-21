@@ -1337,9 +1337,9 @@ Touches: `packages/charts/*`, `.spec/rfc/completed/0055-dependency-security-aler
 
 ### Treat RFC-0045 as a non-demo RFC in coverage guards
 Status: discussed
-Touches: `.spec/rfc/0045-e2e-coverage-collection.md`, `demos/react/e2e/coverage.spec.ts`
+Touches: `coverage.spec.ts`
 
-将 RFC-0045 标记为 Implemented 并归档后，覆盖率守卫失败，因为它要求每个已完成 RFC 都有产品演示。该 RFC 只涉及测试与流程策略，没有面向用户的行为，因此将其加入非演示 RFC 集合。
+RFC-0045 records tests and policy, not user-facing behavior, so requiring a product demo would misrepresent its scope. The coverage guard classifies it with other non-demo RFCs.
 
 ### Keep RFC-0055 exempt from product-demo coverage
 Status: discussed
@@ -1349,12 +1349,30 @@ RFC-0055 is a dependency change rather than a product feature, so requiring a de
 
 ### Require three consecutive full E2E passes before accepting coverage work
 Status: discussed
-Touches: `demos/react/e2e/coverage.spec.ts`, `demos/react/e2e/rfc-validation.spec.ts`, `demos/react/playwright.config.ts`
+Touches: `coverage.spec.ts`
 
-One full-suite run failed on RFC-0007 range selection while later runs passed, so a single green result would not establish stability. The failure did not reproduce in 30 isolated repetitions or 11 subsequent full-suite runs, and its cause remained unresolved. CI runs the suite on each pull request with retries and one worker.
+A full parallel run failed once on Shift+click range selection, though 30 isolated repetitions did not reproduce the failure. The acceptance check requires three consecutive full-suite passes; the reported final sequence had eight consecutive passes, including four runs with 14 workers.
 
 ### Verify coverage guard with a feature-removal mutation
 Status: discussed
 Touches: `demos/react/e2e/rfc-validation.spec.ts`, `demos/react/e2e/coverage.spec.ts`
 
 The RFC-0002 mutation removed its coverage reference, and the guard correctly failed while flagging that feature. After restoring the spec, all 8 coverage checks passed.
+
+### Exclude non-interactive RFCs from product-demo coverage checks
+Status: discussed
+Touches: `coverage.spec.ts`
+
+RFC-0055 and RFC-0045 cover infrastructure and have no user-facing behavior to demonstrate. The coverage checks classify them with RFC-0034 and RFC-0044 as non-demo RFCs.
+
+### Require RFC-named E2E tests for implemented roadmap features
+Status: discussed
+Touches: `coverage.spec.ts`
+
+The coverage guard checks that implemented roadmap features have RFC-named end-to-end tests. Renaming the RFC-0002 test titles made the guard fail for that feature; restoring them returned all eight checks to passing.
+
+### Keep the RFC-0007 selection flake unresolved without fixed waits
+Status: discussed
+Touches: `Grid.wsx`, `RFC-0007`
+
+Two of thirteen full E2E runs showed Shift-click range selection selecting one row instead of three, but 30 isolated repetitions and four stress runs did not reproduce it. The cause remains unknown, and CI retries can mask the failure. A fixed wait was rejected as unsupported by evidence; the unresolved flake is recorded in the RFC Delivery section.
