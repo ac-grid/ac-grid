@@ -35,9 +35,17 @@ export function createEChartsAdapter(echarts: EChartsNamespace): ChartAdapter {
           fontFamily: spec.themeOverrides?.fontFamily,
         },
         tooltip: { trigger: spec.type === "pie" ? "item" : "axis" },
-        legend: {},
-        xAxis: spec.type === "pie" ? undefined : { type: "category", data: spec.labels },
-        yAxis: spec.type === "pie" ? undefined : { type: "value" },
+        // ECharts 6 no longer applies the global textStyle.color to legend and axis text, so set it on each.
+        legend: { textStyle: { color: spec.themeOverrides?.textColor } },
+        xAxis: spec.type === "pie" ? undefined : {
+          type: "category",
+          data: spec.labels,
+          axisLabel: { color: spec.themeOverrides?.textColor },
+        },
+        yAxis: spec.type === "pie" ? undefined : {
+          type: "value",
+          axisLabel: { color: spec.themeOverrides?.textColor },
+        },
         series,
       });
       return { destroy: () => chart.dispose() };
