@@ -1292,3 +1292,9 @@ Status: discussed
 Touches: `packages/core/*`, `packages/theme-base/*`, `packages/theme-default/*`, `apps/site/*`, `demos/react/*`, `demos/wsx/*`
 
 The verification pass reported all package builds passing, 563 core tests passing with two performance tests skipped under coverage, and all 50 browser end-to-end tests passing. The Storybook build remained blocked by pre-existing template story imports.
+
+### Document RFC-0055 delivery deviations and close it after alert remediation
+Status: discussed
+Touches: `.spec/rfc/0055-dependency-security-alerts.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`, `.spec/rfc/completed/0055-dependency-security-alerts.md`
+
+The agent recorded delivery deviations required by the RFC acceptance criteria, including the `echarts` peer-range change. GitHub reported zero open dependency alerts after the override commit was pushed, so the RFC was advanced to Implemented and archived.
