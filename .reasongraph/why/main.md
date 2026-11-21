@@ -545,11 +545,11 @@ Touches: `packages/core/src/components/Grid.wsx`, `packages/core/test/editing.te
 
 关闭键盘导航时，网格级 `handleGridKeyDown` 会提前返回，导致 `editTrigger: "enter"` 和 `"both"` 无效。单元格 `onKeyDown` 只在键盘导航关闭时处理该 Enter 行为；导航开启时仍由网格级处理，避免重复触发。新增行为用例覆盖未启用导航、`doubleClick` 和导航开启的情形；核心全量单测 52 个文件、524 个测试通过。
 
-### 补充双击编辑路径的原值断言
+### 聚焦复选框时强制网格立即重绘
 Status: discussed
-Touches: `demos/react/e2e/rfc-validation.spec.ts`
+Touches: `packages/core/src/components/SelectionCheckbox.wsx`
 
-Enter 与双击共用 CellEditor，双击路径也可能受到原值初始化问题影响；现有双击用例只检查编辑器可见，未检查原值。补充断言尚未实施。
+wsx-core 会在输入框保持焦点时延迟父组件重绘，使选择状态暂时无法从 DOM 观察，也会让浏览器点击因按下节点被替换而丢失。为复选框输入框设置 `data-wsx-force-render`，让选择状态及时反映到行和复选框。风险是立即替换 DOM 可能丢失焦点，因此同时验证并实现焦点恢复。
 
 ### 将开发者 API 参考文档与 RFC-0047 分开
 Status: discussed
@@ -1376,3 +1376,63 @@ Status: discussed
 Touches: `Grid.wsx`, `RFC-0007`
 
 Two of thirteen full E2E runs showed Shift-click range selection selecting one row instead of three, but 30 isolated repetitions and four stress runs did not reproduce it. The cause remains unknown, and CI retries can mask the failure. A fixed wait was rejected as unsupported by evidence; the unresolved flake is recorded in the RFC Delivery section.
+
+### Reproduce RFC-0007 Shift-range selection failures with traces before changing Grid behavior
+Status: discussed
+Touches: `packages/core/src/components/Grid.wsx`, `demos/react/e2e/rfc-validation.spec.ts`
+
+The agent repeated the RFC-0007 browser test 120 times and observed 8 failures. Trace evidence showed the Shift-click was dispatched, but did not establish the root cause; Grid behavior therefore remained unchanged pending diagnosis.
+
+Risk: The intermittent selection failure remains unresolved.
+
+### Install TypeScript language-server tools globally
+Status: directed
+Touches: `/Users/albert.li/.npm-global/bin/typescript-language-server`
+
+The agent installed `typescript-language-server` and `typescript` globally after the language server executable was missing. Startup was not verified because the editor plugin needs a restart or reload.
+
+Risk: The language server may still fail to start until the plugin reloads.
+
+### 为 RFC-0007 的复选框选择缺陷建立并批准 RFC-0056
+Status: discussed
+Touches: `.spec/rfc/0056-select-all-handler-and-e2e-render-race.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
+
+将全选处理器错误与 RFC-0007 的重绘问题归入同一 RFC，因为它们都由复选框交互和重绘行为的实测证据发现。更新 RFC 中的问题、设计和验收标准以对应查明的根因，并通过 Specify 验证、推进至 Approved。
+
+### 让全选处理器显式接收布尔值 (updated)
+Status: discussed
+Touches: `packages/core/src/components/Grid.wsx`
+
+选择框组件的 `onChange` 传递布尔值，而全选处理器原先按事件对象读取 `checked`，导致点击时报错。显式调用 `table.toggleAllRowsSelected(checked)` 保持全选和取消行为，并匹配调用方实际传入的数据。
+
+Risk: 若组件的 `onChange` 契约变更，处理器签名也需同步调整。
+
+### 在 SelectionCheckbox 中观察 checked 和 indeterminate 属性
+Status: discussed
+Touches: `packages/core/src/components/SelectionCheckbox.wsx`
+
+WSX 的 `h()` 将布尔属性写为 DOM attribute，而组件原先只读取 property，因此重绘生成的新复选框不会呈现行的选择状态。通过 `observedAttributes` getter 和属性变化处理同步组件状态，兼容当前 WSX 的布尔属性行为。
+
+### 为每个选择复选框分配稳定且唯一的焦点恢复键
+Status: discussed
+Touches: `packages/core/src/components/SelectionCheckbox.wsx`
+
+wsx-core 通过 `data-wsx-key` 在重绘后恢复焦点；复选框原有自动 key 无法区分多行输入。使用行 ID 生成行复选框 key，并为表头全选框使用独立 key，使重绘后焦点回到对应输入框。
+
+### 覆盖选择状态、焦点恢复和全选行为的回归测试
+Status: discussed
+Touches: `packages/core/test/selection-checkbox-render.test.ts`
+
+新增独立单元测试覆盖重绘后复选框选中状态、聚焦时的即时重绘与焦点保留，以及表头全选行为。使用假定时器检查重绘的可观察时序，并通过逐项撤销修复的变异检查确认每项测试能捕获对应回归。
+
+### 等待 RFC-0007 端到端测试中的可观察选择状态
+Status: discussed
+Touches: `demos/react/e2e/rfc-validation.spec.ts`
+
+网格选择通过异步重绘更新 DOM，连续点击可能在前一状态完成渲染前触发。测试等待行选择状态，并检查复选框保持勾选且仍获焦点，以断言用户可见行为，而不是依赖内部状态或固定延迟。
+
+### 验证 RFC-0007 修复的并行稳定性与全套回归
+Status: discussed
+Touches: `packages/core/src/components/Grid.wsx`, `packages/core/src/components/SelectionCheckbox.wsx`, `packages/core/test/selection-checkbox-render.test.ts`, `demos/react/e2e/rfc-validation.spec.ts`
+
+修复后，250 次并行 RFC-0007 端到端执行全部通过；核心包 568 项测试通过，覆盖率门槛未报错；全量端到端测试 50 项通过，连续三轮通过，构建任务 7/7 成功。变异检查也确认撤销全选处理器或强制重绘会使相应端到端断言失败。
