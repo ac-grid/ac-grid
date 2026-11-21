@@ -1,6 +1,6 @@
 # RFC 0056: Select-all handler error and RFC-0007 E2E render race
 
-**Status:** Approved
+**Status:** Implemented
 
 ## Summary
 
@@ -57,3 +57,27 @@ E2E `RFC-0007` 在并行运行时偶发失败（Shift 点击没有选中范围�
 - 并行 16 个 worker、重复 250 次的 `RFC-0007` 复现 0 失败；同一复现在修复前有失败。
 - 全量 E2E 与 core 单元测试通过；core 覆盖率阈值不降低。
 - 浏览器实测：点击行复选框后，该行立即高亮、复选框保持勾选、焦点仍在同一复选框；再按 Tab、空格选中下一行。
+
+## Delivery
+
+实现提交 `a313ac9`，已推送到 `origin/main` 并核对远端。
+
+**证据与复现。** 修复前，`RFC-0007` 用例在并行下的失败：10 个 worker 重复 120 次失败 8 次；16 个 worker 重复 250 次失败 3–6 次（多轮）。逐层取证：失败时组件内部的 `lastSelectedRowId` 正确；Shift 点击只有 `pointerdown`/`mousedown`/`pointerup`/`mouseup`，没有 `click`；`mousedown` 后约 50ms 整个 `div.ac-grid` 被移除重建，`mouseup` 时按下的单元格已脱离 DOM。进一步发现重绘总是紧跟在下一次 `pointerdown` 之后，而不是复选框点击之后；并在不涉及点击的 `selectRow()` 路径上复现“复选框未勾选”。
+
+**修复后结果。**
+
+- 同一并行复现（16 个 worker、重复 250 次）：250/250 通过，日志里 `reading 'checked'` 为 0。
+- 全量 E2E：连续 4 次 50/50 通过。
+- core 单元测试：54 个文件、568 个测试通过，覆盖率阈值无报错；全量构建 7/7 成功。
+- 浏览器实测：点击第 4 行复选框后，该行立即高亮、复选框保持勾选、焦点仍在该复选框；Tab、空格选中第 5 行。
+
+**变异检查。** 单元测试层：无 `observedAttributes`、无 `data-wsx-force-render`、旧全选处理器、无唯一 `data-wsx-key`，各自让对应测试变红，恢复后全绿。E2E 层：旧全选处理器因 `pageerror` 断言变红；无 `data-wsx-force-render` 因行 `data-selected` 一直为 `false` 变红。
+
+**过程中修正的错误。**
+
+- 第一版测试 2 在无 `data-wsx-force-render` 时仍通过：真实定时器下另有渲染路径最终会重绘，掩盖了推迟。改为假定时器推进帧后才有区分力。
+- 第一版只加 `data-wsx-force-render`，焦点丢到 `BODY`；加唯一 `data-wsx-key` 后解决。
+- 第一版在 `onConnected` 里写状态，引发会丢焦点的第二次重绘；改为 `observedAttributes`。
+- `static observedAttributes` 写成静态字段无效（`@autoRegister` 调用 `define` 时字段未初始化），必须是静态 getter。
+
+**未处理的相关风险。** `@wsxjs/wsx-core` 的“聚焦输入时推迟重绘”和“整根替换”是框架行为；过滤框、单元格编辑器仍依赖前者保住输入，其他交互若在重绘窗口内按下，理论上同样可能丢 `click`，需要另行取证。`apps/site` 的 typecheck、lint、test 失败和 Storybook 模板故事导入问题与本 RFC 无关，另处理。

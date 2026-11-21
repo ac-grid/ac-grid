@@ -493,4 +493,4 @@ MIT License
 | 0053 | [根 README 与文档索引更新 (child of 0050)](rfc/0053-readme-refresh.md) | Draft |
 | 0054 | [PaginationControls 动态更新自定义 i18n](rfc/completed/0054-pagination-i18n-after-connection.md) | Implemented |
 | 0055 | [修复 Dependabot 依赖漏洞告警](rfc/completed/0055-dependency-security-alerts.md) | Implemented |
-| 0056 | [Select-all handler error and RFC-0007 E2E render race](rfc/0056-select-all-handler-and-e2e-render-race.md) | Approved |
+| 0056 | [Select-all handler error and RFC-0007 E2E render race](rfc/completed/0056-select-all-handler-and-e2e-render-race.md) | Implemented |

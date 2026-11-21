@@ -111,8 +111,6 @@
   - [ ] Implement RFC 0051: API 参考文档（由类型定义生成） (child of 0050) (RFC 0051)
   - [ ] Implement RFC 0052: 已实现功能的使用指南 (child of 0050) (RFC 0052)
   - [ ] Implement RFC 0053: 根 README 与文档索引更新 (child of 0050) (RFC 0053)
-- [ ] Implement RFC 0056: Select-all handler error and RFC-0007 E2E render race (RFC 0056)
-
 
 ## Done
 - [x] Track RFC 0002: Sorting (RFC 0002)
@@ -150,4 +148,6 @@
 - [x] Implement RFC 0049: 未开键盘导航时 Enter 触发编辑仍生效 (RFC 0049)
 - [x] Implement RFC 0054: PaginationControls 动态更新自定义 i18n (RFC 0054)
 - [x] Implement RFC 0055: 修复 Dependabot 依赖漏洞告警 (RFC 0055)
+- [x] Implement RFC 0056: Select-all handler error and RFC-0007 E2E render race (RFC 0056)
+
 
