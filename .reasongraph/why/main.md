@@ -1455,9 +1455,9 @@ Risk: The historical failure summary now includes a specific root cause and resu
 
 ### 为站点三项检查建立并批准 RFC-0057 后再实现
 Status: discussed
-Touches: `.spec/rfc/0057-site-checks-green.md`
+Touches: `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`, `.spec/rfc/0057-site-checks-green.md`, `.spec/rfc/completed/0057-site-checks-green.md`, `demos/react/e2e/coverage.spec.ts`
 
-代理先记录 typecheck、lint 和 test 的根因，再通过 Specify 将 RFC-0057 批准后开始实现。这样让修复范围和验收目标可追踪。
+将 RFC-0057 补充交付记录，加入 nonDemoRfcIds，通过 Specify 推进状态并归档。实现提交已推送，远端提交为 7f6c662。
 
 ### 为 apps/site 单独关闭 useDefineForClassFields
 Status: discussed
