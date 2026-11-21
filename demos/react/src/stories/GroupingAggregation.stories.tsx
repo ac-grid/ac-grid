@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
     AGGREGATION_FN_AVG,
     AGGREGATION_FN_COUNT,

@@ -1,6 +1,6 @@
 # RFC 0055: 修复 Dependabot 依赖漏洞告警
 
-**Status:** Draft
+**Status:** Approved
 
 ## Summary
 
@@ -22,11 +22,11 @@ GitHub Dependabot 对默认分支报告 36 条未关闭告警（4 critical、10 
 
 - 默认分支上 Dependabot 未关闭告警降到 0；确实不修的，在本 RFC 的交付说明里逐条写明理由，并以 "tolerable risk" 关闭而不是放着。
 - 升级后所有现有检查仍然通过。
-- 不改变 `@ac-grid/core` 与 `@ac-grid/charts` 已发布的 `dependencies`、`peerDependencies` 范围，除非下面"待批准的选择"里明确批准。
+- 不改变 `@ac-grid/core` 与 `@ac-grid/charts` 已发布的 `dependencies`、`peerDependencies` 范围，唯一例外是 Task 4 对 `@ac-grid/charts` 的 `echarts` peer 范围放宽。
 
 ## Non-goals
 
-- 不做与告警无关的依赖升级，不顺手升大版本。
+- 不升级与告警无关的包。受告警影响的直接依赖按用户决定一律升到最新版本（含大版本），见 Task 2、Task 4。
 - 不引入新的依赖或新的安全扫描工具。
 - 不改产品代码与测试逻辑；升级后如有测试因升级而变红，另行说明并单独处理，不在本 RFC 里放宽断言。
 
@@ -38,22 +38,21 @@ GitHub Dependabot 对默认分支报告 36 条未关闭告警（4 critical、10 
 
 ### Task 2：升级直接依赖（同大版本内）
 
-- `storybook` 与相关 `@storybook/*`：到 ≥ 8.6.19（保持 8.x）。
-- `vitest`：到 ≥ 4.1.12；`vite`：到 ≥ 6.4.4；`happy-dom`：到 ≥ 21.0.4。
-- 版本号统一抬高，避免各 workspace 包出现多个版本。
+按用户决定，全部升到各自的最新版本（含大版本），2026-11-21 的 npm `latest`：
+
+- `storybook` 与 `@storybook/*`：10.6.8（8.x → 10.x）。Storybook 的 `@storybook/builder-vite` 8.6 只支持 `vite` ≤ 6，所以 `vite` 8 要求同时升 Storybook。10.x 把 addon-essentials、addon-interactions、blocks、test 等并入核心，配置与依赖需按官方迁移指南调整。
+- `vite`：8.3.8（`demos/react`、`demos/wsx`、`packages/core`、`theme-base`、`theme-default`、`apps/site` 全部统一）；同时需要 `@vitejs/plugin-react` 6.3.0（其 peer 为 `vite ^8`）与 `vite-plugin-dts` 5.1.2。
+- `vitest`：5.1.1，与 `@vitest/coverage-v8`、`@vitest/ui` 同版本。
+- `happy-dom`：21.0.4。
+- 版本号统一，避免各 workspace 包出现多个版本。分阶段实施：先 `vite`+插件，再 `vitest`，再 Storybook，每阶段跑完检查再进下一阶段，失败时只回退该阶段。
 
 ### Task 3：传递依赖用 overrides 固定
 
 在根 `package.json` 的 `pnpm.overrides` 中，按现有写法（`包@受影响范围: ^修复版本`）为以下项补充或抬高下界：`tinypool`（≥ 2.1.2）、`brace-expansion`（≥ 5.0.12）、`js-yaml`（≥ 4.3.2）、`glob`（≥ 14.0.2）、`minimatch`（≥ 11.0.1）、`uuid`（≥ 11.1.1）、`ajv`（≥ 8.18.0）、`source-map-js`（≥ 1.2.2）、`diff`（≥ 8.0.3）、`postcss-selector-parser`（≥ 6.1.5）、`@babel/core`（≥ 7.29.6）、`@vitest/mocker`（≥ 4.1.12）。优先让 Task 2 的升级自然带走，剩下的才加 override。具体范围以 Task 1 的清单为准，不凭本段猜。
 
-### Task 4：`echarts`（待批准的选择）
+### Task 4：`echarts`
 
-告警要求 ≥ 6.1.0，而 `@ac-grid/charts` 的 peer 范围是 `^5.0.0`。改 peer 范围会影响所有使用者，所以不在本 RFC 自行决定。候选：
-
-- A：先确认告警的来源。如果只来自仓库自己的开发安装，把本地开发用的 `echarts` 升到 6.1.0，peer 范围不动，并确认 `packages/charts` 的测试在 5.x、6.x 下都通过后，再决定是否把 peer 范围放宽为 `^5.0.0 || ^6.1.0`。
-- B：评估后认为该漏洞对本库的使用方式不可达，以 "tolerable risk" 关闭，并写明理由。
-
-默认走 A 的调查，结论出来后再提请批准，不预设结果。
+告警要求 ≥ 6.1.0，而 `@ac-grid/charts` 的 peer 范围是 `^5.0.0`。按用户决定升到最新：仓库自己安装的 `echarts` 升到 6.1.0，`@ac-grid/charts` 的 peer 范围放宽为 `^5.0.0 || ^6.1.0`，不丢掉 5.x 的使用者。前提是 `packages/charts` 的测试在 5.6.0 与 6.1.0 下都通过；任一不通过，就不放宽 peer 范围，并把原因写进交付说明。
 
 ### Task 5：验证
 
@@ -66,4 +65,4 @@ GitHub Dependabot 对默认分支报告 36 条未关闭告警（4 critical、10 
 - `packages/core` 全量单测通过，覆盖率阈值（`src/**/*.ts` 为 100%、全局棘轮）不降低。
 - `demos/react` 的 e2e 通过，`apps/site` 的构建与 `typecheck`、`lint` 通过，Storybook 能构建。
 - 变异检查：把某条 override 临时去掉，对应告警范围内的旧版本必须重新出现在 `pnpm why` 的结果里；恢复后消失。
-- 已发布包（`@ac-grid/core`、`@ac-grid/charts` 等）的 `dependencies`、`peerDependencies` 范围，在 `git diff` 中无变化，除非 Task 4 获批。
+- 已发布包（`@ac-grid/core`、`@ac-grid/charts` 等）的 `dependencies`、`peerDependencies` 范围，在 `git diff` 中只有 Task 4 的 `@ac-grid/charts` `echarts` peer 范围一处变化。
