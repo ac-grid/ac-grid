@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 
 // RFC-0033: every completed interactive RFC needs a demo page and browser test.
 // These RFCs define test infrastructure or coverage policy, not user-facing behavior.
-const nonDemoRfcIds = new Set(["0034", "0044", "0055"]);
+const nonDemoRfcIds = new Set(["0034", "0044", "0045", "0055"]);
 const completedIds = readdirSync(new URL("../../../.spec/rfc/completed/", import.meta.url))
     .map((file) => file.match(/^(\d{4})-/)?.[1])
     .filter((id): id is string => Boolean(id) && !nonDemoRfcIds.has(id));

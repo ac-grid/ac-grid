@@ -105,7 +105,7 @@
   - [ ] Implement RFC 0042: Empty and loading overlay theme (child of 0039) (RFC 0042)
 - [ ] Implement RFC 0043: Full coverage to 100% (Umbrella) (RFC 0043)
   - [x] Implement RFC 0044: Unit coverage for logic modules (child of 0043) (RFC 0044)
-  - [ ] Implement RFC 0045: E2E coverage of P0, P1 and P2 features (child of 0043) (RFC 0045)
+  - [x] Implement RFC 0045: E2E coverage of P0, P1 and P2 features (child of 0043) (RFC 0045)
   - [ ] Implement RFC 0046: Unit coverage for components (child of 0043) (RFC 0046)
 - [ ] Implement RFC 0050: 文档覆盖：API 参考、功能指南与 README (Umbrella) (RFC 0050)
   - [ ] Implement RFC 0051: API 参考文档（由类型定义生成） (child of 0050) (RFC 0051)

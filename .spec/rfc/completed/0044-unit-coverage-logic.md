@@ -20,7 +20,7 @@
 ## Non-goals
 
 - `src/components/*.wsx`：见 [0046](../0046-component-coverage-closure.md)。
-- E2E：见 [0045](../0045-e2e-coverage-collection.md)。
+- E2E：见 [0045](0045-e2e-coverage-collection.md)。
 - 用 `v8 ignore` 或排除文件来凑 100%：不允许。
 
 ## Design

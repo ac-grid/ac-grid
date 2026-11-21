@@ -482,7 +482,7 @@ MIT License
 | 0042 | [Empty and loading overlay theme (child of 0039)](rfc/0042-overlay-theme.md) | Approved |
 | 0043 | [Full coverage to 100% (Umbrella)](rfc/0043-coverage-100-umbrella.md) | Approved |
 | 0044 | [Unit coverage for logic modules (child of 0043)](rfc/completed/0044-unit-coverage-logic.md) | Implemented |
-| 0045 | [E2E coverage of P0, P1 and P2 features (child of 0043)](rfc/0045-e2e-coverage-collection.md) | Approved |
+| 0045 | [E2E coverage of P0, P1 and P2 features (child of 0043)](rfc/completed/0045-e2e-coverage-collection.md) | Implemented |
 | 0046 | [Unit coverage for components (child of 0043)](rfc/0046-component-coverage-closure.md) | Approved |
 | 0047 | [Honor sorting.enabled=false in Grid](rfc/completed/0047-sorting-enabled-config.md) | Implemented |
 | 0048 | [Enter 进入编辑时输入框聚焦并显示原值](rfc/completed/0048-enter-edit-focus-and-value.md) | Implemented |
