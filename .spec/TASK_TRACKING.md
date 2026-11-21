@@ -111,6 +111,8 @@
   - [ ] Implement RFC 0051: API 参考文档（由类型定义生成） (child of 0050) (RFC 0051)
   - [ ] Implement RFC 0052: 已实现功能的使用指南 (child of 0050) (RFC 0052)
   - [ ] Implement RFC 0053: 根 README 与文档索引更新 (child of 0050) (RFC 0053)
+- [ ] Implement RFC 0057: apps/site typecheck, lint and test failures (RFC 0057)
+
 
 ## Done
 - [x] Track RFC 0002: Sorting (RFC 0002)

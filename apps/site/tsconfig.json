@@ -4,6 +4,7 @@
         "outDir": "./dist",
         "jsx": "react-jsx",
         "jsxImportSource": "@wsxjs/wsx-core",
+        "useDefineForClassFields": false,
         "types": ["@wsxjs/wsx-core", "@testing-library/jest-dom"]
     },
     "include": ["src/**/*", "src/global.d.ts", "src/**/*.wsx", "src/types/**/*.d.ts"],
