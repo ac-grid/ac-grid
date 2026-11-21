@@ -1329,11 +1329,11 @@ Touches: `apps/site/*`, `demos/react/*`, `.spec/rfc/completed/0055-dependency-se
 
 未将站点 typecheck、lint 和 test 的既有失败归因于依赖升级；完整 Storybook 构建仍受历史上不存在的模板组件导入影响。E2E 日志中的 `reading 'checked'` 客户端错误也未追查，尽管测试通过。
 
-### 保持 ECharts 5 与 6 的运行时兼容性验证未完成
+### 用真实 ECharts 6 覆盖适配器渲染和销毁
 Status: discussed
-Touches: `packages/charts/*`, `.spec/rfc/completed/0055-dependency-security-alerts.md`
+Touches: `packages/charts/test/echarts-adapter.test.ts`
 
-现有验证只覆盖类型检查，没有对 ECharts 5.6.0 和 6.1.0 做运行时对比。兼容性结论因此仍限于适配器使用的 API 表面。
+测试使用真实 ECharts 6 验证柱状图、折线图、饼图及销毁行为，避免仅凭类型检查推断兼容性。六项测试通过；移除图例颜色、轴颜色、系列名、销毁或背景色的六项变异均使对应测试失败。
 
 ### Treat RFC-0045 as a non-demo RFC in coverage guards
 Status: discussed
@@ -1494,3 +1494,33 @@ Status: discussed
 Touches: `apps/site/test/meta-manager.test.ts`
 
 项目 lint 禁止使用 `innerHTML`。测试改用 `document.head.replaceChildren()` 清理 DOM，保留测试行为并遵守现有规则。
+
+### 为 ECharts 适配器建立运行时验证 RFC
+Status: discussed
+Touches: `.spec/rfc/0058-echarts-adapter-runtime-test.md`, `ROADMAP.md`, `TASK_TRACKING.md`
+
+现有 ECharts 6 升级只做了类型检查，未验证适配器运行时行为。RFC 0058 将运行时验证作为独立工作跟踪，并链接到路线图与任务跟踪文件。
+
+### 为 charts 包配置 happy-dom Vitest 测试
+Status: discussed
+Touches: `packages/charts/vitest.config.ts`, `packages/charts/package.json`
+
+charts 包没有现成测试环境或测试脚本；配置 happy-dom 和 Vitest 命令，让适配器测试能在包内运行。
+
+### 将 ECharts textColor 显式应用到图例和坐标轴
+Status: discussed
+Touches: `packages/charts/src/adapters/echarts.ts`, `packages/charts/test/echarts-adapter.test.ts`
+
+运行时检查发现 ECharts 6 不会用全局 textStyle.color 给数值轴文字着色，导致适配器的 textColor 覆盖未生效。适配器现将颜色分别设到图例、类别轴和数值轴，并以节点 fill 断言覆盖这三处；没有覆盖值时保留默认颜色。
+
+### 用 ECharts 5.6.0 和 6.1.0 验证显式文字颜色兼容性
+Status: discussed
+Touches: `packages/charts/src/adapters/echarts.ts`, `.spec/rfc/0058-echarts-adapter-runtime-test.md`
+
+为确认适配器生成的图例与双轴显式设色选项跨版本有效，分别在 ECharts 5.6.0 和 6.1.0 检查渲染文字。两版本的八个文字节点均带有指定颜色。
+
+### 完整验证后提交并推送 ECharts 适配器修复
+Status: directed
+Touches: `.spec/rfc/0058-echarts-adapter-runtime-test.md`, `packages/charts/vitest.config.ts`, `packages/charts/test/echarts-adapter.test.ts`, `packages/charts/src/adapters/echarts.ts`
+
+实现通过全仓构建、lint 和测试验证，随后提交并推送修复。摘要记录构建 7/7、lint 5/5、测试 9/9 均通过，其中 charts 测试为 6 项。
