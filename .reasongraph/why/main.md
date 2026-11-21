@@ -1452,3 +1452,45 @@ Touches: `.spec/rfc/completed/0045-e2e-coverage-collection.md`
 The Delivery note was changed from unresolved to resolved because RFC-0056 identified and fixed a delayed redraw that replaced the DOM during a checkbox click. The transcript reports 250/250 passes under the same parallel reproduction.
 
 Risk: The historical failure summary now includes a specific root cause and result; ensure both are supported by RFC-0056 evidence.
+
+### 为站点三项检查建立并批准 RFC-0057 后再实现
+Status: discussed
+Touches: `.spec/rfc/0057-site-checks-green.md`
+
+代理先记录 typecheck、lint 和 test 的根因，再通过 Specify 将 RFC-0057 批准后开始实现。这样让修复范围和验收目标可追踪。
+
+### 为 apps/site 单独关闭 useDefineForClassFields
+Status: discussed
+Touches: `apps/site/tsconfig.json`
+
+站点使用的 WSX `@state` 编译方式要求 `useDefineForClassFields: false`。该设置只影响站点 typecheck，避免改变工作区其他包的 TypeScript 配置。
+
+### 在站点显式声明 ESLint 插件依赖
+Status: discussed
+Touches: `apps/site/package.json`, `pnpm-lock.yaml`
+
+站点 lint 因缺少 `@wsxjs/eslint-plugin-wsx` 失败。代理添加该插件及缺失的 ESLint 基础依赖，并沿用工作区已解析的 `@eslint/js` 和 `globals` 版本。
+
+### 删除站点中未使用的路由元数据导入 (updated)
+Status: discussed
+Touches: `apps/site/src/App.wsx`
+
+`RouteMeta` 和 `routeMeta` 在 `App.wsx` 中未被使用。删除这两个导入可清除 lint 警告，不改变路由或页面行为。
+
+### 移除站点 Vite 插件配置上的冗余 any 强转
+Status: discussed
+Touches: `apps/site/vite.config.ts`
+
+临时类型检查表明，移除 `wsxPress`、`UnoCSS` 和 `wsx` 配置上的 `as any` 后没有插件类型错误。保留强转只会压掉类型检查，且没有解决实际兼容问题。
+
+### 为站点路由元数据、SEO 元数据和错误处理补充行为测试
+Status: discussed
+Touches: `apps/site/test/route-meta.test.ts`, `apps/site/test/meta-manager.test.ts`, `apps/site/test/error-handler.test.ts`
+
+站点原先没有测试文件，代理为 `getRouteMeta`、`MetaManager` 和 `ErrorHandler` 添加了行为覆盖。26 个测试通过，四项故意破坏实现的变异均被测试捕获。
+
+### 用 replaceChildren 清理测试中的文档头部
+Status: discussed
+Touches: `apps/site/test/meta-manager.test.ts`
+
+项目 lint 禁止使用 `innerHTML`。测试改用 `document.head.replaceChildren()` 清理 DOM，保留测试行为并遵守现有规则。
