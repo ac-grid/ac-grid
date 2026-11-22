@@ -1317,11 +1317,11 @@ Touches: `package.json`, `pnpm-lock.yaml`
 
 通过 overrides 固定 `@babel/core`、`ajv`、`brace-expansion`、`diff`、`glob`、`js-yaml`、`minimatch`、`postcss-selector-parser`、`source-map-js` 和 `i18next-http-backend`。移除 `minimatch` override 的变异检查重新解析出 9.0.3、9.0.9 和 10.0.3，恢复后这些版本消失。
 
-### 将 RFC-0055 交付偏差和验证结果写入归档 RFC
-Status: discussed
+### 在 RFC-0055 中链接 RFC-0058 的运行时验证结论
+Status: directed
 Touches: `.spec/rfc/completed/0055-dependency-security-alerts.md`
 
-在 Delivery 一节记录升级结果、告警清除情况、验证证据及遗留限制，便于后续审查。所报告的验证包括核心覆盖率运行 563 项通过、2 项跳过，React demo E2E 50 项通过，以及全包构建、站点构建和冻结锁文件安装通过。
+代理补充后续 RFC 的链接及运行时对比结论，使 RFC-0055 中原有的“只有类型检查”记录与后续验证保持一致。该补充保留原 RFC 状态。
 
 ### 保留站点现有验证失败并记录未追查的端到端控制台错误 (updated)
 Status: discussed
@@ -1524,3 +1524,9 @@ Status: directed
 Touches: `.spec/rfc/0058-echarts-adapter-runtime-test.md`, `packages/charts/vitest.config.ts`, `packages/charts/test/echarts-adapter.test.ts`, `packages/charts/src/adapters/echarts.ts`
 
 实现通过全仓构建、lint 和测试验证，随后提交并推送修复。摘要记录构建 7/7、lint 5/5、测试 9/9 均通过，其中 charts 测试为 6 项。
+
+### 关闭 RFC 0058 并归档运行时验证结果
+Status: discussed
+Touches: `.spec/rfc/0058-echarts-adapter-runtime-test.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
+
+代理将 RFC 0058 的交付记录、非演示 RFC 覆盖配置及归档状态一并更新。验证输出显示 8 项检查通过。

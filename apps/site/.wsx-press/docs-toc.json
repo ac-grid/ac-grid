@@ -1,44 +1,4 @@
 {
-  "guide/essentials/getting-started": [
-    {
-      "level": 1,
-      "text": "Getting Started with AC Grid",
-      "id": "getting-started-with-ac-grid",
-      "children": [
-        {
-          "level": 2,
-          "text": "Installation",
-          "id": "installation",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "Quick Start",
-          "id": "quick-start",
-          "children": [
-            {
-              "level": 3,
-              "text": "With a bundler (Vite, Webpack, etc.)",
-              "id": "with-a-bundler-vite-webpack-etc",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "With a framework (React, Vue, etc.)",
-              "id": "with-a-framework-react-vue-etc",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "Next steps",
-          "id": "next-steps",
-          "children": []
-        }
-      ]
-    }
-  ],
   "guide/features/theming": [
     {
       "level": 1,
@@ -493,6 +453,21 @@
       ]
     }
   ],
+  "guide/features/grid-state": [
+    {
+      "level": 1,
+      "text": "Grid state",
+      "id": "grid-state",
+      "children": [
+        {
+          "level": 2,
+          "text": "Persistence",
+          "id": "persistence",
+          "children": []
+        }
+      ]
+    }
+  ],
   "guide/features/filtering": [
     {
       "level": 1,
@@ -728,6 +703,54 @@
           "level": 2,
           "text": "Related Resources",
           "id": "related-resources",
+          "children": []
+        }
+      ]
+    }
+  ],
+  "guide/features/accessibility": [
+    {
+      "level": 1,
+      "text": "Accessibility",
+      "id": "accessibility",
+      "children": []
+    }
+  ],
+  "guide/essentials/getting-started": [
+    {
+      "level": 1,
+      "text": "Getting Started with AC Grid",
+      "id": "getting-started-with-ac-grid",
+      "children": [
+        {
+          "level": 2,
+          "text": "Installation",
+          "id": "installation",
+          "children": []
+        },
+        {
+          "level": 2,
+          "text": "Quick Start",
+          "id": "quick-start",
+          "children": [
+            {
+              "level": 3,
+              "text": "With a bundler (Vite, Webpack, etc.)",
+              "id": "with-a-bundler-vite-webpack-etc",
+              "children": []
+            },
+            {
+              "level": 3,
+              "text": "With a framework (React, Vue, etc.)",
+              "id": "with-a-framework-react-vue-etc",
+              "children": []
+            }
+          ]
+        },
+        {
+          "level": 2,
+          "text": "Next steps",
+          "id": "next-steps",
           "children": []
         }
       ]

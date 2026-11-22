@@ -1,13 +1,4 @@
 {
-  "guide/essentials/getting-started": {
-    "title": "Getting Started",
-    "category": "guide/essentials",
-    "route": "/docs/guide/essentials/getting-started",
-    "order": 1,
-    "description": "Install and use AC Grid in your project in minutes. Framework-agnostic, Web Components + TypeScript.",
-    "prev": null,
-    "next": null
-  },
   "guide/features/theming": {
     "title": "Theming",
     "category": "guide/features",
@@ -15,7 +6,7 @@
     "order": 3,
     "description": "Learn how to use and customize the theme system in AC Grid, including default themes and creating custom themes",
     "prev": "/docs/guide/features/filtering",
-    "next": null
+    "next": "/docs/guide/features/accessibility"
   },
   "guide/features/sorting": {
     "title": "Sorting",
@@ -26,6 +17,13 @@
     "prev": null,
     "next": "/docs/guide/features/filtering"
   },
+  "guide/features/grid-state": {
+    "title": "grid-state",
+    "category": "guide/features",
+    "route": "/docs/guide/features/grid-state",
+    "prev": "/docs/guide/features/accessibility",
+    "next": null
+  },
   "guide/features/filtering": {
     "title": "Filtering",
     "category": "guide/features",
@@ -34,5 +32,23 @@
     "description": "Learn how to use filtering functionality in AC Grid, including column filtering, global search, and custom filter functions",
     "prev": "/docs/guide/features/sorting",
     "next": "/docs/guide/features/theming"
+  },
+  "guide/features/accessibility": {
+    "title": "Accessibility",
+    "category": "guide/features",
+    "route": "/docs/guide/features/accessibility",
+    "order": 4,
+    "description": "Accessible names, screen-reader semantics, and focus visibility in AC Grid",
+    "prev": "/docs/guide/features/theming",
+    "next": "/docs/guide/features/grid-state"
+  },
+  "guide/essentials/getting-started": {
+    "title": "Getting Started",
+    "category": "guide/essentials",
+    "route": "/docs/guide/essentials/getting-started",
+    "order": 1,
+    "description": "Install and use AC Grid in your project in minutes. Framework-agnostic, Web Components + TypeScript.",
+    "prev": null,
+    "next": null
   }
 }
