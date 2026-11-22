@@ -276,24 +276,24 @@ describe("Grid grouping and aggregation", () => {
   it.skipIf(IS_COVERAGE_RUN)(
     "updates expand and collapse state within the RFC performance budget",
     async () => {
-    const grid = createGroupingGrid([DEPARTMENT_COLUMN_ID]);
-    grid.data = createPerformanceData();
-    container.appendChild(grid);
-    await waitFor(() => expect(grid.table).toBeTruthy());
-    expect(grid.table.getGroupedRowModel().rows).toHaveLength(
-      PERFORMANCE_GROUP_COUNT,
-    );
+      const grid = createGroupingGrid([DEPARTMENT_COLUMN_ID]);
+      grid.data = createPerformanceData();
+      container.appendChild(grid);
+      await waitFor(() => expect(grid.table).toBeTruthy());
+      expect(grid.table.getGroupedRowModel().rows).toHaveLength(
+        PERFORMANCE_GROUP_COUNT,
+      );
 
-    const expandStartedAt = process.threadCpuUsage();
-    grid.expandAll();
-    const expandDuration = cpuMillisecondsSince(expandStartedAt);
+      const expandStartedAt = process.threadCpuUsage();
+      grid.expandAll();
+      const expandDuration = cpuMillisecondsSince(expandStartedAt);
 
-    const collapseStartedAt = process.threadCpuUsage();
-    grid.collapseAll();
-    const collapseDuration = cpuMillisecondsSince(collapseStartedAt);
+      const collapseStartedAt = process.threadCpuUsage();
+      grid.collapseAll();
+      const collapseDuration = cpuMillisecondsSince(collapseStartedAt);
 
-    expect(expandDuration).toBeLessThan(EXPANSION_BUDGET_MS);
-    expect(collapseDuration).toBeLessThan(EXPANSION_BUDGET_MS);
+      expect(expandDuration).toBeLessThan(EXPANSION_BUDGET_MS);
+      expect(collapseDuration).toBeLessThan(EXPANSION_BUDGET_MS);
     },
   );
 });
