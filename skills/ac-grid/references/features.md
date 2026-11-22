@@ -31,7 +31,7 @@ Option keys for `createGrid`. Shapes come from `packages/core/src/utils/create-g
 | 0047 | Sorting disable | `sorting: { enabled: false }` turns sorting off for every column: header clicks do not reorder rows and no sort indicator renders |
 | 0048 | Enter edit focus and value | Enter opens text, number, or date editor with focus and original value preserved |
 | 0049 | Enter edit trigger without keyboard navigation | `editTrigger: "enter"` or `"both"` starts edit when keyboard navigation is disabled |
-| 0054 | Pagination i18n live update | Assigning an i18n manager after connection updates pagination labels; falsy assignments retain current manager |
+| 0054 | Pagination i18n after connection | Assigning a custom i18n manager to `PaginationControls` after connection updates its labels; assigning a falsy manager keeps the current one; with none, default messages stay |
 
 ## Not implemented (draft or stretch)
 

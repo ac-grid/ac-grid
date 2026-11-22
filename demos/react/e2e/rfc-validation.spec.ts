@@ -519,25 +519,35 @@ test.describe("RFC validation demos (browser)", () => {
         await expect.poll(() => page.evaluate(() => (window as any).__editStarts)).toBe(1);
     });
 
-    test("RFC-0054 shows default pagination labels without a custom manager", async ({ page }) => {
+    test("RFC-0054 updates pagination labels after connection and keeps the manager on falsy assignment", async ({ page }) => {
         await page.goto("/?rfc=0054");
         await gridReady(page);
-        await expect(page.locator("wsx-ac-pagination-controls .pagination-info")).toHaveText(
-            "Showing 1 to 10 of 50 results",
+        const controls = page.locator("wsx-ac-pagination-controls");
+        await expect(controls.locator(".pagination-info")).toHaveText(
+            "Custom showing 1 through 10 among 50 entries",
+        );
+        await controls.evaluate((element: any) => {
+            element.i18n = null;
+        });
+        await expect(controls.locator(".pagination-info")).toHaveText(
+            "Custom showing 1 through 10 among 50 entries",
         );
     });
 
-    test("RFC-0054 rerenders custom pagination labels and ignores falsy manager", async ({ page }) => {
+    test("RFC-0054 keeps default pagination labels without a custom manager", async ({ page }) => {
         await page.goto("/?rfc=0054");
         await gridReady(page);
-        const grid = page.locator("wsx-ac-grid");
-        await grid.evaluate((element: any) => {
-            const controls = element.querySelector("wsx-ac-pagination-controls");
-            controls.i18n = { t: (_key: string, _params: unknown, fallback: string) => `~${fallback}` };
-            controls.i18n = null;
+        await page.evaluate(() => {
+            const controls = document.createElement("wsx-ac-pagination-controls") as any;
+            controls.pageIndex = 0;
+            controls.pageSize = 10;
+            controls.totalRows = 50;
+            controls.totalPages = 5;
+            controls.dataset.testid = "default-pagination-controls";
+            document.body.appendChild(controls);
         });
-        await expect(page.locator("wsx-ac-pagination-controls .pagination-info")).toHaveText(
-            "~Showing 1 ~to 10 ~of 50 ~results",
+        await expect(page.locator('[data-testid="default-pagination-controls"] .pagination-info')).toHaveText(
+            "Showing 1 to 10 of 50 results",
         );
     });
 
