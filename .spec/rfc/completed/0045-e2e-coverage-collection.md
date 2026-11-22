@@ -44,4 +44,4 @@
 - 变异检查：把 `rfc-validation.spec.ts` 中全部 `RFC-0002` 改名后，`coverage.spec.ts` 报 `0002 (P0)` 缺 E2E，矩阵证据检查同时失败；恢复后 8 条全部通过。第一次变异只改了每行第一个标题，仍有其它 `RFC-0002` 标题，没有构成变异，已重做。
 - 连续通过：并行配置下共 13 次完整运行，2 次各有 1 个失败（见"未解决"）；最后一次失败之后连续 8 次全部 50 通过，其中 4 次用 14 个 worker 加压。
 - CI：`.github/workflows/pull-request.yml` 的 `e2e` 任务运行 `pnpm test:e2e`，重试 2 次、单 worker。
-- 未解决：上述 2 次失败都是 `RFC-0007 keeps selection first and verifies checkbox selection behavior` 在 Shift 点击范围选择后只选中 1 行（期望 3 行）。单独重复该用例 30 次、14 个 worker 加压 4 次均不复现；读 `Grid.wsx` 行点击处理（`lastSelectedRowId` 实时读取）也没发现竞态，根因未查明，CI 的重试会掩盖它。若再出现，需要保留 trace 追查，不要加固定等待。
+- 未解决：上述 2 次失败都是 `RFC-0007 keeps selection first and verifies checkbox selection behavior` 在 Shift 点击范围选择后只选中 1 行（期望 3 行）。单独重复该用例 30 次、14 个 worker 加压 4 次均不复现；读 `Grid.wsx` 行点击处理（`lastSelectedRowId` 实时读取）也没发现竞态，当时根因未查明。**后续已查明并修复**：[RFC 0056](0056-select-all-handler-and-e2e-render-race.md) 找到根因（勾选后重绘被推迟，随后在下一次点击中途冲出并替换整个 DOM，丢掉 `click`），修复后同一并行复现 250/250 通过。

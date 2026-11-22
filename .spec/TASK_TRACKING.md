@@ -148,4 +148,10 @@
 - [x] Implement RFC 0049: 未开键盘导航时 Enter 触发编辑仍生效 (RFC 0049)
 - [x] Implement RFC 0054: PaginationControls 动态更新自定义 i18n (RFC 0054)
 - [x] Implement RFC 0055: 修复 Dependabot 依赖漏洞告警 (RFC 0055)
+- [x] Implement RFC 0056: Select-all handler error and RFC-0007 E2E render race (RFC 0056)
+- [x] Implement RFC 0057: apps/site typecheck, lint and test failures (RFC 0057)
+- [x] Implement RFC 0058: Runtime test of the ECharts adapter on ECharts 6 (RFC 0058)
+
+
+
 

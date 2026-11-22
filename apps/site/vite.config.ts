@@ -21,13 +21,13 @@ export default defineConfig({
         wsxPress({
             docsRoot: path.resolve(__dirname, "public/docs"),
             outputDir: path.resolve(__dirname, ".wsx-press"),
-        }) as any,
-        UnoCSS() as any,
+        }),
+        UnoCSS(),
         wsx({
             debug: false, // Enable debug to see generated code
             jsxFactory: "h",
             jsxFragment: "Fragment",
-        }) as any,
+        }),
     ],
     preview: { port: 5202, strictPort: true },
     build: {

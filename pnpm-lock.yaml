@@ -65,6 +65,9 @@ importers:
         specifier: ^0.1.0
         version: 0.1.1(typescript@5.9.3)
     devDependencies:
+      '@eslint/js':
+        specifier: ^8.57.1
+        version: 8.57.1
       '@testing-library/dom':
         specifier: ^10.4.0
         version: 10.4.1
@@ -83,6 +86,9 @@ importers:
       '@vitest/ui':
         specifier: ^5.1.1
         version: 5.1.1(vitest@5.1.1)
+      '@wsxjs/eslint-plugin-wsx':
+        specifier: ^0.1.1
+        version: 0.1.1(eslint@8.57.1)(typescript@5.9.3)
       '@wsxjs/wsx-vite-plugin':
         specifier: ^0.1.0
         version: 0.1.1(esbuild@0.28.2)(typescript@5.9.3)(vite@8.3.8(@types/node@26.4.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))
@@ -95,6 +101,9 @@ importers:
       gh-pages:
         specifier: ^6.1.1
         version: 6.3.0
+      globals:
+        specifier: ^13.24.0
+        version: 13.24.0
       happy-dom:
         specifier: ^21.0.4
         version: 21.0.4
@@ -242,9 +251,15 @@ importers:
       echarts:
         specifier: ^6.1.0
         version: 6.1.0
+      happy-dom:
+        specifier: ^21.0.4
+        version: 21.0.4
       typescript:
         specifier: ^5.6.2
         version: 5.9.3
+      vitest:
+        specifier: ^5.1.1
+        version: 5.1.1(@types/node@26.4.1)(@vitest/coverage-v8@5.1.1)(@vitest/ui@5.1.1)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@8.3.8(@types/node@26.4.1)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))
 
   packages/core:
     dependencies:
@@ -2059,6 +2074,11 @@ packages:
 
   '@webcontainer/env@1.1.1':
     resolution: {integrity: sha512-6aN99yL695Hi9SuIk1oC88l9o0gmxL1nGWWQ/kNy81HigJ0FoaoTXpytCj6ItzgyCEwA9kF1wixsTuv5cjsgng==}
+
+  '@wsxjs/eslint-plugin-wsx@0.1.1':
+    resolution: {integrity: sha512-S0j829+WjA4arYJGT8u41AxTKYEr/F0MGhLYvwj//lb2wy75OxBdNxcYqBaCUb2D0EfjCDKO8qD5wYD/ZUt6og==}
+    peerDependencies:
+      eslint: '>=8.0.0 || ^9.0.0'
 
   '@wsxjs/wsx-base-components@0.1.1':
     resolution: {integrity: sha512-6eCDYBpWKIt3bJNJrI8q+yqwIm/sgdkfKhCNWLIaSwdUFxotVWHINxajowh0rdqBT3wsP1yvFFtHaCl1pgx9/g==}
@@ -5965,6 +5985,13 @@ snapshots:
       vscode-uri: 3.1.0
 
   '@webcontainer/env@1.1.1': {}
+
+  '@wsxjs/eslint-plugin-wsx@0.1.1(eslint@8.57.1)(typescript@5.9.3)':
+    dependencies:
+      '@wsxjs/wsx-core': 0.1.1(typescript@5.9.3)
+      eslint: 8.57.1
+    transitivePeerDependencies:
+      - typescript
 
   '@wsxjs/wsx-base-components@0.1.1(i18next@23.16.8)(typescript@5.9.3)':
     dependencies:

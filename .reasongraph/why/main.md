@@ -545,11 +545,11 @@ Touches: `packages/core/src/components/Grid.wsx`, `packages/core/test/editing.te
 
 关闭键盘导航时，网格级 `handleGridKeyDown` 会提前返回，导致 `editTrigger: "enter"` 和 `"both"` 无效。单元格 `onKeyDown` 只在键盘导航关闭时处理该 Enter 行为；导航开启时仍由网格级处理，避免重复触发。新增行为用例覆盖未启用导航、`doubleClick` 和导航开启的情形；核心全量单测 52 个文件、524 个测试通过。
 
-### 补充双击编辑路径的原值断言
+### 聚焦复选框时强制网格立即重绘
 Status: discussed
-Touches: `demos/react/e2e/rfc-validation.spec.ts`
+Touches: `packages/core/src/components/SelectionCheckbox.wsx`
 
-Enter 与双击共用 CellEditor，双击路径也可能受到原值初始化问题影响；现有双击用例只检查编辑器可见，未检查原值。补充断言尚未实施。
+wsx-core 会在输入框保持焦点时延迟父组件重绘，使选择状态暂时无法从 DOM 观察，也会让浏览器点击因按下节点被替换而丢失。为复选框输入框设置 `data-wsx-force-render`，让选择状态及时反映到行和复选框。风险是立即替换 DOM 可能丢失焦点，因此同时验证并实现焦点恢复。
 
 ### 将开发者 API 参考文档与 RFC-0047 分开
 Status: discussed
@@ -1329,17 +1329,17 @@ Touches: `apps/site/*`, `demos/react/*`, `.spec/rfc/completed/0055-dependency-se
 
 未将站点 typecheck、lint 和 test 的既有失败归因于依赖升级；完整 Storybook 构建仍受历史上不存在的模板组件导入影响。E2E 日志中的 `reading 'checked'` 客户端错误也未追查，尽管测试通过。
 
-### 保持 ECharts 5 与 6 的运行时兼容性验证未完成
+### 用真实 ECharts 6 覆盖适配器渲染和销毁
 Status: discussed
-Touches: `packages/charts/*`, `.spec/rfc/completed/0055-dependency-security-alerts.md`
+Touches: `packages/charts/test/echarts-adapter.test.ts`
 
-现有验证只覆盖类型检查，没有对 ECharts 5.6.0 和 6.1.0 做运行时对比。兼容性结论因此仍限于适配器使用的 API 表面。
+测试使用真实 ECharts 6 验证柱状图、折线图、饼图及销毁行为，避免仅凭类型检查推断兼容性。六项测试通过；移除图例颜色、轴颜色、系列名、销毁或背景色的六项变异均使对应测试失败。
 
-### Treat RFC-0055 as a non-demo RFC in coverage guards
+### Treat RFC-0045 as a non-demo RFC in coverage guards
 Status: discussed
-Touches: `demos/react/e2e/coverage.spec.ts`
+Touches: `coverage.spec.ts`
 
-The completed-RFC coverage guard requires a demo unless an RFC is explicitly listed as non-demo. RFC-0055 covers dependency remediation and has no product demo, so the guard exempts it alongside the existing non-demo RFCs.
+RFC-0045 records tests and policy, not user-facing behavior, so requiring a product demo would misrepresent its scope. The coverage guard classifies it with other non-demo RFCs.
 
 ### Keep RFC-0055 exempt from product-demo coverage
 Status: discussed
@@ -1349,12 +1349,178 @@ RFC-0055 is a dependency change rather than a product feature, so requiring a de
 
 ### Require three consecutive full E2E passes before accepting coverage work
 Status: discussed
-Touches: `demos/react/e2e/coverage.spec.ts`, `demos/react/e2e/rfc-validation.spec.ts`, `demos/react/playwright.config.ts`
+Touches: `coverage.spec.ts`
 
-One full-suite run failed on RFC-0007 range selection while later runs passed, so a single green result would not establish stability. The failure did not reproduce in 30 isolated repetitions or 11 subsequent full-suite runs, and its cause remained unresolved. CI runs the suite on each pull request with retries and one worker.
+A full parallel run failed once on Shift+click range selection, though 30 isolated repetitions did not reproduce the failure. The acceptance check requires three consecutive full-suite passes; the reported final sequence had eight consecutive passes, including four runs with 14 workers.
 
 ### Verify coverage guard with a feature-removal mutation
 Status: discussed
 Touches: `demos/react/e2e/rfc-validation.spec.ts`, `demos/react/e2e/coverage.spec.ts`
 
 The RFC-0002 mutation removed its coverage reference, and the guard correctly failed while flagging that feature. After restoring the spec, all 8 coverage checks passed.
+
+### Exclude non-interactive RFCs from product-demo coverage checks
+Status: discussed
+Touches: `coverage.spec.ts`
+
+RFC-0055 and RFC-0045 cover infrastructure and have no user-facing behavior to demonstrate. The coverage checks classify them with RFC-0034 and RFC-0044 as non-demo RFCs.
+
+### Require RFC-named E2E tests for implemented roadmap features
+Status: discussed
+Touches: `coverage.spec.ts`
+
+The coverage guard checks that implemented roadmap features have RFC-named end-to-end tests. Renaming the RFC-0002 test titles made the guard fail for that feature; restoring them returned all eight checks to passing.
+
+### Keep the RFC-0007 selection flake unresolved without fixed waits
+Status: discussed
+Touches: `Grid.wsx`, `RFC-0007`
+
+Two of thirteen full E2E runs showed Shift-click range selection selecting one row instead of three, but 30 isolated repetitions and four stress runs did not reproduce it. The cause remains unknown, and CI retries can mask the failure. A fixed wait was rejected as unsupported by evidence; the unresolved flake is recorded in the RFC Delivery section.
+
+### Reproduce RFC-0007 Shift-range selection failures with traces before changing Grid behavior
+Status: discussed
+Touches: `packages/core/src/components/Grid.wsx`, `demos/react/e2e/rfc-validation.spec.ts`
+
+The agent repeated the RFC-0007 browser test 120 times and observed 8 failures. Trace evidence showed the Shift-click was dispatched, but did not establish the root cause; Grid behavior therefore remained unchanged pending diagnosis.
+
+Risk: The intermittent selection failure remains unresolved.
+
+### Install TypeScript language-server tools globally
+Status: directed
+Touches: `/Users/albert.li/.npm-global/bin/typescript-language-server`
+
+The agent installed `typescript-language-server` and `typescript` globally after the language server executable was missing. Startup was not verified because the editor plugin needs a restart or reload.
+
+Risk: The language server may still fail to start until the plugin reloads.
+
+### 为 RFC-0007 的复选框选择缺陷建立并批准 RFC-0056
+Status: discussed
+Touches: `.spec/rfc/0056-select-all-handler-and-e2e-render-race.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
+
+将全选处理器错误与 RFC-0007 的重绘问题归入同一 RFC，因为它们都由复选框交互和重绘行为的实测证据发现。更新 RFC 中的问题、设计和验收标准以对应查明的根因，并通过 Specify 验证、推进至 Approved。
+
+### 让全选处理器显式接收布尔值 (updated)
+Status: discussed
+Touches: `packages/core/src/components/Grid.wsx`
+
+选择框组件的 `onChange` 传递布尔值，而全选处理器原先按事件对象读取 `checked`，导致点击时报错。显式调用 `table.toggleAllRowsSelected(checked)` 保持全选和取消行为，并匹配调用方实际传入的数据。
+
+Risk: 若组件的 `onChange` 契约变更，处理器签名也需同步调整。
+
+### 在 SelectionCheckbox 中观察 checked 和 indeterminate 属性
+Status: discussed
+Touches: `packages/core/src/components/SelectionCheckbox.wsx`
+
+WSX 的 `h()` 将布尔属性写为 DOM attribute，而组件原先只读取 property，因此重绘生成的新复选框不会呈现行的选择状态。通过 `observedAttributes` getter 和属性变化处理同步组件状态，兼容当前 WSX 的布尔属性行为。
+
+### 为每个选择复选框分配稳定且唯一的焦点恢复键
+Status: discussed
+Touches: `packages/core/src/components/SelectionCheckbox.wsx`
+
+wsx-core 通过 `data-wsx-key` 在重绘后恢复焦点；复选框原有自动 key 无法区分多行输入。使用行 ID 生成行复选框 key，并为表头全选框使用独立 key，使重绘后焦点回到对应输入框。
+
+### 覆盖选择状态、焦点恢复和全选行为的回归测试
+Status: discussed
+Touches: `packages/core/test/selection-checkbox-render.test.ts`
+
+新增独立单元测试覆盖重绘后复选框选中状态、聚焦时的即时重绘与焦点保留，以及表头全选行为。使用假定时器检查重绘的可观察时序，并通过逐项撤销修复的变异检查确认每项测试能捕获对应回归。
+
+### 等待 RFC-0007 端到端测试中的可观察选择状态
+Status: discussed
+Touches: `demos/react/e2e/rfc-validation.spec.ts`
+
+网格选择通过异步重绘更新 DOM，连续点击可能在前一状态完成渲染前触发。测试等待行选择状态，并检查复选框保持勾选且仍获焦点，以断言用户可见行为，而不是依赖内部状态或固定延迟。
+
+### 验证 RFC-0007 修复的并行稳定性与全套回归
+Status: discussed
+Touches: `packages/core/src/components/Grid.wsx`, `packages/core/src/components/SelectionCheckbox.wsx`, `packages/core/test/selection-checkbox-render.test.ts`, `demos/react/e2e/rfc-validation.spec.ts`
+
+修复后，250 次并行 RFC-0007 端到端执行全部通过；核心包 568 项测试通过，覆盖率门槛未报错；全量端到端测试 50 项通过，连续三轮通过，构建任务 7/7 成功。变异检查也确认撤销全选处理器或强制重绘会使相应端到端断言失败。
+
+### Close RFC-0056 as Implemented after validation
+Status: discussed
+Touches: `.spec/rfc/0056-select-all-handler-and-e2e-render-race.md`, `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`
+
+The RFC was advanced to Implemented and archived after validation. The transcript reports eight guard tests passing.
+
+Reviewer attention: Confirm the archived RFC and tracking files match the pushed state.
+
+### Update RFC-0045 to reference the resolved RFC-0007 selection failure
+Status: discussed
+Touches: `.spec/rfc/completed/0045-e2e-coverage-collection.md`
+
+The Delivery note was changed from unresolved to resolved because RFC-0056 identified and fixed a delayed redraw that replaced the DOM during a checkbox click. The transcript reports 250/250 passes under the same parallel reproduction.
+
+Risk: The historical failure summary now includes a specific root cause and result; ensure both are supported by RFC-0056 evidence.
+
+### 为站点三项检查建立并批准 RFC-0057 后再实现
+Status: discussed
+Touches: `.spec/ROADMAP.md`, `.spec/TASK_TRACKING.md`, `.spec/rfc/0057-site-checks-green.md`, `.spec/rfc/completed/0057-site-checks-green.md`, `demos/react/e2e/coverage.spec.ts`
+
+将 RFC-0057 补充交付记录，加入 nonDemoRfcIds，通过 Specify 推进状态并归档。实现提交已推送，远端提交为 7f6c662。
+
+### 为 apps/site 单独关闭 useDefineForClassFields
+Status: discussed
+Touches: `apps/site/tsconfig.json`
+
+站点使用的 WSX `@state` 编译方式要求 `useDefineForClassFields: false`。该设置只影响站点 typecheck，避免改变工作区其他包的 TypeScript 配置。
+
+### 在站点显式声明 ESLint 插件依赖
+Status: discussed
+Touches: `apps/site/package.json`, `pnpm-lock.yaml`
+
+站点 lint 因缺少 `@wsxjs/eslint-plugin-wsx` 失败。代理添加该插件及缺失的 ESLint 基础依赖，并沿用工作区已解析的 `@eslint/js` 和 `globals` 版本。
+
+### 删除站点中未使用的路由元数据导入 (updated)
+Status: discussed
+Touches: `apps/site/src/App.wsx`
+
+`RouteMeta` 和 `routeMeta` 在 `App.wsx` 中未被使用。删除这两个导入可清除 lint 警告，不改变路由或页面行为。
+
+### 移除站点 Vite 插件配置上的冗余 any 强转
+Status: discussed
+Touches: `apps/site/vite.config.ts`
+
+临时类型检查表明，移除 `wsxPress`、`UnoCSS` 和 `wsx` 配置上的 `as any` 后没有插件类型错误。保留强转只会压掉类型检查，且没有解决实际兼容问题。
+
+### 为站点路由元数据、SEO 元数据和错误处理补充行为测试
+Status: discussed
+Touches: `apps/site/test/route-meta.test.ts`, `apps/site/test/meta-manager.test.ts`, `apps/site/test/error-handler.test.ts`
+
+站点原先没有测试文件，代理为 `getRouteMeta`、`MetaManager` 和 `ErrorHandler` 添加了行为覆盖。26 个测试通过，四项故意破坏实现的变异均被测试捕获。
+
+### 用 replaceChildren 清理测试中的文档头部
+Status: discussed
+Touches: `apps/site/test/meta-manager.test.ts`
+
+项目 lint 禁止使用 `innerHTML`。测试改用 `document.head.replaceChildren()` 清理 DOM，保留测试行为并遵守现有规则。
+
+### 为 ECharts 适配器建立运行时验证 RFC
+Status: discussed
+Touches: `.spec/rfc/0058-echarts-adapter-runtime-test.md`, `ROADMAP.md`, `TASK_TRACKING.md`
+
+现有 ECharts 6 升级只做了类型检查，未验证适配器运行时行为。RFC 0058 将运行时验证作为独立工作跟踪，并链接到路线图与任务跟踪文件。
+
+### 为 charts 包配置 happy-dom Vitest 测试
+Status: discussed
+Touches: `packages/charts/vitest.config.ts`, `packages/charts/package.json`
+
+charts 包没有现成测试环境或测试脚本；配置 happy-dom 和 Vitest 命令，让适配器测试能在包内运行。
+
+### 将 ECharts textColor 显式应用到图例和坐标轴
+Status: discussed
+Touches: `packages/charts/src/adapters/echarts.ts`, `packages/charts/test/echarts-adapter.test.ts`
+
+运行时检查发现 ECharts 6 不会用全局 textStyle.color 给数值轴文字着色，导致适配器的 textColor 覆盖未生效。适配器现将颜色分别设到图例、类别轴和数值轴，并以节点 fill 断言覆盖这三处；没有覆盖值时保留默认颜色。
+
+### 用 ECharts 5.6.0 和 6.1.0 验证显式文字颜色兼容性
+Status: discussed
+Touches: `packages/charts/src/adapters/echarts.ts`, `.spec/rfc/0058-echarts-adapter-runtime-test.md`
+
+为确认适配器生成的图例与双轴显式设色选项跨版本有效，分别在 ECharts 5.6.0 和 6.1.0 检查渲染文字。两版本的八个文字节点均带有指定颜色。
+
+### 完整验证后提交并推送 ECharts 适配器修复
+Status: directed
+Touches: `.spec/rfc/0058-echarts-adapter-runtime-test.md`, `packages/charts/vitest.config.ts`, `packages/charts/test/echarts-adapter.test.ts`, `packages/charts/src/adapters/echarts.ts`
+
+实现通过全仓构建、lint 和测试验证，随后提交并推送修复。摘要记录构建 7/7、lint 5/5、测试 9/9 均通过，其中 charts 测试为 6 项。

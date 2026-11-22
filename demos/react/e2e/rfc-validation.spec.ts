@@ -262,6 +262,9 @@ test.describe("RFC validation demos (browser)", () => {
     });
 
     test("RFC-0007 keeps selection first and verifies checkbox selection behavior", async ({ page }) => {
+        // RFC-0056: select-all must not throw from its change handler.
+        const pageErrors: string[] = [];
+        page.on("pageerror", (error) => pageErrors.push(error.message));
         await page.goto("/?rfc=0007");
         await gridReady(page);
         const headerIds = () =>
@@ -299,6 +302,11 @@ test.describe("RFC validation demos (browser)", () => {
         expect(Math.abs(checkboxCenter - textCenter)).toBeLessThanOrEqual(2);
 
         await checkbox.click();
+        // RFC-0056: the grid re-renders asynchronously and replaces its DOM, so wait for the DOM to show the
+        // selection before the next real click; a click whose mousedown node is replaced never fires.
+        await expect(firstRow).toHaveAttribute("data-selected", "true");
+        await expect(checkbox).toBeChecked();
+        await expect(checkbox).toBeFocused();
         const selectedIds = () =>
             page.evaluate(() => {
                 const grid = document.querySelector("wsx-ac-grid") as HTMLElement & {
@@ -312,14 +320,18 @@ test.describe("RFC validation demos (browser)", () => {
             nodes.slice(0, 3).map((row) => row.getAttribute("data-row-id")),
         );
         await expect.poll(async () => (await selectedIds()).sort()).toEqual([...expectedRangeIds].sort());
+        await expect(rows.nth(2)).toHaveAttribute("data-selected", "true");
 
         const selectAll = page.locator(".grid-header-row wsx-ac-selection-checkbox input");
         await selectAll.click();
         await expect
             .poll(async () => (await selectedIds()).length)
             .toBe(50);
+        await expect(rows.last()).toHaveAttribute("data-selected", "true");
         await selectAll.click();
         await expect.poll(selectedIds).toHaveLength(0);
+        await expect(rows.first()).toHaveAttribute("data-selected", "false");
+        expect(pageErrors).toEqual([]);
     });
 
     test("RFC-0009 saves edits with Enter and cancels edits with Escape", async ({ page }) => {
