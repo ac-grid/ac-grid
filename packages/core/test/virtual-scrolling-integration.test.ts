@@ -118,7 +118,7 @@ describe("Grid Virtual Scrolling Integration", () => {
         const range = grid.getVisibleRowRange();
         expect(range.end).toBeLessThanOrEqual(ROW_COUNT);
         expect(range.start).toBeLessThan(range.end);
-        expect(grid.querySelectorAll(".grid-row").length).toBeGreaterThan(0);
+        await waitFor(() => expect(grid.querySelectorAll(".grid-row").length).toBeGreaterThan(0));
     });
 
     it("keeps rows visible after data shrinks while scrolled deep", async () => {

@@ -417,11 +417,13 @@ test.describe("RFC validation demos (browser)", () => {
         await grid.evaluate((element: any) => {
             element.editingConfig = { enabled: true, editTrigger: "both" };
         });
+        await domQuiet(page);
 
         const cell = page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first();
         const original = await cell.innerText();
         await cell.focus();
         await domQuiet(page);
+        await expect(cell).toBeFocused();
         await page.keyboard.press("Enter");
 
         const input = grid.locator("wsx-ac-cell-editor input");
@@ -473,10 +475,12 @@ test.describe("RFC validation demos (browser)", () => {
         await grid.evaluate((element: any) => {
             element.editingConfig = { enabled: true, editTrigger: "enter" };
         });
+        await domQuiet(page);
         const cell = page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first();
         const original = (await cell.innerText()).trim();
         await cell.focus();
         await domQuiet(page);
+        await expect(cell).toBeFocused();
         await page.keyboard.press("Enter");
         const input = grid.locator("wsx-ac-cell-editor input");
         await expect(input).toBeVisible();
@@ -491,9 +495,11 @@ test.describe("RFC validation demos (browser)", () => {
         await grid.evaluate((element: any) => {
             element.editingConfig = { enabled: true, editTrigger: "doubleClick" };
         });
+        await domQuiet(page);
         const cell = page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first();
         await cell.focus();
         await domQuiet(page);
+        await expect(cell).toBeFocused();
         await page.keyboard.press("Enter");
         await page.waitForTimeout(150);
         await expect(grid.locator("wsx-ac-cell-editor")).toHaveCount(0);
@@ -511,9 +517,11 @@ test.describe("RFC validation demos (browser)", () => {
                 onEditStart: () => ((window as any).__editStarts += 1),
             };
         });
+        await domQuiet(page);
         const cell = page.locator('.grid-row .grid-cell[data-column-id="firstName"]').first();
         await cell.focus();
         await domQuiet(page);
+        await expect(cell).toBeFocused();
         await page.keyboard.press("Enter");
         await expect(grid.locator("wsx-ac-cell-editor input")).toBeFocused();
         await expect.poll(() => page.evaluate(() => (window as any).__editStarts)).toBe(1);
@@ -599,8 +607,12 @@ test.describe("RFC validation demos (browser)", () => {
 
         await page.getByTestId("state-set-sort").click();
         expect(JSON.parse((await output.textContent())!).sorting).toEqual([{ id: "age", desc: false }]);
-        const sorted = await ages();
-        expect(sorted).toEqual([...sorted].sort((a, b) => a - b));
+        await expect
+            .poll(async () => {
+                const current = await ages();
+                return current.length > 0 && current.every((age, index) => index === 0 || current[index - 1] <= age);
+            })
+            .toBe(true);
 
         await page.getByTestId("state-reset").click();
         expect(JSON.parse((await output.textContent())!).sorting).toEqual([]);

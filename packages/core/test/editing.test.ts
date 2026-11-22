@@ -172,7 +172,10 @@ describe("Grid Cell Editing", () => {
             container.appendChild(grid);
             const root = () => (grid.shadowRoot || grid) as ParentNode;
             const cellSelector = '[role="gridcell"][data-column-id="name"]';
-            await waitFor(() => expect(root().querySelector(cellSelector)).toBeTruthy());
+            await waitFor(() => {
+                expect(root().querySelector(cellSelector)).toBeTruthy();
+                expect(grid._isRendering).not.toBe(true);
+            });
             root()
                 .querySelector<HTMLElement>(cellSelector)!
                 .dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
@@ -184,9 +187,8 @@ describe("Grid Cell Editing", () => {
             const grid = createEditingGrid({ editTrigger: "both", onEditStart });
             const root = await pressEnterOnNameCell(grid);
 
-            await waitFor(() => expect(root().querySelector("wsx-ac-cell-editor")).toBeTruthy());
-            const input = root().querySelector<HTMLInputElement>("wsx-ac-cell-editor input");
             await waitFor(() => {
+                const input = root().querySelector<HTMLInputElement>("wsx-ac-cell-editor input");
                 expect(input).toBeTruthy();
                 expect(input!.value).toBe("Alice");
                 expect(document.activeElement === input || (root() as any).activeElement === input).toBe(true);
@@ -211,11 +213,13 @@ describe("Grid Cell Editing", () => {
             grid.enableKeyboardNavigation = true;
             const root = await pressEnterOnNameCell(grid);
 
-            await waitFor(() => expect(root().querySelector("wsx-ac-cell-editor")).toBeTruthy());
+            await waitFor(() => {
+                const input = root().querySelector<HTMLInputElement>("wsx-ac-cell-editor input");
+                expect(input).toBeTruthy();
+                expect(input!.value).toBe("Alice");
+                expect(document.activeElement === input || (root() as any).activeElement === input).toBe(true);
+            });
             await new Promise((resolve) => setTimeout(resolve, 100));
-            const input = root().querySelector<HTMLInputElement>("wsx-ac-cell-editor input");
-            expect(input?.value).toBe("Alice");
-            expect(document.activeElement === input || (root() as any).activeElement === input).toBe(true);
             expect(onEditStart).toHaveBeenCalledTimes(1);
         });
     });

@@ -5,6 +5,7 @@ import "../src/components/FilterIcon.wsx";
 import "../src/components/SelectionCheckbox.wsx";
 
 const tick = () => new Promise((r) => setTimeout(r, 60));
+const waitIdle = (el: { _isRendering?: boolean }) => waitFor(() => expect(el._isRendering).not.toBe(true));
 // Own accessor that forwards to the prototype setter, mimicking a property set before the element upgraded.
 const preset = (el: any, props: Record<string, any>) => {
     const proto = Object.getPrototypeOf(el);
@@ -18,6 +19,7 @@ const mount = async (tag: string, props: Record<string, any> = {}) => {
     Object.assign(el, props);
     document.body.appendChild(el);
     await tick();
+    await waitIdle(el);
     return el;
 };
 afterEach(() => { document.body.innerHTML = ""; });
@@ -51,8 +53,10 @@ describe("SortingIndicator", () => {
         el.direction = "asc";
         el.direction = "desc";
         await waitFor(() => expect(el.querySelector(".sort-indicator").getAttribute("aria-label")).toBe("Sorted descending"));
+        await waitIdle(el);
         el.index = 0; el.index = 0; el.index = undefined;
         await waitFor(() => expect(el.querySelector(".sort-index")).toBeNull());
+        await waitIdle(el);
         expect(el.direction).toBe("desc");
         expect(el.index).toBeUndefined();
         const custom = { t: (_k: string, _p: any, d: string) => "X" + d };
@@ -70,6 +74,7 @@ describe("SortingIndicator", () => {
         preset(el, { direction: "asc", index: 2, i18n: custom });
         document.body.appendChild(el);
         await tick();
+        await waitIdle(el);
         el.rerender();
         await waitFor(() =>
             expect(el.querySelector(".sort-indicator").getAttribute("aria-label")).toBe("Sorted Yascending (priority 3)"),
