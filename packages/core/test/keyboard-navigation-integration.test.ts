@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "../src/components/Grid.wsx";
 import "../src/components/CellEditor.wsx";
 import { waitFor } from "@testing-library/dom";
@@ -108,5 +108,193 @@ describe("Grid keyboard navigation", () => {
     await waitFor(() => expect(root(grid).querySelector("wsx-ac-cell-editor input")).toBeTruthy());
     root(grid).querySelector("wsx-ac-cell-editor input").dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true, composed: true, cancelable: true }));
     await waitFor(() => expect(grid.getFocusedCell()).toEqual({ rowId: "r1", columnId: "age" }));
+  });
+
+  it("releases Tab at the last cell and Shift+Tab at the first cell without trapping focus", async () => {
+    const grid = makeGrid();
+    container.appendChild(grid);
+    await waitFor(() => expect(root(grid).querySelectorAll("[data-grid-cell]").length).toBe(4));
+
+    grid.focusCell("r2", "age");
+    await waitFor(() => {
+      expect(grid.getFocusedCell()).toEqual({ rowId: "r2", columnId: "age" });
+      expect(document.activeElement?.getAttribute("data-row-id")).toBe("r2");
+      expect(document.activeElement?.getAttribute("data-column-id")).toBe("age");
+    });
+    const lastCell = root(grid).querySelector('[data-row-id="r2"][data-column-id="age"]') as HTMLElement;
+    const forwardBoundaryEvent = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true });
+    lastCell.dispatchEvent(forwardBoundaryEvent);
+    expect(forwardBoundaryEvent.defaultPrevented).toBe(false);
+    expect(grid.getFocusedCell()).toEqual({ rowId: "r2", columnId: "age" });
+
+    grid.focusCell("r1", "name");
+    await waitFor(() => {
+      expect(grid.getFocusedCell()).toEqual({ rowId: "r1", columnId: "name" });
+      expect(document.activeElement?.getAttribute("data-row-id")).toBe("r1");
+      expect(document.activeElement?.getAttribute("data-column-id")).toBe("name");
+    });
+    const firstCell = root(grid).querySelector('[data-row-id="r1"][data-column-id="name"]') as HTMLElement;
+    const backwardBoundaryEvent = new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true, cancelable: true });
+    firstCell.dispatchEvent(backwardBoundaryEvent);
+    expect(backwardBoundaryEvent.defaultPrevented).toBe(false);
+    expect(grid.getFocusedCell()).toEqual({ rowId: "r1", columnId: "name" });
+  });
+
+  it("releases both Tab and Shift+Tab on a single-cell grid", async () => {
+    const grid = makeGrid();
+    grid.data = [{ userId: "r1", name: "Ada" }];
+    grid.columns = [{ accessorKey: "name", id: "name", header: "Name" }];
+    container.appendChild(grid);
+    await waitFor(() => expect(root(grid).querySelectorAll("[data-grid-cell]").length).toBe(1));
+
+    grid.focusCell("r1", "name");
+    await waitFor(() => {
+      expect(grid.getFocusedCell()).toEqual({ rowId: "r1", columnId: "name" });
+      expect(document.activeElement?.getAttribute("data-row-id")).toBe("r1");
+      expect(document.activeElement?.getAttribute("data-column-id")).toBe("name");
+    });
+
+    const cell = root(grid).querySelector('[data-row-id="r1"][data-column-id="name"]') as HTMLElement;
+    const tabEvent = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true });
+    cell.dispatchEvent(tabEvent);
+    expect(tabEvent.defaultPrevented).toBe(false);
+
+    const shiftTabEvent = new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true, cancelable: true });
+    cell.dispatchEvent(shiftTabEvent);
+    expect(shiftTabEvent.defaultPrevented).toBe(false);
+    expect(grid.getFocusedCell()).toEqual({ rowId: "r1", columnId: "name" });
+  });
+
+  it("navigates intermediate cells forward with Tab and backward with Shift+Tab", async () => {
+    const grid = makeGrid();
+    container.appendChild(grid);
+    await waitFor(() => expect(root(grid).querySelectorAll("[data-grid-cell]").length).toBe(4));
+
+    const pressTab = async (
+      from: { rowId: string; columnId: string },
+      shiftKey: boolean,
+      expected: { rowId: string; columnId: string },
+    ) => {
+      const cell = root(grid).querySelector(`[data-row-id="${from.rowId}"][data-column-id="${from.columnId}"]`) as HTMLElement;
+      const event = new KeyboardEvent("keydown", { key: "Tab", shiftKey, bubbles: true, cancelable: true });
+      cell.dispatchEvent(event);
+      expect(event.defaultPrevented).toBe(true);
+      await waitFor(() => expect(grid.getFocusedCell()).toEqual(expected));
+    };
+
+    grid.focusCell("r1", "name");
+    await waitFor(() => expect(grid.getFocusedCell()).toEqual({ rowId: "r1", columnId: "name" }));
+
+    await pressTab({ rowId: "r1", columnId: "name" }, false, { rowId: "r1", columnId: "age" });
+    await pressTab({ rowId: "r1", columnId: "age" }, false, { rowId: "r2", columnId: "name" });
+    await pressTab({ rowId: "r2", columnId: "name" }, false, { rowId: "r2", columnId: "age" });
+
+    await pressTab({ rowId: "r2", columnId: "age" }, true, { rowId: "r2", columnId: "name" });
+    await pressTab({ rowId: "r2", columnId: "name" }, true, { rowId: "r1", columnId: "age" });
+    await pressTab({ rowId: "r1", columnId: "age" }, true, { rowId: "r1", columnId: "name" });
+  });
+
+  const nextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+
+  async function expectBoundaryEditRelease(options: {
+    rowId: string;
+    columnId: string;
+    initialValue: unknown;
+    savedValue: unknown;
+    shiftKey: boolean;
+  }) {
+    const onEditSave = vi.fn();
+    const grid = makeGrid();
+    grid.editingConfig = { enabled: true, onEditSave };
+    const outsideButton = document.createElement("button");
+    outsideButton.textContent = "Outside";
+    container.appendChild(grid);
+    container.appendChild(outsideButton);
+    await waitFor(() => expect(root(grid).querySelectorAll("[data-grid-cell]").length).toBe(4));
+
+    grid.focusCell(options.rowId, options.columnId);
+    await waitFor(() => expect(document.activeElement?.getAttribute("data-column-id")).toBe(options.columnId));
+    grid.startEdit(options.rowId, options.columnId, options.initialValue);
+
+    const input = await waitFor(() => {
+      const el = root(grid).querySelector("wsx-ac-cell-editor input") as HTMLInputElement | null;
+      expect(el).toBeTruthy();
+      expect(document.activeElement).toBe(el);
+      return el!;
+    });
+
+    const event = new KeyboardEvent("keydown", {
+      key: "Tab",
+      shiftKey: options.shiftKey,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    input.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(false);
+    expect(onEditSave).toHaveBeenCalledWith(options.rowId, options.columnId, options.savedValue);
+    expect(grid.editingState.rowId).toBeNull();
+
+    outsideButton.focus();
+    await waitFor(() => expect(root(grid).querySelector("wsx-ac-cell-editor")).toBeNull());
+    await nextFrame();
+    await nextFrame();
+    expect(document.activeElement).toBe(outsideButton);
+  }
+
+  it("saves and releases focus on Tab while editing the last cell", async () => {
+    await expectBoundaryEditRelease({
+      rowId: "r2",
+      columnId: "age",
+      initialValue: 25,
+      savedValue: "25",
+      shiftKey: false,
+    });
+  });
+
+  it("saves and releases focus on Shift+Tab while editing the first cell", async () => {
+    await expectBoundaryEditRelease({
+      rowId: "r1",
+      columnId: "name",
+      initialValue: "Ada",
+      savedValue: "Ada",
+      shiftKey: true,
+    });
+  });
+
+  it("keeps focus in the editor on boundary Tab when edit validation fails", async () => {
+    const onEditSave = vi.fn();
+    const grid = makeGrid();
+    grid.columns = [
+      { accessorKey: "name", id: "name", header: "Name" },
+      { accessorKey: "age", id: "age", header: "Age", validateEdit: () => "Invalid age" },
+    ];
+    grid.editingConfig = { enabled: true, onEditSave };
+    container.appendChild(grid);
+    await waitFor(() => expect(root(grid).querySelectorAll("[data-grid-cell]").length).toBe(4));
+
+    grid.focusCell("r2", "age");
+    await waitFor(() => expect(document.activeElement?.getAttribute("data-column-id")).toBe("age"));
+    grid.startEdit("r2", "age", 25);
+
+    const input = await waitFor(() => {
+      const el = root(grid).querySelector("wsx-ac-cell-editor input") as HTMLInputElement | null;
+      expect(el).toBeTruthy();
+      expect(document.activeElement).toBe(el);
+      return el!;
+    });
+
+    const event = new KeyboardEvent("keydown", {
+      key: "Tab",
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    });
+    input.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(onEditSave).not.toHaveBeenCalled();
+    expect(grid.editingState.rowId).toBe("r2");
   });
 });
