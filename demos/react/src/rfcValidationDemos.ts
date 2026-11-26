@@ -5,6 +5,7 @@ import {
   type ColumnDef,
   type CreateGridOptions,
   type ExportOptions,
+  I18nManager,
   zhCN,
 } from "@ac-grid/core";
 import { setupIntegratedCharts, type ChartSpec, type GridChartHost } from "@ac-grid/charts";
@@ -36,9 +37,9 @@ export const RFC_VALIDATION_ORDER = [
   "0029",
   "0030",
   "0047",
+  "0054",
   "0048",
   "0049",
-  "0054",
 ] as const;
 
 export type RfcValidationId = (typeof RFC_VALIDATION_ORDER)[number];
@@ -706,8 +707,8 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
     "0054": {
       id: "0054",
       title: "Pagination i18n live update",
-      multicaIssue: "RFC-0054",
-      hint: "分页控件连接后支持自定义 i18n，空赋值保留当前 manager。",
+      multicaIssue: "DEV-196",
+      hint: "分页控件连接后赋值自定义 i18n 会更新文案；空赋值保留当前 manager，不赋值时显示默认文案。",
       rowCount: 50,
       showGlobalSearch: false,
       columns: PERSON_COLUMNS.slice(0, 4),
@@ -717,6 +718,34 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
         className: "h-full w-full",
         pagination: { enabled: true, pageSize: 10, pageSizeOptions: [10, 20] },
       }),
+      afterMount: (grid) => {
+        const i18n = new I18nManager();
+        i18n.setMessages({
+          "grid.pagination.showing": "Custom showing",
+          "grid.pagination.to": "through",
+          "grid.pagination.of": "among",
+          "grid.pagination.results": "entries",
+        });
+        const view = grid.ownerDocument.defaultView;
+        if (!view) return;
+        let timer: number;
+        const observer = new MutationObserver(() => {
+          view.clearTimeout(timer);
+          timer = view.setTimeout(applyI18n, 200);
+        });
+        const applyI18n = () => {
+          observer.disconnect();
+          if (!grid.isConnected) return;
+          const controls = grid.querySelector("wsx-ac-pagination-controls") as
+            | (HTMLElement & { i18n: I18nManager })
+            | null;
+          if (!controls) return;
+          controls.i18n = i18n;
+        };
+
+        observer.observe(grid, { childList: true, subtree: true });
+        timer = view.setTimeout(applyI18n, 200);
+      },
     },
   };
 

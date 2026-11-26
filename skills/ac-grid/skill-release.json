@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "skillId": "ac-grid",
   "channel": "development",
-  "version": "0.1.0-dev.1",
+  "version": "0.1.0-dev.2",
   "source": {
     "repository": "https://github.com/ac-grid/ac-grid"
   },
