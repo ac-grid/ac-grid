@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
-import { createFormulaEngineFromMatrix, createGrid } from "@ac-grid/core";
+import { createFormulaEngineFromMatrix, createGrid, I18nManager } from "@ac-grid/core";
 
 import { makeData } from "./stories/makeData";
 import {
@@ -110,6 +110,8 @@ function App() {
         parseRfcIdFromUrl(window.location.search),
     );
     const [themeStatus, setThemeStatus] = useState("applied=light preview=none");
+    const [paginationLabel, setPaginationLabel] = useState("Showing 1 to 10 of 50 results");
+    const [paginationScenario, setPaginationScenario] = useState<"default" | "custom" | "falsy">("default");
     const [copiedText, setCopiedText] = useState("");
     const syncThemeStatus = useCallback(() => {
         const grid = gridRef.current;
@@ -177,6 +179,28 @@ function App() {
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         gridRef.current?.setGlobalFilter?.(e.target.value);
+    };
+
+    const setPaginationI18n = (scenario: "custom" | "falsy") => {
+        const controls = gridRef.current?.querySelector("wsx-ac-pagination-controls") as
+            | (HTMLElement & { i18n: I18nManager | null })
+            | null;
+        if (!controls) return;
+
+        if (scenario === "custom") {
+            const i18n = new I18nManager();
+            i18n.setMessages({
+                "grid.pagination.showing": "Custom showing",
+                "grid.pagination.to": "through",
+                "grid.pagination.of": "among",
+                "grid.pagination.results": "entries",
+            });
+            controls.i18n = i18n;
+            setPaginationLabel("Custom showing 1 through 10 among 50 entries");
+        } else {
+            controls.i18n = null;
+        }
+        setPaginationScenario(scenario);
     };
 
     const prevId = getAdjacentRfcId(rfcId, "prev");
@@ -309,6 +333,28 @@ function App() {
                     ) : null}
 
                     {rfcId === "0030" ? <FormulaSheet /> : null}
+
+                    {rfcId === "0054" ? (
+                        <section className="demo-pagination-i18n-panel" aria-label="分页文案验证">
+                            <h2>分页文案验证</h2>
+                            <p>初始状态不传自定义 manager。连接后可以设置自定义文案，再赋 falsy 值验证文案保留。</p>
+                            <div className="demo-pagination-i18n-actions">
+                                <button type="button" className="demo-btn" onClick={() => setPaginationI18n("custom")}>
+                                    连接后赋自定义 i18n
+                                </button>
+                                <button type="button" className="demo-btn" onClick={() => setPaginationI18n("falsy")}>
+                                    赋 falsy manager
+                                </button>
+                                <button type="button" className="demo-btn" onClick={() => window.location.reload()}>
+                                    重载以查看默认文案
+                                </button>
+                            </div>
+                            <p>当前操作：{paginationScenario === "default" ? "未提供 manager（默认文案）" : paginationScenario === "custom" ? "已赋自定义 manager" : "已赋 falsy 值（保留 manager）"}</p>
+                            <output className="demo-pagination-i18n-current" aria-live="polite" data-testid="pagination-i18n-current">
+                                当前分页标签：{paginationLabel}
+                            </output>
+                        </section>
+                    ) : null}
 
                     <div className="demo-toolbar">
                         {spec.showGlobalSearch ? (

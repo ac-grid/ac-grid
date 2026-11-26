@@ -527,34 +527,27 @@ test.describe("RFC validation demos (browser)", () => {
         await expect.poll(() => page.evaluate(() => (window as any).__editStarts)).toBe(1);
     });
 
-    test("RFC-0054 updates pagination labels after connection and keeps the manager on falsy assignment", async ({ page }) => {
+    test("RFC-0054 demonstrates default, custom, and falsy-assignment labels through page controls", async ({ page }) => {
         await page.goto("/?rfc=0054");
         await gridReady(page);
         const controls = page.locator("wsx-ac-pagination-controls");
-        await expect(controls.locator(".pagination-info")).toHaveText(
-            "Custom showing 1 through 10 among 50 entries",
-        );
-        await controls.evaluate((element: any) => {
-            element.i18n = null;
-        });
-        await expect(controls.locator(".pagination-info")).toHaveText(
-            "Custom showing 1 through 10 among 50 entries",
-        );
-    });
+        const visibleLabel = controls.locator(".pagination-info");
+        const currentLabel = page.getByTestId("pagination-i18n-current");
+        await expect(page.getByText("未提供 manager（默认文案）")).toBeVisible();
+        await expect(visibleLabel).toHaveText("Showing 1 to 10 of 50 results");
+        await expect(currentLabel).toHaveText("当前分页标签：Showing 1 to 10 of 50 results");
 
-    test("RFC-0054 keeps default pagination labels without a custom manager", async ({ page }) => {
-        await page.goto("/?rfc=0054");
+        await page.getByRole("button", { name: "连接后赋自定义 i18n" }).click();
+        await expect(visibleLabel).toHaveText("Custom showing 1 through 10 among 50 entries");
+        await expect(currentLabel).toHaveText("当前分页标签：Custom showing 1 through 10 among 50 entries");
+
+        await page.getByRole("button", { name: "赋 falsy manager" }).click();
+        await expect(visibleLabel).toHaveText("Custom showing 1 through 10 among 50 entries");
+        await expect(currentLabel).toHaveText("当前分页标签：Custom showing 1 through 10 among 50 entries");
+
+        await page.getByRole("button", { name: "重载以查看默认文案" }).click();
         await gridReady(page);
-        await page.evaluate(() => {
-            const controls = document.createElement("wsx-ac-pagination-controls") as any;
-            controls.pageIndex = 0;
-            controls.pageSize = 10;
-            controls.totalRows = 50;
-            controls.totalPages = 5;
-            controls.dataset.testid = "default-pagination-controls";
-            document.body.appendChild(controls);
-        });
-        await expect(page.locator('[data-testid="default-pagination-controls"] .pagination-info')).toHaveText(
+        await expect(page.locator("wsx-ac-pagination-controls .pagination-info")).toHaveText(
             "Showing 1 to 10 of 50 results",
         );
     });

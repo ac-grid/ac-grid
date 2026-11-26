@@ -5,7 +5,6 @@ import {
   type ColumnDef,
   type CreateGridOptions,
   type ExportOptions,
-  I18nManager,
   zhCN,
 } from "@ac-grid/core";
 import { setupIntegratedCharts, type ChartSpec, type GridChartHost } from "@ac-grid/charts";
@@ -718,34 +717,6 @@ export const RFC_VALIDATION_SPECS: Record<RfcValidationId, RfcValidationSpec> =
         className: "h-full w-full",
         pagination: { enabled: true, pageSize: 10, pageSizeOptions: [10, 20] },
       }),
-      afterMount: (grid) => {
-        const i18n = new I18nManager();
-        i18n.setMessages({
-          "grid.pagination.showing": "Custom showing",
-          "grid.pagination.to": "through",
-          "grid.pagination.of": "among",
-          "grid.pagination.results": "entries",
-        });
-        const view = grid.ownerDocument.defaultView;
-        if (!view) return;
-        let timer: number;
-        const observer = new MutationObserver(() => {
-          view.clearTimeout(timer);
-          timer = view.setTimeout(applyI18n, 200);
-        });
-        const applyI18n = () => {
-          observer.disconnect();
-          if (!grid.isConnected) return;
-          const controls = grid.querySelector("wsx-ac-pagination-controls") as
-            | (HTMLElement & { i18n: I18nManager })
-            | null;
-          if (!controls) return;
-          controls.i18n = i18n;
-        };
-
-        observer.observe(grid, { childList: true, subtree: true });
-        timer = view.setTimeout(applyI18n, 200);
-      },
     },
   };
 
