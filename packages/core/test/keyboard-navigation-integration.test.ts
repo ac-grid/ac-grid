@@ -222,6 +222,8 @@ describe("Grid keyboard navigation", () => {
       expect(document.activeElement).toBe(el);
       return el!;
     });
+    input.value = String(options.savedValue);
+    input.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
 
     const event = new KeyboardEvent("keydown", {
       key: "Tab",
@@ -248,7 +250,7 @@ describe("Grid keyboard navigation", () => {
       rowId: "r2",
       columnId: "age",
       initialValue: 25,
-      savedValue: "25",
+      savedValue: "26",
       shiftKey: false,
     });
   });
@@ -296,5 +298,13 @@ describe("Grid keyboard navigation", () => {
     expect(event.defaultPrevented).toBe(true);
     expect(onEditSave).not.toHaveBeenCalled();
     expect(grid.editingState.rowId).toBe("r2");
+
+    grid.data = [...grid.data];
+    await waitFor(() => {
+      const rerenderedEditor = root(grid).querySelector("wsx-ac-cell-editor input");
+      expect(rerenderedEditor).toBeTruthy();
+      expect(grid.editingState.rowId).toBe("r2");
+      expect(document.activeElement).toBe(rerenderedEditor);
+    });
   });
 });

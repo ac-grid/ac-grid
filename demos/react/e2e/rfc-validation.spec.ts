@@ -409,6 +409,47 @@ test.describe("RFC validation demos (browser)", () => {
         await expect(cell).toHaveText(original);
     });
 
+    test("Tab saves an edit in the last cell and moves browser focus outside the grid", async ({ page }) => {
+        await page.goto("/?rfc=0012");
+        await gridReady(page);
+
+        await page.evaluate(() => {
+            const grid = document.querySelector("wsx-ac-grid") as any;
+            grid.data = [{ userId: "boundary-row", firstName: "Before" }];
+            grid.columns = [{ accessorKey: "firstName", id: "firstName", header: "First Name" }];
+            grid.editingConfig = {
+                enabled: true,
+                editTrigger: "enter",
+                onEditSave: (_rowId: string, _columnId: string, value: unknown) => {
+                    (window as any).__boundarySavedValue = value;
+                },
+            };
+
+            const next = document.createElement("button");
+            next.type = "button";
+            next.textContent = "After grid";
+            next.dataset.testid = "after-grid";
+            grid.after(next);
+        });
+        await domQuiet(page);
+
+        const grid = page.locator("wsx-ac-grid");
+        const lastCell = grid.locator('.grid-cell[data-column-id="firstName"]').last();
+        await grid.evaluate((element: any) => element.focusCell("boundary-row", "firstName"));
+        await expect(lastCell).toBeFocused();
+        await page.keyboard.press("Enter");
+
+        const editor = grid.locator("wsx-ac-cell-editor input");
+        await expect(editor).toBeFocused();
+        await editor.fill("After");
+        await page.keyboard.press("Tab");
+
+        await expect.poll(() => page.evaluate(() => (window as any).__boundarySavedValue)).toBe("After");
+        await expect.poll(() => grid.evaluate((element: any) => element.data[0].firstName)).toBe("After");
+        await expect(lastCell).toHaveText("After");
+        await expect(page.getByTestId("after-grid")).toBeFocused();
+    });
+
     test("RFC-0049 starts edit on Enter when keyboard navigation is disabled", async ({ page }) => {
         await page.goto("/?rfc=0049");
         await gridReady(page);

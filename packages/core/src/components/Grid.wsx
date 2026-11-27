@@ -531,14 +531,22 @@ export class Grid extends LightComponent {
                 next.column === columnIndex;
             if (isTabBoundary) {
                 if (editing) {
-                    this.saveEdit(this.editingState.value, false);
+                    const value =
+                        isEditor && target instanceof HTMLInputElement
+                            ? target.value
+                            : this.editingState.value;
+                    this.saveEdit(value, false);
                     if (this.editingState.rowId) event.preventDefault();
                 }
                 return;
             }
             event.preventDefault();
             if (editing) {
-                this.saveEdit(this.editingState.value, false);
+                const value =
+                    isEditor && target instanceof HTMLInputElement
+                        ? target.value
+                        : this.editingState.value;
+                this.saveEdit(value, false);
                 if (this.editingState.rowId) return;
             }
             this.moveKeyboardFocus(rowIndex, columnIndex, event.key, event.shiftKey);
