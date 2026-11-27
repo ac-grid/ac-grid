@@ -14,6 +14,12 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ac-grid/ac-grid",
+    "directory": "packages/core"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "vite build --watch",
     "build": "tsc && vite build",
