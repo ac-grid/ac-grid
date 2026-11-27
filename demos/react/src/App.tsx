@@ -393,6 +393,17 @@ function App() {
                     </div>
 
                     {spec.hideGrid ? null : <div ref={gridHostRef} className="demo-grid-host" />}
+                    {rfcId === "0012" ? (
+                        <div className="demo-keyboard-boundary-actions">
+                            <button
+                                type="button"
+                                className="demo-btn"
+                                data-testid="rfc-0012-after-grid"
+                            >
+                                After grid focus target
+                            </button>
+                        </div>
+                    ) : null}
                 </div>
 
                 <footer className="demo-footer">

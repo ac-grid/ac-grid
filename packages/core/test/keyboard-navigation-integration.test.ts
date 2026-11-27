@@ -200,6 +200,7 @@ describe("Grid keyboard navigation", () => {
     rowId: string;
     columnId: string;
     initialValue: unknown;
+    typedValue?: string;
     savedValue: unknown;
     shiftKey: boolean;
   }) {
@@ -222,6 +223,11 @@ describe("Grid keyboard navigation", () => {
       expect(document.activeElement).toBe(el);
       return el!;
     });
+
+    if (options.typedValue !== undefined) {
+      input.value = options.typedValue;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    }
 
     const event = new KeyboardEvent("keydown", {
       key: "Tab",
@@ -248,7 +254,8 @@ describe("Grid keyboard navigation", () => {
       rowId: "r2",
       columnId: "age",
       initialValue: 25,
-      savedValue: "25",
+      typedValue: "28",
+      savedValue: "28",
       shiftKey: false,
     });
   });
@@ -258,25 +265,42 @@ describe("Grid keyboard navigation", () => {
       rowId: "r1",
       columnId: "name",
       initialValue: "Ada",
-      savedValue: "Ada",
+      typedValue: "Ada Lovelace",
+      savedValue: "Ada Lovelace",
       shiftKey: true,
     });
   });
 
-  it("keeps focus in the editor on boundary Tab when edit validation fails", async () => {
+  async function expectInvalidBoundaryEditRetainsFocus(options: {
+    rowId: string;
+    columnId: string;
+    initialValue: unknown;
+    shiftKey: boolean;
+    expectedError: string;
+  }) {
     const onEditSave = vi.fn();
     const grid = makeGrid();
     grid.columns = [
-      { accessorKey: "name", id: "name", header: "Name" },
-      { accessorKey: "age", id: "age", header: "Age", validateEdit: () => "Invalid age" },
+      {
+        accessorKey: "name",
+        id: "name",
+        header: "Name",
+        validateEdit: options.columnId === "name" ? () => options.expectedError : undefined,
+      },
+      {
+        accessorKey: "age",
+        id: "age",
+        header: "Age",
+        validateEdit: options.columnId === "age" ? () => options.expectedError : undefined,
+      },
     ];
     grid.editingConfig = { enabled: true, onEditSave };
     container.appendChild(grid);
     await waitFor(() => expect(root(grid).querySelectorAll("[data-grid-cell]").length).toBe(4));
 
-    grid.focusCell("r2", "age");
-    await waitFor(() => expect(document.activeElement?.getAttribute("data-column-id")).toBe("age"));
-    grid.startEdit("r2", "age", 25);
+    grid.focusCell(options.rowId, options.columnId);
+    await waitFor(() => expect(document.activeElement?.getAttribute("data-column-id")).toBe(options.columnId));
+    grid.startEdit(options.rowId, options.columnId, options.initialValue);
 
     const input = await waitFor(() => {
       const el = root(grid).querySelector("wsx-ac-cell-editor input") as HTMLInputElement | null;
@@ -287,6 +311,7 @@ describe("Grid keyboard navigation", () => {
 
     const event = new KeyboardEvent("keydown", {
       key: "Tab",
+      shiftKey: options.shiftKey,
       bubbles: true,
       composed: true,
       cancelable: true,
@@ -295,6 +320,39 @@ describe("Grid keyboard navigation", () => {
 
     expect(event.defaultPrevented).toBe(true);
     expect(onEditSave).not.toHaveBeenCalled();
-    expect(grid.editingState.rowId).toBe("r2");
+    expect(grid.editingState.rowId).toBe(options.rowId);
+    expect(grid.editingState.columnId).toBe(options.columnId);
+    expect(grid.editingState.error).toBe(options.expectedError);
+
+    await waitFor(() => expect(grid._isRendering).not.toBe(true));
+    await nextFrame();
+    await nextFrame();
+
+    expect(grid.editingState.rowId).toBe(options.rowId);
+    expect(grid.editingState.columnId).toBe(options.columnId);
+    expect(grid.editingState.error).toBe(options.expectedError);
+    const currentInput = root(grid).querySelector("wsx-ac-cell-editor input") as HTMLInputElement | null;
+    expect(currentInput).toBeTruthy();
+    expect(document.activeElement).toBe(currentInput);
+  }
+
+  it("keeps focus in the editor after rerender on last-cell Tab when edit validation fails", async () => {
+    await expectInvalidBoundaryEditRetainsFocus({
+      rowId: "r2",
+      columnId: "age",
+      initialValue: 25,
+      shiftKey: false,
+      expectedError: "Invalid age",
+    });
+  });
+
+  it("keeps focus in the editor after rerender on first-cell Shift+Tab when edit validation fails", async () => {
+    await expectInvalidBoundaryEditRetainsFocus({
+      rowId: "r1",
+      columnId: "name",
+      initialValue: "Ada",
+      shiftKey: true,
+      expectedError: "Invalid name",
+    });
   });
 });

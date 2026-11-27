@@ -525,20 +525,30 @@ export class Grid extends LightComponent {
                 this._keyboardNavigationMode,
                 event.shiftKey,
             );
+            const cellEditor = target.closest("wsx-ac-cell-editor");
+            const editorInput =
+                target instanceof HTMLInputElement ||
+                target instanceof HTMLTextAreaElement ||
+                target instanceof HTMLSelectElement
+                    ? target
+                    : cellEditor?.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
+                          "input,textarea,select",
+                      ) ?? null;
+            const pendingEditValue = cellEditor && editorInput ? editorInput.value : this.editingState.value;
             const isTabBoundary =
                 event.key === "Tab" &&
                 next.row === rowIndex &&
                 next.column === columnIndex;
             if (isTabBoundary) {
                 if (editing) {
-                    this.saveEdit(this.editingState.value, false);
+                    this.saveEdit(pendingEditValue, false);
                     if (this.editingState.rowId) event.preventDefault();
                 }
                 return;
             }
             event.preventDefault();
             if (editing) {
-                this.saveEdit(this.editingState.value, false);
+                this.saveEdit(pendingEditValue, false);
                 if (this.editingState.rowId) return;
             }
             this.moveKeyboardFocus(rowIndex, columnIndex, event.key, event.shiftKey);

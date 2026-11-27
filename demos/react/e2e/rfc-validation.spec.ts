@@ -409,6 +409,81 @@ test.describe("RFC validation demos (browser)", () => {
         await expect(cell).toHaveText(original);
     });
 
+    test("RFC-0012 saves last-cell edit and moves focus out of the grid on Tab", async ({ page }) => {
+        await page.goto("/?rfc=0012");
+        await gridReady(page);
+        const grid = page.locator("wsx-ac-grid");
+        const lastCell = grid.locator(".grid-body .grid-row").last().locator('.grid-cell[data-column-id="status"]');
+        const afterGrid = page.getByTestId("rfc-0012-after-grid");
+
+        await lastCell.scrollIntoViewIfNeeded();
+        await lastCell.focus();
+        await domQuiet(page);
+        await expect(lastCell).toBeFocused();
+
+        await page.keyboard.press("Enter");
+        const input = grid.locator("wsx-ac-cell-editor input");
+        await expect(input).toBeVisible();
+        await expect(input).toBeFocused();
+
+        await page.keyboard.press("ControlOrMeta+a");
+        await page.keyboard.type("Boundary Saved");
+        await expect(input).toHaveValue("Boundary Saved");
+
+        await page.keyboard.press("Tab");
+
+        await expect(input).toHaveCount(0);
+        await expect(lastCell).toHaveText("Boundary Saved");
+        await expect(afterGrid).toBeFocused();
+        await domQuiet(page);
+        await expect(afterGrid).toBeFocused();
+    });
+
+    test("RFC-0012 keeps focus on the editor after rerender when boundary validation fails", async ({ page }) => {
+        await page.goto("/?rfc=0012");
+        await gridReady(page);
+        const grid = page.locator("wsx-ac-grid");
+        const lastCell = grid.locator(".grid-body .grid-row").last().locator('.grid-cell[data-column-id="status"]');
+        const afterGrid = page.getByTestId("rfc-0012-after-grid");
+
+        await grid.evaluate((element: any) => {
+            element.columns = element.columns.map((column: any) =>
+                column.id === "status"
+                    ? {
+                          ...column,
+                          validateEdit: (value: unknown) =>
+                              String(value ?? "").trim() === "Invalid status" ? "Status cannot be invalid" : true,
+                      }
+                    : column,
+            );
+        });
+        await domQuiet(page);
+
+        await lastCell.scrollIntoViewIfNeeded();
+        await lastCell.focus();
+        await domQuiet(page);
+        await expect(lastCell).toBeFocused();
+
+        await page.keyboard.press("Enter");
+        const input = grid.locator("wsx-ac-cell-editor input");
+        await expect(input).toBeVisible();
+        await expect(input).toBeFocused();
+
+        await page.keyboard.press("ControlOrMeta+a");
+        await page.keyboard.type("Invalid status");
+        await expect(input).toHaveValue("Invalid status");
+
+        await page.keyboard.press("Tab");
+        await domQuiet(page);
+
+        await expect(input).toBeVisible();
+        await expect(input).toBeFocused();
+        await expect(afterGrid).not.toBeFocused();
+        const editingState = await grid.evaluate((element: any) => element.editingState);
+        expect(editingState.columnId).toBe("status");
+        expect(editingState.error).toBe("Status cannot be invalid");
+    });
+
     test("RFC-0049 starts edit on Enter when keyboard navigation is disabled", async ({ page }) => {
         await page.goto("/?rfc=0049");
         await gridReady(page);
