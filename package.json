@@ -6,9 +6,9 @@
     "author": "Albert Li <albert_lee@hotmail.com>",
     "repository": {
         "type": "git",
-        "url": "https://github.com/systembugtj/ac-grid"
+        "url": "https://github.com/ac-grid/ac-grid"
     },
-    "homepage": "http://systembugtj.github.io/ac-grid",
+    "homepage": "https://ac-grid.github.io/ac-grid",
     "scripts": {
         "dev": "pangu",
         "dev:wsx": "pnpm --filter @ac-grid/demo-wsx dev",
@@ -28,10 +28,11 @@
         "build-storybook": "turbo run build-storybook"
     },
     "devDependencies": {
+        "@changesets/cli": "^3.1.0",
+        "@systembug/pangu": "^0.0.10",
         "prettier": "^3.4.2",
         "turbo": "^2.0.0",
-        "typescript": "^5.6.2",
-        "@systembug/pangu": "^0.0.10"
+        "typescript": "^5.6.2"
     },
     "packageManager": "pnpm@10.10.0",
     "license": "MIT",

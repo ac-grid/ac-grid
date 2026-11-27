@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && pnpm copy:404 && pnpm copy:wsx-press",
-    "build:pages": "cross-env NODE_ENV=production GITHUB_PAGES=true CUSTOM_DOMAIN=true vite build && pnpm copy:404 && pnpm copy:wsx-press",
+    "build:pages": "cross-env NODE_ENV=production GITHUB_PAGES=true vite build && pnpm copy:404 && pnpm copy:wsx-press",
     "preview": "vite preview",
     "deploy:pages": "pnpm build:pages && gh-pages -d dist",
     "test": "vitest --run",
